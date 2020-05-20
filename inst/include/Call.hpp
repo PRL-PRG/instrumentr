@@ -2,21 +2,25 @@
 #define LIGHTR_CALL_HPP
 
 #include <string>
+#include <vector>
+
+class Argument;
 
 using call_id_t = int;
 
 class Call {
   public:
+    enum class State { ACTIVE, SUCCESS, ERROR };
+
     Call(const std::string& package_name, const std::string& function_name)
-        : call_id_(Call::get_next_call_id_())
+        : id_(Call::get_next_id_())
         , package_name_(package_name)
         , function_name_(function_name)
-        , finished_(false)
-        , failed_(false) {
+        , state_(State::ACTIVE) {
     }
 
-    call_id_t get_call_id() const {
-        return call_id_;
+    call_id_t get_id() const {
+        return id_;
     }
 
     const std::string& get_package_name() const {
@@ -27,28 +31,28 @@ class Call {
         return function_name_;
     }
 
-    bool has_finished() const {
-        return finished_;
+    State get_state() const {
+        return state_;
     }
 
-    bool has_failed() const {
-        return failed_;
+    void set_state(State state) {
+        state_ = state;
     }
 
-    void set_finished(bool failed = false) {
-        finished_ = true;
-        failed_ = failed;
+    const std::vector<Argument*> get_arguments() const {
+        return arguments_;
     }
 
   private:
-    int call_id_;
+    int id_;
     std::string package_name_;
     std::string function_name_;
-    bool finished_;
-    bool failed_;
+    State state_;
 
-    static call_id_t get_next_call_id_();
-    static call_id_t call_id_counter_;
+    std::vector<Argument*> arguments_;
+
+    static call_id_t get_next_id_();
+    static call_id_t id_counter_;
 };
 
 #endif /* LIGHTR_CALL_HPP */
