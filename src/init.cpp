@@ -18,6 +18,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"argument_is_evaluated", (DL_FUNC) &r_argument_is_evaluated, 1},
     {"argument_get_call", (DL_FUNC) &r_argument_get_call, 1},
 
+    /* CallStack */
+    {"call_stack_get_call_stack", (DL_FUNC) &r_call_stack_get_call_stack, 0},
+    {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},
+    {"call_stack_get_frame", (DL_FUNC) &r_call_stack_get_frame, 2},
+    {"call_stack_peek_frame", (DL_FUNC) &r_call_stack_peek_frame, 2},
+
     {NULL, NULL, 0}};
 
 void R_init_lightr(DllInfo* dll) {
