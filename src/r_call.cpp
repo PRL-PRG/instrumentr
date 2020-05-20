@@ -28,6 +28,7 @@ SEXP r_get_state(SEXP r_call) {
 }
 
 SEXP r_get_argument(SEXP r_call, SEXP r_position) {
-    return Argument::to_sexp(
-        Call::from_sexp(r_call)->get_argument(asInteger(r_position)));
+    CallSPtr call = Call::from_sexp(r_call);
+    int position = asInteger(r_position);
+    return Argument::to_sexp(call->get_argument(position));
 }
