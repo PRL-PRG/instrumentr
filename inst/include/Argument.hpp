@@ -2,17 +2,15 @@
 #define LIGHTR_ARGUMENT_HPP
 
 #include <string>
+#include <memory>
+#include <Rinternals.h>
 
 class Call;
 
 class Argument {
   public:
-    Argument(Call* call, int position, const std::string& name)
+    Argument(std::shared_ptr<Call> call, int position, const std::string& name)
         : call_(call), position_(position), name_(name), evaluated_(false) {
-    }
-
-    const Call* get_call() const {
-        return call_;
     }
 
     int get_position() {
@@ -31,11 +29,23 @@ class Argument {
         evaluated_ = true;
     }
 
+    std::shared_ptr<Call> get_call() const {
+        return call_;
+    }
+
+    static std::shared_ptr<Argument> from_sexp(SEXP r_argument);
+
+    static SEXP to_sexp(std::shared_ptr<Argument> argument);
+
+    static void destroy_sexp(SEXP r_argument);
+
   private:
-    Call* call_;
+    std::shared_ptr<Call> call_;
     int position_;
     std::string name_;
     bool evaluated_;
 };
+
+using ArgumentSPtr = std::shared_ptr<Argument>;
 
 #endif /* LIGHTR_ARGUMENT_HPP */
