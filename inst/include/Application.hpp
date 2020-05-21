@@ -7,10 +7,12 @@
 namespace lightr {
 
 class Package;
+class CallStack;
 
 class Application: public Object {
   public:
-    Application(): Object() {
+    Application(std::shared_ptr<CallStack> call_stack)
+        : Object(), call_stack_(call_stack) {
     }
 
     std::vector<std::shared_ptr<Package>>& get_packages() {
@@ -25,6 +27,14 @@ class Application: public Object {
         packages_.push_back(package);
     }
 
+    const std::shared_ptr<CallStack> get_call_stack() const {
+        return call_stack_;
+    }
+
+    std::shared_ptr<CallStack> get_call_stack() {
+        return call_stack_;
+    }
+
     static void initialize();
 
     static SEXP get_class();
@@ -37,6 +47,7 @@ class Application: public Object {
 
   private:
     std::vector<std::shared_ptr<Package>> packages_;
+    std::shared_ptr<CallStack> call_stack_;
 
     static SEXP class_;
 };

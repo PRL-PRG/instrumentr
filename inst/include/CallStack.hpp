@@ -52,9 +52,6 @@ class CallStack: public Object {
 
 using CallStackSPtr = std::shared_ptr<CallStack>;
 
-CallStackSPtr get_call_stack();
-void initialize_call_stack();
-
 } // namespace lightr
 
 #endif /* LIGHTR_CALL_STACK_HPP */

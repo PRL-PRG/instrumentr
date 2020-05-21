@@ -1,10 +1,14 @@
 #include "r_api.h"
+#include "../inst/include/lightr.hpp"
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
+    /* lightr */
+    {"lightr_get_application", (DL_FUNC) &r_lightr_get_application, 0},
+
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
 
@@ -37,7 +41,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"argument_get_call", (DL_FUNC) &r_argument_get_call, 1},
 
     /* CallStack */
-    {"call_stack_get_call_stack", (DL_FUNC) &r_call_stack_get_call_stack, 0},
     {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},
     {"call_stack_get_frame", (DL_FUNC) &r_call_stack_get_frame, 2},
     {"call_stack_peek_frame", (DL_FUNC) &r_call_stack_peek_frame, 2},
@@ -47,5 +50,6 @@ static const R_CallMethodDef CallEntries[] = {
 void R_init_lightr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
+    lightr::initialize_lightr();
 }
 }

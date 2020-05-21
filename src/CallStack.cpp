@@ -2,12 +2,6 @@
 
 namespace lightr {
 
-CallStackSPtr call_stack;
-
-void initialize_call_stack() {
-    call_stack = std::make_shared<CallStack>();
-}
-
 SEXP CallStack::class_ = nullptr;
 
 void CallStack::initialize() {
@@ -43,10 +37,6 @@ SEXP CallStack::to_sexp(CallStackSPtr call) {
 void CallStack::destroy_sexp(SEXP r_call_stack) {
     delete static_cast<CallStackSPtr*>(R_ExternalPtrAddr(r_call_stack));
     R_SetExternalPtrAddr(r_call_stack, nullptr);
-}
-
-CallStackSPtr get_call_stack() {
-    return call_stack;
 }
 
 } // namespace lightr
