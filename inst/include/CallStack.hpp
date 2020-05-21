@@ -1,5 +1,5 @@
-#ifndef INJECTR_CALL_STACK_HPP
-#define INJECTR_CALL_STACK_HPP
+#ifndef LIGHTR_CALL_STACK_HPP
+#define LIGHTR_CALL_STACK_HPP
 
 #include <vector>
 #include "Call.hpp"
@@ -50,4 +50,4 @@ void initialize_call_stack();
 
 } // namespace lightr
 
-#endif /* INJECTR_CALL_STACK_HPP */
+#endif /* LIGHTR_CALL_STACK_HPP */

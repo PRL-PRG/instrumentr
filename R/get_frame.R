@@ -4,6 +4,6 @@ get_frame <- function(call_stack, position, ...) {
 }
 
 #' @export
-get_frame.injectr_call_stack <- function(call_stack, position, ...) {
+get_frame.lightr_call_stack <- function(call_stack, position, ...) {
     .Call(C_call_stack_get_frame, call_stack, position)
 }
