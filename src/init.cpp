@@ -28,9 +28,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"function_get_parameter_count", (DL_FUNC) &r_function_get_parameter_count, 1},
 
     /* Call */
-    {"call_get_package_name", (DL_FUNC) &r_call_get_package_name, 1},
-    {"call_get_function_name", (DL_FUNC) &r_call_get_function_name, 1},
-    {"call_get_parameter_count", (DL_FUNC) &r_call_get_parameter_count, 1},
+    {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
     {"call_get_state", (DL_FUNC) &r_call_get_state, 1},
     {"call_get_argument", (DL_FUNC) &r_call_get_argument, 2},
 

@@ -1,24 +1,16 @@
 #include "../inst/include/Call.hpp"
+#include "../inst/include/Function.hpp"
 #include "../inst/include/Argument.hpp"
 #include "r_api.h"
 
 using lightr::Argument;
 using lightr::Call;
 using lightr::CallSPtr;
+using lightr::Function;
 
-SEXP r_call_get_package_name(SEXP r_call) {
+SEXP r_call_get_function(SEXP r_call) {
     CallSPtr call = Call::from_sexp(r_call);
-    return mkString(call->get_package_name().c_str());
-}
-
-SEXP r_call_get_function_name(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
-    return mkString(call->get_function_name().c_str());
-}
-
-SEXP r_call_get_parameter_count(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
-    return ScalarInteger(call->get_parameter_count());
+    return Function::to_sexp(call->get_function());
 }
 
 SEXP r_call_get_state(SEXP r_call) {

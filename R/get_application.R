@@ -1,7 +1,12 @@
 
 #' @export
 get_application <- function(package, ...) {
-    UseMethod("get_application")
+    if(missing(package)) {
+        .Call(C_lightr_get_application)
+    }
+    else {
+        UseMethod("get_application")
+    }
 }
 
 #' @export
