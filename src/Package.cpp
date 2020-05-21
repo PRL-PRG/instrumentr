@@ -2,6 +2,17 @@
 
 namespace lightr {
 
+SEXP Package::class_ = nullptr;
+
+void Package::initialize() {
+    class_ = mkString("lightr_package");
+    R_PreserveObject(class_);
+}
+
+SEXP Package::get_class() {
+    return class_;
+}
+
 PackageSPtr Package::from_sexp(SEXP r_package) {
     void* package = R_ExternalPtrAddr(r_package);
     if (package == nullptr) {
@@ -16,8 +27,7 @@ SEXP Package::to_sexp(PackageSPtr package) {
 
     R_RegisterCFinalizerEx(r_package, Package::destroy_sexp, TRUE);
 
-    /*TODO: global constant */
-    setAttrib(r_package, R_ClassSymbol, mkString("lightr_package"));
+    setAttrib(r_package, R_ClassSymbol, Package::get_class());
 
     UNPROTECT(1);
 

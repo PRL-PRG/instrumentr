@@ -2,6 +2,17 @@
 
 namespace lightr {
 
+SEXP Application::class_ = nullptr;
+
+void Application::initialize() {
+    class_ = mkString("lightr_application");
+    R_PreserveObject(class_);
+}
+
+SEXP Application::get_class() {
+    return class_;
+}
+
 ApplicationSPtr Application::from_sexp(SEXP r_application) {
     void* application = R_ExternalPtrAddr(r_application);
     if (application == nullptr) {
@@ -16,8 +27,7 @@ SEXP Application::to_sexp(ApplicationSPtr application) {
 
     R_RegisterCFinalizerEx(r_application, Application::destroy_sexp, TRUE);
 
-    /*TODO: global constant */
-    setAttrib(r_application, R_ClassSymbol, mkString("lightr_application"));
+    setAttrib(r_application, R_ClassSymbol, Application::get_class());
 
     UNPROTECT(1);
 
@@ -30,4 +40,3 @@ void Application::destroy_sexp(SEXP r_application) {
 }
 
 } // namespace lightr
-

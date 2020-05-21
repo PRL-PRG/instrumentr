@@ -35,6 +35,10 @@ class Argument {
         return call_;
     }
 
+    static void initialize();
+
+    static SEXP get_class();
+
     static std::shared_ptr<Argument> from_sexp(SEXP r_argument);
 
     static SEXP to_sexp(std::shared_ptr<Argument> argument);
@@ -46,6 +50,8 @@ class Argument {
     int position_;
     std::string name_;
     bool evaluated_;
+
+    static SEXP class_;
 };
 
 using ArgumentSPtr = std::shared_ptr<Argument>;

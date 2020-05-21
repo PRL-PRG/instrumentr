@@ -2,6 +2,17 @@
 
 namespace lightr {
 
+SEXP Argument::class_ = nullptr;
+
+void Argument::initialize() {
+    class_ = mkString("lightr_argument");
+    R_PreserveObject(class_);
+}
+
+SEXP Argument::get_class() {
+    return class_;
+}
+
 ArgumentSPtr Argument::from_sexp(SEXP r_argument) {
     void* argument = R_ExternalPtrAddr(r_argument);
     if (argument == nullptr) {
@@ -16,8 +27,7 @@ SEXP Argument::to_sexp(ArgumentSPtr argument) {
 
     R_RegisterCFinalizerEx(r_argument, Argument::destroy_sexp, TRUE);
 
-    /*TODO: global constant */
-    setAttrib(r_argument, R_ClassSymbol, mkString("lightr_argument"));
+    setAttrib(r_argument, R_ClassSymbol, Argument::get_class());
 
     UNPROTECT(1);
 

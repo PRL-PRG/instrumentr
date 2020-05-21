@@ -3,9 +3,19 @@
 namespace lightr {
 
 call_id_t Call::id_counter_ = -1;
+SEXP Call::class_ = nullptr;
 
 call_id_t Call::get_next_id_() {
     return ++id_counter_;
+}
+
+void Call::initialize() {
+    class_ = mkString("lightr_call");
+    R_PreserveObject(class_);
+}
+
+SEXP Call::get_class() {
+    return class_;
 }
 
 CallSPtr Call::from_sexp(SEXP r_call) {
@@ -22,8 +32,7 @@ SEXP Call::to_sexp(CallSPtr call) {
 
     R_RegisterCFinalizerEx(r_call, Call::destroy_sexp, TRUE);
 
-    /*TODO: global constant */
-    setAttrib(r_call, R_ClassSymbol, mkString("lightr_call"));
+    setAttrib(r_call, R_ClassSymbol, Call::get_class());
 
     UNPROTECT(1);
 

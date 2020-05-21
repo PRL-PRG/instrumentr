@@ -26,6 +26,10 @@ class Application {
         packages_.push_back(package);
     }
 
+    static void initialize();
+
+    static SEXP get_class();
+
     static std::shared_ptr<Application> from_sexp(SEXP r_application);
 
     static SEXP to_sexp(std::shared_ptr<Application> application);
@@ -34,6 +38,8 @@ class Application {
 
   private:
     std::vector<std::shared_ptr<Package>> packages_;
+
+    static SEXP class_;
 };
 
 using ApplicationSPtr = std::shared_ptr<Application>;

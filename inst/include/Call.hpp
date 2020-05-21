@@ -53,6 +53,10 @@ class Call {
         return arguments_.at(position);
     }
 
+    static void initialize();
+
+    static SEXP get_class();
+
     static std::shared_ptr<Call> from_sexp(SEXP r_call);
 
     static SEXP to_sexp(std::shared_ptr<Call> call);
@@ -65,11 +69,11 @@ class Call {
     std::string function_name_;
     int parameter_count_;
     CallState state_;
-
     std::vector<std::shared_ptr<Argument>> arguments_;
 
     static call_id_t get_next_id_();
     static call_id_t id_counter_;
+    static SEXP class_;
 };
 
 using CallSPtr = std::shared_ptr<Call>;

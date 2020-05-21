@@ -33,6 +33,10 @@ class Function {
         return parameter_count_;
     }
 
+    static void initialize();
+
+    static SEXP get_class();
+
     static std::shared_ptr<Function> from_sexp(SEXP r_function);
 
     static SEXP to_sexp(std::shared_ptr<Function> function);
@@ -43,6 +47,8 @@ class Function {
     std::shared_ptr<Package> package_;
     std::string name_;
     int parameter_count_;
+
+    static SEXP class_;
 };
 
 using FunctionSPtr = std::shared_ptr<Function>;

@@ -33,6 +33,10 @@ class CallStack {
         stack_.pop_back();
     }
 
+    static void initialize();
+
+    static SEXP get_class();
+
     static std::shared_ptr<CallStack> from_sexp(SEXP r_call_stack);
 
     static SEXP to_sexp(std::shared_ptr<CallStack> call_stack);
@@ -41,6 +45,8 @@ class CallStack {
 
   private:
     std::vector<CallSPtr> stack_;
+
+    static SEXP class_;
 };
 
 using CallStackSPtr = std::shared_ptr<CallStack>;

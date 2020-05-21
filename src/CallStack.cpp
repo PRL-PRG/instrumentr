@@ -8,6 +8,17 @@ void initialize_call_stack() {
     call_stack = std::make_shared<CallStack>();
 }
 
+SEXP CallStack::class_ = nullptr;
+
+void CallStack::initialize() {
+    class_ = mkString("lightr_call_stack");
+    R_PreserveObject(class_);
+}
+
+SEXP CallStack::get_class() {
+    return class_;
+}
+
 CallStackSPtr CallStack::from_sexp(SEXP r_call_stack) {
     void* call = R_ExternalPtrAddr(r_call_stack);
     if (call == nullptr) {
@@ -22,8 +33,7 @@ SEXP CallStack::to_sexp(CallStackSPtr call) {
 
     R_RegisterCFinalizerEx(r_call_stack, CallStack::destroy_sexp, TRUE);
 
-    /*TODO: global constant */
-    setAttrib(r_call_stack, R_ClassSymbol, mkString("injectr_call_stack"));
+    setAttrib(r_call_stack, R_ClassSymbol, CallStack::get_class());
 
     UNPROTECT(1);
 

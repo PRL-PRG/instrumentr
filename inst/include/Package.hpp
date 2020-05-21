@@ -41,6 +41,10 @@ class Package {
         functions_.push_back(function);
     }
 
+    static void initialize();
+
+    static SEXP get_class();
+
     static std::shared_ptr<Package> from_sexp(SEXP r_package);
 
     static SEXP to_sexp(std::shared_ptr<Package> package);
@@ -53,6 +57,8 @@ class Package {
     std::vector<std::shared_ptr<Function>> functions_;
 
     int parameter_count_;
+
+    static SEXP class_;
 };
 
 using PackageSPtr = std::shared_ptr<Package>;
