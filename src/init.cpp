@@ -1,4 +1,4 @@
-#include "r_api.hpp"
+#include "r_api.h"
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>

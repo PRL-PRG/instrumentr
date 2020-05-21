@@ -1,6 +1,6 @@
 #include "../inst/include/CallStack.hpp"
 #include "../inst/include/Call.hpp"
-#include "r_api.hpp"
+#include "r_api.h"
 
 using lightr::Call;
 using lightr::CallStack;

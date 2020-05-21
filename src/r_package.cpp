@@ -1,7 +1,7 @@
 #include "../inst/include/Application.hpp"
 #include "../inst/include/Package.hpp"
 #include "../inst/include/Function.hpp"
-#include "r_api.hpp"
+#include "r_api.h"
 
 using lightr::Application;
 using lightr::ApplicationSPtr;

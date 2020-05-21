@@ -1,6 +1,6 @@
 #include "../inst/include/Call.hpp"
 #include "../inst/include/Argument.hpp"
-#include "r_api.hpp"
+#include "r_api.h"
 
 using lightr::Argument;
 using lightr::ArgumentSPtr;
