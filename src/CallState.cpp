@@ -1,5 +1,7 @@
 #include "../inst/include/CallState.hpp"
 
+namespace lightr {
+
 std::string call_state_to_string(CallState call_state) {
     switch (call_state) {
     case CallState::Active:
@@ -24,3 +26,5 @@ CallState string_to_call_state(const std::string str) {
         /* TODO: error  */
     }
 }
+
+} // namespace lightr

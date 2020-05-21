@@ -1,5 +1,7 @@
 #include "../inst/include/Function.hpp"
 
+namespace lightr {
+
 FunctionSPtr Function::from_sexp(SEXP r_function) {
     void* function = R_ExternalPtrAddr(r_function);
     if (function == nullptr) {
@@ -26,3 +28,5 @@ void Function::destroy_sexp(SEXP r_function) {
     delete static_cast<FunctionSPtr*>(R_ExternalPtrAddr(r_function));
     R_SetExternalPtrAddr(r_function, nullptr);
 }
+
+} // namespace lightr

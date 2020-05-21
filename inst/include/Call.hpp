@@ -7,6 +7,8 @@
 #include "CallState.hpp"
 #include <Rinternals.h>
 
+namespace lightr {
+
 class Argument;
 
 using call_id_t = int;
@@ -71,5 +73,7 @@ class Call {
 };
 
 using CallSPtr = std::shared_ptr<Call>;
+
+} // namespace lightr
 
 #endif /* LIGHTR_CALL_HPP */

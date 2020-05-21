@@ -1,5 +1,7 @@
 #include "../inst/include/Package.hpp"
 
+namespace lightr {
+
 PackageSPtr Package::from_sexp(SEXP r_package) {
     void* package = R_ExternalPtrAddr(r_package);
     if (package == nullptr) {
@@ -26,3 +28,5 @@ void Package::destroy_sexp(SEXP r_package) {
     delete static_cast<PackageSPtr*>(R_ExternalPtrAddr(r_package));
     R_SetExternalPtrAddr(r_package, nullptr);
 }
+
+} // namespace lightr

@@ -1,5 +1,7 @@
 #include "../inst/include/CallStack.hpp"
 
+namespace lightr {
+
 CallStackSPtr call_stack;
 
 void initialize_call_stack() {
@@ -36,3 +38,5 @@ void CallStack::destroy_sexp(SEXP r_call_stack) {
 CallStackSPtr get_call_stack() {
     return call_stack;
 }
+
+} // namespace lightr

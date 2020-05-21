@@ -5,6 +5,8 @@
 #include <memory>
 #include <Rinternals.h>
 
+namespace lightr {
+
 class Call;
 
 class Argument {
@@ -47,5 +49,7 @@ class Argument {
 };
 
 using ArgumentSPtr = std::shared_ptr<Argument>;
+
+} // namespace lightr
 
 #endif /* LIGHTR_ARGUMENT_HPP */

@@ -1,5 +1,7 @@
 #include "../inst/include/Call.hpp"
 
+namespace lightr {
+
 call_id_t Call::id_counter_ = -1;
 
 call_id_t Call::get_next_id_() {
@@ -32,3 +34,5 @@ void Call::destroy_sexp(SEXP r_call) {
     delete static_cast<CallSPtr*>(R_ExternalPtrAddr(r_call));
     R_SetExternalPtrAddr(r_call, nullptr);
 }
+
+} // namespace lightr

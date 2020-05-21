@@ -2,6 +2,10 @@
 #include "../inst/include/Argument.hpp"
 #include "r_api.hpp"
 
+using lightr::Argument;
+using lightr::ArgumentSPtr;
+using lightr::Call;
+
 SEXP r_argument_get_position(SEXP r_argument) {
     ArgumentSPtr argument = Argument::from_sexp(r_argument);
     return ScalarInteger(argument->get_position());

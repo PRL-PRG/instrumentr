@@ -5,6 +5,8 @@
 #include <memory>
 #include <Rinternals.h>
 
+namespace lightr {
+
 class Package;
 
 class Function {
@@ -44,5 +46,7 @@ class Function {
 };
 
 using FunctionSPtr = std::shared_ptr<Function>;
+
+} // namespace lightr
 
 #endif /* LIGHTR_FUNCTION_HPP */

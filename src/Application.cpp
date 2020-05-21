@@ -1,5 +1,7 @@
 #include "../inst/include/Application.hpp"
 
+namespace lightr {
+
 ApplicationSPtr Application::from_sexp(SEXP r_application) {
     void* application = R_ExternalPtrAddr(r_application);
     if (application == nullptr) {
@@ -26,3 +28,6 @@ void Application::destroy_sexp(SEXP r_application) {
     delete static_cast<ApplicationSPtr*>(R_ExternalPtrAddr(r_application));
     R_SetExternalPtrAddr(r_application, nullptr);
 }
+
+} // namespace lightr
+

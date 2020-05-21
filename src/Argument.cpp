@@ -1,5 +1,7 @@
 #include "../inst/include/Argument.hpp"
 
+namespace lightr {
+
 ArgumentSPtr Argument::from_sexp(SEXP r_argument) {
     void* argument = R_ExternalPtrAddr(r_argument);
     if (argument == nullptr) {
@@ -26,3 +28,5 @@ void Argument::destroy_sexp(SEXP r_argument) {
     delete static_cast<ArgumentSPtr*>(R_ExternalPtrAddr(r_argument));
     R_SetExternalPtrAddr(r_argument, nullptr);
 }
+
+} // namespace lightr

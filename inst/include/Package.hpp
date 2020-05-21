@@ -6,6 +6,8 @@
 #include <memory>
 #include <Rinternals.h>
 
+namespace lightr {
+
 class Application;
 class Function;
 
@@ -54,5 +56,7 @@ class Package {
 };
 
 using PackageSPtr = std::shared_ptr<Package>;
+
+} // namespace lightr
 
 #endif /* LIGHTR_PACKAGE_HPP */

@@ -3,6 +3,11 @@
 #include "../inst/include/Function.hpp"
 #include "r_api.hpp"
 
+using lightr::Function;
+using lightr::FunctionSPtr;
+using lightr::Package;
+using lightr::PackageSPtr;
+
 SEXP r_function_get_package(SEXP r_function) {
     FunctionSPtr function = Function::from_sexp(r_function);
     PackageSPtr package = function->get_package();

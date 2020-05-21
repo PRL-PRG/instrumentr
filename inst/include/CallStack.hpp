@@ -4,6 +4,8 @@
 #include <vector>
 #include "Call.hpp"
 
+namespace lightr {
+
 class CallStack {
   public:
     CallStack() {
@@ -45,5 +47,7 @@ using CallStackSPtr = std::shared_ptr<CallStack>;
 
 CallStackSPtr get_call_stack();
 void initialize_call_stack();
+
+} // namespace lightr
 
 #endif /* INJECTR_CALL_STACK_HPP */
