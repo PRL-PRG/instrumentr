@@ -6,5 +6,5 @@ get_argument <- function(call, position, ...) {
 
 #' @export
 get_argument.lightr_call <- function(call, position, ...) {
-    .Call(C_call_get_argument, position)
+    .Call(C_call_get_argument, call, position)
 }
