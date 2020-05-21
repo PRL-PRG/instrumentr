@@ -2,16 +2,15 @@
 #define LIGHTR_APPLICATION_HPP
 
 #include <vector>
-#include <memory>
-#include <Rinternals.h>
+#include "Object.hpp"
 
 namespace lightr {
 
 class Package;
 
-class Application {
+class Application: public Object {
   public:
-    Application() {
+    Application(): Object() {
     }
 
     std::vector<std::shared_ptr<Package>>& get_packages() {

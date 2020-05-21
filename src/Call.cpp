@@ -2,12 +2,7 @@
 
 namespace lightr {
 
-call_id_t Call::id_counter_ = -1;
 SEXP Call::class_ = nullptr;
-
-call_id_t Call::get_next_id_() {
-    return ++id_counter_;
-}
 
 void Call::initialize() {
     class_ = mkString("lightr_call");

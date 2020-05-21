@@ -5,6 +5,8 @@
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
+    /* Object */
+    {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
 
     /* Application */
     {"application_get_packages", (DL_FUNC) &r_application_get_packages, 1},
@@ -22,7 +24,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"function_get_parameter_count", (DL_FUNC) &r_function_get_parameter_count, 1},
 
     /* Call */
-    {"call_get_id", (DL_FUNC) &r_call_get_id, 1},
     {"call_get_package_name", (DL_FUNC) &r_call_get_package_name, 1},
     {"call_get_function_name", (DL_FUNC) &r_call_get_function_name, 1},
     {"call_get_parameter_count", (DL_FUNC) &r_call_get_parameter_count, 1},

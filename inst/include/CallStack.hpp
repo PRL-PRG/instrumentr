@@ -3,12 +3,13 @@
 
 #include <vector>
 #include "Call.hpp"
+#include "Object.hpp"
 
 namespace lightr {
 
-class CallStack {
+class CallStack: public Object {
   public:
-    CallStack() {
+    CallStack(): Object() {
     }
 
     int get_size() const {

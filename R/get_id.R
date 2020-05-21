@@ -1,10 +1,10 @@
 
 #' @export
-get_id <- function(call, ...) {
+get_id <- function(object, ...) {
     UseMethod("get_id")
 }
 
 #' @export
-get_id.lightr_call <- function(call, ...) {
-    .Call(C_call_get_id, call)
+get_id.lightr_object <- function(object, ...) {
+    .Call(C_object_get_id, object)
 }

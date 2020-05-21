@@ -6,11 +6,6 @@ using lightr::Argument;
 using lightr::Call;
 using lightr::CallSPtr;
 
-SEXP r_call_get_id(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
-    return ScalarInteger(call->get_id());
-}
-
 SEXP r_call_get_package_name(SEXP r_call) {
     CallSPtr call = Call::from_sexp(r_call);
     return mkString(call->get_package_name().c_str());

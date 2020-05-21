@@ -3,6 +3,9 @@
 #include <Rdefines.h>
 
 extern "C" {
+/* Object */
+SEXP r_object_get_id(SEXP r_object);
+
 /* Application */
 SEXP r_application_get_packages(SEXP r_application);
 SEXP r_application_add_package(SEXP r_application, SEXP r_package);
@@ -19,7 +22,6 @@ SEXP r_function_get_name(SEXP r_function);
 SEXP r_function_get_parameter_count(SEXP r_function);
 
 /* Call */
-SEXP r_call_get_id(SEXP r_call);
 SEXP r_call_get_package_name(SEXP r_call);
 SEXP r_call_get_function_name(SEXP r_call);
 SEXP r_call_get_parameter_count(SEXP r_call);

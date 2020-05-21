@@ -2,17 +2,20 @@
 #define LIGHTR_ARGUMENT_HPP
 
 #include <string>
-#include <memory>
-#include <Rinternals.h>
+#include "Object.hpp"
 
 namespace lightr {
 
 class Call;
 
-class Argument {
+class Argument: public Object {
   public:
     Argument(std::shared_ptr<Call> call, int position, const std::string& name)
-        : call_(call), position_(position), name_(name), evaluated_(false) {
+        : Object()
+        , call_(call)
+        , position_(position)
+        , name_(name)
+        , evaluated_(false) {
     }
 
     int get_position() {

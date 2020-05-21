@@ -3,18 +3,17 @@
 
 #include <vector>
 #include <string>
-#include <memory>
-#include <Rinternals.h>
+#include "Object.hpp"
 
 namespace lightr {
 
 class Application;
 class Function;
 
-class Package {
+class Package: public Object {
   public:
     Package(std::shared_ptr<Application> application, const std::string& name)
-        : application_(application), name_(name) {
+        : Object(), application_(application), name_(name) {
     }
 
     std::shared_ptr<Application> get_application() {

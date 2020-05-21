@@ -3,30 +3,23 @@
 
 #include <string>
 #include <vector>
-#include <memory>
 #include "CallState.hpp"
-#include <Rinternals.h>
+#include "Object.hpp"
 
 namespace lightr {
 
 class Argument;
 
-using call_id_t = int;
-
-class Call {
+class Call: public Object {
   public:
     Call(const std::string& package_name,
          const std::string& function_name,
          int parameter_count)
-        : id_(Call::get_next_id_())
+        : Object()
         , package_name_(package_name)
         , function_name_(function_name)
         , parameter_count_(parameter_count)
         , state_(CallState::Active) {
-    }
-
-    call_id_t get_id() const {
-        return id_;
     }
 
     const std::string& get_package_name() const {
@@ -64,15 +57,12 @@ class Call {
     static void destroy_sexp(SEXP r_call);
 
   private:
-    int id_;
     std::string package_name_;
     std::string function_name_;
     int parameter_count_;
     CallState state_;
     std::vector<std::shared_ptr<Argument>> arguments_;
 
-    static call_id_t get_next_id_();
-    static call_id_t id_counter_;
     static SEXP class_;
 };
 

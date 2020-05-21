@@ -2,19 +2,21 @@
 #define LIGHTR_FUNCTION_HPP
 
 #include <string>
-#include <memory>
-#include <Rinternals.h>
+#include "Object.hpp"
 
 namespace lightr {
 
 class Package;
 
-class Function {
+class Function: public Object {
   public:
     Function(std::shared_ptr<Package> package,
              const std::string& name,
              int parameter_count)
-        : package_(package), name_(name), parameter_count_(parameter_count) {
+        : Object()
+        , package_(package)
+        , name_(name)
+        , parameter_count_(parameter_count) {
     }
 
     std::shared_ptr<Package> get_package() {
