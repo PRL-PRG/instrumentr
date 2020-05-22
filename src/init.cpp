@@ -8,6 +8,11 @@ extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     /* lightr */
     {"lightr_get_application", (DL_FUNC) &r_lightr_get_application, 0},
+    {"lightr_interception_is_enabled", (DL_FUNC) &r_lightr_interception_is_enabled, 0},
+    {"lightr_disable_interception", (DL_FUNC) &r_lightr_disable_interception, 0},
+    {"lightr_enable_interception", (DL_FUNC) &r_lightr_enable_interception, 0},
+    {"lightr_intercept_call_entry", (DL_FUNC) &r_lightr_intercept_call_entry, 4},
+    {"lightr_intercept_call_exit", (DL_FUNC) &r_lightr_intercept_call_exit, 4},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
