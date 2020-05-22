@@ -6,25 +6,10 @@
 
 namespace lightr {
 
-class Package;
-
 class Function: public Object {
   public:
-    Function(std::shared_ptr<Package> package,
-             const std::string& name,
-             int parameter_count)
-        : Object()
-        , package_(package)
-        , name_(name)
-        , parameter_count_(parameter_count) {
-    }
-
-    std::shared_ptr<Package> get_package() {
-        return package_;
-    }
-
-    const std::shared_ptr<Package> get_package() const {
-        return package_;
+    Function(const std::string& name, int parameter_count)
+        : Object(), name_(name), parameter_count_(parameter_count) {
     }
 
     const std::string& get_name() const {
@@ -46,7 +31,6 @@ class Function: public Object {
     static void destroy_sexp(SEXP r_function);
 
   private:
-    std::shared_ptr<Package> package_;
     std::string name_;
     int parameter_count_;
 

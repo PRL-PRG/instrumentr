@@ -4,39 +4,28 @@
 #include <vector>
 #include <string>
 #include "Object.hpp"
+#include "Function.hpp"
 
 namespace lightr {
 
-class Application;
-class Function;
-
 class Package: public Object {
   public:
-    Package(std::shared_ptr<Application> application, const std::string& name)
-        : Object(), application_(application), name_(name) {
-    }
-
-    std::shared_ptr<Application> get_application() {
-        return application_;
-    }
-
-    const std::shared_ptr<Application> get_application() const {
-        return application_;
+    Package(const std::string& name): Object(), name_(name) {
     }
 
     const std::string& get_name() const {
         return name_;
     }
 
-    std::vector<std::shared_ptr<Function>>& get_functions() {
+    std::vector<FunctionSPtr>& get_functions() {
         return functions_;
     }
 
-    const std::vector<std::shared_ptr<Function>>& get_functions() const {
+    const std::vector<FunctionSPtr>& get_functions() const {
         return functions_;
     }
 
-    void add_function(std::shared_ptr<Function> function) {
+    void add_function(FunctionSPtr function) {
         functions_.push_back(function);
     }
 
@@ -51,9 +40,8 @@ class Package: public Object {
     static void destroy_sexp(SEXP r_package);
 
   private:
-    std::shared_ptr<Application> application_;
     std::string name_;
-    std::vector<std::shared_ptr<Function>> functions_;
+    std::vector<FunctionSPtr> functions_;
 
     int parameter_count_;
 

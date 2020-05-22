@@ -3,18 +3,10 @@
 #include "../inst/include/Function.hpp"
 #include "r_api.h"
 
-using lightr::Application;
-using lightr::ApplicationSPtr;
 using lightr::Function;
 using lightr::FunctionSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
-
-SEXP r_package_get_application(SEXP r_package) {
-    PackageSPtr package = Package::from_sexp(r_package);
-    ApplicationSPtr application = package->get_application();
-    return Application::to_sexp(application);
-}
 
 SEXP r_package_get_name(SEXP r_package) {
     PackageSPtr package = Package::from_sexp(r_package);

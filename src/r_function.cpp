@@ -5,14 +5,6 @@
 
 using lightr::Function;
 using lightr::FunctionSPtr;
-using lightr::Package;
-using lightr::PackageSPtr;
-
-SEXP r_function_get_package(SEXP r_function) {
-    FunctionSPtr function = Function::from_sexp(r_function);
-    PackageSPtr package = function->get_package();
-    return Package::to_sexp(package);
-}
 
 SEXP r_function_get_name(SEXP r_function) {
     FunctionSPtr function = Function::from_sexp(r_function);

@@ -22,13 +22,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"application_add_package", (DL_FUNC) &r_application_add_package, 2},
 
     /* Package */
-    {"package_get_application", (DL_FUNC) &r_package_get_application, 1},
     {"package_get_name", (DL_FUNC) &r_package_get_name, 1},
     {"package_get_functions", (DL_FUNC) &r_package_get_functions, 1},
     {"package_add_function", (DL_FUNC) &r_package_add_function, 2},
 
     /* Function */
-    {"function_get_package", (DL_FUNC) &r_function_get_package, 1},
     {"function_get_name", (DL_FUNC) &r_function_get_name, 1},
     {"function_get_parameter_count", (DL_FUNC) &r_function_get_parameter_count, 1},
 
