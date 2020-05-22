@@ -1,5 +1,5 @@
 #include "../inst/include/lightr.hpp"
-#include "../inst/include/CallStack.hpp"
+#include "../inst/include/Parameter.hpp"
 
 namespace lightr {
 
@@ -11,6 +11,13 @@ ApplicationSPtr get_application() {
 
 void initialize_lightr() {
     if (!application) {
+        Application::initialize();
+        CallStack::initialize();
+        Package::initialize();
+        Function::initialize();
+        Call::initialize();
+        Parameter::initialize();
+        Argument::initialize();
         CallStackSPtr call_stack = std::make_shared<CallStack>();
         application = std::make_shared<Application>(call_stack); //);
     }
