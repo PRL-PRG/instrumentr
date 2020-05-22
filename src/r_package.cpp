@@ -8,6 +8,12 @@ using lightr::FunctionSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
+SEXP r_package_create(SEXP r_package_name, SEXP r_package_environment) {
+    std::string package_name = CHAR(asChar(r_package_name));
+    PackageSPtr package = std::make_shared<Package>(package_name);
+    return Package::to_sexp(package);
+}
+
 SEXP r_package_get_name(SEXP r_package) {
     PackageSPtr package = Package::from_sexp(r_package);
     const std::string& name = package->get_name();

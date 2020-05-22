@@ -10,6 +10,10 @@ is_scalar_logical <- function(vector) {
     is.logical(vector) && (length(vector) == 1)
 }
 
+is_scalar_integer <- function(vector) {
+    is.integer(vector) && (length(vector) == 1)
+}
+
 is_environment <- function(env) {
     is.environment(env)
 }
@@ -20,6 +24,18 @@ is_function <- function(fun) {
 
 is_closure <- function(obj) {
     typeof(obj) == "closure"
+}
+
+is_lightr_application <- function(obj) {
+    "lightr_application" %in% class(obj)
+}
+
+is_lightr_package <- function(obj) {
+    "lightr_package" %in% class(obj)
+}
+
+is_lightr_function <- function(obj) {
+    "lightr_function" %in% class(obj)
 }
 
 get_package_name <- function(fun) {

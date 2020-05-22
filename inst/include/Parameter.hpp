@@ -4,10 +4,9 @@
 #include <string>
 #include <vector>
 #include "Object.hpp"
+#include "Argument.hpp"
 
 namespace lightr {
-
-class Argument;
 
 class Parameter: public Object {
   public:

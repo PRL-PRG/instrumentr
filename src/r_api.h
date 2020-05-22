@@ -25,11 +25,13 @@ SEXP r_application_get_packages(SEXP r_application);
 SEXP r_application_add_package(SEXP r_application, SEXP r_package);
 
 /* Package */
+SEXP r_package_create(SEXP r_package_name, SEXP r_package_environment);
 SEXP r_package_get_name(SEXP r_package);
 SEXP r_package_get_functions(SEXP r_package);
 SEXP r_package_add_function(SEXP r_package, SEXP r_function);
 
 /* Function */
+SEXP r_function_create(SEXP r_function_name, SEXP r_parameter_count);
 SEXP r_function_get_name(SEXP r_function);
 SEXP r_function_get_parameter_count(SEXP r_function);
 

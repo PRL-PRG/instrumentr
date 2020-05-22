@@ -3,11 +3,10 @@
 
 #include <vector>
 #include "Object.hpp"
+#include "Package.hpp"
+#include "CallStack.hpp"
 
 namespace lightr {
-
-class Package;
-class CallStack;
 
 class Application: public Object {
   public:

@@ -6,6 +6,14 @@
 using lightr::Function;
 using lightr::FunctionSPtr;
 
+SEXP r_function_create(SEXP r_function_name, SEXP r_parameter_count) {
+    std::string function_name = CHAR(asChar(r_function_name));
+    int parameter_count = asInteger(r_parameter_count);
+    FunctionSPtr function =
+        std::make_shared<Function>(function_name, parameter_count);
+    return Function::to_sexp(function);
+}
+
 SEXP r_function_get_name(SEXP r_function) {
     FunctionSPtr function = Function::from_sexp(r_function);
     const std::string& name = function->get_name();
