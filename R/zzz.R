@@ -17,16 +17,27 @@
         ##autoinject_packages <- get_autoinject()
         ##if (package_name %in% autoinject_packages || any(autoinject_packages
         ##== "all")) {
-        fun_names <- character(0)
-        tryCatch(
-            fun_names <- intercept_package(package_name),
-            error = function(e) {
-                packageStartupMessage(e$message)
-            }
-        )
-        if (length(fun_names) != 0) {
-            packageStartupMessage("Intercepting ", length(fun_names), " functions from ", package_name)
-        }
+
+        intercepted_funs <- 0
+
+        tryCatch({
+
+            package <- intercept_package(package_name)
+
+            application <- get_application()
+
+            add_package(application, package)
+
+            intercepted_funs <- length(get_functions(package))
+
+        }, error = function(e) {
+
+            packageStartupMessage(e$message)
+
+        })
+
+        packageStartupMessage("Intercepting ", intercepted_funs, " functions from ", package_name)
+
         ##}
     }
 
@@ -44,6 +55,7 @@
     for (package in remaining_packages) {
         setHook(packageEvent(package, "attach"), handle_package)
     }
+
     .Call(.lightr_enable_interception)
 }
 

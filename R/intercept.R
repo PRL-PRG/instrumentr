@@ -3,34 +3,44 @@ intercept_package <- function(package_name) {
 
     package_env <- getNamespace(package_name)
 
-    intercept_environment(package_env, package_name, all.names = TRUE)
+    package <- create_package(package_name, package_env)
+
+    functions <- intercept_environment(NULL, package_env, package_name, all.names = TRUE)
+
+    for(func in functions) {
+        if(!is.null(func)) {
+            add_function(package, func)
+        }
+    }
+
+    package
 }
 
-intercept_environment <- function(env, envname, ...) {
+intercept_environment <- function(package, env, name, ...) {
     stopifnot(is_environment(env))
-    stopifnot(is_scalar_character(envname))
+    stopifnot(is_scalar_character(name))
 
-    var_names <- ls(envir=env, ...)
+    variables <- ls(envir=env, ...)
 
-    modified_var_names <- character(0)
+    functions <- list()
 
-    for (var_name in var_names) {
+    for (variable in variables) {
 
-        fun <- get(var_name, envir=env)
+        fun <- get(variable, envir=env)
         if(!is_closure(fun)) next
 
         tryCatch({
-            intercept_function(fun, var_name, envname,  env)
-            modified_var_names <- c(modified_var_names, var_name)
+            func <- intercept_function(package, fun, variable, name, env)
+            functions <- c(functions, list(func))
 
         }, error = function(e) {
             message <- sprintf("unable to intercept `%s::%s`: %s",
-                               envname, var_name, e$message)
+                               name, variable, e$message)
             print(message)
         })
     }
 
-    modified_var_names
+    functions
 }
 
 is_intercepted <- function(fun) {
@@ -38,19 +48,22 @@ is_intercepted <- function(fun) {
     has_intercepted_function(id)
 }
 
-intercept_function <- function(fun, name, pkg, env) {
+intercept_function <- function(package, fun, name, pkg, env) {
     stopifnot(is_function(fun))
     stopifnot(is_scalar_character(name))
     stopifnot(is_scalar_character(pkg))
     stopifnot(is_environment(env))
+
+    func <- NULL
 
     if (is_intercepted(fun)) {
         msg <- sprintf("'%s::%s' already intercepted", pkg, name)
         packageStartupMessage(msg)
     }
     else {
+        func <- create_function(name, length(formals(fun)))
         id <- injectr:::sexp_address(fun)
-        old <- modify_function(fun, name, pkg)
+        old <- modify_function(package, func, fun)
         add_intercepted_function(id, list(env = env,
                                           pkg=pkg,
                                           fun_name=name,
@@ -58,46 +71,46 @@ intercept_function <- function(fun, name, pkg, env) {
                                           old=old))
     }
 
-    invisible(NULL)
+    func
 }
 
-modify_function <- function(fun, fun_name, pkg) {
+modify_function <- function(package, func, fun) {
     old <- injectr:::create_duplicate(fun)
 
-    check_params <- create_argval_interception_code(fun_name, pkg)
+    check_params <- create_argval_interception_code(package, func)
     injectr::inject_code(check_params, fun)
 
-    check_retval <- create_retval_interception_code(fun_name, pkg)
+    check_retval <- create_retval_interception_code(package, func)
     injectr::inject_code(check_retval, fun, where="onexit")
 
     old
 }
 
-create_argval_interception_code <- function(fun_name, pkg) {
+create_argval_interception_code <- function(package, func) {
     substitute({
         if(.Call(.lightr_interception_is_enabled)) {
             .Call(.lightr_disable_interception)
             .Call(.lightr_intercept_call_entry,
                   PKG,
-                  FUN_NAME,
+                  FUNC,
                   sys.function(),
                   sys.frame(sys.nframe()))
             .Call(.lightr_enable_interception)
         }
-    }, list(PKG=pkg, FUN_NAME=fun_name))
+    }, list(PKG=package, FUNC=func))
 }
 
 
-create_retval_interception_code <- function(fun_name, pkg) {
+create_retval_interception_code <- function(package, func) {
     substitute({
         if(.Call(.lightr_interception_is_enabled)) {
             .Call(.lightr_disable_interception)
             .Call(.lightr_intercept_call_exit,
                   PKG,
-                  FUN_NAME,
+                  FUNC,
                   returnValue(.lightr_no_retval_marker),
                   !identical(returnValue(.lightr_no_retval_marker), .lightr_no_retval_marker))
             .Call(.lightr_enable_interception)
         }
-    }, list(PKG=pkg, FUN_NAME=fun_name))
+    }, list(PKG=package, FUNC=func))
 }
