@@ -30,13 +30,19 @@ static const R_CallMethodDef CallEntries[] = {
     /* Call */
     {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
     {"call_get_state", (DL_FUNC) &r_call_get_state, 1},
-    {"call_get_argument", (DL_FUNC) &r_call_get_argument, 2},
+    {"call_get_parameters", (DL_FUNC) &r_call_get_parameters, 1},
+
+    /* Parameter */
+    {"parameter_get_name", (DL_FUNC) &r_parameter_get_name, 1},
+    {"parameter_get_position", (DL_FUNC) &r_parameter_get_position, 1},
+    {"parameter_is_missing", (DL_FUNC) &r_parameter_is_missing, 1},
+    {"parameter_is_vararg", (DL_FUNC) &r_parameter_is_vararg, 1},
+    {"parameter_get_arguments", (DL_FUNC) &r_parameter_get_arguments, 1},
 
     /* Argument */
-    {"argument_get_position", (DL_FUNC) &r_argument_get_position, 1},
     {"argument_get_name", (DL_FUNC) &r_argument_get_name, 1},
+    {"argument_get_position", (DL_FUNC) &r_argument_get_position, 1},
     {"argument_is_evaluated", (DL_FUNC) &r_argument_is_evaluated, 1},
-    {"argument_get_call", (DL_FUNC) &r_argument_get_call, 1},
 
     /* CallStack */
     {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},

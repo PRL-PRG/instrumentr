@@ -6,24 +6,18 @@
 
 namespace lightr {
 
-class Call;
-
 class Argument: public Object {
   public:
-    Argument(std::shared_ptr<Call> call, int position, const std::string& name)
-        : Object()
-        , call_(call)
-        , position_(position)
-        , name_(name)
-        , evaluated_(false) {
-    }
-
-    int get_position() {
-        return position_;
+    Argument(const std::string& name, int position)
+        : Object(), name_(name), position_(position), evaluated_(false) {
     }
 
     const std::string& get_name() const {
         return name_;
+    }
+
+    int get_position() const {
+        return position_;
     }
 
     bool is_evaluated() const {
@@ -32,10 +26,6 @@ class Argument: public Object {
 
     void set_evaluated() {
         evaluated_ = true;
-    }
-
-    std::shared_ptr<Call> get_call() const {
-        return call_;
     }
 
     static void initialize();
@@ -49,9 +39,8 @@ class Argument: public Object {
     static void destroy_sexp(SEXP r_argument);
 
   private:
-    std::shared_ptr<Call> call_;
-    int position_;
     std::string name_;
+    int position_;
     bool evaluated_;
 
     static SEXP class_;

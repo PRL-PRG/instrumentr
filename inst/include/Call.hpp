@@ -9,7 +9,7 @@
 namespace lightr {
 
 class Function;
-class Argument;
+class Parameter;
 
 class Call: public Object {
   public:
@@ -29,8 +29,12 @@ class Call: public Object {
         state_ = state;
     }
 
-    std::shared_ptr<Argument> get_argument(int position) const {
-        return arguments_.at(position);
+    const std::vector<std::shared_ptr<Parameter>>& get_parameters() const {
+        return parameters_;
+    }
+
+    std::vector<std::shared_ptr<Parameter>>& get_parameters() {
+        return parameters_;
     }
 
     static void initialize();
@@ -46,7 +50,7 @@ class Call: public Object {
   private:
     std::shared_ptr<Function> function_;
     CallState state_;
-    std::vector<std::shared_ptr<Argument>> arguments_;
+    std::vector<std::shared_ptr<Parameter>> parameters_;
 
     static SEXP class_;
 };

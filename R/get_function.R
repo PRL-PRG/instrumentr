@@ -6,5 +6,5 @@ get_function <- function(object, ...) {
 
 #' @export
 get_function.lightr_call <- function(object, ...) {
-    .Call(C_function_get_function, object)
+    .Call(C_call_get_function, object)
 }

@@ -15,6 +15,11 @@ get_name.lightr_function <- function(object, ...) {
 }
 
 #' @export
+get_name.lightr_parameter <- function(object, ...) {
+    .Call(C_parameter_get_name, object)
+}
+
+#' @export
 get_name.lightr_argument <- function(object, ...) {
     .Call(C_argument_get_name, object)
 }

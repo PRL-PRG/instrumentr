@@ -27,13 +27,19 @@ SEXP r_function_get_parameter_count(SEXP r_function);
 /* Call */
 SEXP r_call_get_function(SEXP r_call);
 SEXP r_call_get_state(SEXP r_call);
-SEXP r_call_get_argument(SEXP r_call, SEXP r_position);
+SEXP r_call_get_parameters(SEXP r_call);
+
+/* Parameter */
+SEXP r_parameter_get_name(SEXP r_parameter);
+SEXP r_parameter_get_position(SEXP r_parameter);
+SEXP r_parameter_is_missing(SEXP r_parameter);
+SEXP r_parameter_is_vararg(SEXP r_parameter);
+SEXP r_parameter_get_arguments(SEXP r_parameter);
 
 /* Argument */
-SEXP r_argument_get_position(SEXP r_argument);
 SEXP r_argument_get_name(SEXP r_argument);
+SEXP r_argument_get_position(SEXP r_argument);
 SEXP r_argument_is_evaluated(SEXP r_argument);
-SEXP r_argument_get_call(SEXP r_argument);
 
 /* CallStack */
 SEXP r_call_stack_get_size(SEXP r_stack);
