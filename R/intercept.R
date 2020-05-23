@@ -1,9 +1,10 @@
 intercept_package <- function(package_name) {
-    stopifnot(is_scalar_character(package_name))
 
     package_env <- getNamespace(package_name)
 
     package <- create_package(package_name, package_env)
+
+    .Call(C_lightr_intercept_package_entry, package)
 
     functions <- intercept_environment(package, package_env, package_name, all.names = TRUE)
 
@@ -12,6 +13,12 @@ intercept_package <- function(package_name) {
             add_function(package, func)
         }
     }
+
+    application <- get_application()
+
+    add_package(application, package)
+
+    packageStartupMessage("Intercepting ", length(get_functions(package)), " functions from ", package_name)
 
     package
 }

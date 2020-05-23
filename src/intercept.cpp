@@ -27,6 +27,18 @@ SEXP r_lightr_intercept_application_exit(SEXP r_environment) {
     return R_NilValue;
 }
 
+SEXP r_lightr_intercept_package_entry(SEXP r_package) {
+    std::cerr << "Package entry '" << Package::from_sexp(r_package)->get_name()
+              << "'" << std::endl;
+    return R_NilValue;
+}
+
+SEXP r_lightr_intercept_package_exit(SEXP r_package) {
+    std::cerr << "Package exit '" << Package::from_sexp(r_package)->get_name()
+              << "'" << std::endl;
+    return R_NilValue;
+}
+
 SEXP r_lightr_intercept_call_entry(SEXP r_package,
                                    SEXP r_function,
                                    SEXP r_func,

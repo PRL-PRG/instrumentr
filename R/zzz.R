@@ -24,17 +24,9 @@
         ##if (package_name %in% autoinject_packages || any(autoinject_packages
         ##== "all")) {
 
-        intercepted_funs <- 0
-
         tryCatch({
 
             package <- intercept_package(package_name)
-
-            application <- get_application()
-
-            add_package(application, package)
-
-            intercepted_funs <- length(get_functions(package))
 
         }, error = function(e) {
 
@@ -42,7 +34,8 @@
 
         })
 
-        packageStartupMessage("Intercepting ", intercepted_funs, " functions from ", package_name)
+        ## TODO: add error
+        .Call(C_lightr_intercept_package_exit, package)
 
         ##}
     }
