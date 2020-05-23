@@ -8,6 +8,8 @@ SEXP r_lightr_get_application();
 SEXP r_lightr_interception_is_enabled();
 SEXP r_lightr_disable_interception();
 SEXP r_lightr_enable_interception();
+SEXP r_lightr_intercept_application_entry(SEXP global_env);
+SEXP r_lightr_intercept_application_exit(SEXP global_env);
 SEXP r_lightr_intercept_call_entry(SEXP package_name,
                                    SEXP function_name,
                                    SEXP function,

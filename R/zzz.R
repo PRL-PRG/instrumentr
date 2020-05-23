@@ -1,14 +1,20 @@
 
+.onLoad <- function(libname, pkgname) {
+    package_env <- .GlobalEnv #parent.env(environment())
+
+    .Call(C_lightr_intercept_application_entry, package_env)
+
+    reg.finalizer(package_env,
+                  function(e) {
+                      .Call(C_lightr_intercept_application_exit, e)
+                  },
+                  onexit = TRUE)
+}
+
+
 .onAttach <- function(libname, pkgname) {
-    assign(".lightr_disable_interception", lightr:::C_lightr_disable_interception, envir = baseenv())
-    assign(".lightr_enable_interception", lightr:::C_lightr_enable_interception, envir = baseenv())
-    assign(".lightr_interception_is_enabled", lightr:::C_lightr_interception_is_enabled, envir = baseenv())
-    assign(".lightr_intercept_call_entry", lightr:::C_lightr_intercept_call_entry, envir = baseenv())
-    assign(".lightr_intercept_call_exit", lightr:::C_lightr_intercept_call_exit, envir = baseenv())
-    assign(".lightr_no_retval_marker", lightr:::.no_retval_marker, envir = baseenv())
 
-    .Call(.lightr_disable_interception)
-
+    .Call(C_lightr_disable_interception)
 
     ##set_severity()
     ##set_autoinject()
@@ -56,7 +62,7 @@
         setHook(packageEvent(package, "attach"), handle_package)
     }
 
-    .Call(.lightr_enable_interception)
+    .Call(C_lightr_enable_interception)
 }
 
 .onDetach <- function(libpath) {

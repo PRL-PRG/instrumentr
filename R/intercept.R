@@ -117,29 +117,40 @@ modify_function <- function(package, func, fun) {
 
 create_argval_interception_code <- function(package, func) {
     substitute({
-        if(.Call(.lightr_interception_is_enabled)) {
-            .Call(.lightr_disable_interception)
-            .Call(.lightr_intercept_call_entry,
+        if(.Call(INTERCEPTION_IS_ENABLED)) {
+            .Call(DISABLE_INTERCEPTION)
+            .Call(INTERCEPT_CALL_ENTRY,
                   PKG,
                   FUNC,
                   sys.function(),
                   sys.frame(sys.nframe()))
-            .Call(.lightr_enable_interception)
+            .Call(ENABLE_INTERCEPTION)
         }
-    }, list(PKG=package, FUNC=func))
+    }, list(INTERCEPTION_IS_ENABLED=C_lightr_interception_is_enabled,
+            ENABLE_INTERCEPTION=C_lightr_enable_interception,
+            DISABLE_INTERCEPTION=C_lightr_disable_interception,
+            INTERCEPT_CALL_ENTRY=C_lightr_intercept_call_entry,
+            PKG=package,
+            FUNC=func))
 }
 
 
 create_retval_interception_code <- function(package, func) {
     substitute({
-        if(.Call(.lightr_interception_is_enabled)) {
-            .Call(.lightr_disable_interception)
-            .Call(.lightr_intercept_call_exit,
+        if(.Call(INTERCEPTION_IS_ENABLED)) {
+            .Call(DISABLE_INTERCEPTION)
+            .Call(INTERCEPT_CALL_EXIT,
                   PKG,
                   FUNC,
-                  returnValue(.lightr_no_retval_marker),
-                  !identical(returnValue(.lightr_no_retval_marker), .lightr_no_retval_marker))
-            .Call(.lightr_enable_interception)
+                  returnValue(NO_RETVAL_MARKER),
+                  !identical(returnValue(NO_RETVAL_MARKER), NO_RETVAL_MARKER))
+            .Call(ENABLE_INTERCEPTION)
         }
-    }, list(PKG=package, FUNC=func))
+    }, list(INTERCEPTION_IS_ENABLED=C_lightr_interception_is_enabled,
+            ENABLE_INTERCEPTION=C_lightr_enable_interception,
+            DISABLE_INTERCEPTION=C_lightr_disable_interception,
+            INTERCEPT_CALL_EXIT=C_lightr_intercept_call_exit,
+            NO_RETVAL_MARKER=.no_retval_marker,
+            PKG=package,
+            FUNC=func))
 }
