@@ -5,7 +5,7 @@ intercept_package <- function(package_name) {
 
     package <- create_package(package_name, package_env)
 
-    functions <- intercept_environment(NULL, package_env, package_name, all.names = TRUE)
+    functions <- intercept_environment(package, package_env, package_name, all.names = TRUE)
 
     for(func in functions) {
         if(!is.null(func)) {
