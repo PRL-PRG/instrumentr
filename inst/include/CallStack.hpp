@@ -30,8 +30,10 @@ class CallStack: public Object {
         stack_.push_back(call);
     }
 
-    void pop_frame() {
+    CallSPtr pop_frame() {
+        CallSPtr call = stack_.back();
         stack_.pop_back();
+        return call;
     }
 
     static void initialize();
