@@ -12,14 +12,16 @@ SEXP r_lightr_intercept_application_entry(SEXP global_env);
 SEXP r_lightr_intercept_application_exit(SEXP global_env);
 SEXP r_lightr_intercept_package_entry(SEXP r_package);
 SEXP r_lightr_intercept_package_exit(SEXP r_package);
-SEXP r_lightr_intercept_call_entry(SEXP package_name,
-                                   SEXP function_name,
-                                   SEXP function,
-                                   SEXP environment);
+SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
+                                   SEXP r_function_ptr,
+                                   SEXP r_function_obj,
+                                   SEXP r_call_env,
+                                   SEXP r_caller_env);
 SEXP r_lightr_intercept_call_exit(SEXP package_name,
                                   SEXP function_name,
                                   SEXP result,
                                   SEXP failed);
+SEXP r_lightr_initialize(SEXP r_package_environment, SEXP r_state_environment);
 
 /* Object */
 SEXP r_object_get_id(SEXP r_object);
@@ -53,7 +55,6 @@ SEXP r_parameter_get_arguments(SEXP r_parameter);
 
 /* Argument */
 SEXP r_argument_get_name(SEXP r_argument);
-SEXP r_argument_get_position(SEXP r_argument);
 SEXP r_argument_is_evaluated(SEXP r_argument);
 
 /* CallStack */

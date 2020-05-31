@@ -36,8 +36,12 @@ class Parameter: public Object {
         return position_;
     }
 
-    const std::vector<std::shared_ptr<Argument>>& get_arguments() const {
+    const std::vector<ArgumentSPtr>& get_arguments() const {
         return arguments_;
+    }
+
+    void add_argument(ArgumentSPtr argument) {
+        arguments_.push_back(argument);
     }
 
     bool is_missing() {

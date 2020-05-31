@@ -15,8 +15,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"lightr_intercept_package_exit", (DL_FUNC) &r_lightr_intercept_package_exit, 1},
     {"lightr_intercept_application_entry", (DL_FUNC) &r_lightr_intercept_application_entry, 1},
     {"lightr_intercept_application_exit", (DL_FUNC) &r_lightr_intercept_application_exit, 1},
-    {"lightr_intercept_call_entry", (DL_FUNC) &r_lightr_intercept_call_entry, 4},
+    {"lightr_intercept_call_entry", (DL_FUNC) &r_lightr_intercept_call_entry, 5},
     {"lightr_intercept_call_exit", (DL_FUNC) &r_lightr_intercept_call_exit, 4},
+    {"lightr_initialize", (DL_FUNC) &r_lightr_initialize, 2},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
@@ -50,7 +51,6 @@ static const R_CallMethodDef CallEntries[] = {
 
     /* Argument */
     {"argument_get_name", (DL_FUNC) &r_argument_get_name, 1},
-    {"argument_get_position", (DL_FUNC) &r_argument_get_position, 1},
     {"argument_is_evaluated", (DL_FUNC) &r_argument_is_evaluated, 1},
 
     /* CallStack */

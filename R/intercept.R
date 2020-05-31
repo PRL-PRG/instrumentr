@@ -2,59 +2,60 @@ intercept_package <- function(package_name) {
 
     package_env <- getNamespace(package_name)
 
-    package <- create_package(package_name, package_env)
+    package_ptr <- create_package(package_name, package_env)
 
-    .Call(C_lightr_intercept_package_entry, package)
+    .Call(C_lightr_intercept_package_entry, package_ptr)
 
-    functions <- intercept_environment(package, package_env, package_name, all.names = TRUE)
+    function_ptrs <- intercept_environment(package_ptr, package_name, package_env, all.names = TRUE)
 
-    for(func in functions) {
-        if(!is.null(func)) {
-            add_function(package, func)
+    for(function_ptr in function_ptrs) {
+        if(!is.null(function_ptr)) {
+            add_function(package_ptr, function_ptr)
         }
     }
 
     application <- get_application()
 
-    add_package(application, package)
+    add_package(application, package_ptr)
 
-    packageStartupMessage("Intercepting ", length(get_functions(package)), " functions from ", package_name)
+    packageStartupMessage("Intercepting ", length(get_functions(package_ptr)), " functions from ", package_name)
 
-    package
+    package_ptr
 }
 
-intercept_environment <- function(package, env, name, ...) {
-    stopifnot(is_environment(env))
-    stopifnot(is_scalar_character(name))
+intercept_environment <- function(package_ptr, package_name, package_env, ...) {
+    ## TODO: check for package_ptr type
+    stopifnot(is_environment(package_env))
+    stopifnot(is_scalar_character(package_name))
 
-    variables <- ls(envir=env, ...)
+    function_names <- ls(envir=package_env, ...)
 
-    functions <- list()
+    function_ptrs <- list()
 
-    for (variable in variables) {
+    for (function_name in function_names) {
 
-        fun <- get(variable, envir=env)
+        function_obj <- get(function_name, envir=package_env)
 
-        if(!is_closure(fun)) next
+        if(!is_closure(function_obj)) next
 
-        body(fun) <- process_on_exit(body(fun))
+        body(function_obj) <- process_on_exit(body(function_obj))
 
-        unlockBinding(variable, env)
-        assign(variable, fun, envir = env)
-        lockBinding(variable, env)
+        unlockBinding(function_name, package_env)
+        assign(function_name, function_obj, envir = package_env)
+        lockBinding(function_name, package_env)
 
         tryCatch({
-            func <- intercept_function(package, fun, variable, name, env)
-            functions <- c(functions, list(func))
+            function_ptr <- intercept_function(package_ptr, package_name, package_env, function_name, function_obj)
+            function_ptrs <- c(function_ptrs, list(function_ptr))
 
         }, error = function(e) {
             message <- sprintf("unable to intercept `%s::%s`: %s",
-                               name, variable, e$message)
+                               package_name, function_name, e$message)
             print(message)
         })
     }
 
-    functions
+    function_ptrs
 }
 
 is_intercepted <- function(fun) {
@@ -62,30 +63,31 @@ is_intercepted <- function(fun) {
     has_intercepted_function(id)
 }
 
-intercept_function <- function(package, fun, name, pkg, env) {
-    stopifnot(is_function(fun))
-    stopifnot(is_scalar_character(name))
-    stopifnot(is_scalar_character(pkg))
-    stopifnot(is_environment(env))
+intercept_function <- function(package_ptr, package_name, package_env, function_name, function_obj) {
+    ## TODO: check type of package_ptr
+    stopifnot(is_function(function_obj))
+    stopifnot(is_scalar_character(function_name))
+    stopifnot(is_scalar_character(package_name))
+    stopifnot(is_environment(package_env))
 
-    func <- NULL
+    function_ptr <- NULL
 
-    if (is_intercepted(fun)) {
-        msg <- sprintf("'%s::%s' already intercepted", pkg, name)
+    if (is_intercepted(function_obj)) {
+        msg <- sprintf("'%s::%s' already intercepted", package_name, function_name)
         packageStartupMessage(msg)
     }
     else {
-        func <- create_function(name, length(formals(fun)))
-        id <- injectr:::sexp_address(fun)
-        old <- modify_function(package, func, fun)
-        add_intercepted_function(id, list(env = env,
-                                          pkg=pkg,
-                                          fun_name=name,
-                                          new=fun,
-                                          old=old))
+        function_ptr <- create_function(function_name, length(formals(function_obj)))
+        function_id <- injectr:::sexp_address(function_obj)
+        old_function_obj <- modify_function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj)
+        add_intercepted_function(function_id, list(package_name=package_name,
+                                                   package_env=package_env,
+                                                   function_name=function_name,
+                                                   new_function_obj=function_obj,
+                                                   old_function_obj=old_function_obj))
     }
 
-    func
+    function_ptr
 }
 
 ## TODO: Fix implementation to properly handle the complete call signature of on.exit
@@ -109,27 +111,28 @@ process_on_exit <- function(expr) {
     expr
 }
 
-modify_function <- function(package, func, fun) {
+modify_function <- function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj) {
 
-    old <- injectr:::create_duplicate(fun)
+    old_function_obj <- injectr:::create_duplicate(function_obj)
 
-    check_params <- create_argval_interception_code(package, func)
-    injectr::inject_code(check_params, fun)
+    check_params <- create_argval_interception_code(package_ptr, package_name, package_env, function_ptr, function_name, function_obj)
+    injectr::inject_code(check_params, function_obj)
 
-    check_retval <- create_retval_interception_code(package, func)
-    injectr::inject_code(check_retval, fun, where="onexit")
+    check_retval <- create_retval_interception_code(package_ptr, package_name, package_env, function_ptr, function_name, function_obj)
+    injectr::inject_code(check_retval, function_obj, where="onexit")
 
-    old
+    old_function_obj
 }
 
-create_argval_interception_code <- function(package, func) {
+create_argval_interception_code <- function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj) {
     substitute({
         if(.Call(INTERCEPTION_IS_ENABLED)) {
             .Call(DISABLE_INTERCEPTION)
             .Call(INTERCEPT_CALL_ENTRY,
-                  PKG,
-                  FUNC,
+                  PACKAGE_PTR,
+                  FUNCTION_PTR,
                   sys.function(),
+                  environment(),
                   sys.frame(sys.nframe()))
             .Call(ENABLE_INTERCEPTION)
         }
@@ -137,18 +140,18 @@ create_argval_interception_code <- function(package, func) {
             ENABLE_INTERCEPTION=C_lightr_enable_interception,
             DISABLE_INTERCEPTION=C_lightr_disable_interception,
             INTERCEPT_CALL_ENTRY=C_lightr_intercept_call_entry,
-            PKG=package,
-            FUNC=func))
+            PACKAGE_PTR=package_ptr,
+            FUNCTION_PTR=function_ptr))
 }
 
 
-create_retval_interception_code <- function(package, func) {
+create_retval_interception_code <- function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj) {
     substitute({
         if(.Call(INTERCEPTION_IS_ENABLED)) {
             .Call(DISABLE_INTERCEPTION)
             .Call(INTERCEPT_CALL_EXIT,
-                  PKG,
-                  FUNC,
+                  PACKAGE_PTR,
+                  FUNCTION_PTR,
                   returnValue(NO_RETVAL_MARKER),
                   !identical(returnValue(NO_RETVAL_MARKER), NO_RETVAL_MARKER))
             .Call(ENABLE_INTERCEPTION)
@@ -158,6 +161,6 @@ create_retval_interception_code <- function(package, func) {
             DISABLE_INTERCEPTION=C_lightr_disable_interception,
             INTERCEPT_CALL_EXIT=C_lightr_intercept_call_exit,
             NO_RETVAL_MARKER=.no_retval_marker,
-            PKG=package,
-            FUNC=func))
+            PACKAGE_PTR=package_ptr,
+            FUNCTION_PTR=function_ptr))
 }

@@ -8,16 +8,12 @@ namespace lightr {
 
 class Argument: public Object {
   public:
-    Argument(const std::string& name, int position)
-        : Object(), name_(name), position_(position), evaluated_(false) {
+    Argument(const std::string& name)
+        : Object(), name_(name), evaluated_(false) {
     }
 
     const std::string& get_name() const {
         return name_;
-    }
-
-    int get_position() const {
-        return position_;
     }
 
     bool is_evaluated() const {
@@ -26,6 +22,14 @@ class Argument: public Object {
 
     void set_evaluated() {
         evaluated_ = true;
+    }
+
+    void set_value(SEXP r_argument_obj) {
+        r_argument_obj_ = r_argument_obj;
+    }
+
+    SEXP get_value() {
+        return r_argument_obj_;
     }
 
     static void initialize();
@@ -40,8 +44,8 @@ class Argument: public Object {
 
   private:
     std::string name_;
-    int position_;
     bool evaluated_;
+    SEXP r_argument_obj_;
 
     static SEXP class_;
 };

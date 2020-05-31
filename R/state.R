@@ -2,6 +2,8 @@
 
 .no_retval_marker <- new.env(parent=emptyenv())
 
+.state_env <- new.env(parent=emptyenv())
+
 add_intercepted_function <- function(key, value) {
     assign(key, value, envir=.intercepted_functions)
 }
