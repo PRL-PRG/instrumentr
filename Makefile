@@ -11,6 +11,7 @@ check: build
 clean:
 	-rm -f lightr*tar.gz
 	-rm -fr lightr.Rcheck
+	-rm -rf src/*.o src/*.so
 
 document:
 	Rscript -e 'devtools::document()'
