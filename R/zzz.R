@@ -3,7 +3,7 @@
 
     .Call(C_lightr_initialize, parent.env(environment()), .state_env)
 
-    package_env <- .GlobalEnv #parent.env(environment())
+    package_env <- parent.env(environment())
 
     .Call(C_lightr_intercept_application_entry, package_env)
 

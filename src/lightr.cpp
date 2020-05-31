@@ -3,14 +3,16 @@
 
 namespace lightr {
 
-ApplicationSPtr application(nullptr);
+ApplicationSPtr application_(nullptr);
+ContextSPtr context_(nullptr);
 
 ApplicationSPtr get_application() {
-    return application;
+    return application_;
 }
 
 void initialize_lightr() {
-    if (!application) {
+    if (!application_) {
+        Context::initialize();
         Application::initialize();
         CallStack::initialize();
         Package::initialize();
@@ -19,8 +21,16 @@ void initialize_lightr() {
         Parameter::initialize();
         Argument::initialize();
         CallStackSPtr call_stack = std::make_shared<CallStack>();
-        application = std::make_shared<Application>(call_stack); //);
+        application_ = std::make_shared<Application>(call_stack);
     }
+}
+
+ContextSPtr get_context() {
+    return context_;
+}
+
+void set_context(ContextSPtr context) {
+    context_ = context;
 }
 
 } // namespace lightr

@@ -5,6 +5,7 @@
 #include "../inst/include/Function.hpp"
 #include "../inst/include/Call.hpp"
 #include "../inst/include/Parameter.hpp"
+#include "../inst/include/Context.hpp"
 #include "utilities.h"
 
 bool interception_enabled = true;
@@ -13,12 +14,15 @@ bool interception_enabled = true;
 int indentation = 0;
 #endif
 
+using lightr::Application;
 using lightr::ApplicationSPtr;
 using lightr::Argument;
 using lightr::ArgumentSPtr;
 using lightr::Call;
 using lightr::CallSPtr;
 using lightr::CallStackSPtr;
+using lightr::Context;
+using lightr::ContextSPtr;
 using lightr::Function;
 using lightr::FunctionSPtr;
 using lightr::Package;
@@ -26,25 +30,68 @@ using lightr::PackageSPtr;
 using lightr::Parameter;
 using lightr::ParameterSPtr;
 
+using lightr::get_application;
+using lightr::get_context;
+
 SEXP r_lightr_intercept_application_entry(SEXP r_environment) {
     std::cerr << "Application entry" << std::endl;
+
+    ContextSPtr context = get_context();
+
+    if (context && context->has_initializer()) {
+        SEXP initializer = context->get_initializer();
+        Rf_eval(Rf_lang2(initializer, Application::to_sexp(get_application())),
+                context->get_environment());
+    }
+
     return R_NilValue;
 }
 
 SEXP r_lightr_intercept_application_exit(SEXP r_environment) {
     std::cerr << "Application exit" << std::endl;
+
+    ContextSPtr context = get_context();
+
+    if (context && context->has_finalizer()) {
+        SEXP finalizer = context->get_finalizer();
+        Rf_eval(Rf_lang2(finalizer, Application::to_sexp(get_application())),
+                context->get_environment());
+    }
+
     return R_NilValue;
 }
 
 SEXP r_lightr_intercept_package_entry(SEXP r_package) {
     std::cerr << "Package entry '" << Package::from_sexp(r_package)->get_name()
               << "'" << std::endl;
+
+    ContextSPtr context = get_context();
+
+    if (context && context->has_package_entry_callback()) {
+        SEXP package_entry_callback = context->get_package_entry_callback();
+        Rf_eval(Rf_lang3(package_entry_callback,
+                         Application::to_sexp(get_application()),
+                         r_package),
+                context->get_environment());
+    }
+
     return R_NilValue;
 }
 
 SEXP r_lightr_intercept_package_exit(SEXP r_package) {
     std::cerr << "Package exit '" << Package::from_sexp(r_package)->get_name()
               << "'" << std::endl;
+
+    ContextSPtr context = get_context();
+
+    if (context && context->has_package_exit_callback()) {
+        SEXP package_exit_callback = context->get_package_exit_callback();
+        Rf_eval(Rf_lang3(package_exit_callback,
+                         Application::to_sexp(get_application()),
+                         r_package),
+                context->get_environment());
+    }
+
     return R_NilValue;
 }
 
@@ -185,6 +232,18 @@ SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
         }
     }
 
+    ContextSPtr context = get_context();
+
+    if (context && context->has_call_entry_callback()) {
+        SEXP call_entry_callback = context->get_call_entry_callback();
+        Rf_eval(Rf_lang5(call_entry_callback,
+                         Application::to_sexp(get_application()),
+                         r_package_ptr,
+                         r_function_ptr,
+                         Call::to_sexp(call)),
+                context->get_environment());
+    }
+
     return R_NilValue;
 }
 
@@ -214,6 +273,18 @@ SEXP r_lightr_intercept_call_exit(SEXP r_package,
         std::cerr << "Obtained " << call->get_function()->get_name()
                   << std::endl;
         exit(1);
+    }
+
+    ContextSPtr context = get_context();
+
+    if (context && context->has_call_exit_callback()) {
+        SEXP call_exit_callback = context->get_call_exit_callback();
+        Rf_eval(Rf_lang5(call_exit_callback,
+                         Application::to_sexp(get_application()),
+                         r_package,
+                         r_function,
+                         Call::to_sexp(call)),
+                context->get_environment());
     }
 
     return R_NilValue;

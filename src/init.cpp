@@ -8,6 +8,8 @@ extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     /* lightr */
     {"lightr_get_application", (DL_FUNC) &r_lightr_get_application, 0},
+    {"lightr_get_context", (DL_FUNC) &r_lightr_get_context, 0},
+    {"lightr_set_context", (DL_FUNC) &r_lightr_set_context, 1},
     {"lightr_interception_is_enabled", (DL_FUNC) &r_lightr_interception_is_enabled, 0},
     {"lightr_disable_interception", (DL_FUNC) &r_lightr_disable_interception, 0},
     {"lightr_enable_interception", (DL_FUNC) &r_lightr_enable_interception, 0},
@@ -21,6 +23,23 @@ static const R_CallMethodDef CallEntries[] = {
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
+
+    /* Context */
+    {"context_create_context", (DL_FUNC) &r_context_create_context, 7},
+    {"context_set_initializer", (DL_FUNC) &r_context_set_initializer, 2},
+    {"context_get_initializer", (DL_FUNC) &r_context_get_initializer, 1},
+    {"context_set_finalizer", (DL_FUNC) &r_context_set_finalizer, 2},
+    {"context_get_finalizer", (DL_FUNC) &r_context_get_finalizer, 1},
+    {"context_set_package_entry_callback", (DL_FUNC) &r_context_set_package_entry_callback, 2},
+    {"context_get_package_entry_callback", (DL_FUNC) &r_context_get_package_entry_callback, 1},
+    {"context_set_package_exit_callback", (DL_FUNC) &r_context_set_package_exit_callback, 2},
+    {"context_get_package_exit_callback", (DL_FUNC) &r_context_get_package_exit_callback, 1},
+    {"context_set_call_entry_callback", (DL_FUNC) &r_context_set_call_entry_callback, 2},
+    {"context_get_call_entry_callback", (DL_FUNC) &r_context_get_call_entry_callback, 1},
+    {"context_set_call_exit_callback", (DL_FUNC) &r_context_set_call_exit_callback, 2},
+    {"context_get_call_exit_callback", (DL_FUNC) &r_context_get_call_exit_callback, 1},
+    {"context_set_environment", (DL_FUNC) &r_context_set_environment, 2},
+    {"context_get_environment", (DL_FUNC) &r_context_get_environment, 1},
 
     /* Application */
     {"application_get_packages", (DL_FUNC) &r_application_get_packages, 1},

@@ -5,6 +5,8 @@
 extern "C" {
 /* lightr */
 SEXP r_lightr_get_application();
+SEXP r_lightr_get_context();
+SEXP r_lightr_set_context(SEXP r_context);
 SEXP r_lightr_interception_is_enabled();
 SEXP r_lightr_disable_interception();
 SEXP r_lightr_enable_interception();
@@ -25,6 +27,33 @@ SEXP r_lightr_initialize(SEXP r_package_environment, SEXP r_state_environment);
 
 /* Object */
 SEXP r_object_get_id(SEXP r_object);
+
+/* Context */
+SEXP r_context_create_context(SEXP r_initializer,
+                              SEXP r_finalizer,
+                              SEXP r_package_entry_callback,
+                              SEXP r_package_exit_callback,
+                              SEXP r_call_entry_callback,
+                              SEXP r_call_exit_callback,
+                              SEXP r_environment);
+SEXP r_context_set_initializer(SEXP r_context, SEXP r_initializer);
+SEXP r_context_get_initializer(SEXP r_context);
+SEXP r_context_set_finalizer(SEXP r_context, SEXP r_finalizer);
+SEXP r_context_get_finalizer(SEXP r_context);
+SEXP r_context_set_package_entry_callback(SEXP r_context,
+                                          SEXP r_package_entry_callback);
+SEXP r_context_get_package_entry_callback(SEXP r_context);
+SEXP r_context_set_package_exit_callback(SEXP r_context,
+                                         SEXP r_package_exit_callback);
+SEXP r_context_get_package_exit_callback(SEXP r_context);
+SEXP r_context_set_call_entry_callback(SEXP r_context,
+                                       SEXP r_call_entry_callback);
+SEXP r_context_get_call_entry_callback(SEXP r_context);
+SEXP r_context_set_call_exit_callback(SEXP r_context,
+                                      SEXP r_call_exit_callback);
+SEXP r_context_get_call_exit_callback(SEXP r_context);
+SEXP r_context_set_environment(SEXP r_context, SEXP r_environment);
+SEXP r_context_get_environment(SEXP r_context);
 
 /* Application */
 SEXP r_application_get_packages(SEXP r_application);
