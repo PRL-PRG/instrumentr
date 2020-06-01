@@ -1,12 +1,12 @@
 #include "r_api.h"
 #include "../inst/include/lightr.hpp"
-#include <iostream>
 #include "../inst/include/Package.hpp"
 #include "../inst/include/Function.hpp"
 #include "../inst/include/Call.hpp"
 #include "../inst/include/Parameter.hpp"
 #include "../inst/include/Context.hpp"
 #include "utilities.h"
+
 #define DEBUG
 bool interception_enabled = true;
 
@@ -294,12 +294,12 @@ SEXP r_lightr_intercept_call_exit(SEXP r_package,
 #endif
 
     if (call->get_function()->get_name() != function->get_name()) {
-        std::cerr << "************** ERROR ***************" << std::endl;
-        std::cerr << "Expected " << package->get_name()
-                  << "::" << function->get_name() << " ";
-        std::cerr << "Obtained " << call->get_function()->get_name()
-                  << std::endl;
-        exit(1);
+        Rf_errorcall(R_NilValue,
+                     "Error: unmatched call entry and exit, " //
+                     "exiting '%s::%s' but expected to exit '%s'.",
+                     package->get_name(),
+                     function->get_name(),
+                     call->get_function()->get_name());
     }
 
     ContextSPtr context = get_context();
