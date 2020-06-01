@@ -94,7 +94,11 @@ SEXP r_lightr_finalize() {
 SEXP r_lightr_intercept_package_entry(SEXP r_package) {
 #ifdef DEBUG
     PackageSPtr package = Package::from_sexp(r_package);
-    fprintf(stderr, "├── Package Entry '%s'\n", package->get_name().c_str());
+    fprintf(stderr,
+            "├── Package(name='%s', directory='%s', environment='%p')\n",
+            package->get_name().c_str(),
+            package->get_directory().c_str(),
+            (void*) (package->get_environment()));
     ++indentation;
 #endif
 
@@ -117,8 +121,11 @@ SEXP r_lightr_intercept_package_exit(SEXP r_package) {
 #ifdef DEBUG
     --indentation;
     PackageSPtr package = Package::from_sexp(r_package);
-    fprintf(stderr, "├── Package Exit '%s'\n", package->get_name().c_str());
-
+    fprintf(stderr,
+            "├── Package(name='%s', directory='%s', environment='%p')\n",
+            package->get_name().c_str(),
+            package->get_directory().c_str(),
+            (void*) (package->get_environment()));
 #endif
 
     ApplicationSPtr application = get_application();

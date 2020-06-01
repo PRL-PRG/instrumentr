@@ -2,7 +2,9 @@ intercept_package <- function(package_name) {
 
     package_env <- getNamespace(package_name)
 
-    package_ptr <- create_package(package_name, package_env)
+    package_dir <- dirname(system.file(package=package_name))
+
+    package_ptr <- create_package(package_name, package_dir, package_env)
 
     .Call(C_lightr_intercept_package_entry, package_ptr)
 

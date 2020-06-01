@@ -10,11 +10,25 @@ namespace lightr {
 
 class Package: public Object {
   public:
-    Package(const std::string& name): Object(), name_(name) {
+    Package(const std::string& name,
+            const std::string& directory,
+            SEXP environment)
+        : Object()
+        , name_(name)
+        , directory_(directory)
+        , environment_(environment) {
     }
 
     const std::string& get_name() const {
         return name_;
+    }
+
+    const std::string& get_directory() const {
+        return directory_;
+    }
+
+    SEXP get_environment() {
+        return environment_;
     }
 
     std::vector<FunctionSPtr>& get_functions() {
@@ -41,6 +55,8 @@ class Package: public Object {
 
   private:
     std::string name_;
+    std::string directory_;
+    SEXP environment_;
     std::vector<FunctionSPtr> functions_;
 
     int parameter_count_;

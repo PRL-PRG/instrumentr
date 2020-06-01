@@ -46,8 +46,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"application_add_package", (DL_FUNC) &r_application_add_package, 2},
 
     /* Package */
-    {"package_create", (DL_FUNC) &r_package_create, 2},
+    {"package_create", (DL_FUNC) &r_package_create, 3},
     {"package_get_name", (DL_FUNC) &r_package_get_name, 1},
+    {"package_get_directory", (DL_FUNC) &r_package_get_directory, 1},
+    {"package_get_environment", (DL_FUNC) &r_package_get_environment, 1},
     {"package_get_functions", (DL_FUNC) &r_package_get_functions, 1},
     {"package_add_function", (DL_FUNC) &r_package_add_function, 2},
 

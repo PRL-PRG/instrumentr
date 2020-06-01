@@ -8,9 +8,15 @@ using lightr::FunctionSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
-SEXP r_package_create(SEXP r_package_name, SEXP r_package_environment) {
+SEXP r_package_create(SEXP r_package_name,
+                      SEXP r_package_directory,
+                      SEXP r_package_environment) {
     std::string package_name = CHAR(asChar(r_package_name));
-    PackageSPtr package = std::make_shared<Package>(package_name);
+    std::string package_directory = CHAR(asChar(r_package_directory));
+
+    PackageSPtr package = std::make_shared<Package>(
+        package_name, package_directory, r_package_environment);
+
     return Package::to_sexp(package);
 }
 
@@ -18,6 +24,18 @@ SEXP r_package_get_name(SEXP r_package) {
     PackageSPtr package = Package::from_sexp(r_package);
     const std::string& name = package->get_name();
     return mkString(name.c_str());
+}
+
+SEXP r_package_get_directory(SEXP r_package) {
+    PackageSPtr package = Package::from_sexp(r_package);
+    const std::string& directory = package->get_directory();
+    return mkString(directory.c_str());
+}
+
+SEXP r_package_get_environment(SEXP r_package) {
+    PackageSPtr package = Package::from_sexp(r_package);
+    SEXP environment = package->get_environment();
+    return environment;
 }
 
 SEXP r_package_get_functions(SEXP r_package) {
