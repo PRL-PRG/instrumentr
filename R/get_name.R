@@ -5,6 +5,11 @@ get_name <- function(object, ...) {
 }
 
 #' @export
+get_name.lightr_application <- function(object, ...) {
+    .Call(C_application_get_name, object)
+}
+
+#' @export
 get_name.lightr_package <- function(object, ...) {
     .Call(C_package_get_name, object)
 }

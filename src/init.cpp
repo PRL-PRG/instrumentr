@@ -40,6 +40,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_get_environment", (DL_FUNC) &r_context_get_environment, 1},
 
     /* Application */
+    {"application_get_name", (DL_FUNC) &r_application_get_name, 1},
+    {"application_get_global_environment", (DL_FUNC) &r_application_get_global_environment, 1},
     {"application_get_packages", (DL_FUNC) &r_application_get_packages, 1},
     {"application_add_package", (DL_FUNC) &r_application_add_package, 2},
 

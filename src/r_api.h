@@ -58,6 +58,8 @@ SEXP r_context_set_environment(SEXP r_context, SEXP r_environment);
 SEXP r_context_get_environment(SEXP r_context);
 
 /* Application */
+SEXP r_application_get_name(SEXP r_application);
+SEXP r_application_get_global_environment(SEXP r_application);
 SEXP r_application_get_packages(SEXP r_application);
 SEXP r_application_add_package(SEXP r_application, SEXP r_package);
 

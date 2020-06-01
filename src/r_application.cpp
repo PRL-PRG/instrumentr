@@ -7,6 +7,18 @@ using lightr::ApplicationSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
+SEXP r_application_get_name(SEXP r_application) {
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    std::string name = application->get_name();
+    return mkString(name.c_str());
+}
+
+SEXP r_application_get_global_environment(SEXP r_application) {
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    SEXP r_global_environment = application->get_global_environment();
+    return r_global_environment;
+}
+
 SEXP r_application_get_packages(SEXP r_application) {
     ApplicationSPtr application = Application::from_sexp(r_application);
     const std::vector<PackageSPtr>& packages = application->get_packages();
