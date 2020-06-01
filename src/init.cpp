@@ -1,5 +1,4 @@
 #include "r_api.h"
-#include "../inst/include/lightr.hpp"
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>
@@ -15,11 +14,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"lightr_enable_interception", (DL_FUNC) &r_lightr_enable_interception, 0},
     {"lightr_intercept_package_entry", (DL_FUNC) &r_lightr_intercept_package_entry, 1},
     {"lightr_intercept_package_exit", (DL_FUNC) &r_lightr_intercept_package_exit, 1},
-    {"lightr_intercept_application_entry", (DL_FUNC) &r_lightr_intercept_application_entry, 1},
-    {"lightr_intercept_application_exit", (DL_FUNC) &r_lightr_intercept_application_exit, 1},
+    {"lightr_initialize", (DL_FUNC) &r_lightr_initialize, 4},
+    {"lightr_finalize", (DL_FUNC) &r_lightr_finalize, 0},
     {"lightr_intercept_call_entry", (DL_FUNC) &r_lightr_intercept_call_entry, 5},
     {"lightr_intercept_call_exit", (DL_FUNC) &r_lightr_intercept_call_exit, 4},
-    {"lightr_initialize", (DL_FUNC) &r_lightr_initialize, 2},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
@@ -82,6 +80,5 @@ static const R_CallMethodDef CallEntries[] = {
 void R_init_lightr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
-    lightr::initialize_lightr();
 }
 }

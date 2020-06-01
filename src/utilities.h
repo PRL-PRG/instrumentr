@@ -3,6 +3,8 @@
 
 #include <Rinternals.h>
 
+void initialize_utilities(SEXP r_package_environment, SEXP r_state_environment);
+
 SEXP delayed_assign(SEXP variable_sym,
                     SEXP variable_str,
                     SEXP value,

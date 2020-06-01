@@ -10,8 +10,11 @@ SEXP r_lightr_set_context(SEXP r_context);
 SEXP r_lightr_interception_is_enabled();
 SEXP r_lightr_disable_interception();
 SEXP r_lightr_enable_interception();
-SEXP r_lightr_intercept_application_entry(SEXP global_env);
-SEXP r_lightr_intercept_application_exit(SEXP global_env);
+SEXP r_lightr_initialize(SEXP r_application_name,
+                         SEXP r_global_environment,
+                         SEXP r_package_environment,
+                         SEXP r_state_environment);
+SEXP r_lightr_finalize();
 SEXP r_lightr_intercept_package_entry(SEXP r_package);
 SEXP r_lightr_intercept_package_exit(SEXP r_package);
 SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
@@ -23,7 +26,6 @@ SEXP r_lightr_intercept_call_exit(SEXP package_name,
                                   SEXP function_name,
                                   SEXP result,
                                   SEXP failed);
-SEXP r_lightr_initialize(SEXP r_package_environment, SEXP r_state_environment);
 
 /* Object */
 SEXP r_object_get_id(SEXP r_object);

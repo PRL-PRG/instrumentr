@@ -8,7 +8,7 @@ namespace lightr {
 
 ApplicationSPtr get_application();
 
-void initialize_lightr();
+void set_application(ApplicationSPtr application);
 
 ContextSPtr get_context();
 

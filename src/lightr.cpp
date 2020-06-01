@@ -10,19 +10,8 @@ ApplicationSPtr get_application() {
     return application_;
 }
 
-void initialize_lightr() {
-    if (!application_) {
-        Context::initialize();
-        Application::initialize();
-        CallStack::initialize();
-        Package::initialize();
-        Function::initialize();
-        Call::initialize();
-        Parameter::initialize();
-        Argument::initialize();
-        CallStackSPtr call_stack = std::make_shared<CallStack>();
-        application_ = std::make_shared<Application>(call_stack);
-    }
+void set_application(ApplicationSPtr application) {
+    application_ = application;
 }
 
 ContextSPtr get_context() {
@@ -31,6 +20,16 @@ ContextSPtr get_context() {
 
 void set_context(ContextSPtr context) {
     context_ = context;
+
+    ApplicationSPtr application = get_application();
+    SEXP r_application = Application::to_sexp(application);
+
+    if (context_ && context_->has_initializer()) {
+        SEXP initializer = context_->get_initializer();
+        SEXP env = context->get_environment();
+
+        Rf_eval(Rf_lang2(initializer, r_application), env);
+    }
 }
 
 } // namespace lightr

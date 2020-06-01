@@ -7,7 +7,7 @@
 #include "../inst/include/Parameter.hpp"
 #include "../inst/include/Context.hpp"
 #include "utilities.h"
-
+#define DEBUG
 bool interception_enabled = true;
 
 #ifdef DEBUG
@@ -20,6 +20,7 @@ using lightr::Argument;
 using lightr::ArgumentSPtr;
 using lightr::Call;
 using lightr::CallSPtr;
+using lightr::CallStack;
 using lightr::CallStackSPtr;
 using lightr::Context;
 using lightr::ContextSPtr;
@@ -33,63 +34,89 @@ using lightr::ParameterSPtr;
 using lightr::get_application;
 using lightr::get_context;
 
-SEXP r_lightr_intercept_application_entry(SEXP r_environment) {
-    std::cerr << "Application entry" << std::endl;
+SEXP r_lightr_initialize(SEXP r_application_name,
+                         SEXP r_global_environment,
+                         SEXP r_package_environment,
+                         SEXP r_state_environment) {
+#ifdef DEBUG
+    fprintf(stderr, "┌── Initialization\n");
+    ++indentation;
+#endif
 
-    ContextSPtr context = get_context();
-
-    if (context && context->has_initializer()) {
-        SEXP initializer = context->get_initializer();
-        Rf_eval(Rf_lang2(initializer, Application::to_sexp(get_application())),
-                context->get_environment());
-    }
+    initialize_utilities(r_package_environment, r_state_environment);
+    Context::initialize();
+    Application::initialize();
+    CallStack::initialize();
+    Package::initialize();
+    Function::initialize();
+    Call::initialize();
+    Parameter::initialize();
+    Argument::initialize();
+    CallStackSPtr call_stack = std::make_shared<CallStack>();
+    set_application(std::make_shared<Application>(call_stack));
 
     return R_NilValue;
 }
 
-SEXP r_lightr_intercept_application_exit(SEXP r_environment) {
-    std::cerr << "Application exit" << std::endl;
+SEXP r_lightr_finalize() {
+#ifdef DEBUG
+    --indentation;
+    fprintf(stderr, "└── Finalization\n");
+#endif
 
+    ApplicationSPtr application = get_application();
+    SEXP r_application = Application::to_sexp(application);
     ContextSPtr context = get_context();
 
     if (context && context->has_finalizer()) {
         SEXP finalizer = context->get_finalizer();
-        Rf_eval(Rf_lang2(finalizer, Application::to_sexp(get_application())),
-                context->get_environment());
+        SEXP env = context->get_environment();
+
+        Rf_eval(Rf_lang2(finalizer, r_application), env);
     }
 
     return R_NilValue;
 }
 
 SEXP r_lightr_intercept_package_entry(SEXP r_package) {
-    std::cerr << "Package entry '" << Package::from_sexp(r_package)->get_name()
-              << "'" << std::endl;
+#ifdef DEBUG
+    PackageSPtr package = Package::from_sexp(r_package);
+    fprintf(stderr, "├── Package Entry '%s'\n", package->get_name().c_str());
+    ++indentation;
+#endif
 
+    ApplicationSPtr application = get_application();
+    SEXP r_application = Application::to_sexp(application);
     ContextSPtr context = get_context();
 
     if (context && context->has_package_entry_callback()) {
         SEXP package_entry_callback = context->get_package_entry_callback();
-        Rf_eval(Rf_lang3(package_entry_callback,
-                         Application::to_sexp(get_application()),
-                         r_package),
-                context->get_environment());
+        SEXP env = context->get_environment();
+
+        Rf_eval(Rf_lang3(package_entry_callback, r_application, r_package),
+                env);
     }
 
     return R_NilValue;
 }
 
 SEXP r_lightr_intercept_package_exit(SEXP r_package) {
-    std::cerr << "Package exit '" << Package::from_sexp(r_package)->get_name()
-              << "'" << std::endl;
+#ifdef DEBUG
+    --indentation;
+    PackageSPtr package = Package::from_sexp(r_package);
+    fprintf(stderr, "├── Package Exit '%s'\n", package->get_name().c_str());
 
+#endif
+
+    ApplicationSPtr application = get_application();
+    SEXP r_application = Application::to_sexp(application);
     ContextSPtr context = get_context();
 
     if (context && context->has_package_exit_callback()) {
         SEXP package_exit_callback = context->get_package_exit_callback();
-        Rf_eval(Rf_lang3(package_exit_callback,
-                         Application::to_sexp(get_application()),
-                         r_package),
-                context->get_environment());
+        SEXP env = context->get_environment();
+
+        Rf_eval(Rf_lang3(package_exit_callback, r_application, r_package), env);
     }
 
     return R_NilValue;
@@ -134,13 +161,10 @@ SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
     call->set_environment(r_call_env);
 
 #ifdef DEBUG
-    for (int i = 0; i < indentation; ++i) {
-        std::cerr << " ";
+    for (int i = 0; i < indentation - 1; ++i) {
+        fprintf(stderr, "│   ");
     }
-
-    std::cerr << "+" << package->get_name() << "::" << function->get_name()
-              << std::endl;
-
+    fprintf(stderr, "├── Function Entry '%s'\n", function->get_name().c_str());
     ++indentation;
 #endif
 
@@ -259,13 +283,16 @@ SEXP r_lightr_intercept_call_exit(SEXP r_package,
 
 #ifdef DEBUG
     --indentation;
-    for (int i = 0; i < indentation; ++i) {
-        std::cerr << " ";
+    for (int i = 0; i < indentation - 1; ++i) {
+        fprintf(stderr, "│   ");
     }
-
-    std::cerr << "-" << package->get_name() << "::" << function->get_name()
-              << std::endl;
+    fprintf(stderr, "├── Function Exit '%s'\n", function->get_name().c_str());
+    for (int i = 0; i < indentation - 1; ++i) {
+        fprintf(stderr, "│   ");
+    }
+    fprintf(stderr, "█\n");
 #endif
+
     if (call->get_function()->get_name() != function->get_name()) {
         std::cerr << "************** ERROR ***************" << std::endl;
         std::cerr << "Expected " << package->get_name()

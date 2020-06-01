@@ -1,15 +1,15 @@
 
 .onLoad <- function(libname, pkgname) {
 
-    .Call(C_lightr_initialize, parent.env(environment()), .state_env)
+    .Call(C_lightr_initialize,
+          infer_application_name(),
+          .GlobalEnv,
+          parent.env(environment()),
+          .state_env)
 
-    package_env <- parent.env(environment())
-
-    .Call(C_lightr_intercept_application_entry, package_env)
-
-    reg.finalizer(package_env,
+    reg.finalizer(.GlobalEnv,
                   function(e) {
-                      .Call(C_lightr_intercept_application_exit, e)
+                      .Call(C_lightr_finalize)
                   },
                   onexit = TRUE)
 }
@@ -61,6 +61,11 @@
     .Call(C_lightr_enable_interception)
 }
 
-.onDetach <- function(libpath) {
+.onUnload <- function(libpath) {
     ## TODO: remove interceptions
+
+    ###print("hello")
+    ###package_env <- parent.env(environment())
+    ###unintercept()
+    ###.Call(C_lightr_intercept_application_exit, package_env)
 }
