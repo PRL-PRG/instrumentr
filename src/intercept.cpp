@@ -38,11 +38,6 @@ SEXP r_lightr_initialize(SEXP r_application_name,
                          SEXP r_global_environment,
                          SEXP r_package_environment,
                          SEXP r_state_environment) {
-#ifdef DEBUG
-    fprintf(stderr, "┌── Initialization\n");
-    ++indentation;
-#endif
-
     initialize_utilities(r_package_environment, r_state_environment);
     Context::initialize();
     Application::initialize();
@@ -52,19 +47,37 @@ SEXP r_lightr_initialize(SEXP r_application_name,
     Call::initialize();
     Parameter::initialize();
     Argument::initialize();
+
+    std::string application_name = CHAR(asChar(r_application_name));
     CallStackSPtr call_stack = std::make_shared<CallStack>();
-    set_application(std::make_shared<Application>(call_stack));
+
+    set_application(std::make_shared<Application>(
+        application_name, r_global_environment, call_stack));
+
+    ApplicationSPtr application = get_application();
+
+#ifdef DEBUG
+    fprintf(stderr,
+            "┌── Application(name='%s', environment='%p')\n",
+            application->get_name().c_str(),
+            (void*) (application->get_global_environment()));
+    ++indentation;
+#endif
 
     return R_NilValue;
 }
 
 SEXP r_lightr_finalize() {
+    ApplicationSPtr application = get_application();
+
 #ifdef DEBUG
     --indentation;
-    fprintf(stderr, "└── Finalization\n");
+    fprintf(stderr,
+            "└── Application(name='%s', environment='%p')\n",
+            application->get_name().c_str(),
+            (void*) (application->get_global_environment()));
 #endif
 
-    ApplicationSPtr application = get_application();
     SEXP r_application = Application::to_sexp(application);
     ContextSPtr context = get_context();
 
