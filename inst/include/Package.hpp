@@ -12,11 +12,11 @@ class Package: public Object {
   public:
     Package(const std::string& name,
             const std::string& directory,
-            SEXP environment)
+            SEXP r_environment)
         : Object()
         , name_(name)
         , directory_(directory)
-        , environment_(environment) {
+        , r_environment_(r_environment) {
     }
 
     const std::string& get_name() const {
@@ -28,7 +28,7 @@ class Package: public Object {
     }
 
     SEXP get_environment() {
-        return environment_;
+        return r_environment_;
     }
 
     std::vector<FunctionSPtr>& get_functions() {
@@ -56,7 +56,7 @@ class Package: public Object {
   private:
     std::string name_;
     std::string directory_;
-    SEXP environment_;
+    SEXP r_environment_;
     std::vector<FunctionSPtr> functions_;
 
     int parameter_count_;

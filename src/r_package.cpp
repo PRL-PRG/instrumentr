@@ -34,8 +34,8 @@ SEXP r_package_get_directory(SEXP r_package) {
 
 SEXP r_package_get_environment(SEXP r_package) {
     PackageSPtr package = Package::from_sexp(r_package);
-    SEXP environment = package->get_environment();
-    return environment;
+    SEXP r_environment = package->get_environment();
+    return r_environment;
 }
 
 SEXP r_package_get_functions(SEXP r_package) {
