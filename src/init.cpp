@@ -21,7 +21,6 @@ static const R_CallMethodDef CallEntries[] = {
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
-    {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
     {"object_set_data", (DL_FUNC) &r_object_set_data, 2},
     {"object_get_data", (DL_FUNC) &r_object_get_data, 1},
     {"object_remove_data", (DL_FUNC) &r_object_remove_data, 1},
