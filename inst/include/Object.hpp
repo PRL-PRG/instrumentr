@@ -8,7 +8,7 @@ namespace lightr {
 
 class Object {
   public:
-    Object(): id_(Object::get_next_id_()) {
+    Object(): id_(Object::get_next_id_()), r_data_(nullptr) {
     }
 
     virtual ~Object() {
@@ -16,6 +16,22 @@ class Object {
 
     int get_id() const {
         return id_;
+    }
+
+    void set_data(SEXP r_data) {
+        r_data_ = r_data;
+    }
+
+    SEXP get_data() {
+        return r_data_;
+    }
+
+    void remove_data() {
+        r_data_ = nullptr;
+    }
+
+    bool has_data() const {
+        return r_data_ != nullptr;
     }
 
     static void initialize();
@@ -26,6 +42,7 @@ class Object {
 
   private:
     int id_;
+    SEXP r_data_;
 
     static int get_next_id_();
     static int id_counter_;
