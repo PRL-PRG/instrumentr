@@ -286,12 +286,17 @@ SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
 
     if (context && context->has_call_entry_callback()) {
         SEXP call_entry_callback = context->get_call_entry_callback();
+
+        r_lightr_disable_interception();
+
         Rf_eval(Rf_lang5(call_entry_callback,
                          Application::to_sexp(get_application()),
                          r_package_ptr,
                          r_function_ptr,
                          Call::to_sexp(call)),
                 context->get_environment());
+
+        r_lightr_enable_interception();
     }
 
     return R_NilValue;
@@ -332,12 +337,17 @@ SEXP r_lightr_intercept_call_exit(SEXP r_package,
 
     if (context && context->has_call_exit_callback()) {
         SEXP call_exit_callback = context->get_call_exit_callback();
+
+        r_lightr_disable_interception();
+
         Rf_eval(Rf_lang5(call_exit_callback,
                          Application::to_sexp(get_application()),
                          r_package,
                          r_function,
                          Call::to_sexp(call)),
                 context->get_environment());
+
+        r_lightr_enable_interception();
     }
 
     return R_NilValue;
