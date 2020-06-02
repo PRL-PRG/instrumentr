@@ -40,8 +40,6 @@ intercept_environment <- function(package_ptr, package_name, package_env, ...) {
 
         if(!is_closure(function_obj)) next
 
-        body(function_obj) <- process_on_exit(body(function_obj))
-
         unlockBinding(function_name, package_env)
         assign(function_name, function_obj, envir = package_env)
         lockBinding(function_name, package_env)
@@ -90,27 +88,6 @@ intercept_function <- function(package_ptr, package_name, package_env, function_
     }
 
     function_ptr
-}
-
-## TODO: Fix implementation to properly handle the complete call signature of on.exit
-process_on_exit <- function(expr) {
-    if(typeof(expr) == "language") {
-        if(expr[[1]] == "on.exit") {
-            expr[[3]] <- TRUE
-            expr[[4]] <- FALSE
-        }
-        else {
-            l <- length(expr)
-            for(i in 1:l) {
-                ## NOTE: expr[[i]] is used inplace to avoid missingness
-                ##       errors in expressions of the form x[,i]
-                if(typeof(expr[[i]]) == "language") {
-                    expr[[i]] <- process_on_exit(expr[[i]])
-                }
-            }
-        }
-    }
-    expr
 }
 
 modify_function <- function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj) {
