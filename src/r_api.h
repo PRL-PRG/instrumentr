@@ -75,9 +75,12 @@ SEXP r_package_get_functions(SEXP r_package);
 SEXP r_package_add_function(SEXP r_package, SEXP r_function);
 
 /* Function */
-SEXP r_function_create(SEXP r_function_name, SEXP r_parameter_count);
+SEXP r_function_create(SEXP r_function_name,
+                       SEXP r_parameter_count,
+                       SEXP r_function_object);
 SEXP r_function_get_name(SEXP r_function);
 SEXP r_function_get_parameter_count(SEXP r_function);
+SEXP r_function_get_object(SEXP r_function);
 
 /* Call */
 SEXP r_call_get_function(SEXP r_call);

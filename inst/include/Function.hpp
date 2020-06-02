@@ -8,8 +8,13 @@ namespace lightr {
 
 class Function: public Object {
   public:
-    Function(const std::string& name, int parameter_count)
-        : Object(), name_(name), parameter_count_(parameter_count) {
+    Function(const std::string& name,
+             int parameter_count,
+             SEXP r_object)
+        : Object()
+        , name_(name)
+        , parameter_count_(parameter_count)
+        , r_object_(r_object) {
     }
 
     const std::string& get_name() const {
@@ -18,6 +23,10 @@ class Function: public Object {
 
     int get_parameter_count() const {
         return parameter_count_;
+    }
+
+    SEXP get_object() {
+        return r_object_;
     }
 
     static void initialize();
@@ -33,6 +42,7 @@ class Function: public Object {
   private:
     std::string name_;
     int parameter_count_;
+    SEXP r_object_;
 
     static SEXP class_;
 };

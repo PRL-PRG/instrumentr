@@ -79,7 +79,7 @@ intercept_function <- function(package_ptr, package_name, package_env, function_
         packageStartupMessage(msg)
     }
     else {
-        function_ptr <- create_function(function_name, length(formals(function_obj)))
+        function_ptr <- create_function(function_name, length(formals(function_obj)), function_obj)
         function_id <- injectr:::sexp_address(function_obj)
         old_function_obj <- modify_function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj)
         add_intercepted_function(function_id, list(package_name=package_name,

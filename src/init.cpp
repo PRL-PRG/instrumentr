@@ -54,9 +54,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"package_add_function", (DL_FUNC) &r_package_add_function, 2},
 
     /* Function */
-    {"function_create", (DL_FUNC) &r_function_create, 2},
+    {"function_create", (DL_FUNC) &r_function_create, 3},
     {"function_get_name", (DL_FUNC) &r_function_get_name, 1},
     {"function_get_parameter_count", (DL_FUNC) &r_function_get_parameter_count, 1},
+    {"function_get_object", (DL_FUNC) &r_function_get_object, 1},
 
     /* Call */
     {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
