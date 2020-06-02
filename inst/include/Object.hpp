@@ -20,6 +20,7 @@ class Object {
 
     void set_data(SEXP r_data) {
         r_data_ = r_data;
+        R_PreserveObject(r_data_);
     }
 
     SEXP get_data() {
@@ -27,6 +28,7 @@ class Object {
     }
 
     void remove_data() {
+        R_ReleaseObject(r_data_);
         r_data_ = nullptr;
     }
 
