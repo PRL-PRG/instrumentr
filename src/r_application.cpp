@@ -13,6 +13,12 @@ SEXP r_application_get_name(SEXP r_application) {
     return mkString(name.c_str());
 }
 
+SEXP r_application_get_directory(SEXP r_application) {
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    std::string directory = application->get_directory();
+    return mkString(directory.c_str());
+}
+
 SEXP r_application_get_environment(SEXP r_application) {
     ApplicationSPtr application = Application::from_sexp(r_application);
     SEXP r_environment = application->get_environment();
