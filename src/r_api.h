@@ -11,6 +11,7 @@ SEXP r_lightr_interception_is_enabled();
 SEXP r_lightr_disable_interception();
 SEXP r_lightr_enable_interception();
 SEXP r_lightr_initialize(SEXP r_application_name,
+                         SEXP r_application_directory,
                          SEXP r_global_environment,
                          SEXP r_package_environment,
                          SEXP r_state_environment);
@@ -59,7 +60,7 @@ SEXP r_context_get_environment(SEXP r_context);
 
 /* Application */
 SEXP r_application_get_name(SEXP r_application);
-SEXP r_application_get_global_environment(SEXP r_application);
+SEXP r_application_get_environment(SEXP r_application);
 SEXP r_application_get_packages(SEXP r_application);
 SEXP r_application_add_package(SEXP r_application, SEXP r_package);
 

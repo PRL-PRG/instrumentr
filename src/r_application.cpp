@@ -13,10 +13,10 @@ SEXP r_application_get_name(SEXP r_application) {
     return mkString(name.c_str());
 }
 
-SEXP r_application_get_global_environment(SEXP r_application) {
+SEXP r_application_get_environment(SEXP r_application) {
     ApplicationSPtr application = Application::from_sexp(r_application);
-    SEXP r_global_environment = application->get_global_environment();
-    return r_global_environment;
+    SEXP r_environment = application->get_environment();
+    return r_environment;
 }
 
 SEXP r_application_get_packages(SEXP r_application) {

@@ -11,11 +11,13 @@ namespace lightr {
 class Application: public Object {
   public:
     Application(const std::string& name,
-                SEXP r_global_environment,
+                const std::string& directory,
+                SEXP r_environment,
                 std::shared_ptr<CallStack> call_stack)
         : Object()
         , name_(name)
-        , r_global_environment_(r_global_environment)
+        , directory_(directory)
+        , r_environment_(r_environment)
         , call_stack_(call_stack) {
     }
 
@@ -23,8 +25,12 @@ class Application: public Object {
         return name_;
     }
 
-    SEXP get_global_environment() {
-        return r_global_environment_;
+    const std::string& get_directory() const {
+        return directory_;
+    }
+
+    SEXP get_environment() {
+        return r_environment_;
     }
 
     const std::shared_ptr<CallStack> get_call_stack() const {
@@ -59,7 +65,8 @@ class Application: public Object {
 
   private:
     std::string name_;
-    SEXP r_global_environment_;
+    std::string directory_;
+    SEXP r_environment_;
     std::shared_ptr<CallStack> call_stack_;
     std::vector<std::shared_ptr<Package>> packages_;
 

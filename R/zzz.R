@@ -3,6 +3,7 @@
 
     .Call(C_lightr_initialize,
           infer_application_name(),
+          getwd(),
           .GlobalEnv,
           parent.env(environment()),
           .state_env)

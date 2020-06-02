@@ -14,7 +14,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"lightr_enable_interception", (DL_FUNC) &r_lightr_enable_interception, 0},
     {"lightr_intercept_package_entry", (DL_FUNC) &r_lightr_intercept_package_entry, 1},
     {"lightr_intercept_package_exit", (DL_FUNC) &r_lightr_intercept_package_exit, 1},
-    {"lightr_initialize", (DL_FUNC) &r_lightr_initialize, 4},
+    {"lightr_initialize", (DL_FUNC) &r_lightr_initialize, 5},
     {"lightr_finalize", (DL_FUNC) &r_lightr_finalize, 0},
     {"lightr_intercept_call_entry", (DL_FUNC) &r_lightr_intercept_call_entry, 5},
     {"lightr_intercept_call_exit", (DL_FUNC) &r_lightr_intercept_call_exit, 4},
@@ -41,7 +41,7 @@ static const R_CallMethodDef CallEntries[] = {
 
     /* Application */
     {"application_get_name", (DL_FUNC) &r_application_get_name, 1},
-    {"application_get_global_environment", (DL_FUNC) &r_application_get_global_environment, 1},
+    {"application_get_environment", (DL_FUNC) &r_application_get_environment, 1},
     {"application_get_packages", (DL_FUNC) &r_application_get_packages, 1},
     {"application_add_package", (DL_FUNC) &r_application_add_package, 2},
 

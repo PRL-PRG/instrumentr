@@ -35,6 +35,7 @@ using lightr::get_application;
 using lightr::get_context;
 
 SEXP r_lightr_initialize(SEXP r_application_name,
+                         SEXP r_application_directory,
                          SEXP r_global_environment,
                          SEXP r_package_environment,
                          SEXP r_state_environment) {
@@ -49,18 +50,22 @@ SEXP r_lightr_initialize(SEXP r_application_name,
     Argument::initialize();
 
     std::string application_name = CHAR(asChar(r_application_name));
+    std::string application_directory = CHAR(asChar(r_application_directory));
     CallStackSPtr call_stack = std::make_shared<CallStack>();
 
-    set_application(std::make_shared<Application>(
-        application_name, r_global_environment, call_stack));
+    set_application(std::make_shared<Application>(application_name,
+                                                  application_directory,
+                                                  r_global_environment,
+                                                  call_stack));
 
     ApplicationSPtr application = get_application();
 
 #ifdef DEBUG
     fprintf(stderr,
-            "┌── Application(name='%s', environment='%p')\n",
+            "┌── Application(name='%s', directory='%s', environment='%p')\n",
             application->get_name().c_str(),
-            (void*) (application->get_global_environment()));
+            application->get_directory().c_str(),
+            (void*) (application->get_environment()));
     ++indentation;
 #endif
 
@@ -73,9 +78,10 @@ SEXP r_lightr_finalize() {
 #ifdef DEBUG
     --indentation;
     fprintf(stderr,
-            "└── Application(name='%s', environment='%p')\n",
+            "└── Application(name='%s', directory='%s', environment='%p')\n",
             application->get_name().c_str(),
-            (void*) (application->get_global_environment()));
+            application->get_directory().c_str(),
+            (void*) (application->get_environment()));
 #endif
 
     SEXP r_application = Application::to_sexp(application);
