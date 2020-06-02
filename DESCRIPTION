@@ -11,5 +11,7 @@ Description: Lightweight Tracer for R
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports:
+    injectr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0

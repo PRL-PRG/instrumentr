@@ -58,11 +58,13 @@ intercept_environment <- function(package_ptr, package_name, package_env, ...) {
     function_ptrs
 }
 
+#' @importFrom injectr sexp_address
 is_intercepted <- function(fun) {
-    id <- injectr:::sexp_address(fun)
+    id <- sexp_address(fun)
     has_intercepted_function(id)
 }
 
+#' @importFrom injectr sexp_address
 intercept_function <- function(package_ptr, package_name, package_env, function_name, function_obj) {
     ## TODO: check type of package_ptr
     stopifnot(is_function(function_obj))
@@ -78,7 +80,7 @@ intercept_function <- function(package_ptr, package_name, package_env, function_
     }
     else {
         function_ptr <- create_function(function_name, length(formals(function_obj)), function_obj)
-        function_id <- injectr:::sexp_address(function_obj)
+        function_id <- sexp_address(function_obj)
         old_function_obj <- modify_function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj)
         add_intercepted_function(function_id, list(package_name=package_name,
                                                    package_env=package_env,
@@ -90,15 +92,16 @@ intercept_function <- function(package_ptr, package_name, package_env, function_
     function_ptr
 }
 
+#' @importFrom injectr inject_code create_duplicate
 modify_function <- function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj) {
 
-    old_function_obj <- injectr:::create_duplicate(function_obj)
+    old_function_obj <- create_duplicate(function_obj)
 
     check_params <- create_argval_interception_code(package_ptr, package_name, package_env, function_ptr, function_name, function_obj)
-    injectr::inject_code(check_params, function_obj)
+    inject_code(check_params, function_obj)
 
     check_retval <- create_retval_interception_code(package_ptr, package_name, package_env, function_ptr, function_name, function_obj)
-    injectr::inject_code(check_retval, function_obj, where="onexit")
+    inject_code(check_retval, function_obj, where="onexit")
 
     old_function_obj
 }
