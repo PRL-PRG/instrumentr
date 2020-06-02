@@ -4,19 +4,20 @@ namespace lightr {
 
 int Object::id_counter_ = -1;
 
-SEXP Object::class_ = nullptr;
-
 int Object::get_next_id_() {
     return ++id_counter_;
 }
 
-void Object::initialize() {
-    class_ = mkString("lightr_object");
-    R_PreserveObject(class_);
+SEXP Object::create_class(const char* subclass) {
+    SEXP classnames = PROTECT(allocVector(STRSXP, 2));
+    SET_STRING_ELT(classnames, 0, mkChar(subclass));
+    SET_STRING_ELT(classnames, 1, mkChar("lightr_object"));
+    UNPROTECT(1);
+    return classnames;
 }
 
-SEXP Object::get_class() {
-    return class_;
+SEXP Object::create_class(const std::string& subclass) {
+    Object::create_class(subclass.c_str());
 }
 
 } // namespace lightr

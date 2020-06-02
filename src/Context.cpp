@@ -5,7 +5,7 @@ namespace lightr {
 SEXP Context::class_ = nullptr;
 
 void Context::initialize() {
-    class_ = mkString("lightr_context");
+    class_ = Object::create_class("lightr_context");
     R_PreserveObject(class_);
 }
 

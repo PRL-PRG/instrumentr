@@ -2,6 +2,7 @@
 #define LIGHTR_OBJECT_HPP
 
 #include <memory>
+#include <string>
 #include <Rinternals.h>
 
 namespace lightr {
@@ -36,9 +37,9 @@ class Object {
         return r_data_ != nullptr;
     }
 
-    static void initialize();
+    static SEXP create_class(const char* subclass);
 
-    static SEXP get_class();
+    static SEXP create_class(const std::string& subclass);
 
     static std::shared_ptr<Object> from_sexp(SEXP r_object);
 
@@ -48,7 +49,6 @@ class Object {
 
     static int get_next_id_();
     static int id_counter_;
-    static SEXP class_;
 };
 
 using ObjectSPtr = std::shared_ptr<Object>;

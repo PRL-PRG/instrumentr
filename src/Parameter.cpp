@@ -5,7 +5,7 @@ namespace lightr {
 SEXP Parameter::class_ = nullptr;
 
 void Parameter::initialize() {
-    class_ = mkString("lightr_parameter");
+    class_ = Object::create_class("lightr_parameter");
     R_PreserveObject(class_);
 }
 

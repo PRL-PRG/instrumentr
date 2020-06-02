@@ -5,7 +5,7 @@ namespace lightr {
 SEXP Package::class_ = nullptr;
 
 void Package::initialize() {
-    class_ = mkString("lightr_package");
+    class_ = Object::create_class("lightr_package");
     R_PreserveObject(class_);
 }
 

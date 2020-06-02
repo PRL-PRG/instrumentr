@@ -5,7 +5,7 @@ namespace lightr {
 SEXP Argument::class_ = nullptr;
 
 void Argument::initialize() {
-    class_ = mkString("lightr_argument");
+    class_ = Object::create_class("lightr_argument");
     R_PreserveObject(class_);
 }
 

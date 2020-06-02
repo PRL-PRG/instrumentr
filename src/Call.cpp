@@ -5,7 +5,7 @@ namespace lightr {
 SEXP Call::class_ = nullptr;
 
 void Call::initialize() {
-    class_ = mkString("lightr_call");
+    class_ = Object::create_class("lightr_call");
     R_PreserveObject(class_);
 }
 
