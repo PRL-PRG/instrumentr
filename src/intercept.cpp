@@ -7,7 +7,7 @@
 #include "../inst/include/Context.hpp"
 #include "utilities.h"
 
-#define DEBUG
+//#define DEBUG
 bool interception_enabled = true;
 
 #ifdef DEBUG
