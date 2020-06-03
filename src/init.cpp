@@ -42,6 +42,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_get_call_exit_callback", (DL_FUNC) &r_context_get_call_exit_callback, 1},
     {"context_set_environment", (DL_FUNC) &r_context_set_environment, 2},
     {"context_get_environment", (DL_FUNC) &r_context_get_environment, 1},
+    {"context_trace_package", (DL_FUNC) &r_context_trace_package, 2},
+    {"context_trace_function", (DL_FUNC) &r_context_trace_function, 3},
+    {"context_get_traced_packages", (DL_FUNC) &r_context_get_traced_packages, 1},
+    {"context_get_traced_functions", (DL_FUNC) &r_context_get_traced_functions, 2},
+    {"context_is_package_traced", (DL_FUNC) &r_context_is_package_traced, 2},
+    {"context_is_function_traced", (DL_FUNC) &r_context_is_function_traced, 3},
 
     /* Application */
     {"application_get_name", (DL_FUNC) &r_application_get_name, 1},

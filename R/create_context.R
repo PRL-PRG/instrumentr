@@ -16,8 +16,6 @@ create_context <- function(initializer = function(application) { },
 
     environment <- sys.frame(sys.nframe())
 
-    print(environment)
-
     .Call(C_context_create_context,
           initializer,
           finalizer,

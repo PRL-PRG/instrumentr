@@ -61,6 +61,16 @@ SEXP r_context_set_call_exit_callback(SEXP r_context,
 SEXP r_context_get_call_exit_callback(SEXP r_context);
 SEXP r_context_set_environment(SEXP r_context, SEXP r_environment);
 SEXP r_context_get_environment(SEXP r_context);
+SEXP r_context_trace_package(SEXP r_context, SEXP r_package_name);
+SEXP r_context_trace_function(SEXP r_context,
+                              SEXP r_package_name,
+                              SEXP r_function_name);
+SEXP r_context_get_traced_packages(SEXP r_context);
+SEXP r_context_get_traced_functions(SEXP r_context, SEXP r_package_name);
+SEXP r_context_is_package_traced(SEXP r_context, SEXP r_package_name);
+SEXP r_context_is_function_traced(SEXP r_context,
+                                  SEXP r_package_name,
+                                  SEXP r_function_name);
 
 /* Application */
 SEXP r_application_get_name(SEXP r_application);
