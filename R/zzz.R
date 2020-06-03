@@ -18,7 +18,7 @@
 
 .onAttach <- function(libname, pkgname) {
 
-    .Call(C_lightr_disable_interception)
+    .Call(C_lightr_disable_tracing)
 
     ##set_severity()
     ##set_autoinject()
@@ -59,7 +59,7 @@
         setHook(packageEvent(package, "attach"), handle_package)
     }
 
-    .Call(C_lightr_enable_interception)
+    .Call(C_lightr_enable_tracing)
 }
 
 .onUnload <- function(libpath) {

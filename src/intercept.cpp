@@ -8,8 +8,6 @@
 #include "utilities.h"
 
 //#define DEBUG
-bool interception_enabled = true;
-
 #ifdef DEBUG
 int indentation = 0;
 #endif
@@ -287,7 +285,7 @@ SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
     if (context && context->has_call_entry_callback()) {
         SEXP call_entry_callback = context->get_call_entry_callback();
 
-        r_lightr_disable_interception();
+        lightr::disable_tracing();
 
         Rf_eval(Rf_lang5(call_entry_callback,
                          Application::to_sexp(get_application()),
@@ -296,7 +294,7 @@ SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
                          Call::to_sexp(call)),
                 context->get_environment());
 
-        r_lightr_enable_interception();
+        lightr::enable_tracing();
     }
 
     return R_NilValue;
@@ -338,7 +336,7 @@ SEXP r_lightr_intercept_call_exit(SEXP r_package,
     if (context && context->has_call_exit_callback()) {
         SEXP call_exit_callback = context->get_call_exit_callback();
 
-        r_lightr_disable_interception();
+        lightr::disable_tracing();
 
         Rf_eval(Rf_lang5(call_exit_callback,
                          Application::to_sexp(get_application()),
@@ -347,22 +345,8 @@ SEXP r_lightr_intercept_call_exit(SEXP r_package,
                          Call::to_sexp(call)),
                 context->get_environment());
 
-        r_lightr_enable_interception();
+        lightr::enable_tracing();
     }
 
-    return R_NilValue;
-}
-
-SEXP r_lightr_interception_is_enabled() {
-    return ScalarLogical(interception_enabled);
-}
-
-SEXP r_lightr_disable_interception() {
-    interception_enabled = false;
-    return R_NilValue;
-}
-
-SEXP r_lightr_enable_interception() {
-    interception_enabled = true;
     return R_NilValue;
 }

@@ -108,19 +108,19 @@ modify_function <- function(package_ptr, package_name, package_env, function_ptr
 
 create_argval_interception_code <- function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj) {
     substitute({
-        if(.Call(INTERCEPTION_IS_ENABLED)) {
-            .Call(DISABLE_INTERCEPTION)
+        if(.Call(IS_TRACING_ENABLED)) {
+            .Call(DISABLE_TRACING)
             .Call(INTERCEPT_CALL_ENTRY,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
                   sys.function(),
                   environment(),
                   sys.frame(sys.nframe()))
-            .Call(ENABLE_INTERCEPTION)
+            .Call(REINSTATE_TRACING)
         }
-    }, list(INTERCEPTION_IS_ENABLED=C_lightr_interception_is_enabled,
-            ENABLE_INTERCEPTION=C_lightr_enable_interception,
-            DISABLE_INTERCEPTION=C_lightr_disable_interception,
+    }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,
+            REINSTATE_TRACING=C_lightr_reinstate_tracing,
+            DISABLE_TRACING=C_lightr_disable_tracing,
             INTERCEPT_CALL_ENTRY=C_lightr_intercept_call_entry,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr))
@@ -129,18 +129,18 @@ create_argval_interception_code <- function(package_ptr, package_name, package_e
 
 create_retval_interception_code <- function(package_ptr, package_name, package_env, function_ptr, function_name, function_obj) {
     substitute({
-        if(.Call(INTERCEPTION_IS_ENABLED)) {
-            .Call(DISABLE_INTERCEPTION)
+        if(.Call(IS_TRACING_ENABLED)) {
+            .Call(DISABLE_TRACING)
             .Call(INTERCEPT_CALL_EXIT,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
                   returnValue(NO_RETVAL_MARKER),
                   !identical(returnValue(NO_RETVAL_MARKER), NO_RETVAL_MARKER))
-            .Call(ENABLE_INTERCEPTION)
+            .Call(REINSTATE_TRACING)
         }
-    }, list(INTERCEPTION_IS_ENABLED=C_lightr_interception_is_enabled,
-            ENABLE_INTERCEPTION=C_lightr_enable_interception,
-            DISABLE_INTERCEPTION=C_lightr_disable_interception,
+    }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,
+            REINSTATE_TRACING=C_lightr_reinstate_tracing,
+            DISABLE_TRACING=C_lightr_disable_tracing,
             INTERCEPT_CALL_EXIT=C_lightr_intercept_call_exit,
             NO_RETVAL_MARKER=.no_retval_marker,
             PACKAGE_PTR=package_ptr,

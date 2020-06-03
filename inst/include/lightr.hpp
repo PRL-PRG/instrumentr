@@ -14,6 +14,14 @@ ContextSPtr get_context();
 
 void set_context(ContextSPtr context);
 
+bool is_tracing_enabled();
+
+void enable_tracing();
+
+void disable_tracing();
+
+void reinstate_tracing();
+
 } // namespace lightr
 
 #endif /* LIGHTR_LIGHTR_HPP */

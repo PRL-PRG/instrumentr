@@ -7,9 +7,10 @@ extern "C" {
 SEXP r_lightr_get_application();
 SEXP r_lightr_get_context();
 SEXP r_lightr_set_context(SEXP r_context);
-SEXP r_lightr_interception_is_enabled();
-SEXP r_lightr_disable_interception();
-SEXP r_lightr_enable_interception();
+SEXP r_lightr_is_tracing_enabled();
+SEXP r_lightr_disable_tracing();
+SEXP r_lightr_enable_tracing();
+SEXP r_lightr_reinstate_tracing();
 SEXP r_lightr_initialize(SEXP r_application_name,
                          SEXP r_application_directory,
                          SEXP r_global_environment,
