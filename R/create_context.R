@@ -23,7 +23,7 @@ create_context <- function(application_entry_callback = NULL,
 
     stopifnot(is_null(package_exit_callback) ||
               is_closure(package_exit_callback) &&
-              length(formals(package_entry_callback)) >= 3)
+              length(formals(package_exit_callback)) >= 3)
 
     stopifnot(is_null(function_entry_callback) ||
               is_closure(function_entry_callback) &&
@@ -31,7 +31,7 @@ create_context <- function(application_entry_callback = NULL,
 
     stopifnot(is_null(function_exit_callback) ||
               is_closure(function_exit_callback) &&
-              length(formals(function_entry_callback)) >= 4)
+              length(formals(function_exit_callback)) >= 4)
 
     stopifnot(is_null(call_entry_callback) ||
               is_closure(call_entry_callback) &&
@@ -39,7 +39,7 @@ create_context <- function(application_entry_callback = NULL,
 
     stopifnot(is_null(call_exit_callback) ||
               is_closure(call_exit_callback) &&
-              length(formals(call_entry_callback)) >= 5)
+              length(formals(call_exit_callback)) >= 5)
 
     environment <- sys.frame(sys.nframe())
 
