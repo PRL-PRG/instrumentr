@@ -7,7 +7,9 @@ create_context <- function(application_entry_callback = NULL,
                            function_entry_callback = NULL,
                            function_exit_callback = NULL,
                            call_entry_callback = NULL,
-                           call_exit_callback = NULL) {
+                           call_exit_callback = NULL,
+                           packages = character(0),
+                           functions = character(0)) {
 
     stopifnot(is_null(application_entry_callback) ||
               is_closure(application_entry_callback) &&
@@ -41,16 +43,26 @@ create_context <- function(application_entry_callback = NULL,
               is_closure(call_exit_callback) &&
               length(formals(call_exit_callback)) >= 5)
 
+    stopifnot(is_vector_character(packages))
+
+    stopifnot(is_vector_character(functions))
+
     environment <- sys.frame(sys.nframe())
 
-    .Call(C_context_create_context,
-          application_entry_callback,
-          application_exit_callback,
-          package_entry_callback,
-          package_exit_callback,
-          function_entry_callback,
-          function_exit_callback,
-          call_entry_callback,
-          call_exit_callback,
-          environment)
+    context <- .Call(C_context_create_context,
+                     application_entry_callback,
+                     application_exit_callback,
+                     package_entry_callback,
+                     package_exit_callback,
+                     function_entry_callback,
+                     function_exit_callback,
+                     call_entry_callback,
+                     call_exit_callback,
+                     environment)
+
+    trace_functions(context, functions)
+
+    trace_packages(context, packages)
+
+    context
 }

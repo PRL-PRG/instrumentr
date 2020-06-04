@@ -209,7 +209,7 @@ SEXP r_context_get_traced_functions(SEXP r_context, SEXP r_package_name) {
     ContextSPtr context = Context::from_sexp(r_context);
     const std::string package_name(CHAR(asChar(r_package_name)));
 
-    const std::unordered_set<std::string> function_names =
+    const std::unordered_set<std::string>& function_names =
         context->get_traced_functions(package_name);
     int function_count = function_names.size();
 
@@ -217,7 +217,8 @@ SEXP r_context_get_traced_functions(SEXP r_context, SEXP r_package_name) {
     int index = 0;
 
     for (const std::string& function_name: function_names) {
-        SET_STRING_ELT(r_function_names, index, mkChar(function_name.c_str()));
+         SET_STRING_ELT(r_function_names, index, mkChar(function_name.c_str()));
+        ++index;
     }
     UNPROTECT(1);
     return r_function_names;

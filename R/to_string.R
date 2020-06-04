@@ -12,6 +12,7 @@ to_string <- function(object, ...) {
     UseMethod("to_string")
 }
 
+#' @export
 #' @importFrom injectr sexp_address
 to_string.default <- function(object, ...) {
     sprintf("<%s: %s>", typeof(object), sexp_address(object))
@@ -20,12 +21,6 @@ to_string.default <- function(object, ...) {
 #' @export
 to_string.NULL <- function(object, ...) {
     "<null>"
-}
-
-#' @export
-#' @importFrom injectr sexp_address
-to_string.function <- function(object, ...) {
-    sprintf("<function: %s>", sexp_address(object))
 }
 
 #' @export
@@ -39,6 +34,11 @@ to_string.lightr_context <- function(object, ...) {
     function_exit_callback <- get_function_exit_callback(object)
     call_entry_callback <- get_call_entry_callback(object)
     call_exit_callback <- get_call_exit_callback(object)
+    packages <- get_traced_packages(object)
+    functions <- character(0)
+    for(package in packages) {
+        functions <- c(functions, get_traced_functions(object, package))
+    }
 
     representation <-
       paste("Context(application_entry_callback = ", to_string(application_entry_callback), ",\n",
@@ -48,7 +48,10 @@ to_string.lightr_context <- function(object, ...) {
             "        function_entry_callback = ", to_string(function_entry_callback), ",\n",
             "        function_exit_callback = ", to_string(function_exit_callback), ",\n",
             "        call_entry_callback = ", to_string(call_entry_callback), ",\n",
-            "        call_exit_callback = ", to_string(call_exit_callback), ")",
+            "        call_exit_callback = ", to_string(call_exit_callback), ",\n",
+            "        packages = ", to_string(packages), ",\n",
+            "        functions = ", to_string(functions), ")",
+            ")",
             sep = "",
             collapse = "")
 
