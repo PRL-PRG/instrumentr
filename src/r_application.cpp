@@ -4,6 +4,8 @@
 
 using lightr::Application;
 using lightr::ApplicationSPtr;
+using lightr::CallStack;
+using lightr::CallStackSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
@@ -49,6 +51,12 @@ SEXP r_application_get_packages(SEXP r_application) {
     UNPROTECT(1);
 
     return result;
+}
+
+SEXP r_application_get_call_stack(SEXP r_application) {
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    CallStackSPtr call_stack = application->get_call_stack();
+    return CallStack::to_sexp(call_stack);
 }
 
 SEXP r_application_add_package(SEXP r_application, SEXP r_package) {

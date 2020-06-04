@@ -79,11 +79,6 @@ to_string.lightr_package <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_call_stack <- function(object, ...) {
-    "call_stack"
-}
-
-#' @export
 to_string.lightr_function <- function(object, ...) {
     representation <- sprintf("Function(name='%s', parameter_count=%d, object=%s)",
                               get_name(object),
@@ -115,6 +110,27 @@ to_string.lightr_parameter <- function(object, ...) {
 to_string.lightr_argument <- function(object, ...) {
     representation <- sprintf("Argument(name='%s')",
                               get_name(object))
+
+    representation
+}
+
+#' @export
+to_string.lightr_call_stack <- function(object, ...) {
+    size <- get_size(object)
+
+    representation <- sprintf("CallStack(%d frames)", size)
+
+    if(size != 0) {
+        frames <- character(0)
+
+        for(index in size:1) {
+            call_object <- get_frame(object, index)
+            frames <- c(frames, to_string(call_object))
+        }
+
+        frame_representation <- paste(paste("├── ", frames, collapse = "\n"), "█", sep = "\n")
+        representation <- paste(representation, frame_representation, sep = "\n")
+    }
 
     representation
 }

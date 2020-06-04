@@ -109,6 +109,7 @@ SEXP r_application_get_name(SEXP r_application);
 SEXP r_application_get_directory(SEXP r_application);
 SEXP r_application_get_environment(SEXP r_application);
 SEXP r_application_get_packages(SEXP r_application);
+SEXP r_application_get_call_stack(SEXP r_application);
 SEXP r_application_add_package(SEXP r_application, SEXP r_package);
 
 /* Package */

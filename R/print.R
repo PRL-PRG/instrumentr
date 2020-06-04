@@ -10,11 +10,6 @@ print.lightr_application <- function(x, ...) {
 }
 
 #' @export
-print.lightr_call_stack <- function(x, ...) {
-    cat(to_string(x), "\n")
-}
-
-#' @export
 print.lightr_package <- function(x, ...) {
     cat(to_string(x), "\n")
 }
@@ -36,5 +31,10 @@ print.lightr_parameter <- function(x, ...) {
 
 #' @export
 print.lightr_argument <- function(x, ...) {
+    cat(to_string(x), "\n")
+}
+
+#' @export
+print.lightr_call_stack <- function(x, ...) {
     cat(to_string(x), "\n")
 }
