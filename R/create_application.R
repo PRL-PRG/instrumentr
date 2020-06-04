@@ -1,9 +1,10 @@
 
 #' @export
-create_application <- function(application_name, application_directory, application_environment) {
-    stopifnot(is_scalar_character(application_name))
-    stopifnot(is_scalar_character(application_directory))
-    stopifnot(is_environment(application_environment))
+create_application <- function(name, directory, code, environment) {
+    stopifnot(is_scalar_character(name))
+    stopifnot(is_scalar_character(directory))
+    stopifnot(is_language(code))
+    stopifnot(is_environment(environment))
 
-    .Call(C_application_create_application, application_name, application_directory, application_environment)
+    .Call(C_application_create_application, name, directory, code, environment)
 }

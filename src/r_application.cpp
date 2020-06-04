@@ -9,14 +9,15 @@ using lightr::CallStackSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
-SEXP r_application_create_application(SEXP r_application_name,
-                                      SEXP r_application_directory,
-                                      SEXP r_application_environment) {
-    std::string application_name = CHAR(asChar(r_application_name));
-    std::string application_directory = CHAR(asChar(r_application_directory));
+SEXP r_application_create_application(SEXP r_name,
+                                      SEXP r_directory,
+                                      SEXP r_code,
+                                      SEXP r_environment) {
+    std::string name = CHAR(asChar(r_name));
+    std::string directory = CHAR(asChar(r_directory));
 
-    ApplicationSPtr application = std::make_shared<Application>(
-        application_name, application_directory, r_application_environment);
+    ApplicationSPtr application =
+        std::make_shared<Application>(name, directory, r_code, r_environment);
 
     return Application::to_sexp(application);
 }
@@ -31,6 +32,12 @@ SEXP r_application_get_directory(SEXP r_application) {
     ApplicationSPtr application = Application::from_sexp(r_application);
     std::string directory = application->get_directory();
     return mkString(directory.c_str());
+}
+
+SEXP r_application_get_code(SEXP r_application) {
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    SEXP r_code = application->get_code();
+    return r_code;
 }
 
 SEXP r_application_get_environment(SEXP r_application) {

@@ -23,13 +23,14 @@ reinstate_tracing <- function() {
 }
 
 #' @export
-trace_code <- function(code, context) {
+trace_code <- function(code, context, environment = .GlobalEnv) {
 
     stopifnot(is_lightr_context(context))
 
     application <- create_application(infer_application_name(),
                                       getwd(),
-                                      .GlobalEnv)
+                                      substitute(code),
+                                      environment)
 
     .Call(C_lightr_trace_application_entry, context, application)
 
@@ -47,7 +48,7 @@ trace_code <- function(code, context) {
 
     enable_tracing()
 
-    code
+    eval(code, environment)
 }
 
 #' @export

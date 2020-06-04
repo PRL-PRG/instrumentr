@@ -12,12 +12,21 @@ class Application: public Object {
   public:
     Application(const std::string& name,
                 const std::string& directory,
+                SEXP r_code,
                 SEXP r_environment)
         : Object()
         , name_(name)
         , directory_(directory)
+        , r_code_(r_code)
         , r_environment_(r_environment)
         , call_stack_(new CallStack()) {
+        R_PreserveObject(r_environment_);
+        R_PreserveObject(r_code_);
+    }
+
+    ~Application() {
+        R_ReleaseObject(r_environment_);
+        R_ReleaseObject(r_code_);
     }
 
     const std::string& get_name() const {
@@ -28,31 +37,37 @@ class Application: public Object {
         return directory_;
     }
 
+    SEXP get_code() {
+        return r_code_;
+    }
+
     SEXP get_environment() {
         return r_environment_;
     }
 
-    const std::shared_ptr<CallStack> get_call_stack() const {
+    const CallStackSPtr get_call_stack() const {
         return call_stack_;
     }
 
-    std::shared_ptr<CallStack> get_call_stack() {
+    CallStackSPtr get_call_stack() {
         return call_stack_;
     }
 
-    std::vector<std::shared_ptr<Package>>& get_packages() {
+    std::vector<PackageSPtr>& get_packages() {
         return packages_;
     }
 
-    const std::vector<std::shared_ptr<Package>>& get_packages() const {
+    const std::vector<PackageSPtr>& get_packages() const {
         return packages_;
     }
 
-    void add_package(std::shared_ptr<Package> package) {
+    void add_package(PackageSPtr package) {
         packages_.push_back(package);
     }
 
     static void initialize();
+
+    static void finalize();
 
     static SEXP get_class();
 
@@ -65,9 +80,10 @@ class Application: public Object {
   private:
     std::string name_;
     std::string directory_;
+    SEXP r_code_;
     SEXP r_environment_;
-    std::shared_ptr<CallStack> call_stack_;
-    std::vector<std::shared_ptr<Package>> packages_;
+    CallStackSPtr call_stack_;
+    std::vector<PackageSPtr> packages_;
 
     static SEXP class_;
 };

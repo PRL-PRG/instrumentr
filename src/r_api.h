@@ -102,11 +102,13 @@ SEXP r_context_is_function_traced(SEXP r_context,
                                   SEXP r_function_name);
 
 /* Application */
-SEXP r_application_create_application(SEXP r_application_name,
-                                      SEXP r_application_directory,
-                                      SEXP r_global_environment);
+SEXP r_application_create_application(SEXP r_name,
+                                      SEXP r_directory,
+                                      SEXP r_code,
+                                      SEXP r_environment);
 SEXP r_application_get_name(SEXP r_application);
 SEXP r_application_get_directory(SEXP r_application);
+SEXP r_application_get_code(SEXP r_application);
 SEXP r_application_get_environment(SEXP r_application);
 SEXP r_application_get_packages(SEXP r_application);
 SEXP r_application_get_call_stack(SEXP r_application);
