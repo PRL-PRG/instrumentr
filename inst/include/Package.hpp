@@ -17,6 +17,11 @@ class Package: public Object {
         , name_(name)
         , directory_(directory)
         , r_environment_(r_environment) {
+        R_PreserveObject(r_environment_);
+    }
+
+    ~Package() {
+        R_ReleaseObject(r_environment_);
     }
 
     const std::string& get_name() const {
@@ -58,8 +63,6 @@ class Package: public Object {
     std::string directory_;
     SEXP r_environment_;
     std::vector<FunctionSPtr> functions_;
-
-    int parameter_count_;
 
     static SEXP class_;
 };
