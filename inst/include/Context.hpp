@@ -12,37 +12,39 @@ class Context: public Object {
   public:
     Context()
         : Object()
-        , r_initializer_(nullptr)
-        , r_finalizer_(nullptr)
-        , r_package_entry_callback_(nullptr)
-        , r_package_exit_callback_(nullptr)
-        , r_call_entry_callback_(nullptr)
-        , r_call_exit_callback_(nullptr)
+        , r_application_entry_callback_(R_NilValue)
+        , r_application_exit_callback_(R_NilValue)
+        , r_package_entry_callback_(R_NilValue)
+        , r_package_exit_callback_(R_NilValue)
+        , r_function_entry_callback_(R_NilValue)
+        , r_function_exit_callback_(R_NilValue)
+        , r_call_entry_callback_(R_NilValue)
+        , r_call_exit_callback_(R_NilValue)
         , r_environment_(R_GlobalEnv) {
     }
 
-    void set_initializer(SEXP r_initializer) {
-        r_initializer_ = r_initializer;
+    void set_application_entry_callback(SEXP r_application_entry_callback) {
+        r_application_entry_callback_ = r_application_entry_callback;
     }
 
-    SEXP get_initializer() {
-        return r_initializer_;
+    SEXP get_application_entry_callback() {
+        return r_application_entry_callback_;
     }
 
-    bool has_initializer() const {
-        return r_initializer_ != nullptr;
+    bool has_application_entry_callback() const {
+        return r_application_entry_callback_ != R_NilValue;
     }
 
-    void set_finalizer(SEXP r_finalizer) {
-        r_finalizer_ = r_finalizer;
+    void set_application_exit_callback(SEXP r_application_exit_callback) {
+        r_application_exit_callback_ = r_application_exit_callback;
     }
 
-    SEXP get_finalizer() {
-        return r_finalizer_;
+    SEXP get_application_exit_callback() {
+        return r_application_exit_callback_;
     }
 
-    bool has_finalizer() const {
-        return r_finalizer_ != nullptr;
+    bool has_application_exit_callback() const {
+        return r_application_exit_callback_ != R_NilValue;
     }
 
     void set_package_entry_callback(SEXP r_package_entry_callback) {
@@ -54,7 +56,7 @@ class Context: public Object {
     }
 
     bool has_package_entry_callback() const {
-        return r_package_entry_callback_ != nullptr;
+        return r_package_entry_callback_ != R_NilValue;
     }
 
     void set_package_exit_callback(SEXP r_package_exit_callback) {
@@ -66,7 +68,31 @@ class Context: public Object {
     }
 
     bool has_package_exit_callback() const {
-        return r_package_exit_callback_ != nullptr;
+        return r_package_exit_callback_ != R_NilValue;
+    }
+
+    void set_function_entry_callback(SEXP r_function_entry_callback) {
+        r_function_entry_callback_ = r_function_entry_callback;
+    }
+
+    SEXP get_function_entry_callback() {
+        return r_function_entry_callback_;
+    }
+
+    bool has_function_entry_callback() const {
+        return r_function_entry_callback_ != R_NilValue;
+    }
+
+    void set_function_exit_callback(SEXP r_function_exit_callback) {
+        r_function_exit_callback_ = r_function_exit_callback;
+    }
+
+    SEXP get_function_exit_callback() {
+        return r_function_exit_callback_;
+    }
+
+    bool has_function_exit_callback() const {
+        return r_function_exit_callback_ != R_NilValue;
     }
 
     void set_call_entry_callback(SEXP r_call_entry_callback) {
@@ -78,7 +104,7 @@ class Context: public Object {
     }
 
     bool has_call_entry_callback() const {
-        return r_call_entry_callback_ != nullptr;
+        return r_call_entry_callback_ != R_NilValue;
     }
 
     void set_call_exit_callback(SEXP r_call_exit_callback) {
@@ -90,7 +116,7 @@ class Context: public Object {
     }
 
     bool has_call_exit_callback() const {
-        return r_call_exit_callback_ != nullptr;
+        return r_call_exit_callback_ != R_NilValue;
     }
 
     void set_environment(SEXP r_environment) {
@@ -165,10 +191,12 @@ class Context: public Object {
     static void destroy_sexp(SEXP r_context);
 
   private:
-    SEXP r_initializer_;
-    SEXP r_finalizer_;
+    SEXP r_application_entry_callback_;
+    SEXP r_application_exit_callback_;
     SEXP r_package_entry_callback_;
     SEXP r_package_exit_callback_;
+    SEXP r_function_entry_callback_;
+    SEXP r_function_exit_callback_;
     SEXP r_call_entry_callback_;
     SEXP r_call_exit_callback_;
     SEXP r_environment_;

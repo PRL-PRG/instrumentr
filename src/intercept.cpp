@@ -29,123 +29,6 @@ using lightr::PackageSPtr;
 using lightr::Parameter;
 using lightr::ParameterSPtr;
 
-using lightr::get_application;
-using lightr::get_context;
-
-SEXP r_lightr_initialize(SEXP r_application_name,
-                         SEXP r_application_directory,
-                         SEXP r_global_environment,
-                         SEXP r_package_environment,
-                         SEXP r_state_environment) {
-    initialize_utilities(r_package_environment, r_state_environment);
-    Context::initialize();
-    Application::initialize();
-    CallStack::initialize();
-    Package::initialize();
-    Function::initialize();
-    Call::initialize();
-    Parameter::initialize();
-    Argument::initialize();
-
-    std::string application_name = CHAR(asChar(r_application_name));
-    std::string application_directory = CHAR(asChar(r_application_directory));
-    CallStackSPtr call_stack = std::make_shared<CallStack>();
-
-    set_application(std::make_shared<Application>(application_name,
-                                                  application_directory,
-                                                  r_global_environment,
-                                                  call_stack));
-
-    ApplicationSPtr application = get_application();
-
-#ifdef DEBUG
-    fprintf(stderr,
-            "┌── Application(name='%s', directory='%s', environment='%p')\n",
-            application->get_name().c_str(),
-            application->get_directory().c_str(),
-            (void*) (application->get_environment()));
-    ++indentation;
-#endif
-
-    return R_NilValue;
-}
-
-SEXP r_lightr_finalize() {
-    ApplicationSPtr application = get_application();
-
-#ifdef DEBUG
-    --indentation;
-    fprintf(stderr,
-            "└── Application(name='%s', directory='%s', environment='%p')\n",
-            application->get_name().c_str(),
-            application->get_directory().c_str(),
-            (void*) (application->get_environment()));
-#endif
-
-    SEXP r_application = Application::to_sexp(application);
-    ContextSPtr context = get_context();
-
-    if (context && context->has_finalizer()) {
-        SEXP finalizer = context->get_finalizer();
-        SEXP env = context->get_environment();
-
-        Rf_eval(Rf_lang2(finalizer, r_application), env);
-    }
-
-    return R_NilValue;
-}
-
-SEXP r_lightr_intercept_package_entry(SEXP r_package) {
-#ifdef DEBUG
-    PackageSPtr package = Package::from_sexp(r_package);
-    fprintf(stderr,
-            "├── Package(name='%s', directory='%s', environment='%p')\n",
-            package->get_name().c_str(),
-            package->get_directory().c_str(),
-            (void*) (package->get_environment()));
-    ++indentation;
-#endif
-
-    ApplicationSPtr application = get_application();
-    SEXP r_application = Application::to_sexp(application);
-    ContextSPtr context = get_context();
-
-    if (context && context->has_package_entry_callback()) {
-        SEXP package_entry_callback = context->get_package_entry_callback();
-        SEXP env = context->get_environment();
-
-        Rf_eval(Rf_lang3(package_entry_callback, r_application, r_package),
-                env);
-    }
-
-    return R_NilValue;
-}
-
-SEXP r_lightr_intercept_package_exit(SEXP r_package) {
-#ifdef DEBUG
-    --indentation;
-    PackageSPtr package = Package::from_sexp(r_package);
-    fprintf(stderr,
-            "├── Package(name='%s', directory='%s', environment='%p')\n",
-            package->get_name().c_str(),
-            package->get_directory().c_str(),
-            (void*) (package->get_environment()));
-#endif
-
-    ApplicationSPtr application = get_application();
-    SEXP r_application = Application::to_sexp(application);
-    ContextSPtr context = get_context();
-
-    if (context && context->has_package_exit_callback()) {
-        SEXP package_exit_callback = context->get_package_exit_callback();
-        SEXP env = context->get_environment();
-
-        Rf_eval(Rf_lang3(package_exit_callback, r_application, r_package), env);
-    }
-
-    return R_NilValue;
-}
-
 ArgumentSPtr
 create_argument(SEXP r_argument_name, SEXP r_argument_value, SEXP r_call_env) {
     /* value (promise optimized away by compiler)  */
@@ -170,12 +53,15 @@ create_argument(SEXP r_argument_name, SEXP r_argument_value, SEXP r_call_env) {
     return argument;
 }
 
-SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
-                                   SEXP r_function_ptr,
-                                   SEXP r_function_obj,
-                                   SEXP r_call_env,
-                                   SEXP r_caller_env) {
-    ApplicationSPtr application = lightr::get_application();
+SEXP r_lightr_trace_call_entry(SEXP r_context,
+                               SEXP r_application,
+                               SEXP r_package_ptr,
+                               SEXP r_function_ptr,
+                               SEXP r_function_obj,
+                               SEXP r_call_env,
+                               SEXP r_caller_env) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    ApplicationSPtr application = Application::from_sexp(r_application);
     PackageSPtr package = Package::from_sexp(r_package_ptr);
     FunctionSPtr function = Function::from_sexp(r_function_ptr);
     CallSPtr call = std::make_shared<Call>(function);
@@ -280,33 +166,36 @@ SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
         }
     }
 
-    ContextSPtr context = get_context();
-
-    if (context && context->has_call_entry_callback()) {
-        SEXP call_entry_callback = context->get_call_entry_callback();
+    if (context->has_call_entry_callback()) {
+        SEXP r_call_entry_callback = context->get_call_entry_callback();
+        SEXP r_environment = context->get_environment();
 
         lightr::disable_tracing();
 
-        Rf_eval(Rf_lang5(call_entry_callback,
-                         Application::to_sexp(get_application()),
+        Rf_eval(Rf_lang6(r_call_entry_callback,
+                         r_context,
+                         r_application,
                          r_package_ptr,
                          r_function_ptr,
                          Call::to_sexp(call)),
-                context->get_environment());
+                r_environment);
 
-        lightr::enable_tracing();
+        lightr::reinstate_tracing();
     }
 
     return R_NilValue;
 }
 
-SEXP r_lightr_intercept_call_exit(SEXP r_package,
-                                  SEXP r_function,
-                                  SEXP result,
-                                  SEXP failed) {
+SEXP r_lightr_trace_call_exit(SEXP r_context,
+                              SEXP r_application,
+                              SEXP r_package,
+                              SEXP r_function,
+                              SEXP result,
+                              SEXP failed) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    ApplicationSPtr application = Application::from_sexp(r_application);
     PackageSPtr package = Package::from_sexp(r_package);
     FunctionSPtr function = Function::from_sexp(r_function);
-    ApplicationSPtr application = lightr::get_application();
     CallStackSPtr call_stack = application->get_call_stack();
     CallSPtr call = call_stack->pop_frame();
 
@@ -331,21 +220,21 @@ SEXP r_lightr_intercept_call_exit(SEXP r_package,
                      call->get_function()->get_name());
     }
 
-    ContextSPtr context = get_context();
-
-    if (context && context->has_call_exit_callback()) {
-        SEXP call_exit_callback = context->get_call_exit_callback();
+    if (context->has_call_exit_callback()) {
+        SEXP r_call_exit_callback = context->get_call_exit_callback();
+        SEXP r_environment = context->get_environment();
 
         lightr::disable_tracing();
 
-        Rf_eval(Rf_lang5(call_exit_callback,
-                         Application::to_sexp(get_application()),
+        Rf_eval(Rf_lang6(r_call_exit_callback,
+                         r_context,
+                         r_application,
                          r_package,
                          r_function,
                          Call::to_sexp(call)),
                 context->get_environment());
 
-        lightr::enable_tracing();
+        lightr::reinstate_tracing();
     }
 
     return R_NilValue;

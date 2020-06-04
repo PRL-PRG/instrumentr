@@ -10,6 +10,8 @@ trace_functions.lightr_context <- function(object, qualified_function_names, ...
 
     for(qualified_function_name in qualified_function_names) {
         name_components <- split_name_components(qualified_function_name)
+        package_name <- name_components[1]
+        function_name <- name_components[2]
         .Call(C_context_trace_function, object, package_name, function_name)
     }
 }

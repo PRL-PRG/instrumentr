@@ -1,45 +1,49 @@
 
+expr_to_string <- function(expr, n) {
+    indentation <- paste(rep(" ", n - 1), sep="", collapse="")
+    expr_strs <- deparse(expr)
+    paste(expr_strs[1],
+          paste(indentation, expr_strs[2:length(expr_strs)], collapse = "\n"),
+          sep = "\n")
+}
+
 #' @export
 to_string <- function(object, ...) {
     UseMethod("to_string")
 }
 
+to_string.default <- function(object, ...) {
+}
+
+to_string.NULL <- function(object, ...) {
+    "<null>"
+}
+
+to_string.function <- function(object, ...) {
+    sprintf("<function: %s>", sexp_address(object))
+}
+
 #' @export
 to_string.lightr_context <- function(object, ...) {
 
-    expr_to_string <- function(expr, n) {
-        indentation <- paste(rep(" ", n - 1), sep="", collapse="")
-        expr_strs <- deparse(expr)
-        paste(expr_strs[1],
-              paste(indentation, expr_strs[2:length(expr_strs)], collapse = "\n"),
-              sep = "\n")
-    }
-
-    initializer <- expr_to_string(get_initializer(object),
-                                  nchar("context(initializer = "))
-
-    finalizer <- expr_to_string(get_finalizer(object),
-                                nchar("        finalizer = "))
-
-    package_entry_callback <- expr_to_string(get_package_entry_callback(object),
-                                             nchar("        package_entry_callback = "))
-
-    package_exit_callback <- expr_to_string(get_package_exit_callback(object),
-                                            nchar("        package_exit_callback = "))
-
-    call_entry_callback <- expr_to_string(get_call_entry_callback(object),
-                                          nchar("        call_entry_callback = "))
-
-    call_exit_callback <- expr_to_string(get_call_exit_callback(object),
-                                         nchar("        call_exit_callback = "))
+    application_entry_callback <- get_application_entry_callback(object)
+    application_exit_callback <- get_application_exit_callback(object)
+    package_entry_callback <- get_package_entry_callback(object)
+    package_exit_callback <- get_package_exit_callback(object)
+    function_entry_callback <- get_function_entry_callback(object)
+    function_exit_callback <- get_function_exit_callback(object)
+    call_entry_callback <- get_call_entry_callback(object)
+    call_exit_callback <- get_call_exit_callback(object)
 
     representation <-
-      paste("context(initializer = ", initializer, ",\n",
-            "        finalizer = ", finalizer, ",\n",
-            "        package_entry_callback = ", package_entry_callback, ",\n",
-            "        package_exit_callback = ", package_exit_callback, ",\n",
-            "        call_entry_callback = ", call_entry_callback, ",\n",
-            "        call_exit_callback = ", call_entry_callback, ")",
+      paste("Context(application_entry_callback = ", to_string(application_entry_callback), ",\n",
+            "        application_exit_callback = ", to_string(application_exit_callback), ",\n",
+            "        package_entry_callback = ", to_string(package_entry_callback), ",\n",
+            "        package_exit_callback = ", to_string(package_exit_callback), ",\n",
+            "        function_entry_callback = ", to_string(function_entry_callback), ",\n",
+            "        function_exit_callback = ", to_string(function_exit_callback), ",\n",
+            "        call_entry_callback = ", to_string(call_entry_callback), ",\n",
+            "        call_exit_callback = ", to_string(call_exit_callback), ")",
             sep = "",
             collapse = "")
 

@@ -22,8 +22,16 @@ is_function <- function(fun) {
     is.function(fun)
 }
 
+is_null <- function(obj) {
+    is.null(obj)
+}
+
 is_closure <- function(obj) {
     typeof(obj) == "closure"
+}
+
+is_lightr_context <- function(obj) {
+    "lightr_context" %in% class(obj)
 }
 
 is_lightr_application <- function(obj) {

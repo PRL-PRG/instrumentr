@@ -6,14 +6,6 @@
 
 namespace lightr {
 
-ApplicationSPtr get_application();
-
-void set_application(ApplicationSPtr application);
-
-ContextSPtr get_context();
-
-void set_context(ContextSPtr context);
-
 bool is_tracing_enabled();
 
 void enable_tracing();
@@ -21,6 +13,8 @@ void enable_tracing();
 void disable_tracing();
 
 void reinstate_tracing();
+
+void initialize_lightr(SEXP r_package_environment, SEXP r_state_environment);
 
 } // namespace lightr
 

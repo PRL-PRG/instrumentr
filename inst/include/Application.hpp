@@ -12,13 +12,12 @@ class Application: public Object {
   public:
     Application(const std::string& name,
                 const std::string& directory,
-                SEXP r_environment,
-                std::shared_ptr<CallStack> call_stack)
+                SEXP r_environment)
         : Object()
         , name_(name)
         , directory_(directory)
         , r_environment_(r_environment)
-        , call_stack_(call_stack) {
+        , call_stack_(new CallStack()) {
     }
 
     const std::string& get_name() const {

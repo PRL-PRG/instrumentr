@@ -4,30 +4,41 @@
 
 extern "C" {
 /* lightr */
-SEXP r_lightr_get_application();
-SEXP r_lightr_get_context();
-SEXP r_lightr_set_context(SEXP r_context);
 SEXP r_lightr_is_tracing_enabled();
 SEXP r_lightr_disable_tracing();
 SEXP r_lightr_enable_tracing();
 SEXP r_lightr_reinstate_tracing();
-SEXP r_lightr_initialize(SEXP r_application_name,
-                         SEXP r_application_directory,
-                         SEXP r_global_environment,
-                         SEXP r_package_environment,
-                         SEXP r_state_environment);
-SEXP r_lightr_finalize();
-SEXP r_lightr_intercept_package_entry(SEXP r_package);
-SEXP r_lightr_intercept_package_exit(SEXP r_package);
-SEXP r_lightr_intercept_call_entry(SEXP r_package_ptr,
-                                   SEXP r_function_ptr,
-                                   SEXP r_function_obj,
-                                   SEXP r_call_env,
-                                   SEXP r_caller_env);
-SEXP r_lightr_intercept_call_exit(SEXP package_name,
-                                  SEXP function_name,
-                                  SEXP result,
-                                  SEXP failed);
+SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
+                                SEXP r_state_environment);
+SEXP r_lightr_trace_application_entry(SEXP r_context, SEXP r_application);
+SEXP r_lightr_trace_application_exit(SEXP r_context, SEXP r_application);
+SEXP r_lightr_trace_package_entry(SEXP r_context,
+                                  SEXP r_application,
+                                  SEXP r_package);
+SEXP r_lightr_trace_package_exit(SEXP r_context,
+                                 SEXP r_application,
+                                 SEXP r_package);
+SEXP r_lightr_trace_function_entry(SEXP r_context,
+                                   SEXP r_application,
+                                   SEXP r_package,
+                                   SEXP r_function);
+SEXP r_lightr_trace_function_exit(SEXP r_context,
+                                  SEXP r_application,
+                                  SEXP r_package,
+                                  SEXP r_function);
+SEXP r_lightr_trace_call_entry(SEXP r_context,
+                               SEXP r_application,
+                               SEXP r_package_ptr,
+                               SEXP r_function_ptr,
+                               SEXP r_function_obj,
+                               SEXP r_call_env,
+                               SEXP r_caller_env);
+SEXP r_lightr_trace_call_exit(SEXP r_context,
+                              SEXP r_application,
+                              SEXP r_package,
+                              SEXP r_function,
+                              SEXP result,
+                              SEXP failed);
 
 /* Object */
 SEXP r_object_get_id(SEXP r_object);
@@ -37,29 +48,48 @@ SEXP r_object_remove_data(SEXP r_object);
 SEXP r_object_has_data(SEXP r_object);
 
 /* Context */
-SEXP r_context_create_context(SEXP r_initializer,
-                              SEXP r_finalizer,
+SEXP r_context_create_context(SEXP r_application_entry_callback,
+                              SEXP r_application_exit_callback,
                               SEXP r_package_entry_callback,
                               SEXP r_package_exit_callback,
+                              SEXP r_function_entry_callback,
+                              SEXP r_function_exit_callback,
                               SEXP r_call_entry_callback,
                               SEXP r_call_exit_callback,
                               SEXP r_environment);
-SEXP r_context_set_initializer(SEXP r_context, SEXP r_initializer);
-SEXP r_context_get_initializer(SEXP r_context);
-SEXP r_context_set_finalizer(SEXP r_context, SEXP r_finalizer);
-SEXP r_context_get_finalizer(SEXP r_context);
+SEXP r_context_set_application_entry_callback(
+    SEXP r_context,
+    SEXP r_application_entry_callback);
+SEXP r_context_get_application_entry_callback(SEXP r_context);
+SEXP r_context_has_application_entry_callback(SEXP r_context);
+SEXP r_context_set_application_exit_callback(SEXP r_context,
+                                             SEXP r_application_exit_callback);
+SEXP r_context_get_application_exit_callback(SEXP r_context);
+SEXP r_context_has_application_exit_callback(SEXP r_context);
 SEXP r_context_set_package_entry_callback(SEXP r_context,
                                           SEXP r_package_entry_callback);
 SEXP r_context_get_package_entry_callback(SEXP r_context);
+SEXP r_context_has_package_entry_callback(SEXP r_context);
 SEXP r_context_set_package_exit_callback(SEXP r_context,
                                          SEXP r_package_exit_callback);
 SEXP r_context_get_package_exit_callback(SEXP r_context);
+SEXP r_context_has_package_exit_callback(SEXP r_context);
+SEXP r_context_set_function_entry_callback(SEXP r_context,
+                                           SEXP r_function_entry_callback);
+SEXP r_context_get_function_entry_callback(SEXP r_context);
+SEXP r_context_has_function_entry_callback(SEXP r_context);
+SEXP r_context_set_function_exit_callback(SEXP r_context,
+                                          SEXP r_function_exit_callback);
+SEXP r_context_get_function_exit_callback(SEXP r_context);
+SEXP r_context_has_function_exit_callback(SEXP r_context);
 SEXP r_context_set_call_entry_callback(SEXP r_context,
                                        SEXP r_call_entry_callback);
 SEXP r_context_get_call_entry_callback(SEXP r_context);
+SEXP r_context_has_call_entry_callback(SEXP r_context);
 SEXP r_context_set_call_exit_callback(SEXP r_context,
                                       SEXP r_call_exit_callback);
 SEXP r_context_get_call_exit_callback(SEXP r_context);
+SEXP r_context_has_call_exit_callback(SEXP r_context);
 SEXP r_context_set_environment(SEXP r_context, SEXP r_environment);
 SEXP r_context_get_environment(SEXP r_context);
 SEXP r_context_trace_package(SEXP r_context, SEXP r_package_name);
@@ -74,6 +104,9 @@ SEXP r_context_is_function_traced(SEXP r_context,
                                   SEXP r_function_name);
 
 /* Application */
+SEXP r_application_create(SEXP r_application_name,
+                          SEXP r_application_directory,
+                          SEXP r_global_environment);
 SEXP r_application_get_name(SEXP r_application);
 SEXP r_application_get_directory(SEXP r_application);
 SEXP r_application_get_environment(SEXP r_application);

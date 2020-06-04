@@ -7,6 +7,18 @@ using lightr::ApplicationSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
+SEXP r_application_create(SEXP r_application_name,
+                          SEXP r_application_directory,
+                          SEXP r_application_environment) {
+    std::string application_name = CHAR(asChar(r_application_name));
+    std::string application_directory = CHAR(asChar(r_application_directory));
+
+    ApplicationSPtr application = std::make_shared<Application>(
+        application_name, application_directory, r_application_environment);
+
+    return Application::to_sexp(application);
+}
+
 SEXP r_application_get_name(SEXP r_application) {
     ApplicationSPtr application = Application::from_sexp(r_application);
     std::string name = application->get_name();
