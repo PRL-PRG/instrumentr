@@ -8,13 +8,16 @@ namespace lightr {
 
 class Function: public Object {
   public:
-    Function(const std::string& name,
-             int parameter_count,
-             SEXP r_object)
+    Function(const std::string& name, int parameter_count, SEXP r_object)
         : Object()
         , name_(name)
         , parameter_count_(parameter_count)
         , r_object_(r_object) {
+        R_PreserveObject(r_object_);
+    }
+
+    ~Function() {
+        R_ReleaseObject(r_object_);
     }
 
     const std::string& get_name() const {
