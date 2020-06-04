@@ -1,0 +1,9 @@
+#' @export
+has_application_entry_callback <- function(object, ...) {
+    UseMethod("has_application_entry_callback")
+}
+
+#' @export
+has_application_entry_callback.lightr_context <- function(object, ...) {
+    .Call(C_context_has_application_entry_callback, object)
+}

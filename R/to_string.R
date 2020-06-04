@@ -12,13 +12,18 @@ to_string <- function(object, ...) {
     UseMethod("to_string")
 }
 
+#' @importFrom injectr sexp_address
 to_string.default <- function(object, ...) {
+    sprintf("<%s: %s>", typeof(object), sexp_address(object))
 }
 
+#' @export
 to_string.NULL <- function(object, ...) {
     "<null>"
 }
 
+#' @export
+#' @importFrom injectr sexp_address
 to_string.function <- function(object, ...) {
     sprintf("<function: %s>", sexp_address(object))
 }
