@@ -121,6 +121,7 @@ class Context: public Object {
 
     void set_environment(SEXP r_environment) {
         r_environment_ = r_environment;
+        R_PreserveObject(r_environment_);
     }
 
     SEXP get_environment() {
