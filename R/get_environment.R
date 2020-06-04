@@ -18,3 +18,8 @@ get_environment.lightr_application <- function(object, ...) {
 get_environment.lightr_package <- function(object, ...) {
     .Call(C_package_get_environment, object)
 }
+
+#' @export
+get_environment.lightr_call <- function(object, ...) {
+    .Call(C_call_get_environment, object)
+}

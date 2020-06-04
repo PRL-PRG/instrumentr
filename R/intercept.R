@@ -123,11 +123,6 @@ is_intercepted <- function(fun) {
     has_intercepted_function(id)
 }
 
-##unlockBinding(function_name, package_env)
-##assign(function_name, function_obj, envir = package_env)
-##lockBinding(function_name, package_env)
-
-
 #' @importFrom injectr sexp_address
 intercept_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
 
@@ -179,9 +174,7 @@ create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr
                   APPLICATION_PTR,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
-                  sys.function(),
-                  environment(),
-                  sys.frame(sys.nframe()))
+                  create_call(FUNCTION_PTR, sys.call(), environment()))
             .Call(REINSTATE_TRACING)
         }
     }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,

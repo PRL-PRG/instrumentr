@@ -17,7 +17,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"lightr_trace_package_exit", (DL_FUNC) &r_lightr_trace_package_exit, 3},
     {"lightr_trace_function_entry", (DL_FUNC) &r_lightr_trace_function_entry, 4},
     {"lightr_trace_function_exit", (DL_FUNC) &r_lightr_trace_function_exit, 4},
-    {"lightr_trace_call_entry", (DL_FUNC) &r_lightr_trace_call_entry, 7},
+    {"lightr_trace_call_entry", (DL_FUNC) &r_lightr_trace_call_entry, 5},
     {"lightr_trace_call_exit", (DL_FUNC) &r_lightr_trace_call_exit, 6},
 
     /* Object */
@@ -85,7 +85,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"function_get_object", (DL_FUNC) &r_function_get_object, 1},
 
     /* Call */
+    {"call_create", (DL_FUNC) &r_call_create, 3},
     {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
+    {"call_get_object", (DL_FUNC) &r_call_get_object, 1},
+    {"call_get_environment", (DL_FUNC) &r_call_get_environment, 1},
     {"call_get_state", (DL_FUNC) &r_call_get_state, 1},
     {"call_get_parameters", (DL_FUNC) &r_call_get_parameters, 1},
 

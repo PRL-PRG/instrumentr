@@ -13,12 +13,28 @@ class Parameter;
 
 class Call: public Object {
   public:
-    Call(std::shared_ptr<Function> function)
-        : Object(), function_(function), state_(CallState::Active) {
+    Call(std::shared_ptr<Function> function,
+         SEXP r_object,
+         SEXP r_environment = R_NilValue)
+        : Object()
+        , function_(function)
+        , r_object_(r_object)
+        , r_environment_(r_environment)
+        , state_(CallState::Active) {
+        R_PreserveObject(r_object_);
+        R_PreserveObject(r_environment_);
     }
 
     const std::shared_ptr<Function> get_function() const {
         return function_;
+    }
+
+    SEXP get_object() {
+        return r_object_;
+    }
+
+    SEXP get_environment() {
+        return r_environment_;
     }
 
     CallState get_state() const {
@@ -41,14 +57,6 @@ class Call: public Object {
         parameters_.push_back(parameter);
     }
 
-    void set_environment(SEXP r_environment_obj) {
-        r_environment_obj_ = r_environment_obj;
-    }
-
-    SEXP get_environment() {
-        return r_environment_obj_;
-    }
-
     static void initialize();
 
     static SEXP get_class();
@@ -61,9 +69,10 @@ class Call: public Object {
 
   private:
     std::shared_ptr<Function> function_;
+    SEXP r_object_;
+    SEXP r_environment_;
     CallState state_;
     std::vector<std::shared_ptr<Parameter>> parameters_;
-    SEXP r_environment_obj_;
 
     static SEXP class_;
 };

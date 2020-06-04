@@ -1,0 +1,10 @@
+
+#' @export
+create_call <- function(func, call, environment) {
+
+    stopifnot(is_lightr_function(func))
+    stopifnot(is_language(call))
+    stopifnot(is_environment(environment))
+
+    .Call(C_call_create, func, call, environment)
+}

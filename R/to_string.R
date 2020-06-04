@@ -59,18 +59,21 @@ to_string.lightr_context <- function(object, ...) {
 }
 
 #' @export
-#' @importFrom injectr sexp_address
 to_string.lightr_application <- function(object, ...) {
-    representation <- sprintf("Application(name='%s', directory='%s', environment=<environment: %s>)",
-                              get_name(object), get_directory(object), sexp_address(get_environment(object)))
+    representation <- sprintf("Application(name='%s', directory='%s', environment=%s)",
+                              get_name(object),
+                              get_directory(object),
+                              to_string(get_environment(object)))
 
     representation
 }
 
 #' @export
 to_string.lightr_package <- function(object, ...) {
-    representation <- sprintf("Package(name='%s', directory='%s', environment=<environment: %s>)",
-                              get_name(object), get_directory(object), sexp_address(get_environment(object)))
+    representation <- sprintf("Package(name='%s', directory='%s', environment=%s)",
+                              get_name(object),
+                              get_directory(object),
+                              to_string(get_environment(object)))
 
     representation
 }
@@ -82,17 +85,21 @@ to_string.lightr_call_stack <- function(object, ...) {
 
 #' @export
 to_string.lightr_function <- function(object, ...) {
-    representation <- sprintf("Function(name='%s', parameter_count=%d, object=<closure: %s>)",
+    representation <- sprintf("Function(name='%s', parameter_count=%d, object=%s)",
                               get_name(object),
                               get_parameter_count(object),
-                              sexp_address(get_object(object)))
+                              to_string(get_object(object)))
 
     representation
 }
 
 #' @export
 to_string.lightr_call <- function(object, ...) {
-    "call"
+    representation <- sprintf("Call(function=%s, environment=%s)",
+                              to_string(get_function(object)),
+                              to_string(get_environment(object)))
+
+    representation
 }
 
 #' @export

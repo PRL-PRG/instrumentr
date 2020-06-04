@@ -3,8 +3,16 @@
 
 using lightr::Application;
 using lightr::ApplicationSPtr;
+using lightr::Call;
+using lightr::CallSPtr;
+using lightr::CallStack;
+using lightr::CallStackSPtr;
 using lightr::Context;
 using lightr::ContextSPtr;
+using lightr::Function;
+using lightr::FunctionSPtr;
+using lightr::Package;
+using lightr::PackageSPtr;
 
 SEXP r_lightr_is_tracing_enabled() {
     return ScalarLogical(lightr::is_tracing_enabled());
@@ -156,6 +164,80 @@ SEXP r_lightr_trace_function_exit(SEXP r_context,
                          r_application,
                          r_package,
                          r_function),
+                r_environment);
+
+        lightr::reinstate_tracing();
+    }
+
+    return R_NilValue;
+}
+
+SEXP r_lightr_trace_call_entry(SEXP r_context,
+                               SEXP r_application,
+                               SEXP r_package,
+                               SEXP r_function,
+                               SEXP r_call) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    CallSPtr call = Call::from_sexp(r_call);
+    CallStackSPtr call_stack = application->get_call_stack();
+
+    call_stack->push_frame(call);
+
+    if (context->has_call_entry_callback()) {
+        SEXP r_call_entry_callback = context->get_call_entry_callback();
+        SEXP r_environment = context->get_environment();
+
+        lightr::disable_tracing();
+
+        Rf_eval(Rf_lang6(r_call_entry_callback,
+                         r_context,
+                         r_application,
+                         r_package,
+                         r_function,
+                         r_call),
+                r_environment);
+
+        lightr::reinstate_tracing();
+    }
+
+    return R_NilValue;
+}
+
+SEXP r_lightr_trace_call_exit(SEXP r_context,
+                              SEXP r_application,
+                              SEXP r_package,
+                              SEXP r_function,
+                              SEXP result,
+                              SEXP failed) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    PackageSPtr package = Package::from_sexp(r_package);
+    FunctionSPtr function = Function::from_sexp(r_function);
+    CallStackSPtr call_stack = application->get_call_stack();
+    CallSPtr call = call_stack->pop_frame();
+
+    if (call->get_function()->get_name() != function->get_name()) {
+        Rf_errorcall(R_NilValue,
+                     "Error: unmatched call entry and exit, " //
+                     "exiting '%s::%s' but expected to exit '%s'.",
+                     package->get_name(),
+                     function->get_name(),
+                     call->get_function()->get_name());
+    }
+
+    if (context->has_call_exit_callback()) {
+        SEXP r_call_exit_callback = context->get_call_exit_callback();
+        SEXP r_environment = context->get_environment();
+
+        lightr::disable_tracing();
+
+        Rf_eval(Rf_lang6(r_call_exit_callback,
+                         r_context,
+                         r_application,
+                         r_package,
+                         r_function,
+                         Call::to_sexp(call)),
                 r_environment);
 
         lightr::reinstate_tracing();

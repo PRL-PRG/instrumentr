@@ -30,6 +30,10 @@ is_closure <- function(obj) {
     typeof(obj) == "closure"
 }
 
+is_language <- function(obj) {
+    typeof(obj) == "language"
+}
+
 is_lightr_context <- function(obj) {
     "lightr_context" %in% class(obj)
 }
