@@ -90,8 +90,8 @@ to_string.lightr_function <- function(object, ...) {
 
 #' @export
 to_string.lightr_call <- function(object, ...) {
-    representation <- sprintf("Call(function=%s, environment=%s)",
-                              to_string(get_function(object)),
+    representation <- sprintf("Call(name='%s', environment=%s)",
+                              get_name(get_function(object)),
                               to_string(get_environment(object)))
 
     representation
