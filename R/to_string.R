@@ -104,7 +104,11 @@ to_string.lightr_call <- function(object, ...) {
 
 #' @export
 to_string.lightr_parameter <- function(object, ...) {
-    "parameter"
+    representation <- sprintf("Parameter(name='%s', position=%d)",
+                              get_name(object),
+                              get_position(object))
+
+    representation
 }
 
 #' @export
