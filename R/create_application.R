@@ -5,5 +5,5 @@ create_application <- function(application_name, application_directory, applicat
     stopifnot(is_scalar_character(application_directory))
     stopifnot(is_environment(application_environment))
 
-    .Call(C_application_create, application_name, application_directory, application_environment)
+    .Call(C_application_create_application, application_name, application_directory, application_environment)
 }

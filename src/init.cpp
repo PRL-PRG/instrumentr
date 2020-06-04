@@ -63,7 +63,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_is_function_traced", (DL_FUNC) &r_context_is_function_traced, 3},
 
     /* Application */
-    {"application_create", (DL_FUNC) &r_application_create, 3},
+    {"application_create_application", (DL_FUNC) &r_application_create_application, 3},
     {"application_get_name", (DL_FUNC) &r_application_get_name, 1},
     {"application_get_directory", (DL_FUNC) &r_application_get_directory, 1},
     {"application_get_environment", (DL_FUNC) &r_application_get_environment, 1},
@@ -72,7 +72,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"application_add_package", (DL_FUNC) &r_application_add_package, 2},
 
     /* Package */
-    {"package_create", (DL_FUNC) &r_package_create, 3},
+    {"package_create_package", (DL_FUNC) &r_package_create_package, 3},
     {"package_get_name", (DL_FUNC) &r_package_get_name, 1},
     {"package_get_directory", (DL_FUNC) &r_package_get_directory, 1},
     {"package_get_environment", (DL_FUNC) &r_package_get_environment, 1},
@@ -80,13 +80,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"package_add_function", (DL_FUNC) &r_package_add_function, 2},
 
     /* Function */
-    {"function_create", (DL_FUNC) &r_function_create, 3},
+    {"function_create_function", (DL_FUNC) &r_function_create_function, 3},
     {"function_get_name", (DL_FUNC) &r_function_get_name, 1},
     {"function_get_parameter_count", (DL_FUNC) &r_function_get_parameter_count, 1},
     {"function_get_object", (DL_FUNC) &r_function_get_object, 1},
 
     /* Call */
-    {"call_create", (DL_FUNC) &r_call_create, 3},
+    {"call_create_call", (DL_FUNC) &r_call_create_call, 3},
     {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
     {"call_get_object", (DL_FUNC) &r_call_get_object, 1},
     {"call_get_environment", (DL_FUNC) &r_call_get_environment, 1},

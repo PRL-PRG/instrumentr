@@ -9,9 +9,9 @@ using lightr::CallStackSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
-SEXP r_application_create(SEXP r_application_name,
-                          SEXP r_application_directory,
-                          SEXP r_application_environment) {
+SEXP r_application_create_application(SEXP r_application_name,
+                                      SEXP r_application_directory,
+                                      SEXP r_application_environment) {
     std::string application_name = CHAR(asChar(r_application_name));
     std::string application_directory = CHAR(asChar(r_application_directory));
 

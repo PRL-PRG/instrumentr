@@ -8,9 +8,9 @@ using lightr::FunctionSPtr;
 using lightr::Package;
 using lightr::PackageSPtr;
 
-SEXP r_package_create(SEXP r_package_name,
-                      SEXP r_package_directory,
-                      SEXP r_package_environment) {
+SEXP r_package_create_package(SEXP r_package_name,
+                              SEXP r_package_directory,
+                              SEXP r_package_environment) {
     std::string package_name = CHAR(asChar(r_package_name));
     std::string package_directory = CHAR(asChar(r_package_directory));
 

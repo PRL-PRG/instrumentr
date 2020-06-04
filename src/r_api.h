@@ -102,9 +102,9 @@ SEXP r_context_is_function_traced(SEXP r_context,
                                   SEXP r_function_name);
 
 /* Application */
-SEXP r_application_create(SEXP r_application_name,
-                          SEXP r_application_directory,
-                          SEXP r_global_environment);
+SEXP r_application_create_application(SEXP r_application_name,
+                                      SEXP r_application_directory,
+                                      SEXP r_global_environment);
 SEXP r_application_get_name(SEXP r_application);
 SEXP r_application_get_directory(SEXP r_application);
 SEXP r_application_get_environment(SEXP r_application);
@@ -113,9 +113,9 @@ SEXP r_application_get_call_stack(SEXP r_application);
 SEXP r_application_add_package(SEXP r_application, SEXP r_package);
 
 /* Package */
-SEXP r_package_create(SEXP r_package_name,
-                      SEXP r_package_directory,
-                      SEXP r_package_environment);
+SEXP r_package_create_package(SEXP r_package_name,
+                              SEXP r_package_directory,
+                              SEXP r_package_environment);
 SEXP r_package_get_name(SEXP r_package);
 SEXP r_package_get_directory(SEXP r_package);
 SEXP r_package_get_environment(SEXP r_package);
@@ -123,15 +123,15 @@ SEXP r_package_get_functions(SEXP r_package);
 SEXP r_package_add_function(SEXP r_package, SEXP r_function);
 
 /* Function */
-SEXP r_function_create(SEXP r_function_name,
-                       SEXP r_parameter_count,
-                       SEXP r_function_object);
+SEXP r_function_create_function(SEXP r_function_name,
+                                SEXP r_parameter_count,
+                                SEXP r_function_object);
 SEXP r_function_get_name(SEXP r_function);
 SEXP r_function_get_parameter_count(SEXP r_function);
 SEXP r_function_get_object(SEXP r_function);
 
 /* Call */
-SEXP r_call_create(SEXP r_function, SEXP r_call_obj, SEXP r_environment);
+SEXP r_call_create_call(SEXP r_function, SEXP r_call_obj, SEXP r_environment);
 SEXP r_call_get_function(SEXP r_call);
 SEXP r_call_get_object(SEXP r_call);
 SEXP r_call_get_environment(SEXP r_call);

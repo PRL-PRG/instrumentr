@@ -38,7 +38,7 @@ ArgumentSPtr create_argument(SEXP r_argument_name,
     return argument;
 }
 
-SEXP r_call_create(SEXP r_function, SEXP r_call_obj, SEXP r_environment) {
+SEXP r_call_create_call(SEXP r_function, SEXP r_call_obj, SEXP r_environment) {
     FunctionSPtr function = Function::from_sexp(r_function);
     CallSPtr call = std::make_shared<Call>(function, r_call_obj, r_environment);
     SEXP r_function_obj = function->get_object();
