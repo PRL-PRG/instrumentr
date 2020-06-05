@@ -1,5 +1,10 @@
 
 #' @export
+print.lightr_invalid_value <- function(x, ...) {
+    cat(to_string(x), "\n")
+}
+
+#' @export
 print.lightr_context <- function(x, ...) {
     cat(to_string(x), "\n")
 }

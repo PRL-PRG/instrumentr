@@ -24,6 +24,11 @@ to_string.NULL <- function(object, ...) {
 }
 
 #' @export
+to_string.lightr_invalid_value <- function(object, ...) {
+    "<invalid value>"
+}
+
+#' @export
 to_string.lightr_context <- function(object, ...) {
 
     application_entry_callback <- get_application_entry_callback(object)

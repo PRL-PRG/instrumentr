@@ -1,6 +1,6 @@
 .intercepted_functions <- new.env(parent=emptyenv())
 
-invalid_value <- structure(new.env(parent=emptyenv()), class = c("lightr_invalid"))
+invalid_value <- structure(new.env(parent=emptyenv()), class = c("lightr_invalid_value"))
 
 .state_env <- new.env(parent=emptyenv())
 
