@@ -1,5 +1,10 @@
-#include "../inst/include/lightr.hpp"
 #include "r_api.h"
+#include "../inst/include/lightr.hpp"
+#include "../inst/include/Context.hpp"
+#include "../inst/include/Application.hpp"
+#include "../inst/include/Package.hpp"
+#include "../inst/include/Function.hpp"
+#include "../inst/include/Call.hpp"
 
 using lightr::Application;
 using lightr::ApplicationSPtr;
@@ -34,8 +39,10 @@ SEXP r_lightr_reinstate_tracing() {
 }
 
 SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
-                                SEXP r_state_environment) {
-    lightr::initialize_lightr(r_package_environment, r_state_environment);
+                                SEXP r_state_environment,
+                                SEXP r_invalid_value) {
+    lightr::initialize_lightr(
+        r_package_environment, r_state_environment, r_invalid_value);
     return R_NilValue;
 }
 
@@ -182,6 +189,8 @@ SEXP r_lightr_trace_call_entry(SEXP r_context,
     CallSPtr call = Call::from_sexp(r_call);
     CallStackSPtr call_stack = application->get_call_stack();
 
+    call->set_active();
+
     call_stack->push_frame(call);
 
     if (context->has_call_entry_callback()) {
@@ -208,8 +217,7 @@ SEXP r_lightr_trace_call_exit(SEXP r_context,
                               SEXP r_application,
                               SEXP r_package,
                               SEXP r_function,
-                              SEXP result,
-                              SEXP failed) {
+                              SEXP r_result) {
     ContextSPtr context = Context::from_sexp(r_context);
     ApplicationSPtr application = Application::from_sexp(r_application);
     PackageSPtr package = Package::from_sexp(r_package);
@@ -225,6 +233,8 @@ SEXP r_lightr_trace_call_exit(SEXP r_context,
                      function->get_name(),
                      call->get_function()->get_name());
     }
+
+    call->set_result(r_result);
 
     if (context->has_call_exit_callback()) {
         SEXP r_call_exit_callback = context->get_call_exit_callback();

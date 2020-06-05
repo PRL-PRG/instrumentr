@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include "CallState.hpp"
 #include "Object.hpp"
 
 namespace lightr {
@@ -14,35 +13,64 @@ class Parameter;
 class Call: public Object {
   public:
     Call(std::shared_ptr<Function> function,
-         SEXP r_object,
-         SEXP r_environment = R_NilValue)
+         SEXP r_expression,
+         SEXP r_environment)
         : Object()
         , function_(function)
-        , r_object_(r_object)
+        , r_expression_(r_expression)
         , r_environment_(r_environment)
-        , state_(CallState::Active) {
-        R_PreserveObject(r_object_);
+        , active_(false)
+        , r_result_(get_invalid_value()) {
+        R_PreserveObject(r_expression_);
         R_PreserveObject(r_environment_);
+    }
+
+    ~Call() {
+        R_ReleaseObject(r_expression_);
+        R_ReleaseObject(r_environment_);
+        if (is_successful()) {
+            R_ReleaseObject(r_result_);
+        }
     }
 
     const std::shared_ptr<Function> get_function() const {
         return function_;
     }
 
-    SEXP get_object() {
-        return r_object_;
+    std::shared_ptr<Function> get_function() {
+        return function_;
+    }
+
+    SEXP get_expression() {
+        return r_expression_;
     }
 
     SEXP get_environment() {
         return r_environment_;
     }
 
-    CallState get_state() const {
-        return state_;
+    bool is_active() const {
+        return active_;
     }
 
-    void set_state(CallState state) {
-        state_ = state;
+    void set_active() {
+        active_ = true;
+    }
+
+    bool is_successful() {
+        return is_valid_value(get_result());
+    }
+
+    void set_result(SEXP r_result) {
+        active_ = false;
+        r_result_ = r_result;
+        if (is_valid_value(r_result_)) {
+            R_PreserveObject(r_result_);
+        }
+    }
+
+    SEXP get_result() {
+        return r_result_;
     }
 
     const std::vector<std::shared_ptr<Parameter>>& get_parameters() const {
@@ -69,9 +97,10 @@ class Call: public Object {
 
   private:
     std::shared_ptr<Function> function_;
-    SEXP r_object_;
+    SEXP r_expression_;
     SEXP r_environment_;
-    CallState state_;
+    bool active_;
+    SEXP r_result_;
     std::vector<std::shared_ptr<Parameter>> parameters_;
 
     static SEXP class_;

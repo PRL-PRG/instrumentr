@@ -10,7 +10,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"lightr_disable_tracing", (DL_FUNC) &r_lightr_disable_tracing, 0},
     {"lightr_enable_tracing", (DL_FUNC) &r_lightr_enable_tracing, 0},
     {"lightr_reinstate_tracing", (DL_FUNC) &r_lightr_reinstate_tracing, 0},
-    {"lightr_initialize_lightr", (DL_FUNC) &r_lightr_initialize_lightr, 2},
+    {"lightr_initialize_lightr", (DL_FUNC) &r_lightr_initialize_lightr, 3},
     {"lightr_trace_application_entry", (DL_FUNC) &r_lightr_trace_application_entry, 2},
     {"lightr_trace_application_exit", (DL_FUNC) &r_lightr_trace_application_exit, 2},
     {"lightr_trace_package_entry", (DL_FUNC) &r_lightr_trace_package_entry, 3},
@@ -18,7 +18,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"lightr_trace_function_entry", (DL_FUNC) &r_lightr_trace_function_entry, 4},
     {"lightr_trace_function_exit", (DL_FUNC) &r_lightr_trace_function_exit, 4},
     {"lightr_trace_call_entry", (DL_FUNC) &r_lightr_trace_call_entry, 5},
-    {"lightr_trace_call_exit", (DL_FUNC) &r_lightr_trace_call_exit, 6},
+    {"lightr_trace_call_exit", (DL_FUNC) &r_lightr_trace_call_exit, 5},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
@@ -84,14 +84,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"function_create_function", (DL_FUNC) &r_function_create_function, 3},
     {"function_get_name", (DL_FUNC) &r_function_get_name, 1},
     {"function_get_parameter_count", (DL_FUNC) &r_function_get_parameter_count, 1},
-    {"function_get_object", (DL_FUNC) &r_function_get_object, 1},
+    {"function_get_definition", (DL_FUNC) &r_function_get_definition, 1},
 
     /* Call */
     {"call_create_call", (DL_FUNC) &r_call_create_call, 3},
     {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
-    {"call_get_object", (DL_FUNC) &r_call_get_object, 1},
+    {"call_get_expression", (DL_FUNC) &r_call_get_expression, 1},
     {"call_get_environment", (DL_FUNC) &r_call_get_environment, 1},
-    {"call_get_state", (DL_FUNC) &r_call_get_state, 1},
+    {"call_is_active", (DL_FUNC) &r_call_is_active, 1},
+    {"call_is_successful", (DL_FUNC) &r_call_is_successful, 1},
+    {"call_get_result", (DL_FUNC) &r_call_get_result, 1},
     {"call_get_parameters", (DL_FUNC) &r_call_get_parameters, 1},
 
     /* Parameter */

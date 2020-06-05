@@ -9,7 +9,8 @@ SEXP r_lightr_disable_tracing();
 SEXP r_lightr_enable_tracing();
 SEXP r_lightr_reinstate_tracing();
 SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
-                                SEXP r_state_environment);
+                                SEXP r_state_environment,
+                                SEXP r_invalid_value);
 SEXP r_lightr_trace_application_entry(SEXP r_context, SEXP r_application);
 SEXP r_lightr_trace_application_exit(SEXP r_context, SEXP r_application);
 SEXP r_lightr_trace_package_entry(SEXP r_context,
@@ -35,8 +36,7 @@ SEXP r_lightr_trace_call_exit(SEXP r_context,
                               SEXP r_application,
                               SEXP r_package,
                               SEXP r_function,
-                              SEXP result,
-                              SEXP failed);
+                              SEXP r_result);
 
 /* Object */
 SEXP r_object_get_id(SEXP r_object);
@@ -130,14 +130,16 @@ SEXP r_function_create_function(SEXP r_function_name,
                                 SEXP r_function_object);
 SEXP r_function_get_name(SEXP r_function);
 SEXP r_function_get_parameter_count(SEXP r_function);
-SEXP r_function_get_object(SEXP r_function);
+SEXP r_function_get_definition(SEXP r_function);
 
 /* Call */
 SEXP r_call_create_call(SEXP r_function, SEXP r_call_obj, SEXP r_environment);
 SEXP r_call_get_function(SEXP r_call);
-SEXP r_call_get_object(SEXP r_call);
+SEXP r_call_get_expression(SEXP r_call);
 SEXP r_call_get_environment(SEXP r_call);
-SEXP r_call_get_state(SEXP r_call);
+SEXP r_call_is_active(SEXP r_call);
+SEXP r_call_is_successful(SEXP r_call);
+SEXP r_call_get_result(SEXP r_call);
 SEXP r_call_get_parameters(SEXP r_call);
 
 /* Parameter */

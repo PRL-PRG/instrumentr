@@ -1,6 +1,6 @@
 .intercepted_functions <- new.env(parent=emptyenv())
 
-.no_retval_marker <- new.env(parent=emptyenv())
+invalid_value <- structure(new.env(parent=emptyenv()), class = c("lightr_invalid"))
 
 .state_env <- new.env(parent=emptyenv())
 

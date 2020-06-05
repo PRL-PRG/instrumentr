@@ -80,18 +80,18 @@ to_string.lightr_package <- function(object, ...) {
 
 #' @export
 to_string.lightr_function <- function(object, ...) {
-    representation <- sprintf("Function(name='%s', parameter_count=%d, object=%s)",
+    representation <- sprintf("Function(name='%s', parameter_count=%d, definition=%s)",
                               get_name(object),
                               get_parameter_count(object),
-                              to_string(get_object(object)))
+                              to_string(get_definition(object)))
 
     representation
 }
 
 #' @export
 to_string.lightr_call <- function(object, ...) {
-    representation <- sprintf("Call(name='%s', environment=%s)",
-                              get_name(get_function(object)),
+    representation <- sprintf("Call(expression=%s, environment=%s)",
+                              paste(deparse(get_expression(object)), collapse = " ", sep = " "),
                               to_string(get_environment(object)))
 
     representation

@@ -130,7 +130,7 @@ intercept_function <- function(context_ptr, application_ptr, package_ptr, functi
     package_env <- get_environment(package_ptr)
 
     function_name <- get_name(function_ptr)
-    function_obj <- get_object(function_ptr)
+    function_obj <- get_definition(function_ptr)
 
     if (is_intercepted(function_obj)) {
         msg <- sprintf("'%s::%s' already intercepted", package_name, function_name)
@@ -152,7 +152,7 @@ intercept_function <- function(context_ptr, application_ptr, package_ptr, functi
 #' @importFrom injectr inject_code create_duplicate
 modify_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
 
-    function_obj <- get_object(function_ptr)
+    function_obj <- get_definition(function_ptr)
 
     old_function_obj <- create_duplicate(function_obj)
 
@@ -197,8 +197,7 @@ create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr
                   APPLICATION_PTR,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
-                  returnValue(NO_RETVAL_MARKER),
-                  !identical(returnValue(NO_RETVAL_MARKER), NO_RETVAL_MARKER))
+                  returnValue(INVALID_VALUE))
             .Call(REINSTATE_TRACING)
         }
     }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,
@@ -208,6 +207,6 @@ create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
-            NO_RETVAL_MARKER=.no_retval_marker,
+            INVALID_VALUE=invalid_value,
             REINSTATE_TRACING=C_lightr_reinstate_tracing))
 }

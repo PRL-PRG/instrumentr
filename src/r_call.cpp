@@ -38,13 +38,16 @@ ArgumentSPtr create_argument(SEXP r_argument_name,
     return argument;
 }
 
-SEXP r_call_create_call(SEXP r_function, SEXP r_call_obj, SEXP r_environment) {
+SEXP r_call_create_call(SEXP r_function,
+                        SEXP r_call_expression,
+                        SEXP r_environment) {
     FunctionSPtr function = Function::from_sexp(r_function);
-    CallSPtr call = std::make_shared<Call>(function, r_call_obj, r_environment);
-    SEXP r_function_obj = function->get_object();
+    CallSPtr call =
+        std::make_shared<Call>(function, r_call_expression, r_environment);
+    SEXP r_definition = function->get_definition();
 
     std::string argument_name;
-    SEXP r_parameters = FORMALS(r_function_obj);
+    SEXP r_parameters = FORMALS(r_definition);
 
     for (int parameter_position = 0; r_parameters != R_NilValue;
          ++parameter_position, r_parameters = CDR(r_parameters)) {
@@ -140,9 +143,9 @@ SEXP r_call_get_function(SEXP r_call) {
     return Function::to_sexp(call->get_function());
 }
 
-SEXP r_call_get_object(SEXP r_call) {
+SEXP r_call_get_expression(SEXP r_call) {
     CallSPtr call = Call::from_sexp(r_call);
-    return call->get_object();
+    return call->get_expression();
 }
 
 SEXP r_call_get_environment(SEXP r_call) {
@@ -150,9 +153,19 @@ SEXP r_call_get_environment(SEXP r_call) {
     return call->get_environment();
 }
 
-SEXP r_call_get_state(SEXP r_call) {
+SEXP r_call_is_active(SEXP r_call) {
     CallSPtr call = Call::from_sexp(r_call);
-    return mkString(call_state_to_string(call->get_state()).c_str());
+    return ScalarLogical(call->is_active());
+}
+
+SEXP r_call_is_successful(SEXP r_call) {
+    CallSPtr call = Call::from_sexp(r_call);
+    return ScalarLogical(call->is_successful());
+}
+
+SEXP r_call_get_result(SEXP r_call) {
+    CallSPtr call = Call::from_sexp(r_call);
+    return call->get_result();
 }
 
 SEXP r_call_get_parameters(SEXP r_call) {

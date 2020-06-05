@@ -10,7 +10,9 @@ SEXP TemporarySymbolString = NULL;
 SEXP StateEnvironment = NULL;
 SEXP PackageEnvironment = NULL;
 
-void initialize_utilities(SEXP r_package_environment, SEXP r_state_environment) {
+void initialize_utilities(SEXP r_package_environment,
+                          SEXP r_state_environment) {
+
     DelayedAssignSymbol = Rf_install("delayedAssign");
 
     LightrSymbol = Rf_install("lightr");

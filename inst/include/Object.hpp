@@ -3,16 +3,19 @@
 
 #include <memory>
 #include <string>
-#include <Rinternals.h>
+#include "lightr.hpp"
 
 namespace lightr {
 
 class Object {
   public:
-    Object(): id_(Object::get_next_id_()), r_data_(nullptr) {
+    Object(): id_(Object::get_next_id_()), r_data_(get_invalid_value()) {
     }
 
     virtual ~Object() {
+        if (has_data()) {
+            R_ReleaseObject(r_data_);
+        }
     }
 
     int get_id() const {
@@ -30,11 +33,11 @@ class Object {
 
     void remove_data() {
         R_ReleaseObject(r_data_);
-        r_data_ = nullptr;
+        r_data_ = get_invalid_value();
     }
 
     bool has_data() const {
-        return r_data_ != nullptr;
+        return is_valid_value(r_data_);
     }
 
     static SEXP create_class(const char* subclass);
