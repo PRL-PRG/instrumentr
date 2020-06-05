@@ -7,6 +7,10 @@ expr_to_string <- function(expr, n) {
           sep = "\n")
 }
 
+logical_to_string <- function(object) {
+    c("FALSE", "TRUE")[object[1] + 1]
+}
+
 #' @export
 to_string <- function(object, ...) {
     UseMethod("to_string")
@@ -109,16 +113,18 @@ to_string.lightr_call <- function(object, ...) {
 
 #' @export
 to_string.lightr_parameter <- function(object, ...) {
-    representation <- sprintf("Parameter(name='%s', position=%d)",
+    representation <- sprintf("Parameter(name='%s', position=%d, missing=%s, vararg=%s)",
                               get_name(object),
-                              get_position(object))
+                              get_position(object),
+                              logical_to_string(is_missing(object)),
+                              logical_to_string(is_vararg(object)))
 
     representation
 }
 
 #' @export
 to_string.lightr_argument <- function(object, ...) {
-    representation <- sprintf("Argument(name='%s', expression=%s, result=%s, is_evaluated=%s)",
+    representation <- sprintf("Argument(name='%s', expression=%s, result=%s, evaluated=%s)",
                               get_name(object),
                               to_string(get_expression(object)),
                               to_string(get_result(object)),
@@ -136,8 +142,8 @@ to_string.lightr_call_stack <- function(object, ...) {
     if(size != 0) {
         frames <- character(0)
 
-        for(index in size:1) {
-            call_object <- get_frame(object, index)
+        for(index in 1:size) {
+            call_object <- peek_frame(object, index)
             frames <- c(frames, to_string(call_object))
         }
 
