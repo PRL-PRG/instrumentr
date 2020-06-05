@@ -17,7 +17,7 @@ SEXP Object::create_class(const char* subclass) {
 }
 
 SEXP Object::create_class(const std::string& subclass) {
-    Object::create_class(subclass.c_str());
+    return Object::create_class(subclass.c_str());
 }
 
 } // namespace lightr
