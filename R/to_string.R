@@ -118,9 +118,11 @@ to_string.lightr_parameter <- function(object, ...) {
 
 #' @export
 to_string.lightr_argument <- function(object, ...) {
-    representation <- sprintf("Argument(name='%s', expression=%s)",
+    representation <- sprintf("Argument(name='%s', expression=%s, result=%s, is_evaluated=%s)",
                               get_name(object),
-                              to_string(get_expression(object)))
+                              to_string(get_expression(object)),
+                              to_string(get_result(object)),
+                              c("FALSE", "TRUE")[is_evaluated(object) + 1])
 
     representation
 }
