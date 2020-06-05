@@ -16,14 +16,10 @@ class CallStack: public Object {
         return stack_.size();
     }
 
-    CallSPtr get_frame(int index) const {
-        /* TODO: error if index > size  */
-        return stack_.at(index);
-    }
-
     CallSPtr peek_frame(int index) const {
-        /* TODO: error if index > size  */
-        return stack_.at(index);
+        /* TODO: error if index >= size  */
+        int reverse_index = get_size() - 1 - index;
+        return stack_.at(reverse_index);
     }
 
     void push_frame(CallSPtr call) {

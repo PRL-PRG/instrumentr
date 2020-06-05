@@ -157,6 +157,5 @@ SEXP r_argument_get_result(SEXP r_argument);
 
 /* CallStack */
 SEXP r_call_stack_get_size(SEXP r_stack);
-SEXP r_call_stack_get_frame(SEXP r_stack, SEXP r_index);
 SEXP r_call_stack_peek_frame(SEXP r_stack, SEXP r_index);
 }

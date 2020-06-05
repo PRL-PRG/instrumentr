@@ -111,7 +111,6 @@ static const R_CallMethodDef CallEntries[] = {
 
     /* CallStack */
     {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},
-    {"call_stack_get_frame", (DL_FUNC) &r_call_stack_get_frame, 2},
     {"call_stack_peek_frame", (DL_FUNC) &r_call_stack_peek_frame, 2},
 
     {NULL, NULL, 0}};
