@@ -4,7 +4,10 @@ get_installed_package_names <- function(exclude = "lightr") {
 
     stopifnot(is_vector_character(exclude))
 
-    installed_package_names <- get("installed.packages", envir=getNamespace("utils"))()[, 1]
+    ## NOTE: directly calling installed.packages results in
+    ## warnings on R CMD check
+    local_installed_packages <- get("installed.packages", envir=getNamespace("utils"))
+    installed_package_names <- local_installed_packages()[, 1]
     setdiff(installed_package_names, exclude)
 }
 

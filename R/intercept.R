@@ -1,5 +1,9 @@
 remove_interception <- function() {
 
+    ## NOTE: directly calling unlockBinding results in
+    ## warnings on R CMD check
+    local_unlock_binding <- get("unlockBinding", envir=baseenv())
+
     unintercept_function <- function(intercepted_function) {
         package_name <- intercepted_function$package_name
         package_env <- intercepted_function$package_env
@@ -7,7 +11,7 @@ remove_interception <- function() {
         new_function_obj <- intercepted_function$function_obj
         old_function_obj <- intercepted_function$old_function_obj
 
-        unlockBinding(function_name, package_env)
+        local_unlock_binding(function_name, package_env)
         assign(function_name, old_function_obj, envir = package_env)
         lockBinding(function_name, package_env)
     }
