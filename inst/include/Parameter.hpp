@@ -14,20 +14,6 @@ class Parameter: public Object {
         : Object(), name_(name), position_(position), arguments_() {
     }
 
-    Parameter(const std::string& name,
-              int position,
-              std::shared_ptr<Argument> argument)
-        : Parameter(name, position) {
-        arguments_.push_back(argument);
-    }
-
-    Parameter(const std::string& name,
-              int position,
-              std::vector<std::shared_ptr<Argument>> arguments)
-        : Parameter(name, position) {
-        arguments_ = arguments;
-    }
-
     const std::string& get_name() const {
         return name_;
     }
@@ -37,6 +23,10 @@ class Parameter: public Object {
     }
 
     const std::vector<ArgumentSPtr>& get_arguments() const {
+        return arguments_;
+    }
+
+    std::vector<ArgumentSPtr>& get_arguments() {
         return arguments_;
     }
 
