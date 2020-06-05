@@ -8,8 +8,13 @@ namespace lightr {
 
 class Argument: public Object {
   public:
-    Argument(const std::string& name)
-        : Object(), name_(name), evaluated_(false) {
+    Argument(const std::string& name, SEXP r_argument)
+        : Object(), name_(name), r_argument_(r_argument) {
+        R_PreserveObject(r_argument_);
+    }
+
+    ~Argument() {
+        R_ReleaseObject(r_argument_);
     }
 
     const std::string& get_name() const {
@@ -17,19 +22,28 @@ class Argument: public Object {
     }
 
     bool is_evaluated() const {
-        return evaluated_;
+        return PRVALUE(r_argument_) != R_UnboundValue;
     }
 
-    void set_evaluated() {
-        evaluated_ = true;
+    SEXP get_argument() {
+        return r_argument_;
     }
 
-    void set_value(SEXP r_argument_obj) {
-        r_argument_obj_ = r_argument_obj;
+    SEXP get_expression() {
+        return PREXPR(r_argument_);
     }
 
-    SEXP get_value() {
-        return r_argument_obj_;
+    SEXP get_result() {
+        SEXP promise_result = PRVALUE(r_argument_);
+
+        /* promise is not evaluated  */
+        if (promise_result == R_UnboundValue) {
+            return get_invalid_value();
+        }
+        /* promise is evaluated  */
+        else {
+            return promise_result;
+        }
     }
 
     static void initialize();
@@ -44,8 +58,7 @@ class Argument: public Object {
 
   private:
     std::string name_;
-    bool evaluated_;
-    SEXP r_argument_obj_;
+    SEXP r_argument_;
 
     static SEXP class_;
 };

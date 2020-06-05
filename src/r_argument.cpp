@@ -13,3 +13,13 @@ SEXP r_argument_is_evaluated(SEXP r_argument) {
     ArgumentSPtr argument = Argument::from_sexp(r_argument);
     return ScalarLogical(argument->is_evaluated());
 }
+
+SEXP r_argument_get_expression(SEXP r_argument) {
+    ArgumentSPtr argument = Argument::from_sexp(r_argument);
+    return argument->get_expression();
+}
+
+SEXP r_argument_get_result(SEXP r_argument) {
+    ArgumentSPtr argument = Argument::from_sexp(r_argument);
+    return argument->get_result();
+}

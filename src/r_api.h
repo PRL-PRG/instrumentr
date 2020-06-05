@@ -152,6 +152,8 @@ SEXP r_parameter_get_arguments(SEXP r_parameter);
 /* Argument */
 SEXP r_argument_get_name(SEXP r_argument);
 SEXP r_argument_is_evaluated(SEXP r_argument);
+SEXP r_argument_get_expression(SEXP r_argument);
+SEXP r_argument_get_result(SEXP r_argument);
 
 /* CallStack */
 SEXP r_call_stack_get_size(SEXP r_stack);

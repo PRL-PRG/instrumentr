@@ -29,6 +29,11 @@ to_string.lightr_invalid_value <- function(object, ...) {
 }
 
 #' @export
+to_string.call <- function(object, ...) {
+    paste(deparse(object), collapse = " ", sep = " ")
+}
+
+#' @export
 to_string.lightr_context <- function(object, ...) {
 
     application_entry_callback <- get_application_entry_callback(object)
@@ -96,7 +101,7 @@ to_string.lightr_function <- function(object, ...) {
 #' @export
 to_string.lightr_call <- function(object, ...) {
     representation <- sprintf("Call(expression=%s, environment=%s)",
-                              paste(deparse(get_expression(object)), collapse = " ", sep = " "),
+                              to_string(get_expression(object)),
                               to_string(get_environment(object)))
 
     representation
@@ -113,8 +118,9 @@ to_string.lightr_parameter <- function(object, ...) {
 
 #' @export
 to_string.lightr_argument <- function(object, ...) {
-    representation <- sprintf("Argument(name='%s')",
-                              get_name(object))
+    representation <- sprintf("Argument(name='%s', expression=%s)",
+                              get_name(object),
+                              to_string(get_expression(object)))
 
     representation
 }

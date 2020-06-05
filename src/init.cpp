@@ -106,6 +106,8 @@ static const R_CallMethodDef CallEntries[] = {
     /* Argument */
     {"argument_get_name", (DL_FUNC) &r_argument_get_name, 1},
     {"argument_is_evaluated", (DL_FUNC) &r_argument_is_evaluated, 1},
+    {"argument_get_expression", (DL_FUNC) &r_argument_get_expression, 1},
+    {"argument_get_result", (DL_FUNC) &r_argument_get_result, 1},
 
     /* CallStack */
     {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},

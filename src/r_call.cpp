@@ -30,10 +30,7 @@ ArgumentSPtr create_argument(SEXP r_argument_name,
         UNPROTECT(1);
     }
 
-    ArgumentSPtr argument =
-        std::make_shared<Argument>(CHAR(PRINTNAME(r_argument_name)));
-
-    argument->set_value(r_argument_value);
+    ArgumentSPtr argument = std::make_shared<Argument>("", r_argument_value);
 
     return argument;
 }
@@ -111,10 +108,8 @@ SEXP r_call_create_call(SEXP r_function,
                 dots = PROTECT(CONS(r_dot_argument_value, dots));
                 SET_TAG(dots, r_dot_argument_tag);
 
-                ArgumentSPtr argument =
-                    std::make_shared<Argument>(argument_name);
-
-                argument->set_value(r_dot_argument_value);
+                ArgumentSPtr argument = std::make_shared<Argument>(
+                    argument_name, r_dot_argument_value);
 
                 parameter->add_argument(argument);
             }
