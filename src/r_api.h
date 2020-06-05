@@ -8,6 +8,7 @@ SEXP r_lightr_is_tracing_enabled();
 SEXP r_lightr_disable_tracing();
 SEXP r_lightr_enable_tracing();
 SEXP r_lightr_reinstate_tracing();
+SEXP r_lightr_eval(SEXP r_code, SEXP r_environment);
 SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
                                 SEXP r_state_environment,
                                 SEXP r_invalid_value);

@@ -48,7 +48,7 @@ trace_code <- function(code, context, environment = .GlobalEnv) {
 
     enable_tracing()
 
-    eval(code, environment)
+    .Call(C_lightr_eval, code, environment)
 }
 
 #' @export

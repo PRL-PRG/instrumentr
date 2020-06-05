@@ -38,6 +38,10 @@ SEXP r_lightr_reinstate_tracing() {
     return R_NilValue;
 }
 
+SEXP r_lightr_eval(SEXP r_code, SEXP r_environment) {
+    return Rf_eval(r_code, r_environment);
+}
+
 SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
                                 SEXP r_state_environment,
                                 SEXP r_invalid_value) {
