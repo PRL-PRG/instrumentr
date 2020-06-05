@@ -12,14 +12,14 @@ class Context: public Object {
   public:
     Context()
         : Object()
-        , r_application_entry_callback_(R_NilValue)
-        , r_application_exit_callback_(R_NilValue)
-        , r_package_entry_callback_(R_NilValue)
-        , r_package_exit_callback_(R_NilValue)
-        , r_function_entry_callback_(R_NilValue)
-        , r_function_exit_callback_(R_NilValue)
-        , r_call_entry_callback_(R_NilValue)
-        , r_call_exit_callback_(R_NilValue)
+        , r_application_entry_callback_(get_invalid_value())
+        , r_application_exit_callback_(get_invalid_value())
+        , r_package_entry_callback_(get_invalid_value())
+        , r_package_exit_callback_(get_invalid_value())
+        , r_function_entry_callback_(get_invalid_value())
+        , r_function_exit_callback_(get_invalid_value())
+        , r_call_entry_callback_(get_invalid_value())
+        , r_call_exit_callback_(get_invalid_value())
         , r_environment_(R_GlobalEnv) {
     }
 
@@ -32,7 +32,7 @@ class Context: public Object {
     }
 
     bool has_application_entry_callback() const {
-        return r_application_entry_callback_ != R_NilValue;
+        return is_valid_value(r_application_entry_callback_);
     }
 
     void set_application_exit_callback(SEXP r_application_exit_callback) {
@@ -44,7 +44,7 @@ class Context: public Object {
     }
 
     bool has_application_exit_callback() const {
-        return r_application_exit_callback_ != R_NilValue;
+        return is_valid_value(r_application_exit_callback_);
     }
 
     void set_package_entry_callback(SEXP r_package_entry_callback) {
@@ -56,7 +56,7 @@ class Context: public Object {
     }
 
     bool has_package_entry_callback() const {
-        return r_package_entry_callback_ != R_NilValue;
+        return is_valid_value(r_package_entry_callback_);
     }
 
     void set_package_exit_callback(SEXP r_package_exit_callback) {
@@ -68,7 +68,7 @@ class Context: public Object {
     }
 
     bool has_package_exit_callback() const {
-        return r_package_exit_callback_ != R_NilValue;
+        return is_valid_value(r_package_exit_callback_);
     }
 
     void set_function_entry_callback(SEXP r_function_entry_callback) {
@@ -80,7 +80,7 @@ class Context: public Object {
     }
 
     bool has_function_entry_callback() const {
-        return r_function_entry_callback_ != R_NilValue;
+        return is_valid_value(r_function_entry_callback_);
     }
 
     void set_function_exit_callback(SEXP r_function_exit_callback) {
@@ -92,7 +92,7 @@ class Context: public Object {
     }
 
     bool has_function_exit_callback() const {
-        return r_function_exit_callback_ != R_NilValue;
+        return is_valid_value(r_function_exit_callback_);
     }
 
     void set_call_entry_callback(SEXP r_call_entry_callback) {
@@ -104,7 +104,7 @@ class Context: public Object {
     }
 
     bool has_call_entry_callback() const {
-        return r_call_entry_callback_ != R_NilValue;
+        return is_valid_value(r_call_entry_callback_);
     }
 
     void set_call_exit_callback(SEXP r_call_exit_callback) {
@@ -116,7 +116,7 @@ class Context: public Object {
     }
 
     bool has_call_exit_callback() const {
-        return r_call_exit_callback_ != R_NilValue;
+        return is_valid_value(r_call_exit_callback_);
     }
 
     void set_environment(SEXP r_environment) {
