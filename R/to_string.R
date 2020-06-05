@@ -147,7 +147,15 @@ to_string.lightr_call_stack <- function(object, ...) {
             frames <- c(frames, to_string(call_object))
         }
 
-        frame_representation <- paste(paste("├── ", frames, collapse = "\n"), "█", sep = "\n")
+        ## NOTE: "├── " is written using unicode sequence
+        ## to avoid R CMD check warnings
+        prefix <- "\u251C\u2500\u2500 "
+
+        ## NOTE: "█" is written using unicode sequence
+        ## to avoid R CMD check warnings
+        suffix <- "\u2588"
+
+        frame_representation <- paste(paste(prefix, frames, collapse = "\n"), suffix, sep = "\n")
         representation <- paste(representation, frame_representation, sep = "\n")
     }
 
