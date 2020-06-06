@@ -43,7 +43,7 @@ trace_code <- function(code, context, environment = .GlobalEnv) {
 
         value <- .Call(C_lightr_trace_code, code, environment)
 
-        remove_interception()
+        remove_interception(context, application)
 
         .Call(C_lightr_trace_application_exit, context, application)
 

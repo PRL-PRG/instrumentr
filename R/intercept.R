@@ -1,27 +1,3 @@
-remove_interception <- function() {
-
-    ## NOTE: directly calling unlockBinding results in
-    ## warnings on R CMD check
-    local_unlock_binding <- get("unlockBinding", envir=baseenv())
-
-    unintercept_function <- function(intercepted_function) {
-        package_name <- intercepted_function$package_name
-        package_env <- intercepted_function$package_env
-        function_name <- intercepted_function$function_name
-        new_function_obj <- intercepted_function$function_obj
-        old_function_obj <- intercepted_function$old_function_obj
-
-        local_unlock_binding(function_name, package_env)
-        assign(function_name, old_function_obj, envir = package_env)
-        lockBinding(function_name, package_env)
-    }
-
-    for (function_id in get_intercepted_function_ids()) {
-        unintercept_function(get_intercepted_function(function_id))
-        remove_intercepted_function(function_id)
-    }
-}
-
 insert_interception <- function(context_ptr, application_ptr) {
 
     handle_package <- function(package_name, ...) {
@@ -31,13 +7,9 @@ insert_interception <- function(context_ptr, application_ptr) {
 
         package_ptr <- create_package(package_name, package_dir, package_env)
 
-        add_package(application_ptr, package_ptr)
-
         .Call(C_lightr_trace_package_entry, context_ptr, application_ptr, package_ptr)
 
         package <- intercept_package(context_ptr, application_ptr, package_ptr)
-
-        .Call(C_lightr_trace_package_exit, context_ptr, application_ptr, package_ptr)
     }
 
     traced_packages <- get_traced_packages(context_ptr)
@@ -82,26 +54,19 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
         function_ptr <- create_function(function_name, length(formals(function_obj)), function_obj)
 
-        add_function(package_ptr, function_ptr)
-
         .Call(C_lightr_trace_function_entry, context_ptr, application_ptr, package_ptr, function_ptr)
 
         package <- intercept_function(context_ptr, application_ptr, package_ptr, function_ptr)
-
-        .Call(C_lightr_trace_function_exit, context_ptr, application_ptr, package_ptr, function_ptr)
 
     }
 
     message("Intercepting ", length(get_functions(package_ptr)), " functions from ", package_name)
 }
 
-#' @importFrom injectr sexp_address
-is_intercepted <- function(fun) {
-    id <- sexp_address(fun)
-    has_intercepted_function(id)
+is_intercepted <- function(package_name, function_name) {
+    has_intercepted_function(package_name, function_name)
 }
 
-#' @importFrom injectr sexp_address
 intercept_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
 
     package_name <- get_name(package_ptr)
@@ -110,20 +75,20 @@ intercept_function <- function(context_ptr, application_ptr, package_ptr, functi
     function_name <- get_name(function_ptr)
     function_obj <- get_definition(function_ptr)
 
-    if (is_intercepted(function_obj)) {
+    if (is_intercepted(package_name, function_name)) {
         msg <- sprintf("'%s::%s' already intercepted", package_name, function_name)
         message(msg)
     }
     else {
-        function_id <- sexp_address(function_obj)
-
         old_function_obj <- modify_function(context_ptr, application_ptr, package_ptr, function_ptr)
 
-        add_intercepted_function(function_id, list(package_name=package_name,
-                                                   package_env=package_env,
-                                                   function_name=function_name,
-                                                   new_function_obj=function_obj,
-                                                   old_function_obj=old_function_obj))
+        add_intercepted_function(package_name,
+                                 function_name,
+                                 list(package_name=package_name,
+                                      package_env=package_env,
+                                      function_name=function_name,
+                                      new_function_obj=function_obj,
+                                      old_function_obj=old_function_obj))
     }
 }
 

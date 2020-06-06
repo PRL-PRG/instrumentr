@@ -65,6 +65,15 @@ class Application: public Object {
         packages_.push_back(package);
     }
 
+    void remove_package(PackageSPtr package) {
+        for (int index = packages_.size() - 1; index >= 0; --index) {
+            if (packages_[index] == package) {
+                packages_.erase(packages_.begin() + index);
+                break;
+            }
+        }
+    }
+
     static void initialize();
 
     static void finalize();

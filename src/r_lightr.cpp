@@ -127,6 +127,11 @@ SEXP r_lightr_trace_package_entry(SEXP r_context,
                                   SEXP r_application,
                                   SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    PackageSPtr package = Package::from_sexp(r_package);
+
+    application->add_package(package);
+
     SEXP result = R_NilValue;
 
     if (context->has_package_entry_callback()) {
@@ -150,6 +155,11 @@ SEXP r_lightr_trace_package_exit(SEXP r_context,
                                  SEXP r_application,
                                  SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    PackageSPtr package = Package::from_sexp(r_package);
+
+    application->remove_package(package);
+
     SEXP result = R_NilValue;
 
     if (context->has_package_exit_callback()) {
@@ -172,6 +182,11 @@ SEXP r_lightr_trace_function_entry(SEXP r_context,
                                    SEXP r_package,
                                    SEXP r_function) {
     ContextSPtr context = Context::from_sexp(r_context);
+    PackageSPtr package = Package::from_sexp(r_package);
+    FunctionSPtr function = Function::from_sexp(r_function);
+
+    package->add_function(function);
+
     SEXP result = R_NilValue;
 
     if (context->has_function_entry_callback()) {
@@ -197,6 +212,11 @@ SEXP r_lightr_trace_function_exit(SEXP r_context,
                                   SEXP r_package,
                                   SEXP r_function) {
     ContextSPtr context = Context::from_sexp(r_context);
+    PackageSPtr package = Package::from_sexp(r_package);
+    FunctionSPtr function = Function::from_sexp(r_function);
+
+    package->remove_function(function);
+
     SEXP result = R_NilValue;
 
     if (context->has_function_exit_callback()) {
