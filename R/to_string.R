@@ -163,6 +163,20 @@ to_string.lightr_call_stack <- function(object, ...) {
 }
 
 #' @export
+to_string.lightr_result <- function(object, ...) {
+
+    representation <-
+      if (is_valid(object)) {
+          sprintf("Result(value=%s)", to_string(get_value(object)))
+      }
+      else {
+          sprintf("Result(error=%s)", to_string(get_error(object)))
+      }
+
+    representation
+}
+
+#' @export
 to_string.lightr_error <- function(object, ...) {
     representation <- sprintf("Error(source='%s', message='%s', call=%s)",
                               get_source(object),

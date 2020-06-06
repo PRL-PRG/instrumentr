@@ -46,10 +46,5 @@ print.lightr_call_stack <- function(x, ...) {
 
 #' @export
 print.lightr_result <- function(x, ...) {
-    if (is_valid(x)) {
-        print(get_value(x))
-    }
-    else {
-        cat(to_string(get_error(x)), "\n")
-    }
+    cat(to_string(x), "\n")
 }
