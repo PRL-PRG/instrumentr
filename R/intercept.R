@@ -39,17 +39,9 @@ insert_interception <- function(context_ptr, application_ptr) {
 
         .Call(C_lightr_trace_package_entry, context_ptr, application_ptr, package_ptr)
 
-        tryCatch({
+        package <- intercept_package(context_ptr, application_ptr, package_ptr)
 
-            package <- intercept_package(context_ptr, application_ptr, package_ptr)
-
-            .Call(C_lightr_trace_package_exit, context_ptr, application_ptr, package_ptr)
-
-        }, error = function(e) {
-
-            message(e$message)
-
-        })
+        .Call(C_lightr_trace_package_exit, context_ptr, application_ptr, package_ptr)
     }
 
     with_tracing_disabled({
@@ -102,20 +94,10 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
         .Call(C_lightr_trace_function_entry, context_ptr, application_ptr, package_ptr, function_ptr)
 
-        tryCatch({
+        package <- intercept_function(context_ptr, application_ptr, package_ptr, function_ptr)
 
-            package <- intercept_function(context_ptr, application_ptr, package_ptr, function_ptr)
+        .Call(C_lightr_trace_function_exit, context_ptr, application_ptr, package_ptr, function_ptr)
 
-            .Call(C_lightr_trace_function_exit, context_ptr, application_ptr, package_ptr, function_ptr)
-
-        }, error = function(e) {
-
-            message <- sprintf("unable to intercept `%s::%s`: %s",
-                               package_name, function_name, e$message)
-
-            message(e$message)
-
-        })
     }
 
     message("Intercepting ", length(get_functions(package_ptr)), " functions from ", package_name)

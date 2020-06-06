@@ -27,28 +27,38 @@ trace_code <- function(code, context, environment = .GlobalEnv) {
 
     stopifnot(is_lightr_context(context))
 
-    application <- create_application(infer_application_name(),
-                                      getwd(),
-                                      substitute(code),
-                                      environment)
+    result <- NULL
 
-    .Call(C_lightr_trace_application_entry, context, application)
+    .Call(C_lightr_initialize_tracing)
 
-    insert_interception(context, application)
+    tryCatch({
+        application <- create_application(infer_application_name(),
+                                          getwd(),
+                                          substitute(code),
+                                          environment)
 
-    on.exit({
+        .Call(C_lightr_trace_application_entry, context, application)
 
-        reinstate_tracing()
+        insert_interception(context, application)
+
+        value <- .Call(C_lightr_trace_code, code, environment)
 
         remove_interception()
 
         .Call(C_lightr_trace_application_exit, context, application)
 
+        result <- create_result(value)
+    },
+    error = function(e) {
+        print(e)
+
+        result <<- create_result(e, peek_execution_context())
+    },
+    finally = {
+        .Call(C_lightr_finalize_tracing)
     })
 
-    enable_tracing()
-
-    .Call(C_lightr_eval, code, environment)
+    result
 }
 
 #' @export
@@ -73,4 +83,8 @@ with_tracing_disabled <- function(code) {
     })
 
     code
+}
+
+peek_execution_context <- function() {
+    .Call(C_lightr_peek_execution_context)
 }

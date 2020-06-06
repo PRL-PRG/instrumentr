@@ -161,3 +161,13 @@ to_string.lightr_call_stack <- function(object, ...) {
 
     representation
 }
+
+#' @export
+to_string.lightr_error <- function(object, ...) {
+    representation <- sprintf("Error(source='%s', message='%s', call=%s)",
+                              get_source(object),
+                              get_message(object),
+                              to_string(get_call(object)))
+
+    representation
+}
