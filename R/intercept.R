@@ -16,7 +16,7 @@ remove_interception <- function() {
         lockBinding(function_name, package_env)
     }
 
-    for(function_id in get_intercepted_function_ids()) {
+    for (function_id in get_intercepted_function_ids()) {
         unintercept_function(get_intercepted_function(function_id))
         remove_intercepted_function(function_id)
     }
@@ -25,10 +25,6 @@ remove_interception <- function() {
 insert_interception <- function(context_ptr, application_ptr) {
 
     handle_package <- function(package_name, ...) {
-        ##autoinject_packages <- get_autoinject()
-        ##if (package_name %in% autoinject_packages || any(autoinject_packages
-        ##== "all")) {
-
         package_env <- getNamespace(package_name)
 
         package_dir <- dirname(system.file(package=package_name))
@@ -52,7 +48,7 @@ insert_interception <- function(context_ptr, application_ptr) {
 
         loaded_packages <- setdiff(remove_package_prefix(search()), remove_packages)
 
-        for(package in intersect(traced_packages, loaded_packages)) {
+        for (package in intersect(traced_packages, loaded_packages)) {
             handle_package(package)
         }
 
@@ -73,7 +69,7 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
     traced_function_names <- get_traced_functions(context_ptr, package_name)
 
-    if(length(traced_function_names) == 0) {
+    if (length(traced_function_names) == 0) {
         function_names <- all_function_names
     }
     else {
@@ -86,7 +82,7 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
         function_obj <- get(function_name, envir=package_env)
 
-        if(!is_closure(function_obj)) next
+        if (!is_closure(function_obj)) next
 
         function_ptr <- create_function(function_name, length(formals(function_obj)), function_obj)
 
@@ -153,7 +149,7 @@ modify_function <- function(context_ptr, application_ptr, package_ptr, function_
 
 create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
     substitute({
-        if(.Call(IS_TRACING_ENABLED)) {
+        if (.Call(IS_TRACING_ENABLED)) {
             .Call(DISABLE_TRACING)
             .Call(TRACE_CALL_ENTRY,
                   CONTEXT_PTR,
@@ -176,7 +172,7 @@ create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr
 
 create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
     substitute({
-        if(.Call(IS_TRACING_ENABLED)) {
+        if (.Call(IS_TRACING_ENABLED)) {
             .Call(DISABLE_TRACING)
             .Call(TRACE_CALL_EXIT,
                   CONTEXT_PTR,

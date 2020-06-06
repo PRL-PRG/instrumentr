@@ -5,6 +5,6 @@ get_application_exit_callback <- function(context, ...) {
 }
 
 #' @export
-get_application_exit_callback.lightr_context <- function(context, ...) {
+get_application_exit_callback.lightr_context <- function(context, ...) { # nolint
     .Call(C_context_get_application_exit_callback, context)
 }

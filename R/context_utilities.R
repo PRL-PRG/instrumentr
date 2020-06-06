@@ -22,7 +22,7 @@ get_package_function_names <- function(package_name,
 
     function_names <- character(0)
 
-    if(public) {
+    if (public) {
 
         function_names <- get_public_package_function_names(package_name)
 
@@ -30,7 +30,7 @@ get_package_function_names <- function(package_name,
 
     }
 
-    if(private) {
+    if (private) {
 
         private_function_names <- get_private_package_function_names(package_name)
 
@@ -47,11 +47,11 @@ filter_closure_bindings <- function(binding_names, environment) {
 
     closure_bindings <- c()
 
-    for(binding_name in binding_names) {
+    for (binding_name in binding_names) {
 
         binding_value <- get(binding_name, envir=environment)
 
-        if(is_closure(binding_value)) {
+        if (is_closure(binding_value)) {
             closure_bindings <- c(closure_bindings, binding_name)
         }
     }
@@ -65,7 +65,7 @@ with_package_namespace <- function(package_name, fun) {
 
     ns <- NULL
 
-    if(!package_is_loaded) {
+    if (!package_is_loaded) {
         ns <- loadNamespace(package_name)
     }
     else {
@@ -74,7 +74,7 @@ with_package_namespace <- function(package_name, fun) {
 
     result <- fun(ns)
 
-    if(!package_is_loaded) {
+    if (!package_is_loaded) {
         unloadNamespace(package_name)
     }
 
@@ -95,7 +95,7 @@ get_all_package_function_names <- function(package_name) {
     )
 }
 
-get_public_package_function_names <- function(package_name) {
+get_public_package_function_names <- function(package_name) {  # nolint
     with_package_namespace(
         package_name,
         function(package_namespace) {
@@ -116,7 +116,7 @@ get_public_package_function_names <- function(package_name) {
     )
 }
 
-get_private_package_function_names <- function(package_name) {
+get_private_package_function_names <- function(package_name) { # nolint
     with_package_namespace(
         package_name,
         function(package_namespace) {

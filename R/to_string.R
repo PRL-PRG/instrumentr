@@ -50,7 +50,7 @@ to_string.lightr_context <- function(object, ...) {
     call_exit_callback <- get_call_exit_callback(object)
     packages <- get_traced_packages(object)
     functions <- character(0)
-    for(package in packages) {
+    for (package in packages) {
         functions <- c(functions, get_traced_functions(object, package))
     }
 
@@ -139,10 +139,10 @@ to_string.lightr_call_stack <- function(object, ...) {
 
     representation <- sprintf("CallStack(%d frames)", size)
 
-    if(size != 0) {
+    if (size != 0) {
         frames <- character(0)
 
-        for(index in 1:size) {
+        for (index in 1:size) {
             call_object <- peek_frame(object, index)
             frames <- c(frames, to_string(call_object))
         }

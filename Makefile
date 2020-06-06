@@ -18,3 +18,6 @@ document:
 
 test:
 	Rscript -e 'devtools::test()'
+
+lintr:
+	R --slave -e "lintr::lint_package()"

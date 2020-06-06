@@ -5,6 +5,6 @@ get_parameter_count <- function(object, ...) {
 }
 
 #' @export
-get_parameter_count.lightr_function <- function(object, ...) {
+get_parameter_count.lightr_function <- function(object, ...) { # nolint
     .Call(C_function_get_parameter_count, object)
 }

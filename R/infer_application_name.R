@@ -5,19 +5,20 @@ infer_application_name <- function() {
     ## this works if script is sourced inside R session
     tryCatch({
         application_name <- sys.frame(1)$ofile
-        if(!is.null(application_name)) {
+        if (!is.null(application_name)) {
             application_name <- substr(application_name,
                                        1,
                                        ## ignore `.R` suffix
                                        nchar(application_name) - 2)
         }
-    }, error = function(e) {})
+    }, error = function(e) {
+    })
 
-    if(is.null(application_name)) {
+    if (is.null(application_name)) {
         ## this works if script is started from command line as
         ## R --file=<application_name>.R
         args <- commandArgs(trailingOnly = FALSE)
-        for(arg in args) {
+        for (arg in args) {
             if (startsWith(arg, "--file=")) {
                 application_name <- substr(arg,
                                            ## ignore `--file=` prefix
@@ -29,7 +30,7 @@ infer_application_name <- function() {
         }
     }
 
-    if(is.null(application_name)) {
+    if (is.null(application_name)) {
         application_name <- "<unknown>"
     }
 

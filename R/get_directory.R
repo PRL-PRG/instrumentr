@@ -5,7 +5,7 @@ get_directory <- function(object, ...) {
 }
 
 #' @export
-get_directory.lightr_application <- function(object, ...) {
+get_directory.lightr_application <- function(object, ...) { # nolint
     .Call(C_application_get_directory, object)
 }
 

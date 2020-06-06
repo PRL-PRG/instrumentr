@@ -10,7 +10,7 @@ get_environment.lightr_context <- function(object, ...) {
 }
 
 #' @export
-get_environment.lightr_application <- function(object, ...) {
+get_environment.lightr_application <- function(object, ...) { # nolint
     .Call(C_application_get_environment, object)
 }
 

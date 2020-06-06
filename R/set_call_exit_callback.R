@@ -3,7 +3,7 @@ set_call_exit_callback <- function(context, call_exit_callback, ...) {
     UseMethod("set_call_exit_callback")
 }
 
-set_call_exit_callback.lightr_context <- function(context, call_exit_callback, ...) {
+set_call_exit_callback.lightr_context <- function(context, call_exit_callback, ...) {  # nolint
 
     stopifnot(is_null(call_exit_callback) ||
               is_closure(call_exit_callback) &&

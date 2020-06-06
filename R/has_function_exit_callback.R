@@ -5,6 +5,6 @@ has_function_exit_callback <- function(object, ...) {
 }
 
 #' @export
-has_function_exit_callback.lightr_context <- function(object, ...) {
+has_function_exit_callback.lightr_context <- function(object, ...) { # nolint
     .Call(C_context_has_function_exit_callback, object)
 }

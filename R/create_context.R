@@ -11,35 +11,35 @@ create_context <- function(application_entry_callback,
                            packages = character(0),
                            functions = character(0)) {
 
-    if(missing(application_entry_callback)) {
+    if (missing(application_entry_callback)) {
         application_entry_callback <- invalid_value
     }
 
-    if(missing(application_exit_callback)) {
+    if (missing(application_exit_callback)) {
         application_exit_callback <- invalid_value
     }
 
-    if(missing(package_entry_callback)) {
+    if (missing(package_entry_callback)) {
         package_entry_callback <- invalid_value
     }
 
-    if(missing(package_exit_callback)) {
+    if (missing(package_exit_callback)) {
         package_exit_callback <- invalid_value
     }
 
-    if(missing(function_entry_callback)) {
+    if (missing(function_entry_callback)) {
         function_entry_callback <- invalid_value
     }
 
-    if(missing(function_exit_callback)) {
+    if (missing(function_exit_callback)) {
         function_exit_callback <- invalid_value
     }
 
-    if(missing(call_entry_callback)) {
+    if (missing(call_entry_callback)) {
         call_entry_callback <- invalid_value
     }
 
-    if(missing(call_exit_callback)) {
+    if (missing(call_exit_callback)) {
         call_exit_callback <- invalid_value
     }
 

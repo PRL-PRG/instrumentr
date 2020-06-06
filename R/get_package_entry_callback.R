@@ -5,7 +5,6 @@ get_package_entry_callback <- function(context, ...) {
 }
 
 #' @export
-get_package_entry_callback.lightr_context <- function(context, ...) {
+get_package_entry_callback.lightr_context <- function(context, ...) { # nolint
     .Call(C_context_get_package_entry_callback, context)
 }
-

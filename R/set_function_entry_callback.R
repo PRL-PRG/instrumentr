@@ -5,7 +5,7 @@ set_function_entry_callback <- function(context, function_entry_callback, ...) {
 }
 
 #' @export
-set_function_entry_callback.lightr_context <- function(context, function_entry_callback, ...) {
+set_function_entry_callback.lightr_context <- function(context, function_entry_callback, ...) { # nolint
 
     stopifnot(is_null(function_entry_callback) ||
               is_closure(function_entry_callback) &&
@@ -17,4 +17,3 @@ set_function_entry_callback.lightr_context <- function(context, function_entry_c
 
     invisible(NULL)
 }
-

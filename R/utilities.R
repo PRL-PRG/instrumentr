@@ -72,4 +72,3 @@ add_package_prefix <- function(package_names) {
     prefix <- "package:"
     paste0(prefix, package_names)
 }
-
