@@ -50,15 +50,7 @@ SEXP r_object_remove_data(SEXP r_object);
 SEXP r_object_has_data(SEXP r_object);
 
 /* Context */
-SEXP r_context_create_context(SEXP r_application_entry_callback,
-                              SEXP r_application_exit_callback,
-                              SEXP r_package_entry_callback,
-                              SEXP r_package_exit_callback,
-                              SEXP r_function_entry_callback,
-                              SEXP r_function_exit_callback,
-                              SEXP r_call_entry_callback,
-                              SEXP r_call_exit_callback,
-                              SEXP r_environment);
+SEXP r_context_create_context(SEXP r_environment);
 SEXP r_context_set_application_entry_callback(
     SEXP r_context,
     SEXP r_application_entry_callback);

@@ -4,27 +4,8 @@
 using lightr::Context;
 using lightr::ContextSPtr;
 
-SEXP r_context_create_context(SEXP r_application_entry_callback,
-                              SEXP r_application_exit_callback,
-                              SEXP r_package_entry_callback,
-                              SEXP r_package_exit_callback,
-                              SEXP r_function_entry_callback,
-                              SEXP r_function_exit_callback,
-                              SEXP r_call_entry_callback,
-                              SEXP r_call_exit_callback,
-                              SEXP r_environment) {
-    ContextSPtr context = std::make_shared<Context>();
-
-    context->set_application_entry_callback(r_application_entry_callback);
-    context->set_application_exit_callback(r_application_exit_callback);
-    context->set_package_entry_callback(r_package_entry_callback);
-    context->set_package_exit_callback(r_package_exit_callback);
-    context->set_function_entry_callback(r_function_entry_callback);
-    context->set_function_exit_callback(r_function_exit_callback);
-    context->set_call_entry_callback(r_call_entry_callback);
-    context->set_call_exit_callback(r_call_exit_callback);
-    context->set_environment(r_environment);
-
+SEXP r_context_create_context(SEXP r_environment) {
+    ContextSPtr context = std::make_shared<Context>(r_environment);
     return Context::to_sexp(context);
 }
 
@@ -217,7 +198,7 @@ SEXP r_context_get_traced_functions(SEXP r_context, SEXP r_package_name) {
     int index = 0;
 
     for (const std::string& function_name: function_names) {
-         SET_STRING_ELT(r_function_names, index, mkChar(function_name.c_str()));
+        SET_STRING_ELT(r_function_names, index, mkChar(function_name.c_str()));
         ++index;
     }
     UNPROTECT(1);

@@ -3,6 +3,15 @@
 
 #include <Rinternals.h>
 
+extern SEXP ApplicationEntryCallbackSymbol;
+extern SEXP ApplicationExitCallbackSymbol;
+extern SEXP PackageEntryCallbackSymbol;
+extern SEXP PackageExitCallbackSymbol;
+extern SEXP FunctionEntryCallbackSymbol;
+extern SEXP FunctionExitCallbackSymbol;
+extern SEXP CallEntryCallbackSymbol;
+extern SEXP CallExitCallbackSymbol;
+
 void initialize_utilities(SEXP r_package_environment, SEXP r_state_environment);
 
 SEXP delayed_assign(SEXP variable_sym,

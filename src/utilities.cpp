@@ -9,6 +9,14 @@ SEXP TemporarySymbol = NULL;
 SEXP TemporarySymbolString = NULL;
 SEXP StateEnvironment = NULL;
 SEXP PackageEnvironment = NULL;
+SEXP ApplicationEntryCallbackSymbol = NULL;
+SEXP ApplicationExitCallbackSymbol = NULL;
+SEXP PackageEntryCallbackSymbol = NULL;
+SEXP PackageExitCallbackSymbol = NULL;
+SEXP FunctionEntryCallbackSymbol = NULL;
+SEXP FunctionExitCallbackSymbol = NULL;
+SEXP CallEntryCallbackSymbol = NULL;
+SEXP CallExitCallbackSymbol = NULL;
 
 void initialize_utilities(SEXP r_package_environment,
                           SEXP r_state_environment) {
@@ -29,6 +37,22 @@ void initialize_utilities(SEXP r_package_environment,
     PackageEnvironment = r_package_environment;
 
     StateEnvironment = r_state_environment;
+
+    ApplicationEntryCallbackSymbol = Rf_install("application_entry_callback");
+
+    ApplicationExitCallbackSymbol = Rf_install("application_exit_callback");
+
+    PackageEntryCallbackSymbol = Rf_install("package_entry_callback");
+
+    PackageExitCallbackSymbol = Rf_install("package_exit_callback");
+
+    FunctionEntryCallbackSymbol = Rf_install("function_entry_callback");
+
+    FunctionExitCallbackSymbol = Rf_install("function_exit_callback");
+
+    CallEntryCallbackSymbol = Rf_install("call_entry_callback");
+
+    CallExitCallbackSymbol = Rf_install("call_exit_callback");
 }
 
 SEXP delayed_assign(SEXP variable_sym,

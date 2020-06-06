@@ -1,4 +1,5 @@
 #include "r_api.h"
+#include "utilities.h"
 #include "../inst/include/lightr.hpp"
 #include "../inst/include/Context.hpp"
 #include "../inst/include/Application.hpp"
@@ -96,7 +97,7 @@ SEXP r_lightr_trace_application_entry(SEXP r_context, SEXP r_application) {
         result = r_lightr_execute_tracing_component(
             false,
             ExecutionContext::ApplicationEntryCallback,
-            Rf_lang3(r_application_entry_callback, r_context, r_application),
+            Rf_lang3(ApplicationEntryCallbackSymbol, r_context, r_application),
             r_environment);
     }
 
@@ -115,7 +116,7 @@ SEXP r_lightr_trace_application_exit(SEXP r_context, SEXP r_application) {
         result = r_lightr_execute_tracing_component(
             false,
             ExecutionContext::ApplicationExitCallback,
-            Rf_lang3(r_application_exit_callback, r_context, r_application),
+            Rf_lang3(ApplicationExitCallbackSymbol, r_context, r_application),
             r_environment);
     }
 
@@ -135,8 +136,10 @@ SEXP r_lightr_trace_package_entry(SEXP r_context,
         result = r_lightr_execute_tracing_component(
             false,
             ExecutionContext::PackageEntryCallback,
-            Rf_lang4(
-                r_package_entry_callback, r_context, r_application, r_package),
+            Rf_lang4(PackageEntryCallbackSymbol,
+                     r_context,
+                     r_application,
+                     r_package),
             r_environment);
     }
 
@@ -157,7 +160,7 @@ SEXP r_lightr_trace_package_exit(SEXP r_context,
             false,
             ExecutionContext::PackageExitCallback,
             Rf_lang4(
-                r_package_exit_callback, r_context, r_application, r_package),
+                PackageExitCallbackSymbol, r_context, r_application, r_package),
             r_environment);
     }
 
@@ -178,7 +181,7 @@ SEXP r_lightr_trace_function_entry(SEXP r_context,
         result = r_lightr_execute_tracing_component(
             false,
             ExecutionContext::FunctionEntryCallback,
-            Rf_lang5(r_function_entry_callback,
+            Rf_lang5(FunctionEntryCallbackSymbol,
                      r_context,
                      r_application,
                      r_package,
@@ -203,7 +206,7 @@ SEXP r_lightr_trace_function_exit(SEXP r_context,
         result = r_lightr_execute_tracing_component(
             false,
             ExecutionContext::FunctionExitCallback,
-            Rf_lang5(r_function_exit_callback,
+            Rf_lang5(FunctionExitCallbackSymbol,
                      r_context,
                      r_application,
                      r_package,
@@ -236,7 +239,7 @@ SEXP r_lightr_trace_call_entry(SEXP r_context,
         result = r_lightr_execute_tracing_component(
             false,
             ExecutionContext::CallEntryCallback,
-            Rf_lang6(r_call_entry_callback,
+            Rf_lang6(CallEntryCallbackSymbol,
                      r_context,
                      r_application,
                      r_package,
@@ -276,15 +279,16 @@ SEXP r_lightr_trace_call_exit(SEXP r_context,
         SEXP r_call_exit_callback = context->get_call_exit_callback();
         SEXP r_environment = context->get_environment();
 
-        result = r_lightr_execute_tracing_component(false,
-                                           ExecutionContext::CallExitCallback,
-                                           Rf_lang6(r_call_exit_callback,
-                                                    r_context,
-                                                    r_application,
-                                                    r_package,
-                                                    r_function,
-                                                    Call::to_sexp(call)),
-                                           r_environment);
+        result = r_lightr_execute_tracing_component(
+            false,
+            ExecutionContext::CallExitCallback,
+            Rf_lang6(CallExitCallbackSymbol,
+                     r_context,
+                     r_application,
+                     r_package,
+                     r_function,
+                     Call::to_sexp(call)),
+            r_environment);
     }
 
     return result;

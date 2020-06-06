@@ -10,7 +10,7 @@ namespace lightr {
 
 class Context: public Object {
   public:
-    Context()
+    Context(SEXP r_environment)
         : Object()
         , r_application_entry_callback_(get_invalid_value())
         , r_application_exit_callback_(get_invalid_value())
@@ -20,7 +20,12 @@ class Context: public Object {
         , r_function_exit_callback_(get_invalid_value())
         , r_call_entry_callback_(get_invalid_value())
         , r_call_exit_callback_(get_invalid_value())
-        , r_environment_(R_GlobalEnv) {
+        , r_environment_(r_environment) {
+        R_PreserveObject(r_environment_);
+    }
+
+    ~Context() {
+        R_ReleaseObject(r_environment_);
     }
 
     void set_application_entry_callback(SEXP r_application_entry_callback) {
@@ -120,6 +125,7 @@ class Context: public Object {
     }
 
     void set_environment(SEXP r_environment) {
+        R_ReleaseObject(r_environment_);
         r_environment_ = r_environment;
         R_PreserveObject(r_environment_);
     }
@@ -182,6 +188,8 @@ class Context: public Object {
     }
 
     static void initialize();
+
+    static void finalize();
 
     static SEXP get_class();
 

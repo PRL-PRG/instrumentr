@@ -32,7 +32,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"object_has_data", (DL_FUNC) &r_object_has_data, 1},
 
     /* Context */
-    {"context_create_context", (DL_FUNC) &r_context_create_context, 9},
+    {"context_create_context", (DL_FUNC) &r_context_create_context, 1},
     {"context_set_application_entry_callback", (DL_FUNC) &r_context_set_application_entry_callback, 2},
     {"context_get_application_entry_callback", (DL_FUNC) &r_context_get_application_entry_callback, 1},
     {"context_has_application_entry_callback", (DL_FUNC) &r_context_has_application_entry_callback, 1},

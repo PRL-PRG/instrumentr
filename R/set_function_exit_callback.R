@@ -7,9 +7,11 @@ set_function_exit_callback <- function(context, function_exit_callback, ...) {
 #' @export
 set_function_exit_callback.lightr_context <- function(context, function_exit_callback, ...) {  # nolint
 
-    stopifnot(is_null(function_exit_callback) ||
+    stopifnot(is_invalid_value(function_exit_callback) ||
               is_closure(function_exit_callback) &&
               length(formals(function_exit_callback)) >= 4)
+
+    assign("function_exit_callback", function_exit_callback, envir=get_environment(context))
 
     .Call(C_context_set_function_exit_callback,
           context,
