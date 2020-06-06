@@ -7,9 +7,10 @@ using lightr::ObjectSPtr;
 ObjectSPtr Object::from_sexp(SEXP r_object) {
     void* object = R_ExternalPtrAddr(r_object);
     if (object == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Object::from_sexp: object is null");
+    } else {
+        return *static_cast<ObjectSPtr*>(object);
     }
-    return *static_cast<ObjectSPtr*>(object);
 }
 
 SEXP r_object_get_id(SEXP r_object) {

@@ -16,9 +16,10 @@ SEXP Package::get_class() {
 PackageSPtr Package::from_sexp(SEXP r_package) {
     void* package = R_ExternalPtrAddr(r_package);
     if (package == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Package::from_sexp: object is null");
+    } else {
+        return *static_cast<PackageSPtr*>(package);
     }
-    return *static_cast<PackageSPtr*>(package);
 }
 
 SEXP Package::to_sexp(PackageSPtr package) {

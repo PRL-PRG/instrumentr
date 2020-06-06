@@ -14,11 +14,12 @@ SEXP CallStack::get_class() {
 }
 
 CallStackSPtr CallStack::from_sexp(SEXP r_call_stack) {
-    void* call = R_ExternalPtrAddr(r_call_stack);
-    if (call == nullptr) {
-        // TODO error;
+    void* call_stack = R_ExternalPtrAddr(r_call_stack);
+    if (call_stack == nullptr) {
+        Rf_errorcall(R_NilValue, "CallStack::from_sexp: object is null");
+    } else {
+        return *static_cast<CallStackSPtr*>(call_stack);
     }
-    return *static_cast<CallStackSPtr*>(call);
 }
 
 SEXP CallStack::to_sexp(CallStackSPtr call) {

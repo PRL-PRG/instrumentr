@@ -16,9 +16,10 @@ SEXP Parameter::get_class() {
 ParameterSPtr Parameter::from_sexp(SEXP r_parameter) {
     void* parameter = R_ExternalPtrAddr(r_parameter);
     if (parameter == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Parameter::from_sexp: object is null");
+    } else {
+        return *static_cast<ParameterSPtr*>(parameter);
     }
-    return *static_cast<ParameterSPtr*>(parameter);
 }
 
 SEXP Parameter::to_sexp(ParameterSPtr parameter) {

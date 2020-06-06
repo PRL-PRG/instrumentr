@@ -16,9 +16,10 @@ SEXP Function::get_class() {
 FunctionSPtr Function::from_sexp(SEXP r_function) {
     void* function = R_ExternalPtrAddr(r_function);
     if (function == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Function::from_sexp: object is null");
+    } else {
+        return *static_cast<FunctionSPtr*>(function);
     }
-    return *static_cast<FunctionSPtr*>(function);
 }
 
 SEXP Function::to_sexp(FunctionSPtr function) {

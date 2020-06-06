@@ -21,3 +21,6 @@ test:
 
 lintr:
 	R --slave -e "lintr::lint_package()"
+
+clang-analyze:
+	scan-build make build

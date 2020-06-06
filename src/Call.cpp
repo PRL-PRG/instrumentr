@@ -16,9 +16,10 @@ SEXP Call::get_class() {
 CallSPtr Call::from_sexp(SEXP r_call) {
     void* call = R_ExternalPtrAddr(r_call);
     if (call == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Call::from_sexp: object is null");
+    } else {
+        return *static_cast<CallSPtr*>(call);
     }
-    return *static_cast<CallSPtr*>(call);
 }
 
 SEXP Call::to_sexp(CallSPtr call) {

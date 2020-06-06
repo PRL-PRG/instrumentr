@@ -16,9 +16,10 @@ SEXP Application::get_class() {
 ApplicationSPtr Application::from_sexp(SEXP r_application) {
     void* application = R_ExternalPtrAddr(r_application);
     if (application == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Application::from_sexp: object is null");
+    } else {
+        return *static_cast<ApplicationSPtr*>(application);
     }
-    return *static_cast<ApplicationSPtr*>(application);
 }
 
 SEXP Application::to_sexp(ApplicationSPtr application) {

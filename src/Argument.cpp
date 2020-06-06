@@ -16,9 +16,10 @@ SEXP Argument::get_class() {
 ArgumentSPtr Argument::from_sexp(SEXP r_argument) {
     void* argument = R_ExternalPtrAddr(r_argument);
     if (argument == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Argument::from_sexp: argument is null");
+    } else {
+        return *static_cast<ArgumentSPtr*>(argument);
     }
-    return *static_cast<ArgumentSPtr*>(argument);
 }
 
 SEXP Argument::to_sexp(ArgumentSPtr argument) {

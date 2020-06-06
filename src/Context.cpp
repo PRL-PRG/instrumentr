@@ -16,9 +16,10 @@ SEXP Context::get_class() {
 ContextSPtr Context::from_sexp(SEXP r_context) {
     void* context = R_ExternalPtrAddr(r_context);
     if (context == nullptr) {
-        // TODO error;
+        Rf_errorcall(R_NilValue, "Context::from_sexp: object is null");
+    } else {
+        return *static_cast<ContextSPtr*>(context);
     }
-    return *static_cast<ContextSPtr*>(context);
 }
 
 SEXP Context::to_sexp(ContextSPtr context) {
