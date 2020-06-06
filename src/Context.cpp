@@ -23,8 +23,8 @@ ContextSPtr Context::from_sexp(SEXP r_context) {
 }
 
 SEXP Context::to_sexp(ContextSPtr context) {
-    SEXP r_context = PROTECT(R_MakeExternalPtr(
-        new ContextSPtr(context), R_NilValue, R_NilValue));
+    SEXP r_context = PROTECT(
+        R_MakeExternalPtr(new ContextSPtr(context), R_NilValue, R_NilValue));
 
     R_RegisterCFinalizerEx(r_context, Context::destroy_sexp, TRUE);
 
