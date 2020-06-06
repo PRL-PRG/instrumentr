@@ -40,23 +40,19 @@ insert_interception <- function(context_ptr, application_ptr) {
         .Call(C_lightr_trace_package_exit, context_ptr, application_ptr, package_ptr)
     }
 
-    with_tracing_disabled({
+    traced_packages <- get_traced_packages(context_ptr)
 
-        traced_packages <- get_traced_packages(context_ptr)
+    remove_packages <- c(".GlobalEnv", "Autoloads", "tools:callr", "tools:rstudio", "lightr")
 
-        remove_packages <- c(".GlobalEnv", "Autoloads", "tools:callr", "tools:rstudio", "lightr")
+    loaded_packages <- setdiff(remove_package_prefix(search()), remove_packages)
 
-        loaded_packages <- setdiff(remove_package_prefix(search()), remove_packages)
+    for (package in intersect(traced_packages, loaded_packages)) {
+        handle_package(package)
+    }
 
-        for (package in intersect(traced_packages, loaded_packages)) {
-            handle_package(package)
-        }
-
-        for (package in setdiff(traced_packages, loaded_packages)) {
-            setHook(packageEvent(package, "attach"), handle_package)
-        }
-
-    })
+    for (package in setdiff(traced_packages, loaded_packages)) {
+        setHook(packageEvent(package, "attach"), handle_package)
+    }
 }
 
 intercept_package <- function(context_ptr, application_ptr, package_ptr) {
