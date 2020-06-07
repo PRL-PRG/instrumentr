@@ -23,6 +23,9 @@ unintercept_function <- function(context_ptr, application_ptr, package_ptr, func
 }
 
 unintercept_package <- function(context_ptr, application_ptr, package_ptr) {
+
+    .Call(C_lightr_trace_package_detach, context_ptr, application_ptr, package_ptr)
+
     package_name <- get_name(package_ptr)
     function_ptrs <- rev(get_functions(package_ptr))
 
@@ -30,9 +33,9 @@ unintercept_package <- function(context_ptr, application_ptr, package_ptr) {
         unintercept_function(context_ptr, application_ptr, package_ptr, function_ptr)
     }
 
-    remove_intercepted_package(package_name)
+    .Call(C_lightr_trace_package_unload, context_ptr, application_ptr, package_ptr)
 
-    .Call(C_lightr_trace_package_exit, context_ptr, application_ptr, package_ptr)
+    remove_intercepted_package(package_name)
 }
 
 remove_interception <- function(context_ptr, application_ptr) {

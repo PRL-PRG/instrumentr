@@ -161,9 +161,28 @@ SEXP r_lightr_trace_application_detach(SEXP r_context, SEXP r_application) {
     return result;
 }
 
-SEXP r_lightr_trace_package_entry(SEXP r_context,
-                                  SEXP r_application,
-                                  SEXP r_package) {
+SEXP r_lightr_trace_package(ExecutionContext execution_context,
+                            SEXP r_callback_symbol,
+                            SEXP r_context,
+                            SEXP r_application,
+                            SEXP r_package) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    PackageSPtr package = Package::from_sexp(r_package);
+
+    SEXP r_environment = context->get_environment();
+    SEXP result = r_lightr_execute_tracing_component(
+        false,
+        execution_context,
+        Rf_lang4(r_callback_symbol, r_context, r_application, r_package),
+        r_environment);
+
+    return result;
+}
+
+SEXP r_lightr_trace_package_load(SEXP r_context,
+                                 SEXP r_application,
+                                 SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
     ApplicationSPtr application = Application::from_sexp(r_application);
     PackageSPtr package = Package::from_sexp(r_package);
@@ -172,44 +191,70 @@ SEXP r_lightr_trace_package_entry(SEXP r_context,
 
     SEXP result = R_NilValue;
 
-    if (context->has_package_entry_callback()) {
-        SEXP r_package_entry_callback = context->get_package_entry_callback();
-        SEXP r_environment = context->get_environment();
-
-        result = r_lightr_execute_tracing_component(
-            false,
-            ExecutionContext::PackageEntryCallback,
-            Rf_lang4(PackageEntryCallbackSymbol,
-                     r_context,
-                     r_application,
-                     r_package),
-            r_environment);
+    if (context->has_package_load_callback()) {
+        result = r_lightr_trace_package(ExecutionContext::PackageLoadCallback,
+                                        lightr::PackageLoadCallbackSymbol,
+                                        r_context,
+                                        r_application,
+                                        r_package);
     }
 
     return result;
 }
 
-SEXP r_lightr_trace_package_exit(SEXP r_context,
-                                 SEXP r_application,
-                                 SEXP r_package) {
+SEXP r_lightr_trace_package_unload(SEXP r_context,
+                                   SEXP r_application,
+                                   SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
     ApplicationSPtr application = Application::from_sexp(r_application);
     PackageSPtr package = Package::from_sexp(r_package);
 
+    SEXP result = R_NilValue;
+
+    if (context->has_package_unload_callback()) {
+        result = r_lightr_trace_package(ExecutionContext::PackageUnloadCallback,
+                                        lightr::PackageUnloadCallbackSymbol,
+                                        r_context,
+                                        r_application,
+                                        r_package);
+    }
+
     application->remove_package(package);
+
+    return result;
+}
+
+SEXP r_lightr_trace_package_attach(SEXP r_context,
+                                   SEXP r_application,
+                                   SEXP r_package) {
+    ContextSPtr context = Context::from_sexp(r_context);
 
     SEXP result = R_NilValue;
 
-    if (context->has_package_exit_callback()) {
-        SEXP r_package_exit_callback = context->get_package_exit_callback();
-        SEXP r_environment = context->get_environment();
+    if (context->has_package_attach_callback()) {
+        result = r_lightr_trace_package(ExecutionContext::PackageAttachCallback,
+                                        lightr::PackageAttachCallbackSymbol,
+                                        r_context,
+                                        r_application,
+                                        r_package);
+    }
 
-        result = r_lightr_execute_tracing_component(
-            false,
-            ExecutionContext::PackageExitCallback,
-            Rf_lang4(
-                PackageExitCallbackSymbol, r_context, r_application, r_package),
-            r_environment);
+    return result;
+}
+
+SEXP r_lightr_trace_package_detach(SEXP r_context,
+                                   SEXP r_application,
+                                   SEXP r_package) {
+    ContextSPtr context = Context::from_sexp(r_context);
+
+    SEXP result = R_NilValue;
+
+    if (context->has_package_detach_callback()) {
+        result = r_lightr_trace_package(ExecutionContext::PackageDetachCallback,
+                                        lightr::PackageDetachCallbackSymbol,
+                                        r_context,
+                                        r_application,
+                                        r_package);
     }
 
     return result;

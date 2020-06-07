@@ -7,9 +7,11 @@ insert_interception <- function(context_ptr, application_ptr) {
 
         package_ptr <- create_package(package_name, package_dir, package_env)
 
-        .Call(C_lightr_trace_package_entry, context_ptr, application_ptr, package_ptr)
+        .Call(C_lightr_trace_package_load, context_ptr, application_ptr, package_ptr)
 
-        package <- intercept_package(context_ptr, application_ptr, package_ptr)
+        intercept_package(context_ptr, application_ptr, package_ptr)
+
+        .Call(C_lightr_trace_package_attach, context_ptr, application_ptr, package_ptr)
     }
 
     traced_packages <- get_traced_packages(context_ptr)

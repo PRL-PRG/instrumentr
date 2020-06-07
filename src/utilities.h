@@ -3,8 +3,6 @@
 
 #include <Rinternals.h>
 
-extern SEXP PackageEntryCallbackSymbol;
-extern SEXP PackageExitCallbackSymbol;
 extern SEXP FunctionEntryCallbackSymbol;
 extern SEXP FunctionExitCallbackSymbol;
 extern SEXP CallEntryCallbackSymbol;

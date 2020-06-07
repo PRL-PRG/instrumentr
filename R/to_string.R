@@ -44,8 +44,10 @@ to_string.lightr_context <- function(object, ...) {
     application_unload_callback <- get_application_unload_callback(object)
     application_attach_callback <- get_application_attach_callback(object)
     application_detach_callback <- get_application_detach_callback(object)
-    package_entry_callback <- get_package_entry_callback(object)
-    package_exit_callback <- get_package_exit_callback(object)
+    package_load_callback <- get_package_load_callback(object)
+    package_unload_callback <- get_package_unload_callback(object)
+    package_attach_callback <- get_package_attach_callback(object)
+    package_detach_callback <- get_package_detach_callback(object)
     function_entry_callback <- get_function_entry_callback(object)
     function_exit_callback <- get_function_exit_callback(object)
     call_entry_callback <- get_call_entry_callback(object)
@@ -61,8 +63,10 @@ to_string.lightr_context <- function(object, ...) {
             "        application_unload_callback = ", to_string(application_unload_callback), ",\n",
             "        application_attach_callback = ", to_string(application_attach_callback), ",\n",
             "        application_detach_callback = ", to_string(application_detach_callback), ",\n",
-            "        package_entry_callback = ", to_string(package_entry_callback), ",\n",
-            "        package_exit_callback = ", to_string(package_exit_callback), ",\n",
+            "        package_load_callback = ", to_string(package_load_callback), ",\n",
+            "        package_unload_callback = ", to_string(package_unload_callback), ",\n",
+            "        package_attach_callback = ", to_string(package_attach_callback), ",\n",
+            "        package_detach_callback = ", to_string(package_detach_callback), ",\n",
             "        function_entry_callback = ", to_string(function_entry_callback), ",\n",
             "        function_exit_callback = ", to_string(function_exit_callback), ",\n",
             "        call_entry_callback = ", to_string(call_entry_callback), ",\n",

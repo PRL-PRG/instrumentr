@@ -6,6 +6,10 @@ SEXP ApplicationLoadCallbackSymbol = NULL;
 SEXP ApplicationUnloadCallbackSymbol = NULL;
 SEXP ApplicationAttachCallbackSymbol = NULL;
 SEXP ApplicationDetachCallbackSymbol = NULL;
+SEXP PackageLoadCallbackSymbol = NULL;
+SEXP PackageUnloadCallbackSymbol = NULL;
+SEXP PackageAttachCallbackSymbol = NULL;
+SEXP PackageDetachCallbackSymbol = NULL;
 
 SEXP Context::class_ = nullptr;
 
@@ -16,6 +20,10 @@ void Context::initialize() {
     ApplicationUnloadCallbackSymbol = Rf_install("application_unload_callback");
     ApplicationAttachCallbackSymbol = Rf_install("application_attach_callback");
     ApplicationDetachCallbackSymbol = Rf_install("application_detach_callback");
+    PackageLoadCallbackSymbol = Rf_install("package_load_callback");
+    PackageUnloadCallbackSymbol = Rf_install("package_unload_callback");
+    PackageAttachCallbackSymbol = Rf_install("package_attach_callback");
+    PackageDetachCallbackSymbol = Rf_install("package_detach_callback");
 }
 
 SEXP Context::get_class() {

@@ -12,13 +12,15 @@ extern SEXP ApplicationLoadCallbackSymbol;
 extern SEXP ApplicationUnloadCallbackSymbol;
 extern SEXP ApplicationAttachCallbackSymbol;
 extern SEXP ApplicationDetachCallbackSymbol;
+extern SEXP PackageLoadCallbackSymbol;
+extern SEXP PackageUnloadCallbackSymbol;
+extern SEXP PackageAttachCallbackSymbol;
+extern SEXP PackageDetachCallbackSymbol;
 
 class Context: public Object {
   public:
     Context(SEXP r_environment)
         : Object()
-        , r_package_entry_callback_(get_invalid_value())
-        , r_package_exit_callback_(get_invalid_value())
         , r_function_entry_callback_(get_invalid_value())
         , r_function_exit_callback_(get_invalid_value())
         , r_call_entry_callback_(get_invalid_value())
@@ -83,28 +85,52 @@ class Context: public Object {
         return has_callback_(ApplicationDetachCallbackSymbol);
     }
 
-    void set_package_entry_callback(SEXP r_package_entry_callback) {
-        r_package_entry_callback_ = r_package_entry_callback;
+    void set_package_load_callback(SEXP r_package_load_callback) {
+        set_callback_(PackageLoadCallbackSymbol, r_package_load_callback);
     }
 
-    SEXP get_package_entry_callback() {
-        return r_package_entry_callback_;
+    SEXP get_package_load_callback() {
+        return get_callback_(PackageLoadCallbackSymbol);
     }
 
-    bool has_package_entry_callback() const {
-        return is_valid_value(r_package_entry_callback_);
+    bool has_package_load_callback() {
+        return has_callback_(PackageLoadCallbackSymbol);
     }
 
-    void set_package_exit_callback(SEXP r_package_exit_callback) {
-        r_package_exit_callback_ = r_package_exit_callback;
+    void set_package_unload_callback(SEXP r_package_unload_callback) {
+        set_callback_(PackageUnloadCallbackSymbol, r_package_unload_callback);
     }
 
-    SEXP get_package_exit_callback() {
-        return r_package_exit_callback_;
+    SEXP get_package_unload_callback() {
+        return get_callback_(PackageUnloadCallbackSymbol);
     }
 
-    bool has_package_exit_callback() const {
-        return is_valid_value(r_package_exit_callback_);
+    bool has_package_unload_callback() {
+        return has_callback_(PackageUnloadCallbackSymbol);
+    }
+
+    void set_package_attach_callback(SEXP r_package_attach_callback) {
+        set_callback_(PackageAttachCallbackSymbol, r_package_attach_callback);
+    }
+
+    SEXP get_package_attach_callback() {
+        return get_callback_(PackageAttachCallbackSymbol);
+    }
+
+    bool has_package_attach_callback() {
+        return has_callback_(PackageAttachCallbackSymbol);
+    }
+
+    void set_package_detach_callback(SEXP r_package_detach_callback) {
+        set_callback_(PackageDetachCallbackSymbol, r_package_detach_callback);
+    }
+
+    SEXP get_package_detach_callback() {
+        return get_callback_(PackageDetachCallbackSymbol);
+    }
+
+    bool has_package_detach_callback() {
+        return has_callback_(PackageDetachCallbackSymbol);
     }
 
     void set_function_entry_callback(SEXP r_function_entry_callback) {

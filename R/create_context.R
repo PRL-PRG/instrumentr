@@ -4,8 +4,10 @@ create_context <- function(application_load_callback,
                            application_unload_callback,
                            application_attach_callback,
                            application_detach_callback,
-                           package_entry_callback,
-                           package_exit_callback,
+                           package_load_callback,
+                           package_unload_callback,
+                           package_attach_callback,
+                           package_detach_callback,
                            function_entry_callback,
                            function_exit_callback,
                            call_entry_callback,
@@ -29,12 +31,20 @@ create_context <- function(application_load_callback,
         application_detach_callback <- invalid_value
     }
 
-    if (missing(package_entry_callback)) {
-        package_entry_callback <- invalid_value
+    if (missing(package_load_callback)) {
+        package_load_callback <- invalid_value
     }
 
-    if (missing(package_exit_callback)) {
-        package_exit_callback <- invalid_value
+    if (missing(package_unload_callback)) {
+        package_unload_callback <- invalid_value
+    }
+
+    if (missing(package_attach_callback)) {
+        package_attach_callback <- invalid_value
+    }
+
+    if (missing(package_detach_callback)) {
+        package_detach_callback <- invalid_value
     }
 
     if (missing(function_entry_callback)) {
@@ -66,8 +76,10 @@ create_context <- function(application_load_callback,
     set_application_attach_callback(context, application_attach_callback)
     set_application_detach_callback(context, application_detach_callback)
 
-    set_package_entry_callback(context, package_entry_callback)
-    set_package_exit_callback(context, package_exit_callback)
+    set_package_load_callback(context, package_load_callback)
+    set_package_unload_callback(context, package_unload_callback)
+    set_package_attach_callback(context, package_attach_callback)
+    set_package_detach_callback(context, package_detach_callback)
 
     set_function_entry_callback(context, function_entry_callback)
     set_function_exit_callback(context, function_exit_callback)

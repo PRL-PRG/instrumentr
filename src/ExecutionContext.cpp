@@ -23,11 +23,17 @@ execution_context_to_string(const ExecutionContext& execution_context) {
     case ExecutionContext::ApplicationDetachCallback:
         return "application_detach_callback";
         break;
-    case ExecutionContext::PackageEntryCallback:
-        return "package_entry_callback";
+    case ExecutionContext::PackageLoadCallback:
+        return "package_load_callback";
         break;
-    case ExecutionContext::PackageExitCallback:
-        return "package_exit_callback";
+    case ExecutionContext::PackageUnloadCallback:
+        return "package_unload_callback";
+        break;
+    case ExecutionContext::PackageAttachCallback:
+        return "package_attach_callback";
+        break;
+    case ExecutionContext::PackageDetachCallback:
+        return "package_detach_callback";
         break;
     case ExecutionContext::FunctionEntryCallback:
         return "function_entry_callback";

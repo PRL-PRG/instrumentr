@@ -19,12 +19,18 @@ SEXP r_lightr_trace_application_load(SEXP r_context, SEXP r_application);
 SEXP r_lightr_trace_application_unload(SEXP r_context, SEXP r_application);
 SEXP r_lightr_trace_application_attach(SEXP r_context, SEXP r_application);
 SEXP r_lightr_trace_application_detach(SEXP r_context, SEXP r_application);
-SEXP r_lightr_trace_package_entry(SEXP r_context,
-                                  SEXP r_application,
-                                  SEXP r_package);
-SEXP r_lightr_trace_package_exit(SEXP r_context,
+SEXP r_lightr_trace_package_load(SEXP r_context,
                                  SEXP r_application,
                                  SEXP r_package);
+SEXP r_lightr_trace_package_unload(SEXP r_context,
+                                   SEXP r_application,
+                                   SEXP r_package);
+SEXP r_lightr_trace_package_attach(SEXP r_context,
+                                   SEXP r_application,
+                                   SEXP r_package);
+SEXP r_lightr_trace_package_detach(SEXP r_context,
+                                   SEXP r_application,
+                                   SEXP r_package);
 SEXP r_lightr_trace_function_entry(SEXP r_context,
                                    SEXP r_application,
                                    SEXP r_package,
@@ -72,14 +78,22 @@ SEXP r_context_set_application_detach_callback(
     SEXP r_application_detach_callback);
 SEXP r_context_get_application_detach_callback(SEXP r_context);
 SEXP r_context_has_application_detach_callback(SEXP r_context);
-SEXP r_context_set_package_entry_callback(SEXP r_context,
-                                          SEXP r_package_entry_callback);
-SEXP r_context_get_package_entry_callback(SEXP r_context);
-SEXP r_context_has_package_entry_callback(SEXP r_context);
-SEXP r_context_set_package_exit_callback(SEXP r_context,
-                                         SEXP r_package_exit_callback);
-SEXP r_context_get_package_exit_callback(SEXP r_context);
-SEXP r_context_has_package_exit_callback(SEXP r_context);
+SEXP r_context_set_package_load_callback(SEXP r_context,
+                                         SEXP r_package_load_callback);
+SEXP r_context_get_package_load_callback(SEXP r_context);
+SEXP r_context_has_package_load_callback(SEXP r_context);
+SEXP r_context_set_package_unload_callback(SEXP r_context,
+                                           SEXP r_package_unload_callback);
+SEXP r_context_get_package_unload_callback(SEXP r_context);
+SEXP r_context_has_package_unload_callback(SEXP r_context);
+SEXP r_context_set_package_attach_callback(SEXP r_context,
+                                           SEXP r_package_attach_callback);
+SEXP r_context_get_package_attach_callback(SEXP r_context);
+SEXP r_context_has_package_attach_callback(SEXP r_context);
+SEXP r_context_set_package_detach_callback(SEXP r_context,
+                                           SEXP r_package_detach_callback);
+SEXP r_context_get_package_detach_callback(SEXP r_context);
+SEXP r_context_has_package_detach_callback(SEXP r_context);
 SEXP r_context_set_function_entry_callback(SEXP r_context,
                                            SEXP r_function_entry_callback);
 SEXP r_context_get_function_entry_callback(SEXP r_context);
