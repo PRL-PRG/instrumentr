@@ -8,14 +8,15 @@
 
 namespace lightr {
 
+extern SEXP ApplicationLoadCallbackSymbol;
+extern SEXP ApplicationUnloadCallbackSymbol;
+extern SEXP ApplicationAttachCallbackSymbol;
+extern SEXP ApplicationDetachCallbackSymbol;
+
 class Context: public Object {
   public:
     Context(SEXP r_environment)
         : Object()
-        , r_application_load_callback_(get_invalid_value())
-        , r_application_unload_callback_(get_invalid_value())
-        , r_application_attach_callback_(get_invalid_value())
-        , r_application_detach_callback_(get_invalid_value())
         , r_package_entry_callback_(get_invalid_value())
         , r_package_exit_callback_(get_invalid_value())
         , r_function_entry_callback_(get_invalid_value())
@@ -31,51 +32,55 @@ class Context: public Object {
     }
 
     void set_application_load_callback(SEXP r_application_load_callback) {
-        r_application_load_callback_ = r_application_load_callback;
+        set_callback_(ApplicationLoadCallbackSymbol,
+                      r_application_load_callback);
     }
 
     SEXP get_application_load_callback() {
-        return r_application_load_callback_;
+        return get_callback_(ApplicationLoadCallbackSymbol);
     }
 
-    bool has_application_load_callback() const {
-        return is_valid_value(r_application_load_callback_);
+    bool has_application_load_callback() {
+        return has_callback_(ApplicationLoadCallbackSymbol);
     }
 
     void set_application_unload_callback(SEXP r_application_unload_callback) {
-        r_application_unload_callback_ = r_application_unload_callback;
+        set_callback_(ApplicationUnloadCallbackSymbol,
+                      r_application_unload_callback);
     }
 
     SEXP get_application_unload_callback() {
-        return r_application_unload_callback_;
+        return get_callback_(ApplicationUnloadCallbackSymbol);
     }
 
-    bool has_application_unload_callback() const {
-        return is_valid_value(r_application_unload_callback_);
+    bool has_application_unload_callback() {
+        return has_callback_(ApplicationUnloadCallbackSymbol);
     }
 
     void set_application_attach_callback(SEXP r_application_attach_callback) {
-        r_application_attach_callback_ = r_application_attach_callback;
+        set_callback_(ApplicationAttachCallbackSymbol,
+                      r_application_attach_callback);
     }
 
     SEXP get_application_attach_callback() {
-        return r_application_attach_callback_;
+        return get_callback_(ApplicationAttachCallbackSymbol);
     }
 
-    bool has_application_attach_callback() const {
-        return is_valid_value(r_application_attach_callback_);
+    bool has_application_attach_callback() {
+        return has_callback_(ApplicationAttachCallbackSymbol);
     }
 
     void set_application_detach_callback(SEXP r_application_detach_callback) {
-        r_application_detach_callback_ = r_application_detach_callback;
+        set_callback_(ApplicationDetachCallbackSymbol,
+                      r_application_detach_callback);
     }
 
     SEXP get_application_detach_callback() {
-        return r_application_detach_callback_;
+        return get_callback_(ApplicationDetachCallbackSymbol);
     }
 
-    bool has_application_detach_callback() const {
-        return is_valid_value(r_application_detach_callback_);
+    bool has_application_detach_callback() {
+        return has_callback_(ApplicationDetachCallbackSymbol);
     }
 
     void set_package_entry_callback(SEXP r_package_entry_callback) {
@@ -224,10 +229,19 @@ class Context: public Object {
     static void destroy_sexp(SEXP r_context);
 
   private:
-    SEXP r_application_load_callback_;
-    SEXP r_application_unload_callback_;
-    SEXP r_application_attach_callback_;
-    SEXP r_application_detach_callback_;
+    void set_callback_(SEXP r_symbol, SEXP r_callback) {
+        Rf_defineVar(r_symbol, r_callback, get_environment());
+    }
+
+    SEXP get_callback_(SEXP r_symbol) {
+        SEXP value = Rf_findVarInFrame(get_environment(), r_symbol);
+        return value == R_UnboundValue ? get_invalid_value() : value;
+    }
+
+    bool has_callback_(SEXP r_symbol) {
+        return is_valid_value(get_callback_(r_symbol));
+    }
+
     SEXP r_package_entry_callback_;
     SEXP r_package_exit_callback_;
     SEXP r_function_entry_callback_;

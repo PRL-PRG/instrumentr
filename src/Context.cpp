@@ -2,11 +2,20 @@
 
 namespace lightr {
 
+SEXP ApplicationLoadCallbackSymbol = NULL;
+SEXP ApplicationUnloadCallbackSymbol = NULL;
+SEXP ApplicationAttachCallbackSymbol = NULL;
+SEXP ApplicationDetachCallbackSymbol = NULL;
+
 SEXP Context::class_ = nullptr;
 
 void Context::initialize() {
     class_ = Object::create_class("lightr_context");
     R_PreserveObject(class_);
+    ApplicationLoadCallbackSymbol = Rf_install("application_load_callback");
+    ApplicationUnloadCallbackSymbol = Rf_install("application_unload_callback");
+    ApplicationAttachCallbackSymbol = Rf_install("application_attach_callback");
+    ApplicationDetachCallbackSymbol = Rf_install("application_detach_callback");
 }
 
 SEXP Context::get_class() {
