@@ -15,8 +15,10 @@ SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
 SEXP r_lightr_initialize_tracing();
 SEXP r_lightr_finalize_tracing();
 SEXP r_lightr_peek_execution_context();
-SEXP r_lightr_trace_application_entry(SEXP r_context, SEXP r_application);
-SEXP r_lightr_trace_application_exit(SEXP r_context, SEXP r_application);
+SEXP r_lightr_trace_application_load(SEXP r_context, SEXP r_application);
+SEXP r_lightr_trace_application_unload(SEXP r_context, SEXP r_application);
+SEXP r_lightr_trace_application_attach(SEXP r_context, SEXP r_application);
+SEXP r_lightr_trace_application_detach(SEXP r_context, SEXP r_application);
 SEXP r_lightr_trace_package_entry(SEXP r_context,
                                   SEXP r_application,
                                   SEXP r_package);
@@ -51,15 +53,25 @@ SEXP r_object_has_data(SEXP r_object);
 
 /* Context */
 SEXP r_context_create_context(SEXP r_environment);
-SEXP r_context_set_application_entry_callback(
+SEXP r_context_set_application_load_callback(SEXP r_context,
+                                             SEXP r_application_load_callback);
+SEXP r_context_get_application_load_callback(SEXP r_context);
+SEXP r_context_has_application_load_callback(SEXP r_context);
+SEXP r_context_set_application_unload_callback(
     SEXP r_context,
-    SEXP r_application_entry_callback);
-SEXP r_context_get_application_entry_callback(SEXP r_context);
-SEXP r_context_has_application_entry_callback(SEXP r_context);
-SEXP r_context_set_application_exit_callback(SEXP r_context,
-                                             SEXP r_application_exit_callback);
-SEXP r_context_get_application_exit_callback(SEXP r_context);
-SEXP r_context_has_application_exit_callback(SEXP r_context);
+    SEXP r_application_unload_callback);
+SEXP r_context_get_application_unload_callback(SEXP r_context);
+SEXP r_context_has_application_unload_callback(SEXP r_context);
+SEXP r_context_set_application_attach_callback(
+    SEXP r_context,
+    SEXP r_application_attach_callback);
+SEXP r_context_get_application_attach_callback(SEXP r_context);
+SEXP r_context_has_application_attach_callback(SEXP r_context);
+SEXP r_context_set_application_detach_callback(
+    SEXP r_context,
+    SEXP r_application_detach_callback);
+SEXP r_context_get_application_detach_callback(SEXP r_context);
+SEXP r_context_has_application_detach_callback(SEXP r_context);
 SEXP r_context_set_package_entry_callback(SEXP r_context,
                                           SEXP r_package_entry_callback);
 SEXP r_context_get_package_entry_callback(SEXP r_context);

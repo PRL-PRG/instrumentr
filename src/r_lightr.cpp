@@ -85,38 +85,68 @@ SEXP r_lightr_trace_code(SEXP r_code, SEXP r_environment) {
         true, ExecutionContext::Application, r_code, r_environment);
 }
 
-SEXP r_lightr_trace_application_entry(SEXP r_context, SEXP r_application) {
+SEXP r_lightr_trace_application_load(SEXP r_context, SEXP r_application) {
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP result = R_NilValue;
 
-    if (context->has_application_entry_callback()) {
-        SEXP r_application_entry_callback =
-            context->get_application_entry_callback();
+    if (context->has_application_load_callback()) {
         SEXP r_environment = context->get_environment();
 
         result = r_lightr_execute_tracing_component(
             false,
-            ExecutionContext::ApplicationEntryCallback,
-            Rf_lang3(ApplicationEntryCallbackSymbol, r_context, r_application),
+            ExecutionContext::ApplicationLoadCallback,
+            Rf_lang3(ApplicationLoadCallbackSymbol, r_context, r_application),
             r_environment);
     }
 
     return result;
 }
 
-SEXP r_lightr_trace_application_exit(SEXP r_context, SEXP r_application) {
+SEXP r_lightr_trace_application_unload(SEXP r_context, SEXP r_application) {
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP result = R_NilValue;
 
-    if (context->has_application_exit_callback()) {
-        SEXP r_application_exit_callback =
-            context->get_application_exit_callback();
+    if (context->has_application_unload_callback()) {
         SEXP r_environment = context->get_environment();
 
         result = r_lightr_execute_tracing_component(
             false,
-            ExecutionContext::ApplicationExitCallback,
-            Rf_lang3(ApplicationExitCallbackSymbol, r_context, r_application),
+            ExecutionContext::ApplicationUnloadCallback,
+            Rf_lang3(ApplicationUnloadCallbackSymbol, r_context, r_application),
+            r_environment);
+    }
+
+    return result;
+}
+
+SEXP r_lightr_trace_application_attach(SEXP r_context, SEXP r_application) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    SEXP result = R_NilValue;
+
+    if (context->has_application_attach_callback()) {
+        SEXP r_environment = context->get_environment();
+
+        result = r_lightr_execute_tracing_component(
+            false,
+            ExecutionContext::ApplicationAttachCallback,
+            Rf_lang3(ApplicationAttachCallbackSymbol, r_context, r_application),
+            r_environment);
+    }
+
+    return result;
+}
+
+SEXP r_lightr_trace_application_detach(SEXP r_context, SEXP r_application) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    SEXP result = R_NilValue;
+
+    if (context->has_application_detach_callback()) {
+        SEXP r_environment = context->get_environment();
+
+        result = r_lightr_execute_tracing_component(
+            false,
+            ExecutionContext::ApplicationDetachCallback,
+            Rf_lang3(ApplicationDetachCallbackSymbol, r_context, r_application),
             r_environment);
     }
 

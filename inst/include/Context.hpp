@@ -12,8 +12,10 @@ class Context: public Object {
   public:
     Context(SEXP r_environment)
         : Object()
-        , r_application_entry_callback_(get_invalid_value())
-        , r_application_exit_callback_(get_invalid_value())
+        , r_application_load_callback_(get_invalid_value())
+        , r_application_unload_callback_(get_invalid_value())
+        , r_application_attach_callback_(get_invalid_value())
+        , r_application_detach_callback_(get_invalid_value())
         , r_package_entry_callback_(get_invalid_value())
         , r_package_exit_callback_(get_invalid_value())
         , r_function_entry_callback_(get_invalid_value())
@@ -28,28 +30,52 @@ class Context: public Object {
         R_ReleaseObject(r_environment_);
     }
 
-    void set_application_entry_callback(SEXP r_application_entry_callback) {
-        r_application_entry_callback_ = r_application_entry_callback;
+    void set_application_load_callback(SEXP r_application_load_callback) {
+        r_application_load_callback_ = r_application_load_callback;
     }
 
-    SEXP get_application_entry_callback() {
-        return r_application_entry_callback_;
+    SEXP get_application_load_callback() {
+        return r_application_load_callback_;
     }
 
-    bool has_application_entry_callback() const {
-        return is_valid_value(r_application_entry_callback_);
+    bool has_application_load_callback() const {
+        return is_valid_value(r_application_load_callback_);
     }
 
-    void set_application_exit_callback(SEXP r_application_exit_callback) {
-        r_application_exit_callback_ = r_application_exit_callback;
+    void set_application_unload_callback(SEXP r_application_unload_callback) {
+        r_application_unload_callback_ = r_application_unload_callback;
     }
 
-    SEXP get_application_exit_callback() {
-        return r_application_exit_callback_;
+    SEXP get_application_unload_callback() {
+        return r_application_unload_callback_;
     }
 
-    bool has_application_exit_callback() const {
-        return is_valid_value(r_application_exit_callback_);
+    bool has_application_unload_callback() const {
+        return is_valid_value(r_application_unload_callback_);
+    }
+
+    void set_application_attach_callback(SEXP r_application_attach_callback) {
+        r_application_attach_callback_ = r_application_attach_callback;
+    }
+
+    SEXP get_application_attach_callback() {
+        return r_application_attach_callback_;
+    }
+
+    bool has_application_attach_callback() const {
+        return is_valid_value(r_application_attach_callback_);
+    }
+
+    void set_application_detach_callback(SEXP r_application_detach_callback) {
+        r_application_detach_callback_ = r_application_detach_callback;
+    }
+
+    SEXP get_application_detach_callback() {
+        return r_application_detach_callback_;
+    }
+
+    bool has_application_detach_callback() const {
+        return is_valid_value(r_application_detach_callback_);
     }
 
     void set_package_entry_callback(SEXP r_package_entry_callback) {
@@ -189,8 +215,6 @@ class Context: public Object {
 
     static void initialize();
 
-    static void finalize();
-
     static SEXP get_class();
 
     static std::shared_ptr<Context> from_sexp(SEXP r_context);
@@ -200,8 +224,10 @@ class Context: public Object {
     static void destroy_sexp(SEXP r_context);
 
   private:
-    SEXP r_application_entry_callback_;
-    SEXP r_application_exit_callback_;
+    SEXP r_application_load_callback_;
+    SEXP r_application_unload_callback_;
+    SEXP r_application_attach_callback_;
+    SEXP r_application_detach_callback_;
     SEXP r_package_entry_callback_;
     SEXP r_package_exit_callback_;
     SEXP r_function_entry_callback_;

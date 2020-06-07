@@ -9,8 +9,10 @@ SEXP TemporarySymbol = NULL;
 SEXP TemporarySymbolString = NULL;
 SEXP StateEnvironment = NULL;
 SEXP PackageEnvironment = NULL;
-SEXP ApplicationEntryCallbackSymbol = NULL;
-SEXP ApplicationExitCallbackSymbol = NULL;
+SEXP ApplicationLoadCallbackSymbol = NULL;
+SEXP ApplicationUnloadCallbackSymbol = NULL;
+SEXP ApplicationAttachCallbackSymbol = NULL;
+SEXP ApplicationDetachCallbackSymbol = NULL;
 SEXP PackageEntryCallbackSymbol = NULL;
 SEXP PackageExitCallbackSymbol = NULL;
 SEXP FunctionEntryCallbackSymbol = NULL;
@@ -20,7 +22,6 @@ SEXP CallExitCallbackSymbol = NULL;
 
 void initialize_utilities(SEXP r_package_environment,
                           SEXP r_state_environment) {
-
     DelayedAssignSymbol = Rf_install("delayedAssign");
 
     LightrSymbol = Rf_install("lightr");
@@ -38,9 +39,13 @@ void initialize_utilities(SEXP r_package_environment,
 
     StateEnvironment = r_state_environment;
 
-    ApplicationEntryCallbackSymbol = Rf_install("application_entry_callback");
+    ApplicationLoadCallbackSymbol = Rf_install("application_load_callback");
 
-    ApplicationExitCallbackSymbol = Rf_install("application_exit_callback");
+    ApplicationUnloadCallbackSymbol = Rf_install("application_unload_callback");
+
+    ApplicationAttachCallbackSymbol = Rf_install("application_attach_callback");
+
+    ApplicationDetachCallbackSymbol = Rf_install("application_detach_callback");
 
     PackageEntryCallbackSymbol = Rf_install("package_entry_callback");
 

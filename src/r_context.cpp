@@ -9,39 +9,75 @@ SEXP r_context_create_context(SEXP r_environment) {
     return Context::to_sexp(context);
 }
 
-SEXP r_context_set_application_entry_callback(
+SEXP r_context_set_application_load_callback(SEXP r_context,
+                                             SEXP r_application_load_callback) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    context->set_application_load_callback(r_application_load_callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_application_load_callback(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    return context->get_application_load_callback();
+}
+
+SEXP r_context_has_application_load_callback(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    return ScalarLogical(context->has_application_load_callback());
+}
+
+SEXP r_context_set_application_unload_callback(
     SEXP r_context,
-    SEXP r_application_entry_callback) {
+    SEXP r_application_unload_callback) {
     ContextSPtr context = Context::from_sexp(r_context);
-    context->set_application_entry_callback(r_application_entry_callback);
+    context->set_application_unload_callback(r_application_unload_callback);
     return R_NilValue;
 }
 
-SEXP r_context_get_application_entry_callback(SEXP r_context) {
+SEXP r_context_get_application_unload_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return context->get_application_entry_callback();
+    return context->get_application_unload_callback();
 }
 
-SEXP r_context_has_application_entry_callback(SEXP r_context) {
+SEXP r_context_has_application_unload_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return ScalarLogical(context->has_application_entry_callback());
+    return ScalarLogical(context->has_application_unload_callback());
 }
 
-SEXP r_context_set_application_exit_callback(SEXP r_context,
-                                             SEXP r_application_exit_callback) {
+SEXP r_context_set_application_attach_callback(
+    SEXP r_context,
+    SEXP r_application_attach_callback) {
     ContextSPtr context = Context::from_sexp(r_context);
-    context->set_application_exit_callback(r_application_exit_callback);
+    context->set_application_attach_callback(r_application_attach_callback);
     return R_NilValue;
 }
 
-SEXP r_context_get_application_exit_callback(SEXP r_context) {
+SEXP r_context_get_application_attach_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return context->get_application_exit_callback();
+    return context->get_application_attach_callback();
 }
 
-SEXP r_context_has_application_exit_callback(SEXP r_context) {
+SEXP r_context_has_application_attach_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return ScalarLogical(context->has_application_exit_callback());
+    return ScalarLogical(context->has_application_attach_callback());
+}
+
+SEXP r_context_set_application_detach_callback(
+    SEXP r_context,
+    SEXP r_application_detach_callback) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    context->set_application_detach_callback(r_application_detach_callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_application_detach_callback(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    return context->get_application_detach_callback();
+}
+
+SEXP r_context_has_application_detach_callback(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    return ScalarLogical(context->has_application_detach_callback());
 }
 
 SEXP r_context_set_package_entry_callback(SEXP r_context,

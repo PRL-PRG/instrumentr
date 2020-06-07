@@ -37,15 +37,19 @@ trace_code <- function(code, context, environment = .GlobalEnv) {
                                           substitute(code),
                                           environment)
 
-        .Call(C_lightr_trace_application_entry, context, application)
+        .Call(C_lightr_trace_application_load, context, application)
 
         insert_interception(context, application)
 
+        .Call(C_lightr_trace_application_attach, context, application)
+
         value <- .Call(C_lightr_trace_code, code, environment)
+
+        .Call(C_lightr_trace_application_detach, context, application)
 
         remove_interception(context, application)
 
-        .Call(C_lightr_trace_application_exit, context, application)
+        .Call(C_lightr_trace_application_unload, context, application)
 
         result <- create_result(value)
     },

@@ -1,7 +1,9 @@
 
 #' @export
-create_context <- function(application_entry_callback,
-                           application_exit_callback,
+create_context <- function(application_load_callback,
+                           application_unload_callback,
+                           application_attach_callback,
+                           application_detach_callback,
                            package_entry_callback,
                            package_exit_callback,
                            function_entry_callback,
@@ -11,12 +13,20 @@ create_context <- function(application_entry_callback,
                            packages = character(0),
                            functions = character(0)) {
 
-    if (missing(application_entry_callback)) {
-        application_entry_callback <- invalid_value
+    if (missing(application_load_callback)) {
+        application_load_callback <- invalid_value
     }
 
-    if (missing(application_exit_callback)) {
-        application_exit_callback <- invalid_value
+    if (missing(application_unload_callback)) {
+        application_unload_callback <- invalid_value
+    }
+
+    if (missing(application_attach_callback)) {
+        application_attach_callback <- invalid_value
+    }
+
+    if (missing(application_detach_callback)) {
+        application_detach_callback <- invalid_value
     }
 
     if (missing(package_entry_callback)) {
@@ -51,8 +61,10 @@ create_context <- function(application_entry_callback,
 
     context <- .Call(C_context_create_context, environment)
 
-    set_application_entry_callback(context, application_entry_callback)
-    set_application_exit_callback(context, application_exit_callback)
+    set_application_load_callback(context, application_load_callback)
+    set_application_unload_callback(context, application_unload_callback)
+    set_application_attach_callback(context, application_attach_callback)
+    set_application_detach_callback(context, application_detach_callback)
 
     set_package_entry_callback(context, package_entry_callback)
     set_package_exit_callback(context, package_exit_callback)

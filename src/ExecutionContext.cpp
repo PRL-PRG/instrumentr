@@ -11,11 +11,17 @@ execution_context_to_string(const ExecutionContext& execution_context) {
     case ExecutionContext::Application:
         return "application";
         break;
-    case ExecutionContext::ApplicationEntryCallback:
-        return "application_entry_callback";
+    case ExecutionContext::ApplicationLoadCallback:
+        return "application_load_callback";
         break;
-    case ExecutionContext::ApplicationExitCallback:
-        return "application_exit_callback";
+    case ExecutionContext::ApplicationUnloadCallback:
+        return "application_unload_callback";
+        break;
+    case ExecutionContext::ApplicationAttachCallback:
+        return "application_attach_callback";
+        break;
+    case ExecutionContext::ApplicationDetachCallback:
+        return "application_detach_callback";
         break;
     case ExecutionContext::PackageEntryCallback:
         return "package_entry_callback";

@@ -5,8 +5,10 @@ namespace lightr {
 enum class ExecutionContext {
     Lightr,
     Application,
-    ApplicationEntryCallback,
-    ApplicationExitCallback,
+    ApplicationLoadCallback,
+    ApplicationUnloadCallback,
+    ApplicationAttachCallback,
+    ApplicationDetachCallback,
     PackageEntryCallback,
     PackageExitCallback,
     FunctionEntryCallback,
