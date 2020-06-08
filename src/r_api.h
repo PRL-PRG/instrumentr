@@ -31,14 +31,14 @@ SEXP r_lightr_trace_package_attach(SEXP r_context,
 SEXP r_lightr_trace_package_detach(SEXP r_context,
                                    SEXP r_application,
                                    SEXP r_package);
-SEXP r_lightr_trace_function_entry(SEXP r_context,
-                                   SEXP r_application,
-                                   SEXP r_package,
-                                   SEXP r_function);
-SEXP r_lightr_trace_function_exit(SEXP r_context,
-                                  SEXP r_application,
-                                  SEXP r_package,
-                                  SEXP r_function);
+SEXP r_lightr_trace_function_attach(SEXP r_context,
+                                    SEXP r_application,
+                                    SEXP r_package,
+                                    SEXP r_function);
+SEXP r_lightr_trace_function_detach(SEXP r_context,
+                                    SEXP r_application,
+                                    SEXP r_package,
+                                    SEXP r_function);
 SEXP r_lightr_trace_call_entry(SEXP r_context,
                                SEXP r_application,
                                SEXP r_package,
@@ -94,14 +94,14 @@ SEXP r_context_set_package_detach_callback(SEXP r_context,
                                            SEXP r_package_detach_callback);
 SEXP r_context_get_package_detach_callback(SEXP r_context);
 SEXP r_context_has_package_detach_callback(SEXP r_context);
-SEXP r_context_set_function_entry_callback(SEXP r_context,
-                                           SEXP r_function_entry_callback);
-SEXP r_context_get_function_entry_callback(SEXP r_context);
-SEXP r_context_has_function_entry_callback(SEXP r_context);
-SEXP r_context_set_function_exit_callback(SEXP r_context,
-                                          SEXP r_function_exit_callback);
-SEXP r_context_get_function_exit_callback(SEXP r_context);
-SEXP r_context_has_function_exit_callback(SEXP r_context);
+SEXP r_context_set_function_attach_callback(SEXP r_context,
+                                           SEXP r_function_attach_callback);
+SEXP r_context_get_function_attach_callback(SEXP r_context);
+SEXP r_context_has_function_attach_callback(SEXP r_context);
+SEXP r_context_set_function_detach_callback(SEXP r_context,
+                                          SEXP r_function_detach_callback);
+SEXP r_context_get_function_detach_callback(SEXP r_context);
+SEXP r_context_has_function_detach_callback(SEXP r_context);
 SEXP r_context_set_call_entry_callback(SEXP r_context,
                                        SEXP r_call_entry_callback);
 SEXP r_context_get_call_entry_callback(SEXP r_context);

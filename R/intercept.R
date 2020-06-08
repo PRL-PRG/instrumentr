@@ -56,7 +56,7 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
         function_ptr <- create_function(function_name, length(formals(function_obj)), function_obj)
 
-        .Call(C_lightr_trace_function_entry, context_ptr, application_ptr, package_ptr, function_ptr)
+        .Call(C_lightr_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
 
         package <- intercept_function(context_ptr, application_ptr, package_ptr, function_ptr)
 

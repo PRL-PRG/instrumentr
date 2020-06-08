@@ -1,6 +1,5 @@
 #ifndef LIGHTR_CONTEXT_HPP
 #define LIGHTR_CONTEXT_HPP
-
 #include "Object.hpp"
 #include <unordered_map>
 #include <unordered_set>
@@ -16,13 +15,13 @@ extern SEXP PackageLoadCallbackSymbol;
 extern SEXP PackageUnloadCallbackSymbol;
 extern SEXP PackageAttachCallbackSymbol;
 extern SEXP PackageDetachCallbackSymbol;
+extern SEXP FunctionAttachCallbackSymbol;
+extern SEXP FunctionDetachCallbackSymbol;
 
 class Context: public Object {
   public:
     Context(SEXP r_environment)
         : Object()
-        , r_function_entry_callback_(get_invalid_value())
-        , r_function_exit_callback_(get_invalid_value())
         , r_call_entry_callback_(get_invalid_value())
         , r_call_exit_callback_(get_invalid_value())
         , r_environment_(r_environment) {
@@ -133,28 +132,28 @@ class Context: public Object {
         return has_callback_(PackageDetachCallbackSymbol);
     }
 
-    void set_function_entry_callback(SEXP r_function_entry_callback) {
-        r_function_entry_callback_ = r_function_entry_callback;
+    void set_function_attach_callback(SEXP r_function_attach_callback) {
+        set_callback_(FunctionAttachCallbackSymbol, r_function_attach_callback);
     }
 
-    SEXP get_function_entry_callback() {
-        return r_function_entry_callback_;
+    SEXP get_function_attach_callback() {
+        return get_callback_(FunctionAttachCallbackSymbol);
     }
 
-    bool has_function_entry_callback() const {
-        return is_valid_value(r_function_entry_callback_);
+    bool has_function_attach_callback() {
+        return has_callback_(FunctionAttachCallbackSymbol);
     }
 
-    void set_function_exit_callback(SEXP r_function_exit_callback) {
-        r_function_exit_callback_ = r_function_exit_callback;
+    void set_function_detach_callback(SEXP r_function_detach_callback) {
+        set_callback_(FunctionDetachCallbackSymbol, r_function_detach_callback);
     }
 
-    SEXP get_function_exit_callback() {
-        return r_function_exit_callback_;
+    SEXP get_function_detach_callback() {
+        return get_callback_(FunctionDetachCallbackSymbol);
     }
 
-    bool has_function_exit_callback() const {
-        return is_valid_value(r_function_exit_callback_);
+    bool has_function_detach_callback() {
+        return has_callback_(FunctionDetachCallbackSymbol);
     }
 
     void set_call_entry_callback(SEXP r_call_entry_callback) {
@@ -246,6 +245,8 @@ class Context: public Object {
 
     static void initialize();
 
+    static void finalize();
+
     static SEXP get_class();
 
     static std::shared_ptr<Context> from_sexp(SEXP r_context);
@@ -268,10 +269,6 @@ class Context: public Object {
         return is_valid_value(get_callback_(r_symbol));
     }
 
-    SEXP r_package_entry_callback_;
-    SEXP r_package_exit_callback_;
-    SEXP r_function_entry_callback_;
-    SEXP r_function_exit_callback_;
     SEXP r_call_entry_callback_;
     SEXP r_call_exit_callback_;
     SEXP r_environment_;

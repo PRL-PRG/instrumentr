@@ -19,7 +19,7 @@ unintercept_function <- function(context_ptr, application_ptr, package_ptr, func
 
     remove_intercepted_function(package_name, function_name)
 
-    .Call(C_lightr_trace_function_exit, context_ptr, application_ptr, package_ptr, function_ptr)
+    .Call(C_lightr_trace_function_detach, context_ptr, application_ptr, package_ptr, function_ptr)
 }
 
 unintercept_package <- function(context_ptr, application_ptr, package_ptr) {

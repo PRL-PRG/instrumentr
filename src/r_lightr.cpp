@@ -260,10 +260,29 @@ SEXP r_lightr_trace_package_detach(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_function_entry(SEXP r_context,
-                                   SEXP r_application,
-                                   SEXP r_package,
-                                   SEXP r_function) {
+SEXP r_lightr_trace_function(ExecutionContext execution_context,
+                             SEXP r_callback_symbol,
+                             SEXP r_context,
+                             SEXP r_application,
+                             SEXP r_package,
+                             SEXP r_function) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    SEXP r_environment = context->get_environment();
+
+    SEXP result = r_lightr_execute_tracing_component(
+        false,
+        execution_context,
+        Rf_lang5(
+            r_callback_symbol, r_context, r_application, r_package, r_function),
+        r_environment);
+
+    return result;
+}
+
+SEXP r_lightr_trace_function_attach(SEXP r_context,
+                                    SEXP r_application,
+                                    SEXP r_package,
+                                    SEXP r_function) {
     ContextSPtr context = Context::from_sexp(r_context);
     PackageSPtr package = Package::from_sexp(r_package);
     FunctionSPtr function = Function::from_sexp(r_function);
@@ -272,50 +291,39 @@ SEXP r_lightr_trace_function_entry(SEXP r_context,
 
     SEXP result = R_NilValue;
 
-    if (context->has_function_entry_callback()) {
-        SEXP r_function_entry_callback = context->get_function_entry_callback();
-        SEXP r_environment = context->get_environment();
-
-        result = r_lightr_execute_tracing_component(
-            false,
-            ExecutionContext::FunctionEntryCallback,
-            Rf_lang5(FunctionEntryCallbackSymbol,
-                     r_context,
-                     r_application,
-                     r_package,
-                     r_function),
-            r_environment);
+    if (context->has_function_attach_callback()) {
+        result =
+            r_lightr_trace_function(ExecutionContext::FunctionAttachCallback,
+                                    lightr::FunctionAttachCallbackSymbol,
+                                    r_context,
+                                    r_application,
+                                    r_package,
+                                    r_function);
     }
 
     return result;
 }
 
-SEXP r_lightr_trace_function_exit(SEXP r_context,
-                                  SEXP r_application,
-                                  SEXP r_package,
-                                  SEXP r_function) {
+SEXP r_lightr_trace_function_detach(SEXP r_context,
+                                    SEXP r_application,
+                                    SEXP r_package,
+                                    SEXP r_function) {
     ContextSPtr context = Context::from_sexp(r_context);
     PackageSPtr package = Package::from_sexp(r_package);
     FunctionSPtr function = Function::from_sexp(r_function);
 
-    package->remove_function(function);
-
     SEXP result = R_NilValue;
 
-    if (context->has_function_exit_callback()) {
-        SEXP r_function_exit_callback = context->get_function_exit_callback();
-        SEXP r_environment = context->get_environment();
-
-        result = r_lightr_execute_tracing_component(
-            false,
-            ExecutionContext::FunctionExitCallback,
-            Rf_lang5(FunctionExitCallbackSymbol,
-                     r_context,
-                     r_application,
-                     r_package,
-                     r_function),
-            r_environment);
+    if (context->has_function_detach_callback()) {
+        result = r_lightr_trace_function(ExecutionContext::FunctionDetachCallback,
+                                         lightr::FunctionDetachCallbackSymbol,
+                                         r_context,
+                                         r_application,
+                                         r_package,
+                                         r_function);
     }
+
+    package->remove_function(function);
 
     return result;
 }

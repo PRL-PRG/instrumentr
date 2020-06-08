@@ -148,38 +148,38 @@ SEXP r_context_has_package_detach_callback(SEXP r_context) {
     return ScalarLogical(context->has_package_detach_callback());
 }
 
-SEXP r_context_set_function_entry_callback(SEXP r_context,
-                                           SEXP r_function_entry_callback) {
+SEXP r_context_set_function_attach_callback(SEXP r_context,
+                                            SEXP r_function_attach_callback) {
     ContextSPtr context = Context::from_sexp(r_context);
-    context->set_function_entry_callback(r_function_entry_callback);
+    context->set_function_attach_callback(r_function_attach_callback);
     return R_NilValue;
 }
 
-SEXP r_context_get_function_entry_callback(SEXP r_context) {
+SEXP r_context_get_function_attach_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return context->get_function_entry_callback();
+    return context->get_function_attach_callback();
 }
 
-SEXP r_context_has_function_entry_callback(SEXP r_context) {
+SEXP r_context_has_function_attach_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return ScalarLogical(context->has_function_entry_callback());
+    return ScalarLogical(context->has_function_attach_callback());
 }
 
-SEXP r_context_set_function_exit_callback(SEXP r_context,
-                                          SEXP r_function_exit_callback) {
+SEXP r_context_set_function_detach_callback(SEXP r_context,
+                                            SEXP r_function_detach_callback) {
     ContextSPtr context = Context::from_sexp(r_context);
-    context->set_function_exit_callback(r_function_exit_callback);
+    context->set_function_detach_callback(r_function_detach_callback);
     return R_NilValue;
 }
 
-SEXP r_context_get_function_exit_callback(SEXP r_context) {
+SEXP r_context_get_function_detach_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return context->get_function_exit_callback();
+    return context->get_function_detach_callback();
 }
 
-SEXP r_context_has_function_exit_callback(SEXP r_context) {
+SEXP r_context_has_function_detach_callback(SEXP r_context) {
     ContextSPtr context = Context::from_sexp(r_context);
-    return ScalarLogical(context->has_function_exit_callback());
+    return ScalarLogical(context->has_function_detach_callback());
 }
 
 SEXP r_context_set_call_entry_callback(SEXP r_context,

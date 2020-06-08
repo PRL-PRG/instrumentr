@@ -10,6 +10,8 @@ SEXP PackageLoadCallbackSymbol = NULL;
 SEXP PackageUnloadCallbackSymbol = NULL;
 SEXP PackageAttachCallbackSymbol = NULL;
 SEXP PackageDetachCallbackSymbol = NULL;
+SEXP FunctionAttachCallbackSymbol = NULL;
+SEXP FunctionDetachCallbackSymbol = NULL;
 
 SEXP Context::class_ = nullptr;
 
@@ -24,6 +26,8 @@ void Context::initialize() {
     PackageUnloadCallbackSymbol = Rf_install("package_unload_callback");
     PackageAttachCallbackSymbol = Rf_install("package_attach_callback");
     PackageDetachCallbackSymbol = Rf_install("package_detach_callback");
+    FunctionAttachCallbackSymbol = Rf_install("function_attach_callback");
+    FunctionDetachCallbackSymbol = Rf_install("function_detach_callback");
 }
 
 SEXP Context::get_class() {

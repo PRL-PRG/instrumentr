@@ -13,8 +13,8 @@ enum class ExecutionContext {
     PackageUnloadCallback,
     PackageAttachCallback,
     PackageDetachCallback,
-    FunctionEntryCallback,
-    FunctionExitCallback,
+    FunctionAttachCallback,
+    FunctionDetachCallback,
     CallEntryCallback,
     CallExitCallback
 };

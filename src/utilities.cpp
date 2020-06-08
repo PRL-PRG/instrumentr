@@ -33,17 +33,9 @@ void initialize_utilities(SEXP r_package_environment,
 
     StateEnvironment = r_state_environment;
 
-    FunctionEntryCallbackSymbol = Rf_install("function_entry_callback");
-
-    FunctionExitCallbackSymbol = Rf_install("function_exit_callback");
-
     CallEntryCallbackSymbol = Rf_install("call_entry_callback");
 
     CallExitCallbackSymbol = Rf_install("call_exit_callback");
-}
-
-void finalize_utilities() {
-    R_ReleaseObject(TemporarySymbolString);
 }
 
 SEXP delayed_assign(SEXP variable_sym,

@@ -48,8 +48,8 @@ to_string.lightr_context <- function(object, ...) {
     package_unload_callback <- get_package_unload_callback(object)
     package_attach_callback <- get_package_attach_callback(object)
     package_detach_callback <- get_package_detach_callback(object)
-    function_entry_callback <- get_function_entry_callback(object)
-    function_exit_callback <- get_function_exit_callback(object)
+    function_attach_callback <- get_function_attach_callback(object)
+    function_detach_callback <- get_function_detach_callback(object)
     call_entry_callback <- get_call_entry_callback(object)
     call_exit_callback <- get_call_exit_callback(object)
     packages <- get_traced_packages(object)
@@ -67,8 +67,8 @@ to_string.lightr_context <- function(object, ...) {
             "        package_unload_callback = ", to_string(package_unload_callback), ",\n",
             "        package_attach_callback = ", to_string(package_attach_callback), ",\n",
             "        package_detach_callback = ", to_string(package_detach_callback), ",\n",
-            "        function_entry_callback = ", to_string(function_entry_callback), ",\n",
-            "        function_exit_callback = ", to_string(function_exit_callback), ",\n",
+            "        function_attach_callback = ", to_string(function_attach_callback), ",\n",
+            "        function_detach_callback = ", to_string(function_detach_callback), ",\n",
             "        call_entry_callback = ", to_string(call_entry_callback), ",\n",
             "        call_exit_callback = ", to_string(call_exit_callback), ",\n",
             "        packages = ", to_string(packages), ",\n",

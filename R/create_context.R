@@ -8,8 +8,8 @@ create_context <- function(application_load_callback,
                            package_unload_callback,
                            package_attach_callback,
                            package_detach_callback,
-                           function_entry_callback,
-                           function_exit_callback,
+                           function_attach_callback,
+                           function_detach_callback,
                            call_entry_callback,
                            call_exit_callback,
                            packages = character(0),
@@ -47,12 +47,12 @@ create_context <- function(application_load_callback,
         package_detach_callback <- invalid_value
     }
 
-    if (missing(function_entry_callback)) {
-        function_entry_callback <- invalid_value
+    if (missing(function_attach_callback)) {
+        function_attach_callback <- invalid_value
     }
 
-    if (missing(function_exit_callback)) {
-        function_exit_callback <- invalid_value
+    if (missing(function_detach_callback)) {
+        function_detach_callback <- invalid_value
     }
 
     if (missing(call_entry_callback)) {
@@ -81,8 +81,8 @@ create_context <- function(application_load_callback,
     set_package_attach_callback(context, package_attach_callback)
     set_package_detach_callback(context, package_detach_callback)
 
-    set_function_entry_callback(context, function_entry_callback)
-    set_function_exit_callback(context, function_exit_callback)
+    set_function_attach_callback(context, function_attach_callback)
+    set_function_detach_callback(context, function_detach_callback)
 
     set_call_entry_callback(context, call_entry_callback)
     set_call_exit_callback(context, call_exit_callback)
