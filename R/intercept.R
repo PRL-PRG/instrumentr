@@ -119,7 +119,7 @@ create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr
                   APPLICATION_PTR,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
-                  create_call(FUNCTION_PTR, sys.call(), environment()))
+                  .Call(CREATE_CALL, FUNCTION_PTR, sys.call(), environment()))
             .Call(REINSTATE_TRACING)
         }
     }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,
@@ -129,6 +129,7 @@ create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
+            CREATE_CALL=C_call_create_call,
             REINSTATE_TRACING=C_lightr_reinstate_tracing))
 }
 
