@@ -337,6 +337,29 @@ SEXP r_lightr_trace_function_detach(SEXP r_context,
     return result;
 }
 
+SEXP r_lightr_trace_call(ExecutionContext execution_context,
+                         SEXP r_callback_symbol,
+                         SEXP r_context,
+                         SEXP r_application,
+                         SEXP r_package,
+                         SEXP r_function,
+                         SEXP r_call) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    SEXP r_environment = context->get_environment();
+
+    SEXP result = r_lightr_execute_tracing_component(false,
+                                                     execution_context,
+                                                     Rf_lang6(r_callback_symbol,
+                                                              r_context,
+                                                              r_application,
+                                                              r_package,
+                                                              r_function,
+                                                              r_call),
+                                                     r_environment);
+
+    return result;
+}
+
 SEXP r_lightr_trace_call_entry(SEXP r_context,
                                SEXP r_application,
                                SEXP r_package,
@@ -353,19 +376,13 @@ SEXP r_lightr_trace_call_entry(SEXP r_context,
     call_stack->push_frame(call);
 
     if (context->has_call_entry_callback()) {
-        SEXP r_call_entry_callback = context->get_call_entry_callback();
-        SEXP r_environment = context->get_environment();
-
-        result = r_lightr_execute_tracing_component(
-            false,
-            ExecutionContext::CallEntryCallback,
-            Rf_lang6(CallEntryCallbackSymbol,
-                     r_context,
-                     r_application,
-                     r_package,
-                     r_function,
-                     r_call),
-            r_environment);
+        result = r_lightr_trace_call(ExecutionContext::CallEntryCallback,
+                                     lightr::CallEntryCallbackSymbol,
+                                     r_context,
+                                     r_application,
+                                     r_package,
+                                     r_function,
+                                     r_call);
     }
 
     return result;
@@ -396,19 +413,13 @@ SEXP r_lightr_trace_call_exit(SEXP r_context,
     call->set_result(r_result);
 
     if (context->has_call_exit_callback()) {
-        SEXP r_call_exit_callback = context->get_call_exit_callback();
-        SEXP r_environment = context->get_environment();
-
-        result = r_lightr_execute_tracing_component(
-            false,
-            ExecutionContext::CallExitCallback,
-            Rf_lang6(CallExitCallbackSymbol,
-                     r_context,
-                     r_application,
-                     r_package,
-                     r_function,
-                     Call::to_sexp(call)),
-            r_environment);
+        result = r_lightr_trace_call(ExecutionContext::CallExitCallback,
+                                     lightr::CallExitCallbackSymbol,
+                                     r_context,
+                                     r_application,
+                                     r_package,
+                                     r_function,
+                                     Call::to_sexp(call));
     }
 
     return result;

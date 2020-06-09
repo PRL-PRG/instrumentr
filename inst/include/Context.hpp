@@ -17,14 +17,12 @@ extern SEXP PackageAttachCallbackSymbol;
 extern SEXP PackageDetachCallbackSymbol;
 extern SEXP FunctionAttachCallbackSymbol;
 extern SEXP FunctionDetachCallbackSymbol;
+extern SEXP CallEntryCallbackSymbol;
+extern SEXP CallExitCallbackSymbol;
 
 class Context: public Object {
   public:
-    Context(SEXP r_environment)
-        : Object()
-        , r_call_entry_callback_(get_undefined_object())
-        , r_call_exit_callback_(get_undefined_object())
-        , r_environment_(r_environment) {
+    Context(SEXP r_environment): Object(), r_environment_(r_environment) {
         R_PreserveObject(r_environment_);
     }
 
@@ -157,27 +155,27 @@ class Context: public Object {
     }
 
     void set_call_entry_callback(SEXP r_call_entry_callback) {
-        r_call_entry_callback_ = r_call_entry_callback;
+        set_callback_(CallEntryCallbackSymbol, r_call_entry_callback);
     }
 
     SEXP get_call_entry_callback() {
-        return r_call_entry_callback_;
+        return get_callback_(CallEntryCallbackSymbol);
     }
 
-    bool has_call_entry_callback() const {
-        return is_defined_object(r_call_entry_callback_);
+    bool has_call_entry_callback() {
+        return has_callback_(CallEntryCallbackSymbol);
     }
 
     void set_call_exit_callback(SEXP r_call_exit_callback) {
-        r_call_exit_callback_ = r_call_exit_callback;
+        set_callback_(CallExitCallbackSymbol, r_call_exit_callback);
     }
 
     SEXP get_call_exit_callback() {
-        return r_call_exit_callback_;
+        return get_callback_(CallExitCallbackSymbol);
     }
 
-    bool has_call_exit_callback() const {
-        return is_defined_object(r_call_exit_callback_);
+    bool has_call_exit_callback() {
+        return has_callback_(CallExitCallbackSymbol);
     }
 
     void set_environment(SEXP r_environment) {
@@ -269,8 +267,6 @@ class Context: public Object {
         return is_defined_object(get_callback_(r_symbol));
     }
 
-    SEXP r_call_entry_callback_;
-    SEXP r_call_exit_callback_;
     SEXP r_environment_;
     std::unordered_map<std::string, std::unordered_set<std::string>> packages_;
 

@@ -9,8 +9,6 @@ set_call_exit_callback.lightr_context <- function(context, call_exit_callback, .
               is_closure(call_exit_callback) &&
               length(formals(call_exit_callback)) >= 5)
 
-    assign("call_exit_callback", call_exit_callback, envir=get_environment(context))
-
     .Call(C_context_set_call_exit_callback,
           context,
           call_exit_callback)
