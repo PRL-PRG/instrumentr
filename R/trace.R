@@ -23,7 +23,11 @@ reinstate_tracing <- function() {
 }
 
 #' @export
-trace_code <- function(code, context, environment = .GlobalEnv) {
+trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
+
+    if (quote) {
+        code <- substitute(code)
+    }
 
     stopifnot(is_lightr_context(context))
 
