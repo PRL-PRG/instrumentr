@@ -22,8 +22,8 @@ class Context: public Object {
   public:
     Context(SEXP r_environment)
         : Object()
-        , r_call_entry_callback_(get_invalid_value())
-        , r_call_exit_callback_(get_invalid_value())
+        , r_call_entry_callback_(get_undefined_object())
+        , r_call_exit_callback_(get_undefined_object())
         , r_environment_(r_environment) {
         R_PreserveObject(r_environment_);
     }
@@ -165,7 +165,7 @@ class Context: public Object {
     }
 
     bool has_call_entry_callback() const {
-        return is_valid_value(r_call_entry_callback_);
+        return is_defined_object(r_call_entry_callback_);
     }
 
     void set_call_exit_callback(SEXP r_call_exit_callback) {
@@ -177,7 +177,7 @@ class Context: public Object {
     }
 
     bool has_call_exit_callback() const {
-        return is_valid_value(r_call_exit_callback_);
+        return is_defined_object(r_call_exit_callback_);
     }
 
     void set_environment(SEXP r_environment) {
@@ -262,11 +262,11 @@ class Context: public Object {
 
     SEXP get_callback_(SEXP r_symbol) {
         SEXP value = Rf_findVarInFrame(get_environment(), r_symbol);
-        return value == R_UnboundValue ? get_invalid_value() : value;
+        return value == R_UnboundValue ? get_undefined_object() : value;
     }
 
     bool has_callback_(SEXP r_symbol) {
-        return is_valid_value(get_callback_(r_symbol));
+        return is_defined_object(get_callback_(r_symbol));
     }
 
     SEXP r_call_entry_callback_;

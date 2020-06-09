@@ -5,7 +5,7 @@ set_call_entry_callback <- function(context, call_entry_callback, ...) {
 
 set_call_entry_callback.lightr_context <- function(context, call_entry_callback, ...) {  # nolint
 
-    stopifnot(is_invalid_value(call_entry_callback) ||
+    stopifnot(is_undefined(call_entry_callback) ||
               is_closure(call_entry_callback) &&
               length(formals(call_entry_callback)) >= 5)
 

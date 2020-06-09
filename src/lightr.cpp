@@ -14,7 +14,7 @@ namespace lightr {
 std::vector<bool> tracing_status_stack;
 std::vector<ExecutionContext> execution_context_stack;
 
-SEXP InvalidValue = NULL;
+SEXP UndefinedObject = NULL;
 
 bool is_tracing_enabled() {
     return !tracing_status_stack.empty() && tracing_status_stack.back();
@@ -60,23 +60,23 @@ void clear_execution_context() {
     execution_context_stack.clear();
 }
 
-SEXP get_invalid_value() {
-    return InvalidValue;
+SEXP get_undefined_object() {
+    return UndefinedObject;
 }
 
-bool is_invalid_value(SEXP value) {
-    return value == InvalidValue;
+bool is_undefined_object(SEXP object) {
+    return object == UndefinedObject;
 }
 
-bool is_valid_value(SEXP value) {
-    return !(is_invalid_value(value));
+bool is_defined_object(SEXP value) {
+    return !(is_undefined_object(value));
 }
 
 void initialize_lightr(SEXP r_package_environment,
                        SEXP r_state_environment,
-                       SEXP r_invalid_value) {
+                       SEXP r_undefined_object) {
     initialize_utilities(r_package_environment, r_state_environment);
-    InvalidValue = r_invalid_value;
+    UndefinedObject = r_undefined_object;
     Context::initialize();
     Application::initialize();
     CallStack::initialize();

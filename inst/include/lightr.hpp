@@ -26,15 +26,15 @@ ExecutionContext pop_execution_context();
 
 void clear_execution_context();
 
-SEXP get_invalid_value();
+SEXP get_undefined_object();
 
-bool is_invalid_value(SEXP value);
+bool is_undefined_object(SEXP object);
 
-bool is_valid_value(SEXP value);
+bool is_defined_object(SEXP object);
 
 void initialize_lightr(SEXP r_package_environment,
                        SEXP r_state_environment,
-                       SEXP r_invalid_value);
+                       SEXP r_undefined_object);
 
 } // namespace lightr
 

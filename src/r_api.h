@@ -11,9 +11,12 @@ SEXP r_lightr_reinstate_tracing();
 SEXP r_lightr_trace_code(SEXP r_code, SEXP r_environment);
 SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
                                 SEXP r_state_environment,
-                                SEXP r_invalid_value);
+                                SEXP r_undefined_object);
 SEXP r_lightr_initialize_tracing();
 SEXP r_lightr_finalize_tracing();
+SEXP r_lightr_is_undefined_object(SEXP object);
+SEXP r_lightr_is_defined_object(SEXP object);
+
 SEXP r_lightr_peek_execution_context();
 SEXP r_lightr_trace_application_load(SEXP r_context, SEXP r_application);
 SEXP r_lightr_trace_application_unload(SEXP r_context, SEXP r_application);
@@ -95,11 +98,11 @@ SEXP r_context_set_package_detach_callback(SEXP r_context,
 SEXP r_context_get_package_detach_callback(SEXP r_context);
 SEXP r_context_has_package_detach_callback(SEXP r_context);
 SEXP r_context_set_function_attach_callback(SEXP r_context,
-                                           SEXP r_function_attach_callback);
+                                            SEXP r_function_attach_callback);
 SEXP r_context_get_function_attach_callback(SEXP r_context);
 SEXP r_context_has_function_attach_callback(SEXP r_context);
 SEXP r_context_set_function_detach_callback(SEXP r_context,
-                                          SEXP r_function_detach_callback);
+                                            SEXP r_function_detach_callback);
 SEXP r_context_get_function_detach_callback(SEXP r_context);
 SEXP r_context_has_function_detach_callback(SEXP r_context);
 SEXP r_context_set_call_entry_callback(SEXP r_context,

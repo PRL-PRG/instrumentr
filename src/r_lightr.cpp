@@ -42,9 +42,9 @@ SEXP r_lightr_reinstate_tracing() {
 
 SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
                                 SEXP r_state_environment,
-                                SEXP r_invalid_value) {
+                                SEXP r_undefined_object) {
     lightr::initialize_lightr(
-        r_package_environment, r_state_environment, r_invalid_value);
+        r_package_environment, r_state_environment, r_undefined_object);
     return R_NilValue;
 }
 
@@ -63,6 +63,14 @@ SEXP r_lightr_finalize_tracing() {
     lightr::clear_execution_context();
     lightr::clear_tracing();
     return R_NilValue;
+}
+
+SEXP r_lightr_is_undefined_object(SEXP object) {
+    return ScalarLogical(lightr::is_undefined_object(object));
+}
+
+SEXP r_lightr_is_defined_object(SEXP object) {
+    return ScalarLogical(lightr::is_defined_object(object));
 }
 
 SEXP r_lightr_execute_tracing_component(bool tracing_status,
@@ -315,12 +323,13 @@ SEXP r_lightr_trace_function_detach(SEXP r_context,
     SEXP result = R_NilValue;
 
     if (context->has_function_detach_callback()) {
-        result = r_lightr_trace_function(ExecutionContext::FunctionDetachCallback,
-                                         lightr::FunctionDetachCallbackSymbol,
-                                         r_context,
-                                         r_application,
-                                         r_package,
-                                         r_function);
+        result =
+            r_lightr_trace_function(ExecutionContext::FunctionDetachCallback,
+                                    lightr::FunctionDetachCallbackSymbol,
+                                    r_context,
+                                    r_application,
+                                    r_package,
+                                    r_function);
     }
 
     package->remove_function(function);

@@ -14,6 +14,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"lightr_initialize_lightr", (DL_FUNC) &r_lightr_initialize_lightr, 3},
     {"lightr_initialize_tracing", (DL_FUNC) &r_lightr_initialize_tracing, 0},
     {"lightr_finalize_tracing", (DL_FUNC) &r_lightr_finalize_tracing, 0},
+    {"lightr_is_undefined_object", (DL_FUNC)&r_lightr_is_undefined_object, 1},
+    {"lightr_is_defined_object", (DL_FUNC)&r_lightr_is_defined_object, 1},
     {"lightr_peek_execution_context", (DL_FUNC) &r_lightr_peek_execution_context, 0},
     {"lightr_trace_application_load", (DL_FUNC) &r_lightr_trace_application_load, 2},
     {"lightr_trace_application_unload", (DL_FUNC) &r_lightr_trace_application_unload, 2},
@@ -37,7 +39,6 @@ static const R_CallMethodDef CallEntries[] = {
 
     /* Context */
     {"context_create_context", (DL_FUNC) &r_context_create_context, 1},
-
     {"context_set_application_load_callback", (DL_FUNC) &r_context_set_application_load_callback, 2},
     {"context_get_application_load_callback", (DL_FUNC) &r_context_get_application_load_callback, 1},
     {"context_has_application_load_callback", (DL_FUNC) &r_context_has_application_load_callback, 1},

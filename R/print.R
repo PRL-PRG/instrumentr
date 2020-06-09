@@ -1,6 +1,6 @@
 
 #' @export
-print.lightr_invalid_value <- function(x, ...) {
+print.lightr_undefined <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 

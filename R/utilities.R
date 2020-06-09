@@ -50,10 +50,6 @@ is_lightr_function <- function(obj) {
     "lightr_function" %in% class(obj)
 }
 
-is_invalid_value <- function(obj) {
-    "lightr_invalid_value" %in% class(obj)
-}
-
 get_package_name <- function(fun) {
     name <- environmentName(environment(fun))
     if (name == "R_GlobalEnv") ".GlobalEnv"

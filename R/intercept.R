@@ -142,7 +142,7 @@ create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr
                   APPLICATION_PTR,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
-                  returnValue(INVALID_VALUE))
+                  returnValue(UNDEFINED_OBJECT))
             .Call(REINSTATE_TRACING)
         }
     }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,
@@ -152,6 +152,6 @@ create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
-            INVALID_VALUE=invalid_value,
+            UNDEFINED_OBJECT=undefined_object,
             REINSTATE_TRACING=C_lightr_reinstate_tracing))
 }

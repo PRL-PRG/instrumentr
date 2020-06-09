@@ -9,6 +9,11 @@ void Parameter::initialize() {
     R_PreserveObject(class_);
 }
 
+void Parameter::finalize() {
+    R_ReleaseObject(class_);
+    class_ = nullptr;
+}
+
 SEXP Parameter::get_class() {
     return class_;
 }

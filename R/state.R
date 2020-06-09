@@ -1,7 +1,5 @@
 intercepted_packages <- new.env(parent=emptyenv())
 
-invalid_value <- structure(new.env(parent=emptyenv()), class = c("lightr_invalid_value"))
-
 .state_env <- new.env(parent=emptyenv())
 
 add_intercepted_function <- function(package_name, function_name, value) {

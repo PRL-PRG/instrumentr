@@ -20,7 +20,7 @@ class Call: public Object {
         , r_expression_(r_expression)
         , r_environment_(r_environment)
         , active_(false)
-        , r_result_(get_invalid_value()) {
+        , r_result_(get_undefined_object()) {
         R_PreserveObject(r_expression_);
         R_PreserveObject(r_environment_);
     }
@@ -58,13 +58,13 @@ class Call: public Object {
     }
 
     bool is_successful() {
-        return is_valid_value(get_result());
+        return is_defined_object(get_result());
     }
 
     void set_result(SEXP r_result) {
         active_ = false;
         r_result_ = r_result;
-        if (is_valid_value(r_result_)) {
+        if (is_defined_object(r_result_)) {
             R_PreserveObject(r_result_);
         }
     }
@@ -86,6 +86,8 @@ class Call: public Object {
     }
 
     static void initialize();
+
+    static void finalize();
 
     static SEXP get_class();
 

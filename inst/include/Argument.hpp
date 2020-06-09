@@ -38,7 +38,7 @@ class Argument: public Object {
 
         /* promise is not evaluated  */
         if (promise_result == R_UnboundValue) {
-            return get_invalid_value();
+            return get_undefined_object();
         }
         /* promise is evaluated  */
         else {

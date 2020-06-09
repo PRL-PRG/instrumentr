@@ -28,8 +28,8 @@ to_string.NULL <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_invalid_value <- function(object, ...) {
-    "<invalid value>"
+to_string.lightr_undefined <- function(object, ...) {
+    "<undefined>"
 }
 
 #' @export
@@ -174,7 +174,7 @@ to_string.lightr_call_stack <- function(object, ...) {
 to_string.lightr_result <- function(object, ...) {
 
     representation <-
-      if (is_valid(object)) {
+      if (is_value(object)) {
           sprintf("Result(value=%s)", to_string(get_value(object)))
       }
       else {

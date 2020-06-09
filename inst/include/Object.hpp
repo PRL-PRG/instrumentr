@@ -9,7 +9,7 @@ namespace lightr {
 
 class Object {
   public:
-    Object(): id_(Object::get_next_id_()), r_data_(get_invalid_value()) {
+    Object(): id_(Object::get_next_id_()), r_data_(get_undefined_object()) {
     }
 
     virtual ~Object() {
@@ -33,11 +33,11 @@ class Object {
 
     void remove_data() {
         R_ReleaseObject(r_data_);
-        r_data_ = get_invalid_value();
+        r_data_ = get_undefined_object();
     }
 
     bool has_data() const {
-        return is_valid_value(r_data_);
+        return is_defined_object(r_data_);
     }
 
     static SEXP create_class(const char* subclass);

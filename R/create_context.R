@@ -16,51 +16,51 @@ create_context <- function(application_load_callback,
                            functions = character(0)) {
 
     if (missing(application_load_callback)) {
-        application_load_callback <- invalid_value
+        application_load_callback <- undefined_object
     }
 
     if (missing(application_unload_callback)) {
-        application_unload_callback <- invalid_value
+        application_unload_callback <- undefined_object
     }
 
     if (missing(application_attach_callback)) {
-        application_attach_callback <- invalid_value
+        application_attach_callback <- undefined_object
     }
 
     if (missing(application_detach_callback)) {
-        application_detach_callback <- invalid_value
+        application_detach_callback <- undefined_object
     }
 
     if (missing(package_load_callback)) {
-        package_load_callback <- invalid_value
+        package_load_callback <- undefined_object
     }
 
     if (missing(package_unload_callback)) {
-        package_unload_callback <- invalid_value
+        package_unload_callback <- undefined_object
     }
 
     if (missing(package_attach_callback)) {
-        package_attach_callback <- invalid_value
+        package_attach_callback <- undefined_object
     }
 
     if (missing(package_detach_callback)) {
-        package_detach_callback <- invalid_value
+        package_detach_callback <- undefined_object
     }
 
     if (missing(function_attach_callback)) {
-        function_attach_callback <- invalid_value
+        function_attach_callback <- undefined_object
     }
 
     if (missing(function_detach_callback)) {
-        function_detach_callback <- invalid_value
+        function_detach_callback <- undefined_object
     }
 
     if (missing(call_entry_callback)) {
-        call_entry_callback <- invalid_value
+        call_entry_callback <- undefined_object
     }
 
     if (missing(call_exit_callback)) {
-        call_exit_callback <- invalid_value
+        call_exit_callback <- undefined_object
     }
 
     stopifnot(is_vector_character(packages))
