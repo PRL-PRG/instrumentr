@@ -73,10 +73,10 @@ SEXP r_lightr_is_defined_object(SEXP object) {
     return ScalarLogical(lightr::is_defined_object(object));
 }
 
-SEXP r_lightr_execute_tracing_component(bool tracing_status,
-                                        ExecutionContext execution_context,
-                                        SEXP r_code,
-                                        SEXP r_environment) {
+SEXP r_lightr_trace(bool tracing_status,
+                    ExecutionContext execution_context,
+                    SEXP r_code,
+                    SEXP r_environment) {
     lightr::set_tracing_status(tracing_status);
     lightr::push_execution_context(execution_context);
 
@@ -89,7 +89,7 @@ SEXP r_lightr_execute_tracing_component(bool tracing_status,
 }
 
 SEXP r_lightr_trace_code(SEXP r_code, SEXP r_environment) {
-    return r_lightr_execute_tracing_component(
+    return r_lightr_trace(
         true, ExecutionContext::Application, r_code, r_environment);
 }
 
@@ -100,11 +100,11 @@ SEXP r_lightr_trace_application(ExecutionContext execution_context,
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP r_environment = context->get_environment();
 
-    SEXP result = r_lightr_execute_tracing_component(
-        false,
-        execution_context,
-        Rf_lang3(r_callback_symbol, r_context, r_application),
-        r_environment);
+    SEXP result =
+        r_lightr_trace(false,
+                       execution_context,
+                       Rf_lang3(r_callback_symbol, r_context, r_application),
+                       r_environment);
 
     return result;
 }
@@ -179,7 +179,7 @@ SEXP r_lightr_trace_package(ExecutionContext execution_context,
     PackageSPtr package = Package::from_sexp(r_package);
 
     SEXP r_environment = context->get_environment();
-    SEXP result = r_lightr_execute_tracing_component(
+    SEXP result = r_lightr_trace(
         false,
         execution_context,
         Rf_lang4(r_callback_symbol, r_context, r_application, r_package),
@@ -277,7 +277,7 @@ SEXP r_lightr_trace_function(ExecutionContext execution_context,
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP r_environment = context->get_environment();
 
-    SEXP result = r_lightr_execute_tracing_component(
+    SEXP result = r_lightr_trace(
         false,
         execution_context,
         Rf_lang5(
@@ -347,15 +347,15 @@ SEXP r_lightr_trace_call(ExecutionContext execution_context,
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP r_environment = context->get_environment();
 
-    SEXP result = r_lightr_execute_tracing_component(false,
-                                                     execution_context,
-                                                     Rf_lang6(r_callback_symbol,
-                                                              r_context,
-                                                              r_application,
-                                                              r_package,
-                                                              r_function,
-                                                              r_call),
-                                                     r_environment);
+    SEXP result = r_lightr_trace(false,
+                                 execution_context,
+                                 Rf_lang6(r_callback_symbol,
+                                          r_context,
+                                          r_application,
+                                          r_package,
+                                          r_function,
+                                          r_call),
+                                 r_environment);
 
     return result;
 }
