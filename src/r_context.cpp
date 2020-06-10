@@ -1,8 +1,8 @@
 #include "../inst/include/Context.hpp"
 #include "r_api.h"
 
-using lightr::Context;
-using lightr::ContextSPtr;
+using instrumentr::Context;
+using instrumentr::ContextSPtr;
 
 SEXP r_context_create_context(SEXP r_environment) {
     ContextSPtr context = std::make_shared<Context>(r_environment);

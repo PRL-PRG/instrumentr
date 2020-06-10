@@ -5,6 +5,6 @@ get_position <- function(object, ...) {
 }
 
 #' @export
-get_position.lightr_parameter <- function(object, ...) {
+get_position.instrumentr_parameter <- function(object, ...) {
     .Call(C_parameter_get_position, object)
 }

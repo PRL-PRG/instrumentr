@@ -5,6 +5,6 @@ has_data <- function(object, ...) {
 }
 
 #' @export
-has_data.lightr_object <- function(object, ...) {
+has_data.instrumentr_object <- function(object, ...) {
     .Call(C_object_has_data, object)
 }

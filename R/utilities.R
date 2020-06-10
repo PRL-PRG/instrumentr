@@ -34,20 +34,20 @@ is_language <- function(obj) {
     is.language(obj)
 }
 
-is_lightr_context <- function(obj) {
-    "lightr_context" %in% class(obj)
+is_instrumentr_context <- function(obj) {
+    "instrumentr_context" %in% class(obj)
 }
 
-is_lightr_application <- function(obj) {
-    "lightr_application" %in% class(obj)
+is_instrumentr_application <- function(obj) {
+    "instrumentr_application" %in% class(obj)
 }
 
-is_lightr_package <- function(obj) {
-    "lightr_package" %in% class(obj)
+is_instrumentr_package <- function(obj) {
+    "instrumentr_package" %in% class(obj)
 }
 
-is_lightr_function <- function(obj) {
-    "lightr_function" %in% class(obj)
+is_instrumentr_function <- function(obj) {
+    "instrumentr_function" %in% class(obj)
 }
 
 get_package_name <- function(fun) {

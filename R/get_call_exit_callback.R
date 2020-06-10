@@ -5,6 +5,6 @@ get_call_exit_callback <- function(context, ...) {
 }
 
 #' @export
-get_call_exit_callback.lightr_context <- function(context, ...) { # nolint
+get_call_exit_callback.instrumentr_context <- function(context, ...) { # nolint
     .Call(C_context_get_call_exit_callback, context)
 }

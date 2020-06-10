@@ -28,7 +28,7 @@ to_string.NULL <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_undefined <- function(object, ...) {
+to_string.instrumentr_undefined <- function(object, ...) {
     "<undefined>"
 }
 
@@ -38,7 +38,7 @@ to_string.call <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_context <- function(object, ...) {
+to_string.instrumentr_context <- function(object, ...) {
 
     packages <- get_traced_packages(object)
     functions <- character(0)
@@ -88,7 +88,7 @@ to_string.lightr_context <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_application <- function(object, ...) {
+to_string.instrumentr_application <- function(object, ...) {
     representation <- sprintf("Application(name='%s', directory='%s', environment=%s)",
                               get_name(object),
                               get_directory(object),
@@ -98,7 +98,7 @@ to_string.lightr_application <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_package <- function(object, ...) {
+to_string.instrumentr_package <- function(object, ...) {
     representation <- sprintf("Package(name='%s', directory='%s', environment=%s)",
                               get_name(object),
                               get_directory(object),
@@ -108,7 +108,7 @@ to_string.lightr_package <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_function <- function(object, ...) {
+to_string.instrumentr_function <- function(object, ...) {
     representation <- sprintf("Function(name='%s', parameter_count=%d, definition=%s)",
                               get_name(object),
                               get_parameter_count(object),
@@ -118,7 +118,7 @@ to_string.lightr_function <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_call <- function(object, ...) {
+to_string.instrumentr_call <- function(object, ...) {
     representation <- sprintf("Call(expression=%s, environment=%s)",
                               to_string(get_expression(object)),
                               to_string(get_environment(object)))
@@ -127,7 +127,7 @@ to_string.lightr_call <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_parameter <- function(object, ...) {
+to_string.instrumentr_parameter <- function(object, ...) {
     representation <- sprintf("Parameter(name='%s', position=%d, missing=%s, vararg=%s)",
                               get_name(object),
                               get_position(object),
@@ -138,7 +138,7 @@ to_string.lightr_parameter <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_argument <- function(object, ...) {
+to_string.instrumentr_argument <- function(object, ...) {
     name <- get_name(object)
 
     name_str <- ""
@@ -162,7 +162,7 @@ to_string.lightr_argument <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_call_stack <- function(object, ...) {
+to_string.instrumentr_call_stack <- function(object, ...) {
     size <- get_size(object)
 
     representation <- sprintf("CallStack(%d frames)", size)
@@ -191,7 +191,7 @@ to_string.lightr_call_stack <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_result <- function(object, ...) {
+to_string.instrumentr_result <- function(object, ...) {
 
     representation <-
       if (is_value(object)) {
@@ -205,7 +205,7 @@ to_string.lightr_result <- function(object, ...) {
 }
 
 #' @export
-to_string.lightr_error <- function(object, ...) {
+to_string.instrumentr_error <- function(object, ...) {
     representation <- sprintf("Error(source='%s', message='%s', call=%s)",
                               get_source(object),
                               get_message(object),

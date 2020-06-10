@@ -5,6 +5,6 @@ get_functions <- function(object, ...) {
 }
 
 #' @export
-get_functions.lightr_package <- function(object, ...) {
+get_functions.instrumentr_package <- function(object, ...) {
     .Call(C_package_get_functions, object)
 }

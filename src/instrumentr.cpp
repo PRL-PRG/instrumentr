@@ -1,4 +1,4 @@
-#include "../inst/include/lightr.hpp"
+#include "../inst/include/instrumentr.hpp"
 #include "../inst/include/Context.hpp"
 #include "../inst/include/Application.hpp"
 #include "../inst/include/Package.hpp"
@@ -9,7 +9,7 @@
 #include "utilities.h"
 #include <vector>
 
-namespace lightr {
+namespace instrumentr {
 
 std::vector<bool> tracing_status_stack;
 std::vector<ExecutionContext> execution_context_stack;
@@ -72,7 +72,7 @@ bool is_defined_object(SEXP value) {
     return !(is_undefined_object(value));
 }
 
-void initialize_lightr(SEXP r_package_environment,
+void initialize_instrumentr(SEXP r_package_environment,
                        SEXP r_state_environment,
                        SEXP r_undefined_object) {
     initialize_utilities(r_package_environment, r_state_environment);
@@ -87,4 +87,4 @@ void initialize_lightr(SEXP r_package_environment,
     Argument::initialize();
 }
 
-} // namespace lightr
+} // namespace instrumentr

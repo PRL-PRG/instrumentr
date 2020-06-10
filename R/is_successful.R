@@ -5,6 +5,6 @@ is_successful <- function(object, ...) {
 }
 
 #' @export
-is_successful.lightr_call <- function(object, ...) {
+is_successful.instrumentr_call <- function(object, ...) {
     .Call(C_call_is_successful, object)
 }

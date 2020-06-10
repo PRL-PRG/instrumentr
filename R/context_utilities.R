@@ -1,6 +1,6 @@
 
 #' @export
-get_installed_package_names <- function(exclude = "lightr") {
+get_installed_package_names <- function(exclude = "instrumentr") {
 
     stopifnot(is_vector_character(exclude))
 

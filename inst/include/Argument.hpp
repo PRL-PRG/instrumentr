@@ -1,10 +1,10 @@
-#ifndef LIGHTR_ARGUMENT_HPP
-#define LIGHTR_ARGUMENT_HPP
+#ifndef INSTRUMENTR_ARGUMENT_HPP
+#define INSTRUMENTR_ARGUMENT_HPP
 
 #include <string>
 #include "Object.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 class Argument: public Object {
   public:
@@ -65,6 +65,6 @@ class Argument: public Object {
 
 using ArgumentSPtr = std::shared_ptr<Argument>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_ARGUMENT_HPP */
+#endif /* INSTRUMENTR_ARGUMENT_HPP */

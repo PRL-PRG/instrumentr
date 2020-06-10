@@ -1,11 +1,11 @@
-#ifndef LIGHTR_OBJECT_HPP
-#define LIGHTR_OBJECT_HPP
+#ifndef INSTRUMENTR_OBJECT_HPP
+#define INSTRUMENTR_OBJECT_HPP
 
 #include <memory>
 #include <string>
-#include "lightr.hpp"
+#include "instrumentr.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 class Object {
   public:
@@ -56,6 +56,6 @@ class Object {
 
 using ObjectSPtr = std::shared_ptr<Object>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_OBJECT_HPP */
+#endif /* INSTRUMENTR_OBJECT_HPP */

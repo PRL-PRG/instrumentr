@@ -5,7 +5,7 @@ set_package_attach_callback <- function(context, package_attach_callback, ...) {
 }
 
 #' @export
-set_package_attach_callback.lightr_context <- function(context, package_attach_callback, ...) { # nolint
+set_package_attach_callback.instrumentr_context <- function(context, package_attach_callback, ...) { # nolint
 
     stopifnot(is_undefined(package_attach_callback) ||
               is_closure(package_attach_callback) &&

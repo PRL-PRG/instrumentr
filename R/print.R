@@ -1,50 +1,50 @@
 
 #' @export
-print.lightr_undefined <- function(x, ...) {
+print.instrumentr_undefined <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_context <- function(x, ...) {
+print.instrumentr_context <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_application <- function(x, ...) {
+print.instrumentr_application <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_package <- function(x, ...) {
+print.instrumentr_package <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_function <- function(x, ...) {
+print.instrumentr_function <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_call <- function(x, ...) {
+print.instrumentr_call <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_parameter <- function(x, ...) {
+print.instrumentr_parameter <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_argument <- function(x, ...) {
+print.instrumentr_argument <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_call_stack <- function(x, ...) {
+print.instrumentr_call_stack <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
 #' @export
-print.lightr_result <- function(x, ...) {
+print.instrumentr_result <- function(x, ...) {
     cat(to_string(x), "\n")
 }

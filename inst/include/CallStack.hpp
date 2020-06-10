@@ -1,11 +1,11 @@
-#ifndef LIGHTR_CALL_STACK_HPP
-#define LIGHTR_CALL_STACK_HPP
+#ifndef INSTRUMENTR_CALL_STACK_HPP
+#define INSTRUMENTR_CALL_STACK_HPP
 
 #include <vector>
 #include "Call.hpp"
 #include "Object.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 class CallStack: public Object {
   public:
@@ -50,6 +50,6 @@ class CallStack: public Object {
 
 using CallStackSPtr = std::shared_ptr<CallStack>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_CALL_STACK_HPP */
+#endif /* INSTRUMENTR_CALL_STACK_HPP */

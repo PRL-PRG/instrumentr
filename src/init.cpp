@@ -5,30 +5,30 @@
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    /* lightr */
-    {"lightr_is_tracing_enabled", (DL_FUNC) &r_lightr_is_tracing_enabled, 0},
-    {"lightr_disable_tracing", (DL_FUNC) &r_lightr_disable_tracing, 0},
-    {"lightr_enable_tracing", (DL_FUNC) &r_lightr_enable_tracing, 0},
-    {"lightr_reinstate_tracing", (DL_FUNC) &r_lightr_reinstate_tracing, 0},
-    {"lightr_trace_code", (DL_FUNC) &r_lightr_trace_code, 2},
-    {"lightr_initialize_lightr", (DL_FUNC) &r_lightr_initialize_lightr, 3},
-    {"lightr_initialize_tracing", (DL_FUNC) &r_lightr_initialize_tracing, 0},
-    {"lightr_finalize_tracing", (DL_FUNC) &r_lightr_finalize_tracing, 0},
-    {"lightr_is_undefined_object", (DL_FUNC)&r_lightr_is_undefined_object, 1},
-    {"lightr_is_defined_object", (DL_FUNC)&r_lightr_is_defined_object, 1},
-    {"lightr_peek_execution_context", (DL_FUNC) &r_lightr_peek_execution_context, 0},
-    {"lightr_trace_application_load", (DL_FUNC) &r_lightr_trace_application_load, 2},
-    {"lightr_trace_application_unload", (DL_FUNC) &r_lightr_trace_application_unload, 2},
-    {"lightr_trace_application_attach", (DL_FUNC) &r_lightr_trace_application_attach, 2},
-    {"lightr_trace_application_detach", (DL_FUNC) &r_lightr_trace_application_detach, 2},
-    {"lightr_trace_package_load", (DL_FUNC) &r_lightr_trace_package_load, 3},
-    {"lightr_trace_package_unload", (DL_FUNC) &r_lightr_trace_package_unload, 3},
-    {"lightr_trace_package_attach", (DL_FUNC) &r_lightr_trace_package_attach, 3},
-    {"lightr_trace_package_detach", (DL_FUNC) &r_lightr_trace_package_detach, 3},
-    {"lightr_trace_function_attach", (DL_FUNC) &r_lightr_trace_function_attach, 4},
-    {"lightr_trace_function_detach", (DL_FUNC) &r_lightr_trace_function_detach, 4},
-    {"lightr_trace_call_entry", (DL_FUNC) &r_lightr_trace_call_entry, 5},
-    {"lightr_trace_call_exit", (DL_FUNC) &r_lightr_trace_call_exit, 5},
+    /* instrumentr */
+    {"instrumentr_is_tracing_enabled", (DL_FUNC) &r_instrumentr_is_tracing_enabled, 0},
+    {"instrumentr_disable_tracing", (DL_FUNC) &r_instrumentr_disable_tracing, 0},
+    {"instrumentr_enable_tracing", (DL_FUNC) &r_instrumentr_enable_tracing, 0},
+    {"instrumentr_reinstate_tracing", (DL_FUNC) &r_instrumentr_reinstate_tracing, 0},
+    {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 2},
+    {"instrumentr_initialize_instrumentr", (DL_FUNC) &r_instrumentr_initialize_instrumentr, 3},
+    {"instrumentr_initialize_tracing", (DL_FUNC) &r_instrumentr_initialize_tracing, 0},
+    {"instrumentr_finalize_tracing", (DL_FUNC) &r_instrumentr_finalize_tracing, 0},
+    {"instrumentr_is_undefined_object", (DL_FUNC)&r_instrumentr_is_undefined_object, 1},
+    {"instrumentr_is_defined_object", (DL_FUNC)&r_instrumentr_is_defined_object, 1},
+    {"instrumentr_peek_execution_context", (DL_FUNC) &r_instrumentr_peek_execution_context, 0},
+    {"instrumentr_trace_application_load", (DL_FUNC) &r_instrumentr_trace_application_load, 2},
+    {"instrumentr_trace_application_unload", (DL_FUNC) &r_instrumentr_trace_application_unload, 2},
+    {"instrumentr_trace_application_attach", (DL_FUNC) &r_instrumentr_trace_application_attach, 2},
+    {"instrumentr_trace_application_detach", (DL_FUNC) &r_instrumentr_trace_application_detach, 2},
+    {"instrumentr_trace_package_load", (DL_FUNC) &r_instrumentr_trace_package_load, 3},
+    {"instrumentr_trace_package_unload", (DL_FUNC) &r_instrumentr_trace_package_unload, 3},
+    {"instrumentr_trace_package_attach", (DL_FUNC) &r_instrumentr_trace_package_attach, 3},
+    {"instrumentr_trace_package_detach", (DL_FUNC) &r_instrumentr_trace_package_detach, 3},
+    {"instrumentr_trace_function_attach", (DL_FUNC) &r_instrumentr_trace_function_attach, 4},
+    {"instrumentr_trace_function_detach", (DL_FUNC) &r_instrumentr_trace_function_detach, 4},
+    {"instrumentr_trace_call_entry", (DL_FUNC) &r_instrumentr_trace_call_entry, 5},
+    {"instrumentr_trace_call_exit", (DL_FUNC) &r_instrumentr_trace_call_exit, 5},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
@@ -137,7 +137,7 @@ static const R_CallMethodDef CallEntries[] = {
 
     {NULL, NULL, 0}};
 
-void R_init_lightr(DllInfo* dll) {
+void R_init_instrumentr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

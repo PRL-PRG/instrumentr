@@ -1,11 +1,11 @@
 #include "../inst/include/Call.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 SEXP Call::class_ = nullptr;
 
 void Call::initialize() {
-    class_ = Object::create_class("lightr_call");
+    class_ = Object::create_class("instrumentr_call");
     R_PreserveObject(class_);
 }
 
@@ -40,4 +40,4 @@ void Call::destroy_sexp(SEXP r_call) {
     R_SetExternalPtrAddr(r_call, nullptr);
 }
 
-} // namespace lightr
+} // namespace instrumentr

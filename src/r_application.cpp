@@ -2,12 +2,12 @@
 #include "../inst/include/Package.hpp"
 #include "r_api.h"
 
-using lightr::Application;
-using lightr::ApplicationSPtr;
-using lightr::CallStack;
-using lightr::CallStackSPtr;
-using lightr::Package;
-using lightr::PackageSPtr;
+using instrumentr::Application;
+using instrumentr::ApplicationSPtr;
+using instrumentr::CallStack;
+using instrumentr::CallStackSPtr;
+using instrumentr::Package;
+using instrumentr::PackageSPtr;
 
 SEXP r_application_create_application(SEXP r_name,
                                       SEXP r_directory,

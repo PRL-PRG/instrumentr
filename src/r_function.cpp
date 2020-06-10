@@ -3,8 +3,8 @@
 #include "../inst/include/Function.hpp"
 #include "r_api.h"
 
-using lightr::Function;
-using lightr::FunctionSPtr;
+using instrumentr::Function;
+using instrumentr::FunctionSPtr;
 
 SEXP r_function_create_function(SEXP r_name,
                                 SEXP r_parameter_count,

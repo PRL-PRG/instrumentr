@@ -5,6 +5,6 @@ get_packages <- function(application, ...) {
 }
 
 #' @export
-get_packages.lightr_application <- function(application, ...) { # nolint
+get_packages.instrumentr_application <- function(application, ...) { # nolint
     .Call(C_application_get_packages, application)
 }

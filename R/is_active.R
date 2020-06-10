@@ -5,6 +5,6 @@ is_active <- function(object, ...) {
 }
 
 #' @export
-is_active.lightr_call <- function(object, ...) {
+is_active.instrumentr_call <- function(object, ...) {
     .Call(C_call_is_active, object)
 }

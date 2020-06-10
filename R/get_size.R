@@ -4,6 +4,6 @@ get_size <- function(call_stack, ...) {
 }
 
 #' @export
-get_size.lightr_call_stack <- function(call_stack, ...) {
+get_size.instrumentr_call_stack <- function(call_stack, ...) {
     .Call(C_call_stack_get_size, call_stack)
 }

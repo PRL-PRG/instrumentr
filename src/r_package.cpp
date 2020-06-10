@@ -3,10 +3,10 @@
 #include "../inst/include/Function.hpp"
 #include "r_api.h"
 
-using lightr::Function;
-using lightr::FunctionSPtr;
-using lightr::Package;
-using lightr::PackageSPtr;
+using instrumentr::Function;
+using instrumentr::FunctionSPtr;
+using instrumentr::Package;
+using instrumentr::PackageSPtr;
 
 SEXP r_package_create_package(SEXP r_package_name,
                               SEXP r_package_directory,

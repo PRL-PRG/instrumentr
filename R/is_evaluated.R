@@ -5,6 +5,6 @@ is_evaluated <- function(argument, ...) {
 }
 
 #' @export
-is_evaluated.lightr_argument <- function(argument, ...) {
+is_evaluated.instrumentr_argument <- function(argument, ...) {
     .Call(C_argument_is_evaluated, argument)
 }

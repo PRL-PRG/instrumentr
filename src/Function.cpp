@@ -1,11 +1,11 @@
 #include "../inst/include/Function.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 SEXP Function::class_ = nullptr;
 
 void Function::initialize() {
-    class_ = mkString("lightr_function");
+    class_ = mkString("instrumentr_function");
     R_PreserveObject(class_);
 }
 
@@ -40,4 +40,4 @@ void Function::destroy_sexp(SEXP r_function) {
     R_SetExternalPtrAddr(r_function, nullptr);
 }
 
-} // namespace lightr
+} // namespace instrumentr

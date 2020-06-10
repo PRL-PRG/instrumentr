@@ -1,12 +1,12 @@
-#ifndef LIGHTR_APPLICATION_HPP
-#define LIGHTR_APPLICATION_HPP
+#ifndef INSTRUMENTR_APPLICATION_HPP
+#define INSTRUMENTR_APPLICATION_HPP
 
 #include <vector>
 #include "Object.hpp"
 #include "Package.hpp"
 #include "CallStack.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 class Application: public Object {
   public:
@@ -76,8 +76,6 @@ class Application: public Object {
 
     static void initialize();
 
-    static void finalize();
-
     static SEXP get_class();
 
     static std::shared_ptr<Application> from_sexp(SEXP r_application);
@@ -99,6 +97,6 @@ class Application: public Object {
 
 using ApplicationSPtr = std::shared_ptr<Application>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_APPLICATION_HPP */
+#endif /* INSTRUMENTR_APPLICATION_HPP */

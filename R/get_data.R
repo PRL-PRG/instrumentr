@@ -5,6 +5,6 @@ get_data <- function(object, ...) {
 }
 
 #' @export
-get_data.lightr_object <- function(object, ...) {
+get_data.instrumentr_object <- function(object, ...) {
     .Call(C_object_get_data, object)
 }

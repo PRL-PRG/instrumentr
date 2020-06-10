@@ -4,6 +4,6 @@ peek_frame <- function(call_stack, position, ...) {
 }
 
 #' @export
-peek_frame.lightr_call_stack <- function(call_stack, position, ...) {
+peek_frame.instrumentr_call_stack <- function(call_stack, position, ...) {
     .Call(C_call_stack_peek_frame, call_stack, position)
 }

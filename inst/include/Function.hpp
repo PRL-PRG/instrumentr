@@ -1,10 +1,10 @@
-#ifndef LIGHTR_FUNCTION_HPP
-#define LIGHTR_FUNCTION_HPP
+#ifndef INSTRUMENTR_FUNCTION_HPP
+#define INSTRUMENTR_FUNCTION_HPP
 
 #include <string>
 #include "Object.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 class Function: public Object {
   public:
@@ -52,6 +52,6 @@ class Function: public Object {
 
 using FunctionSPtr = std::shared_ptr<Function>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_FUNCTION_HPP */
+#endif /* INSTRUMENTR_FUNCTION_HPP */

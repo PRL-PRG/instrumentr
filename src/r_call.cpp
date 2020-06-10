@@ -4,14 +4,14 @@
 #include "r_api.h"
 #include "utilities.h"
 
-using lightr::Argument;
-using lightr::ArgumentSPtr;
-using lightr::Call;
-using lightr::CallSPtr;
-using lightr::Function;
-using lightr::FunctionSPtr;
-using lightr::Parameter;
-using lightr::ParameterSPtr;
+using instrumentr::Argument;
+using instrumentr::ArgumentSPtr;
+using instrumentr::Call;
+using instrumentr::CallSPtr;
+using instrumentr::Function;
+using instrumentr::FunctionSPtr;
+using instrumentr::Parameter;
+using instrumentr::ParameterSPtr;
 
 ArgumentSPtr create_argument(SEXP r_argument_name,
                              SEXP r_argument_value,

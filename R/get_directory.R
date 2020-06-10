@@ -5,11 +5,11 @@ get_directory <- function(object, ...) {
 }
 
 #' @export
-get_directory.lightr_application <- function(object, ...) { # nolint
+get_directory.instrumentr_application <- function(object, ...) { # nolint
     .Call(C_application_get_directory, object)
 }
 
 #' @export
-get_directory.lightr_package <- function(object, ...) {
+get_directory.instrumentr_package <- function(object, ...) {
     .Call(C_package_get_directory, object)
 }

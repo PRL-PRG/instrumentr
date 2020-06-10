@@ -7,16 +7,16 @@ insert_interception <- function(context_ptr, application_ptr) {
 
         package_ptr <- create_package(package_name, package_dir, package_env)
 
-        .Call(C_lightr_trace_package_load, context_ptr, application_ptr, package_ptr)
+        .Call(C_instrumentr_trace_package_load, context_ptr, application_ptr, package_ptr)
 
         intercept_package(context_ptr, application_ptr, package_ptr)
 
-        .Call(C_lightr_trace_package_attach, context_ptr, application_ptr, package_ptr)
+        .Call(C_instrumentr_trace_package_attach, context_ptr, application_ptr, package_ptr)
     }
 
     traced_packages <- get_traced_packages(context_ptr)
 
-    remove_packages <- c(".GlobalEnv", "Autoloads", "tools:callr", "tools:rstudio", "lightr")
+    remove_packages <- c(".GlobalEnv", "Autoloads", "tools:callr", "tools:rstudio", "instrumentr")
 
     loaded_packages <- setdiff(remove_package_prefix(search()), remove_packages)
 
@@ -56,7 +56,7 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
         function_ptr <- create_function(function_name, length(formals(function_obj)), function_obj)
 
-        .Call(C_lightr_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
+        .Call(C_instrumentr_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
 
         package <- intercept_function(context_ptr, application_ptr, package_ptr, function_ptr)
 
@@ -122,15 +122,15 @@ create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr
                   .Call(CREATE_CALL, FUNCTION_PTR, sys.call(), environment()))
             .Call(REINSTATE_TRACING)
         }
-    }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,
-            DISABLE_TRACING=C_lightr_disable_tracing,
-            TRACE_CALL_ENTRY=C_lightr_trace_call_entry,
+    }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
+            DISABLE_TRACING=C_instrumentr_disable_tracing,
+            TRACE_CALL_ENTRY=C_instrumentr_trace_call_entry,
             CONTEXT_PTR=context_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
             CREATE_CALL=C_call_create_call,
-            REINSTATE_TRACING=C_lightr_reinstate_tracing))
+            REINSTATE_TRACING=C_instrumentr_reinstate_tracing))
 }
 
 
@@ -146,13 +146,13 @@ create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr
                   returnValue(UNDEFINED_OBJECT))
             .Call(REINSTATE_TRACING)
         }
-    }, list(IS_TRACING_ENABLED=C_lightr_is_tracing_enabled,
-            DISABLE_TRACING=C_lightr_disable_tracing,
-            TRACE_CALL_EXIT=C_lightr_trace_call_exit,
+    }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
+            DISABLE_TRACING=C_instrumentr_disable_tracing,
+            TRACE_CALL_EXIT=C_instrumentr_trace_call_exit,
             CONTEXT_PTR=context_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
             UNDEFINED_OBJECT=undefined_object,
-            REINSTATE_TRACING=C_lightr_reinstate_tracing))
+            REINSTATE_TRACING=C_instrumentr_reinstate_tracing))
 }

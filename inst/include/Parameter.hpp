@@ -1,12 +1,12 @@
-#ifndef LIGHTR_PARAMETER_HPP
-#define LIGHTR_PARAMETER_HPP
+#ifndef INSTRUMENTR_PARAMETER_HPP
+#define INSTRUMENTR_PARAMETER_HPP
 
 #include <string>
 #include <vector>
 #include "Object.hpp"
 #include "Argument.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 class Parameter: public Object {
   public:
@@ -62,6 +62,6 @@ class Parameter: public Object {
 
 using ParameterSPtr = std::shared_ptr<Parameter>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_PARAMETER_HPP */
+#endif /* INSTRUMENTR_PARAMETER_HPP */

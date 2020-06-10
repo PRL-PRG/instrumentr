@@ -5,6 +5,6 @@ get_message <- function(object, ...) {
 }
 
 #' @export
-get_message.lightr_error <- function(object, ...) {
+get_message.instrumentr_error <- function(object, ...) {
     object$message
 }

@@ -5,6 +5,6 @@ is_value <- function(object, ...) {
 }
 
 #' @export
-is_value.lightr_result <- function(object, ...) {
+is_value.instrumentr_result <- function(object, ...) {
     is_defined(get_value(object))
 }

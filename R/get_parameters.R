@@ -5,6 +5,6 @@ get_parameters <- function(call, ...) {
 }
 
 #' @export
-get_parameters.lightr_call <- function(call, ...) {
+get_parameters.instrumentr_call <- function(call, ...) {
     .Call(C_call_get_parameters, call)
 }

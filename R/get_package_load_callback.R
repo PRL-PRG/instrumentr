@@ -5,7 +5,7 @@ get_package_load_callback <- function(context, ...) {
 }
 
 #' @export
-get_package_load_callback.lightr_context <- function(context, ...) { # nolint
+get_package_load_callback.instrumentr_context <- function(context, ...) { # nolint
     .Call(C_context_get_package_load_callback, context)
 }
 

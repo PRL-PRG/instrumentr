@@ -3,9 +3,9 @@
 #include "../inst/include/Argument.hpp"
 #include "r_api.h"
 
-using lightr::Argument;
-using lightr::Parameter;
-using lightr::ParameterSPtr;
+using instrumentr::Argument;
+using instrumentr::Parameter;
+using instrumentr::ParameterSPtr;
 
 SEXP r_parameter_get_name(SEXP r_parameter) {
     ParameterSPtr parameter = Parameter::from_sexp(r_parameter);

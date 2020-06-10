@@ -6,11 +6,11 @@ build: document
 	R CMD build .
 
 check: build
-	R CMD check lightr*tar.gz
+	R CMD check instrumentr*tar.gz
 
 clean:
-	-rm -f lightr*tar.gz
-	-rm -fr lightr.Rcheck
+	-rm -f instrumentr*tar.gz
+	-rm -fr instrumentr.Rcheck
 	-rm -rf src/*.o src/*.so
 
 document:

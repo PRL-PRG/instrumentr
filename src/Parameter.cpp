@@ -1,11 +1,11 @@
 #include "../inst/include/Parameter.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 SEXP Parameter::class_ = nullptr;
 
 void Parameter::initialize() {
-    class_ = Object::create_class("lightr_parameter");
+    class_ = Object::create_class("instrumentr_parameter");
     R_PreserveObject(class_);
 }
 
@@ -40,4 +40,4 @@ void Parameter::destroy_sexp(SEXP r_parameter) {
     R_SetExternalPtrAddr(r_parameter, nullptr);
 }
 
-} // namespace lightr
+} // namespace instrumentr

@@ -5,7 +5,7 @@ set_application_unload_callback <- function(context, application_unload_callback
 }
 
 #' @export
-set_application_unload_callback.lightr_context <- function(context, application_unload_callback, ...) {  # nolint
+set_application_unload_callback.instrumentr_context <- function(context, application_unload_callback, ...) {  # nolint
 
     stopifnot(is_undefined(application_unload_callback) ||
               is_closure(application_unload_callback) &&

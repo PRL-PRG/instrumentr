@@ -5,6 +5,6 @@ is_vararg <- function(object, ...) {
 }
 
 #' @export
-is_vararg.lightr_parameter <- function(object, ...) {
+is_vararg.instrumentr_parameter <- function(object, ...) {
     .Call(C_parameter_is_vararg, object)
 }

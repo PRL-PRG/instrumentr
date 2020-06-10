@@ -1,11 +1,11 @@
 #include "../inst/include/CallStack.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 SEXP CallStack::class_ = nullptr;
 
 void CallStack::initialize() {
-    class_ = Object::create_class("lightr_call_stack");
+    class_ = Object::create_class("instrumentr_call_stack");
     R_PreserveObject(class_);
 }
 
@@ -40,4 +40,4 @@ void CallStack::destroy_sexp(SEXP r_call_stack) {
     R_SetExternalPtrAddr(r_call_stack, nullptr);
 }
 
-} // namespace lightr
+} // namespace instrumentr

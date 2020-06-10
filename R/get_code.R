@@ -5,6 +5,6 @@ get_code <- function(object, ...) {
 }
 
 #' @export
-get_code.lightr_application <- function(object, ...) {
+get_code.instrumentr_application <- function(object, ...) {
     .Call(C_application_get_code, object)
 }

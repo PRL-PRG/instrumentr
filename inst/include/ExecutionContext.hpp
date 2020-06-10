@@ -1,9 +1,9 @@
 #include <string>
 
-namespace lightr {
+namespace instrumentr {
 
 enum class ExecutionContext {
-    Lightr,
+    Instrumentr,
     Application,
     ApplicationLoadCallback,
     ApplicationUnloadCallback,
@@ -22,4 +22,4 @@ enum class ExecutionContext {
 std::string
 execution_context_to_string(const ExecutionContext& execution_context);
 
-} // namespace lightr
+} // namespace instrumentr

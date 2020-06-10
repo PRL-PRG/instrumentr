@@ -1,11 +1,11 @@
 #include "../inst/include/Application.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 SEXP Application::class_ = nullptr;
 
 void Application::initialize() {
-    class_ = Object::create_class("lightr_application");
+    class_ = Object::create_class("instrumentr_application");
     R_PreserveObject(class_);
 }
 
@@ -40,4 +40,4 @@ void Application::destroy_sexp(SEXP r_application) {
     R_SetExternalPtrAddr(r_application, nullptr);
 }
 
-} // namespace lightr
+} // namespace instrumentr

@@ -5,6 +5,6 @@ is_error <- function(object, ...) {
 }
 
 #' @export
-is_error.lightr_result <- function(object, ...) {
+is_error.instrumentr_result <- function(object, ...) {
     is_defined(get_error(object))
 }

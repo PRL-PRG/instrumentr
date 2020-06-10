@@ -1,8 +1,8 @@
 #include "../inst/include/Argument.hpp"
 #include "r_api.h"
 
-using lightr::Argument;
-using lightr::ArgumentSPtr;
+using instrumentr::Argument;
+using instrumentr::ArgumentSPtr;
 
 SEXP r_argument_get_name(SEXP r_argument) {
     ArgumentSPtr argument = Argument::from_sexp(r_argument);

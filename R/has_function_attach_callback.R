@@ -5,6 +5,6 @@ has_function_attach_callback <- function(object, ...) {
 }
 
 #' @export
-has_function_attach_callback.lightr_context <- function(object, ...) { # nolint
+has_function_attach_callback.instrumentr_context <- function(object, ...) { # nolint
     .Call(C_context_has_function_attach_callback, object)
 }

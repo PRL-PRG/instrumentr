@@ -1,12 +1,12 @@
 #include "../inst/include/ExecutionContext.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 std::string
 execution_context_to_string(const ExecutionContext& execution_context) {
     switch (execution_context) {
-    case ExecutionContext::Lightr:
-        return "lightr";
+    case ExecutionContext::Instrumentr:
+        return "instrumentr";
         break;
     case ExecutionContext::Application:
         return "application";
@@ -53,4 +53,4 @@ execution_context_to_string(const ExecutionContext& execution_context) {
     }
 }
 
-} // namespace lightr
+} // namespace instrumentr

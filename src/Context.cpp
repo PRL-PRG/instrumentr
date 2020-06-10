@@ -1,6 +1,6 @@
 #include "../inst/include/Context.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 SEXP ApplicationLoadCallbackSymbol = NULL;
 SEXP ApplicationUnloadCallbackSymbol = NULL;
@@ -18,7 +18,7 @@ SEXP CallExitCallbackSymbol = NULL;
 SEXP Context::class_ = nullptr;
 
 void Context::initialize() {
-    class_ = Object::create_class("lightr_context");
+    class_ = Object::create_class("instrumentr_context");
     R_PreserveObject(class_);
     ApplicationLoadCallbackSymbol = Rf_install("application_load_callback");
     ApplicationUnloadCallbackSymbol = Rf_install("application_unload_callback");
@@ -32,11 +32,6 @@ void Context::initialize() {
     FunctionDetachCallbackSymbol = Rf_install("function_detach_callback");
     CallEntryCallbackSymbol = Rf_install("call_entry_callback");
     CallExitCallbackSymbol = Rf_install("call_exit_callback");
-}
-
-void Context::finalize() {
-    R_ReleaseObject(class_);
-    class_ = nullptr;
 }
 
 SEXP Context::get_class() {
@@ -70,4 +65,4 @@ void Context::destroy_sexp(SEXP r_context) {
     R_SetExternalPtrAddr(r_context, nullptr);
 }
 
-} // namespace lightr
+} // namespace instrumentr

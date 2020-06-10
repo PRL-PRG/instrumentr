@@ -5,6 +5,6 @@ has_application_unload_callback <- function(object, ...) {
 }
 
 #' @export
-has_application_unload_callback.lightr_context <- function(object, ...) { # nolint
+has_application_unload_callback.instrumentr_context <- function(object, ...) { # nolint
     .Call(C_context_has_application_unload_callback, object)
 }

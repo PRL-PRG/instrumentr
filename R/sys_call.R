@@ -1,18 +1,18 @@
 
 .state_env$sys_call_base_index <- 0
 
-dot_callback_names <- c("C_lightr_trace_application_load",
-                        "C_lightr_trace_application_unload",
-                        "C_lightr_trace_application_attach",
-                        "C_lightr_trace_application_detach",
-                        "C_lightr_trace_package_load",
-                        "C_lightr_trace_package_unload",
-                        "C_lightr_trace_package_attach",
-                        "C_lightr_trace_package_detach",
-                        "C_lightr_trace_function_attach",
-                        "C_lightr_trace_function_detach",
-                        "C_lightr_trace_call_entry",
-                        "C_lightr_trace_call_exit")
+dot_callback_names <- c("C_instrumentr_trace_application_load",
+                        "C_instrumentr_trace_application_unload",
+                        "C_instrumentr_trace_application_attach",
+                        "C_instrumentr_trace_application_detach",
+                        "C_instrumentr_trace_package_load",
+                        "C_instrumentr_trace_package_unload",
+                        "C_instrumentr_trace_package_attach",
+                        "C_instrumentr_trace_package_detach",
+                        "C_instrumentr_trace_function_attach",
+                        "C_instrumentr_trace_function_detach",
+                        "C_instrumentr_trace_call_entry",
+                        "C_instrumentr_trace_call_exit")
 
 r_callback_names <- c("application_load_callback",
                       "application_unload_callback",

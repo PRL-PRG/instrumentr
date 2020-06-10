@@ -2,7 +2,7 @@
 #include "r_api.h"
 
 SEXP DelayedAssignSymbol = NULL;
-SEXP LightrSymbol = NULL;
+SEXP InstrumentrSymbol = NULL;
 SEXP TripleColonSymbol = NULL;
 SEXP DotCallSymbol = NULL;
 SEXP TemporarySymbol = NULL;
@@ -18,15 +18,15 @@ void initialize_utilities(SEXP r_package_environment,
                           SEXP r_state_environment) {
     DelayedAssignSymbol = Rf_install("delayedAssign");
 
-    LightrSymbol = Rf_install("lightr");
+    InstrumentrSymbol = Rf_install("instrumentr");
 
     TripleColonSymbol = Rf_install(":::");
 
     DotCallSymbol = Rf_install(".Call");
 
-    TemporarySymbol = Rf_install("*lightr-tmp*");
+    TemporarySymbol = Rf_install("*instrumentr-tmp*");
 
-    TemporarySymbolString = mkString("*lightr-tmp*");
+    TemporarySymbolString = mkString("*instrumentr-tmp*");
     R_PreserveObject(TemporarySymbolString);
 
     PackageEnvironment = r_package_environment;

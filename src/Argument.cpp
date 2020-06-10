@@ -1,11 +1,11 @@
 #include "../inst/include/Argument.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 SEXP Argument::class_ = nullptr;
 
 void Argument::initialize() {
-    class_ = Object::create_class("lightr_argument");
+    class_ = Object::create_class("instrumentr_argument");
     R_PreserveObject(class_);
 }
 
@@ -40,4 +40,4 @@ void Argument::destroy_sexp(SEXP r_argument) {
     R_SetExternalPtrAddr(r_argument, nullptr);
 }
 
-} // namespace lightr
+} // namespace instrumentr

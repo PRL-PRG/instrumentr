@@ -5,6 +5,6 @@ get_value <- function(object, ...) {
 }
 
 #' @export
-get_value.lightr_result <- function(object, ...) {
+get_value.instrumentr_result <- function(object, ...) {
     object$value
 }

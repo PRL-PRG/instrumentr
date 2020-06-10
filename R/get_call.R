@@ -5,6 +5,6 @@ get_call <- function(object, ...) {
 }
 
 #' @export
-get_call.lightr_error <- function(object, ...) {
+get_call.instrumentr_error <- function(object, ...) {
     object$call
 }

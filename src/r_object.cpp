@@ -1,8 +1,8 @@
 #include "../inst/include/Object.hpp"
 #include "r_api.h"
 
-using lightr::Object;
-using lightr::ObjectSPtr;
+using instrumentr::Object;
+using instrumentr::ObjectSPtr;
 
 ObjectSPtr Object::from_sexp(SEXP r_object) {
     void* object = R_ExternalPtrAddr(r_object);

@@ -2,9 +2,9 @@
 #include "../inst/include/Call.hpp"
 #include "r_api.h"
 
-using lightr::Call;
-using lightr::CallStack;
-using lightr::CallStackSPtr;
+using instrumentr::Call;
+using instrumentr::CallStack;
+using instrumentr::CallStackSPtr;
 
 SEXP r_call_stack_get_size(SEXP r_call_stack) {
     CallStackSPtr call_stack = CallStack::from_sexp(r_call_stack);

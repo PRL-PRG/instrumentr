@@ -1,10 +1,10 @@
-#ifndef LIGHTR_LIGHTR_HPP
-#define LIGHTR_LIGHTR_HPP
+#ifndef INSTRUMENTR_INSTRUMENTR_HPP
+#define INSTRUMENTR_INSTRUMENTR_HPP
 
 #include <Rinternals.h>
 #include "ExecutionContext.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 bool is_tracing_enabled();
 
@@ -32,10 +32,10 @@ bool is_undefined_object(SEXP object);
 
 bool is_defined_object(SEXP object);
 
-void initialize_lightr(SEXP r_package_environment,
+void initialize_instrumentr(SEXP r_package_environment,
                        SEXP r_state_environment,
                        SEXP r_undefined_object);
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_LIGHTR_HPP */
+#endif /* INSTRUMENTR_INSTRUMENTR_HPP */

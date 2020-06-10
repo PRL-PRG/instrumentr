@@ -5,7 +5,7 @@ set_application_detach_callback <- function(context, application_detach_callback
 }
 
 #' @export
-set_application_detach_callback.lightr_context <- function(context, application_detach_callback, ...) {  # nolint
+set_application_detach_callback.instrumentr_context <- function(context, application_detach_callback, ...) {  # nolint
 
     stopifnot(is_undefined(application_detach_callback) ||
               is_closure(application_detach_callback) &&

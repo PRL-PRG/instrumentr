@@ -5,7 +5,7 @@ remove_data <- function(object, ...) {
 }
 
 #' @export
-remove_data.lightr_object <- function(object, ...) {
+remove_data.instrumentr_object <- function(object, ...) {
     .Call(C_object_remove_data, object)
     invisible(NULL)
 }

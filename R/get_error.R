@@ -5,6 +5,6 @@ get_error <- function(object, ...) {
 }
 
 #' @export
-get_error.lightr_result <- function(object, ...) {
+get_error.instrumentr_result <- function(object, ...) {
     object$error
 }

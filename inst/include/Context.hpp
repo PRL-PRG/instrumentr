@@ -1,11 +1,11 @@
-#ifndef LIGHTR_CONTEXT_HPP
-#define LIGHTR_CONTEXT_HPP
+#ifndef INSTRUMENTR_CONTEXT_HPP
+#define INSTRUMENTR_CONTEXT_HPP
 #include "Object.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-namespace lightr {
+namespace instrumentr {
 
 extern SEXP ApplicationLoadCallbackSymbol;
 extern SEXP ApplicationUnloadCallbackSymbol;
@@ -243,8 +243,6 @@ class Context: public Object {
 
     static void initialize();
 
-    static void finalize();
-
     static SEXP get_class();
 
     static std::shared_ptr<Context> from_sexp(SEXP r_context);
@@ -275,6 +273,6 @@ class Context: public Object {
 
 using ContextSPtr = std::shared_ptr<Context>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_CONTEXT_HPP */
+#endif /* INSTRUMENTR_CONTEXT_HPP */

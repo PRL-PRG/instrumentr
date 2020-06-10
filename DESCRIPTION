@@ -1,4 +1,4 @@
-Package: lightr
+Package: instrumentr
 Title: Lightweight Tracer for R
 Version: 0.0.0.9000
 Authors@R: 

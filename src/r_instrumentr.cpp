@@ -1,99 +1,99 @@
 #include "r_api.h"
 #include "utilities.h"
-#include "../inst/include/lightr.hpp"
+#include "../inst/include/instrumentr.hpp"
 #include "../inst/include/Context.hpp"
 #include "../inst/include/Application.hpp"
 #include "../inst/include/Package.hpp"
 #include "../inst/include/Function.hpp"
 #include "../inst/include/Call.hpp"
 
-using lightr::Application;
-using lightr::ApplicationSPtr;
-using lightr::Call;
-using lightr::CallSPtr;
-using lightr::CallStack;
-using lightr::CallStackSPtr;
-using lightr::Context;
-using lightr::ContextSPtr;
-using lightr::ExecutionContext;
-using lightr::Function;
-using lightr::FunctionSPtr;
-using lightr::Package;
-using lightr::PackageSPtr;
+using instrumentr::Application;
+using instrumentr::ApplicationSPtr;
+using instrumentr::Call;
+using instrumentr::CallSPtr;
+using instrumentr::CallStack;
+using instrumentr::CallStackSPtr;
+using instrumentr::Context;
+using instrumentr::ContextSPtr;
+using instrumentr::ExecutionContext;
+using instrumentr::Function;
+using instrumentr::FunctionSPtr;
+using instrumentr::Package;
+using instrumentr::PackageSPtr;
 
-SEXP r_lightr_is_tracing_enabled() {
-    return ScalarLogical(lightr::is_tracing_enabled());
+SEXP r_instrumentr_is_tracing_enabled() {
+    return ScalarLogical(instrumentr::is_tracing_enabled());
 }
 
-SEXP r_lightr_disable_tracing() {
-    lightr::disable_tracing();
+SEXP r_instrumentr_disable_tracing() {
+    instrumentr::disable_tracing();
     return R_NilValue;
 }
 
-SEXP r_lightr_enable_tracing() {
-    lightr::enable_tracing();
+SEXP r_instrumentr_enable_tracing() {
+    instrumentr::enable_tracing();
     return R_NilValue;
 }
 
-SEXP r_lightr_reinstate_tracing() {
-    lightr::reinstate_tracing();
+SEXP r_instrumentr_reinstate_tracing() {
+    instrumentr::reinstate_tracing();
     return R_NilValue;
 }
 
-SEXP r_lightr_initialize_lightr(SEXP r_package_environment,
+SEXP r_instrumentr_initialize_instrumentr(SEXP r_package_environment,
                                 SEXP r_state_environment,
                                 SEXP r_undefined_object) {
-    lightr::initialize_lightr(
+    instrumentr::initialize_instrumentr(
         r_package_environment, r_state_environment, r_undefined_object);
     return R_NilValue;
 }
 
-SEXP r_lightr_peek_execution_context() {
+SEXP r_instrumentr_peek_execution_context() {
     std::string execution_context =
-        lightr::execution_context_to_string(lightr::peek_execution_context());
+        instrumentr::execution_context_to_string(instrumentr::peek_execution_context());
     return mkString(execution_context.c_str());
 }
 
-SEXP r_lightr_initialize_tracing() {
-    lightr::push_execution_context(ExecutionContext::Lightr);
+SEXP r_instrumentr_initialize_tracing() {
+    instrumentr::push_execution_context(ExecutionContext::Instrumentr);
     return R_NilValue;
 }
 
-SEXP r_lightr_finalize_tracing() {
-    lightr::clear_execution_context();
-    lightr::clear_tracing();
+SEXP r_instrumentr_finalize_tracing() {
+    instrumentr::clear_execution_context();
+    instrumentr::clear_tracing();
     return R_NilValue;
 }
 
-SEXP r_lightr_is_undefined_object(SEXP object) {
-    return ScalarLogical(lightr::is_undefined_object(object));
+SEXP r_instrumentr_is_undefined_object(SEXP object) {
+    return ScalarLogical(instrumentr::is_undefined_object(object));
 }
 
-SEXP r_lightr_is_defined_object(SEXP object) {
-    return ScalarLogical(lightr::is_defined_object(object));
+SEXP r_instrumentr_is_defined_object(SEXP object) {
+    return ScalarLogical(instrumentr::is_defined_object(object));
 }
 
-SEXP r_lightr_trace(bool tracing_status,
+SEXP r_instrumentr_trace(bool tracing_status,
                     ExecutionContext execution_context,
                     SEXP r_code,
                     SEXP r_environment) {
-    lightr::set_tracing_status(tracing_status);
-    lightr::push_execution_context(execution_context);
+    instrumentr::set_tracing_status(tracing_status);
+    instrumentr::push_execution_context(execution_context);
 
     SEXP result = Rf_eval(r_code, r_environment);
 
-    lightr::pop_execution_context();
-    lightr::reinstate_tracing();
+    instrumentr::pop_execution_context();
+    instrumentr::reinstate_tracing();
 
     return result;
 }
 
-SEXP r_lightr_trace_code(SEXP r_code, SEXP r_environment) {
-    return r_lightr_trace(
+SEXP r_instrumentr_trace_code(SEXP r_code, SEXP r_environment) {
+    return r_instrumentr_trace(
         true, ExecutionContext::Application, r_code, r_environment);
 }
 
-SEXP r_lightr_trace_application(ExecutionContext execution_context,
+SEXP r_instrumentr_trace_application(ExecutionContext execution_context,
                                 SEXP r_callback_symbol,
                                 SEXP r_context,
                                 SEXP r_application) {
@@ -101,7 +101,7 @@ SEXP r_lightr_trace_application(ExecutionContext execution_context,
     SEXP r_environment = context->get_environment();
 
     SEXP result =
-        r_lightr_trace(false,
+        r_instrumentr_trace(false,
                        execution_context,
                        Rf_lang3(r_callback_symbol, r_context, r_application),
                        r_environment);
@@ -109,14 +109,14 @@ SEXP r_lightr_trace_application(ExecutionContext execution_context,
     return result;
 }
 
-SEXP r_lightr_trace_application_load(SEXP r_context, SEXP r_application) {
+SEXP r_instrumentr_trace_application_load(SEXP r_context, SEXP r_application) {
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP result = R_NilValue;
 
     if (context->has_application_load_callback()) {
-        SEXP result = r_lightr_trace_application(
+        SEXP result = r_instrumentr_trace_application(
             ExecutionContext::ApplicationLoadCallback,
-            lightr::ApplicationLoadCallbackSymbol,
+            instrumentr::ApplicationLoadCallbackSymbol,
             r_context,
             r_application);
     }
@@ -124,14 +124,14 @@ SEXP r_lightr_trace_application_load(SEXP r_context, SEXP r_application) {
     return result;
 }
 
-SEXP r_lightr_trace_application_unload(SEXP r_context, SEXP r_application) {
+SEXP r_instrumentr_trace_application_unload(SEXP r_context, SEXP r_application) {
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP result = R_NilValue;
 
     if (context->has_application_unload_callback()) {
-        SEXP result = r_lightr_trace_application(
+        SEXP result = r_instrumentr_trace_application(
             ExecutionContext::ApplicationUnloadCallback,
-            lightr::ApplicationUnloadCallbackSymbol,
+            instrumentr::ApplicationUnloadCallbackSymbol,
             r_context,
             r_application);
     }
@@ -139,14 +139,14 @@ SEXP r_lightr_trace_application_unload(SEXP r_context, SEXP r_application) {
     return result;
 }
 
-SEXP r_lightr_trace_application_attach(SEXP r_context, SEXP r_application) {
+SEXP r_instrumentr_trace_application_attach(SEXP r_context, SEXP r_application) {
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP result = R_NilValue;
 
     if (context->has_application_attach_callback()) {
-        SEXP result = r_lightr_trace_application(
+        SEXP result = r_instrumentr_trace_application(
             ExecutionContext::ApplicationAttachCallback,
-            lightr::ApplicationAttachCallbackSymbol,
+            instrumentr::ApplicationAttachCallbackSymbol,
             r_context,
             r_application);
     }
@@ -154,14 +154,14 @@ SEXP r_lightr_trace_application_attach(SEXP r_context, SEXP r_application) {
     return result;
 }
 
-SEXP r_lightr_trace_application_detach(SEXP r_context, SEXP r_application) {
+SEXP r_instrumentr_trace_application_detach(SEXP r_context, SEXP r_application) {
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP result = R_NilValue;
 
     if (context->has_application_detach_callback()) {
-        SEXP result = r_lightr_trace_application(
+        SEXP result = r_instrumentr_trace_application(
             ExecutionContext::ApplicationDetachCallback,
-            lightr::ApplicationDetachCallbackSymbol,
+            instrumentr::ApplicationDetachCallbackSymbol,
             r_context,
             r_application);
     }
@@ -169,7 +169,7 @@ SEXP r_lightr_trace_application_detach(SEXP r_context, SEXP r_application) {
     return result;
 }
 
-SEXP r_lightr_trace_package(ExecutionContext execution_context,
+SEXP r_instrumentr_trace_package(ExecutionContext execution_context,
                             SEXP r_callback_symbol,
                             SEXP r_context,
                             SEXP r_application,
@@ -179,7 +179,7 @@ SEXP r_lightr_trace_package(ExecutionContext execution_context,
     PackageSPtr package = Package::from_sexp(r_package);
 
     SEXP r_environment = context->get_environment();
-    SEXP result = r_lightr_trace(
+    SEXP result = r_instrumentr_trace(
         false,
         execution_context,
         Rf_lang4(r_callback_symbol, r_context, r_application, r_package),
@@ -188,7 +188,7 @@ SEXP r_lightr_trace_package(ExecutionContext execution_context,
     return result;
 }
 
-SEXP r_lightr_trace_package_load(SEXP r_context,
+SEXP r_instrumentr_trace_package_load(SEXP r_context,
                                  SEXP r_application,
                                  SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
@@ -200,8 +200,8 @@ SEXP r_lightr_trace_package_load(SEXP r_context,
     SEXP result = R_NilValue;
 
     if (context->has_package_load_callback()) {
-        result = r_lightr_trace_package(ExecutionContext::PackageLoadCallback,
-                                        lightr::PackageLoadCallbackSymbol,
+        result = r_instrumentr_trace_package(ExecutionContext::PackageLoadCallback,
+                                        instrumentr::PackageLoadCallbackSymbol,
                                         r_context,
                                         r_application,
                                         r_package);
@@ -210,7 +210,7 @@ SEXP r_lightr_trace_package_load(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_package_unload(SEXP r_context,
+SEXP r_instrumentr_trace_package_unload(SEXP r_context,
                                    SEXP r_application,
                                    SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
@@ -220,8 +220,8 @@ SEXP r_lightr_trace_package_unload(SEXP r_context,
     SEXP result = R_NilValue;
 
     if (context->has_package_unload_callback()) {
-        result = r_lightr_trace_package(ExecutionContext::PackageUnloadCallback,
-                                        lightr::PackageUnloadCallbackSymbol,
+        result = r_instrumentr_trace_package(ExecutionContext::PackageUnloadCallback,
+                                        instrumentr::PackageUnloadCallbackSymbol,
                                         r_context,
                                         r_application,
                                         r_package);
@@ -232,7 +232,7 @@ SEXP r_lightr_trace_package_unload(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_package_attach(SEXP r_context,
+SEXP r_instrumentr_trace_package_attach(SEXP r_context,
                                    SEXP r_application,
                                    SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
@@ -240,8 +240,8 @@ SEXP r_lightr_trace_package_attach(SEXP r_context,
     SEXP result = R_NilValue;
 
     if (context->has_package_attach_callback()) {
-        result = r_lightr_trace_package(ExecutionContext::PackageAttachCallback,
-                                        lightr::PackageAttachCallbackSymbol,
+        result = r_instrumentr_trace_package(ExecutionContext::PackageAttachCallback,
+                                        instrumentr::PackageAttachCallbackSymbol,
                                         r_context,
                                         r_application,
                                         r_package);
@@ -250,7 +250,7 @@ SEXP r_lightr_trace_package_attach(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_package_detach(SEXP r_context,
+SEXP r_instrumentr_trace_package_detach(SEXP r_context,
                                    SEXP r_application,
                                    SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
@@ -258,8 +258,8 @@ SEXP r_lightr_trace_package_detach(SEXP r_context,
     SEXP result = R_NilValue;
 
     if (context->has_package_detach_callback()) {
-        result = r_lightr_trace_package(ExecutionContext::PackageDetachCallback,
-                                        lightr::PackageDetachCallbackSymbol,
+        result = r_instrumentr_trace_package(ExecutionContext::PackageDetachCallback,
+                                        instrumentr::PackageDetachCallbackSymbol,
                                         r_context,
                                         r_application,
                                         r_package);
@@ -268,7 +268,7 @@ SEXP r_lightr_trace_package_detach(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_function(ExecutionContext execution_context,
+SEXP r_instrumentr_trace_function(ExecutionContext execution_context,
                              SEXP r_callback_symbol,
                              SEXP r_context,
                              SEXP r_application,
@@ -277,7 +277,7 @@ SEXP r_lightr_trace_function(ExecutionContext execution_context,
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP r_environment = context->get_environment();
 
-    SEXP result = r_lightr_trace(
+    SEXP result = r_instrumentr_trace(
         false,
         execution_context,
         Rf_lang5(
@@ -287,7 +287,7 @@ SEXP r_lightr_trace_function(ExecutionContext execution_context,
     return result;
 }
 
-SEXP r_lightr_trace_function_attach(SEXP r_context,
+SEXP r_instrumentr_trace_function_attach(SEXP r_context,
                                     SEXP r_application,
                                     SEXP r_package,
                                     SEXP r_function) {
@@ -301,8 +301,8 @@ SEXP r_lightr_trace_function_attach(SEXP r_context,
 
     if (context->has_function_attach_callback()) {
         result =
-            r_lightr_trace_function(ExecutionContext::FunctionAttachCallback,
-                                    lightr::FunctionAttachCallbackSymbol,
+            r_instrumentr_trace_function(ExecutionContext::FunctionAttachCallback,
+                                    instrumentr::FunctionAttachCallbackSymbol,
                                     r_context,
                                     r_application,
                                     r_package,
@@ -312,7 +312,7 @@ SEXP r_lightr_trace_function_attach(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_function_detach(SEXP r_context,
+SEXP r_instrumentr_trace_function_detach(SEXP r_context,
                                     SEXP r_application,
                                     SEXP r_package,
                                     SEXP r_function) {
@@ -324,8 +324,8 @@ SEXP r_lightr_trace_function_detach(SEXP r_context,
 
     if (context->has_function_detach_callback()) {
         result =
-            r_lightr_trace_function(ExecutionContext::FunctionDetachCallback,
-                                    lightr::FunctionDetachCallbackSymbol,
+            r_instrumentr_trace_function(ExecutionContext::FunctionDetachCallback,
+                                    instrumentr::FunctionDetachCallbackSymbol,
                                     r_context,
                                     r_application,
                                     r_package,
@@ -337,7 +337,7 @@ SEXP r_lightr_trace_function_detach(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_call(ExecutionContext execution_context,
+SEXP r_instrumentr_trace_call(ExecutionContext execution_context,
                          SEXP r_callback_symbol,
                          SEXP r_context,
                          SEXP r_application,
@@ -347,7 +347,7 @@ SEXP r_lightr_trace_call(ExecutionContext execution_context,
     ContextSPtr context = Context::from_sexp(r_context);
     SEXP r_environment = context->get_environment();
 
-    SEXP result = r_lightr_trace(false,
+    SEXP result = r_instrumentr_trace(false,
                                  execution_context,
                                  Rf_lang6(r_callback_symbol,
                                           r_context,
@@ -360,7 +360,7 @@ SEXP r_lightr_trace_call(ExecutionContext execution_context,
     return result;
 }
 
-SEXP r_lightr_trace_call_entry(SEXP r_context,
+SEXP r_instrumentr_trace_call_entry(SEXP r_context,
                                SEXP r_application,
                                SEXP r_package,
                                SEXP r_function,
@@ -376,8 +376,8 @@ SEXP r_lightr_trace_call_entry(SEXP r_context,
     call_stack->push_frame(call);
 
     if (context->has_call_entry_callback()) {
-        result = r_lightr_trace_call(ExecutionContext::CallEntryCallback,
-                                     lightr::CallEntryCallbackSymbol,
+        result = r_instrumentr_trace_call(ExecutionContext::CallEntryCallback,
+                                     instrumentr::CallEntryCallbackSymbol,
                                      r_context,
                                      r_application,
                                      r_package,
@@ -388,7 +388,7 @@ SEXP r_lightr_trace_call_entry(SEXP r_context,
     return result;
 }
 
-SEXP r_lightr_trace_call_exit(SEXP r_context,
+SEXP r_instrumentr_trace_call_exit(SEXP r_context,
                               SEXP r_application,
                               SEXP r_package,
                               SEXP r_function,
@@ -413,8 +413,8 @@ SEXP r_lightr_trace_call_exit(SEXP r_context,
     call->set_result(r_result);
 
     if (context->has_call_exit_callback()) {
-        result = r_lightr_trace_call(ExecutionContext::CallExitCallback,
-                                     lightr::CallExitCallbackSymbol,
+        result = r_instrumentr_trace_call(ExecutionContext::CallExitCallback,
+                                     instrumentr::CallExitCallbackSymbol,
                                      r_context,
                                      r_application,
                                      r_package,

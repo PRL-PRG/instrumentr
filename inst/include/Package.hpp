@@ -1,12 +1,12 @@
-#ifndef LIGHTR_PACKAGE_HPP
-#define LIGHTR_PACKAGE_HPP
+#ifndef INSTRUMENTR_PACKAGE_HPP
+#define INSTRUMENTR_PACKAGE_HPP
 
 #include <vector>
 #include <string>
 #include "Object.hpp"
 #include "Function.hpp"
 
-namespace lightr {
+namespace instrumentr {
 
 class Package: public Object {
   public:
@@ -78,6 +78,6 @@ class Package: public Object {
 
 using PackageSPtr = std::shared_ptr<Package>;
 
-} // namespace lightr
+} // namespace instrumentr
 
-#endif /* LIGHTR_PACKAGE_HPP */
+#endif /* INSTRUMENTR_PACKAGE_HPP */
