@@ -26,7 +26,7 @@ get_package_function_names <- function(package_name,
 
         function_names <- get_public_package_function_names(package_name)
 
-        function_names <- paste(package_name, "::", function_names)
+        function_names <- paste(package_name, "::", function_names, sep = "")
 
     }
 
@@ -34,7 +34,7 @@ get_package_function_names <- function(package_name,
 
         private_function_names <- get_private_package_function_names(package_name)
 
-        private_function_names <- paste(package_name, ":::", private_function_names)
+        private_function_names <- paste(package_name, ":::", private_function_names, sep= "")
 
         function_names <- c(function_names, private_function_names)
 
