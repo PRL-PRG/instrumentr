@@ -36,6 +36,16 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
     .Call(C_lightr_initialize_tracing)
 
     tryCatch({
+        ## NOTE: we manually account for the following four stack frames
+        ## introduced by tryCatch in excess of the existing frames:
+        ## - tryCatch({ <all code> })
+        ## - tryCatchList(expr, classes, parentenv, handlers)
+        ## - tryCatchOne(expr, names, parentenv, handlers[[1L]])
+        ## - doTryCatch(return(expr), name, parentenv, handler)
+        n <- sys.nframe() + 4
+
+        set_sys_call_base_index(n)
+
         application <- create_application(infer_application_name(),
                                           getwd(),
                                           substitute(code),
@@ -64,6 +74,8 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
     },
     finally = {
         .Call(C_lightr_finalize_tracing)
+
+        set_sys_call_base_index(0)
     })
 
     result
