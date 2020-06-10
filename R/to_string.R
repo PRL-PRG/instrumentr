@@ -40,42 +40,49 @@ to_string.call <- function(object, ...) {
 #' @export
 to_string.lightr_context <- function(object, ...) {
 
-    application_load_callback <- get_application_load_callback(object)
-    application_unload_callback <- get_application_unload_callback(object)
-    application_attach_callback <- get_application_attach_callback(object)
-    application_detach_callback <- get_application_detach_callback(object)
-    package_load_callback <- get_package_load_callback(object)
-    package_unload_callback <- get_package_unload_callback(object)
-    package_attach_callback <- get_package_attach_callback(object)
-    package_detach_callback <- get_package_detach_callback(object)
-    function_attach_callback <- get_function_attach_callback(object)
-    function_detach_callback <- get_function_detach_callback(object)
-    call_entry_callback <- get_call_entry_callback(object)
-    call_exit_callback <- get_call_exit_callback(object)
     packages <- get_traced_packages(object)
     functions <- character(0)
     for (package in packages) {
         functions <- c(functions, get_traced_functions(object, package))
     }
 
+    get_callback_representation <- function(name, fun) {
+        callback <- fun(object)
+        representation <- ""
+        if (is_defined(callback)) {
+            representation <- sprintf("%s=%s,\n", name, to_string(callback))
+        }
+        representation
+    }
+
+    get_field_representation <- function(name, fun, check = is_defined, sep = ", ") {
+        get_value_representation(name, fun(object), check, sep)
+    }
+
+    get_value_representation <- function(name, value, check, sep) {
+        representation <- ""
+        if (check(value)) {
+            representation <- sprintf("%s=%s%s", name, to_string(value), sep)
+        }
+        representation
+    }
+
     representation <-
-      paste("Context(application_load_callback = ", to_string(application_load_callback), ",\n",
-            "        application_unload_callback = ", to_string(application_unload_callback), ",\n",
-            "        application_attach_callback = ", to_string(application_attach_callback), ",\n",
-            "        application_detach_callback = ", to_string(application_detach_callback), ",\n",
-            "        package_load_callback = ", to_string(package_load_callback), ",\n",
-            "        package_unload_callback = ", to_string(package_unload_callback), ",\n",
-            "        package_attach_callback = ", to_string(package_attach_callback), ",\n",
-            "        package_detach_callback = ", to_string(package_detach_callback), ",\n",
-            "        function_attach_callback = ", to_string(function_attach_callback), ",\n",
-            "        function_detach_callback = ", to_string(function_detach_callback), ",\n",
-            "        call_entry_callback = ", to_string(call_entry_callback), ",\n",
-            "        call_exit_callback = ", to_string(call_exit_callback), ",\n",
-            "        packages = ", to_string(packages), ",\n",
-            "        functions = ", to_string(functions), ")",
-            ")",
-            sep = "",
-            collapse = "")
+      sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+              get_field_representation("application_unload_callback", get_application_unload_callback),
+              get_field_representation("application_attach_callback", get_application_attach_callback),
+              get_field_representation("application_detach_callback", get_application_detach_callback),
+              get_field_representation("package_load_callback", get_package_load_callback),
+              get_field_representation("package_unload_callback", get_package_unload_callback),
+              get_field_representation("package_attach_callback", get_package_attach_callback),
+              get_field_representation("package_detach_callback", get_package_detach_callback),
+              get_field_representation("function_attach_callback", get_function_attach_callback),
+              get_field_representation("function_detach_callback", get_function_detach_callback),
+              get_field_representation("call_entry_callback", get_call_entry_callback),
+              get_field_representation("call_exit_callback", get_call_exit_callback),
+              get_field_representation("call_exit_callback", get_call_exit_callback),
+              get_value_representation("packages", packages, function(v) length(v) > 0, ", "),
+              get_value_representation("functions", functions, function(v) length(v) > 0, ")"))
 
     representation
 }
@@ -132,10 +139,23 @@ to_string.lightr_parameter <- function(object, ...) {
 
 #' @export
 to_string.lightr_argument <- function(object, ...) {
-    representation <- sprintf("Argument(name='%s', expression=%s, result=%s, evaluated=%s)",
-                              get_name(object),
+    name <- get_name(object)
+
+    name_str <- ""
+    if (name != "") {
+        name_str <- sprintf("name='%s', ", name)
+    }
+
+    result <- get_result(object)
+    result_str <- ""
+    if (is_defined(result)) {
+        result_str <- sprintf("result=%s, ", to_string(result))
+    }
+
+    representation <- sprintf("Argument(%sexpression=%s, %sevaluated=%s)",
+                              name_str,
                               to_string(get_expression(object)),
-                              to_string(get_result(object)),
+                              result_str,
                               c("FALSE", "TRUE")[is_evaluated(object) + 1])
 
     representation
