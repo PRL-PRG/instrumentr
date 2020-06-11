@@ -2,5 +2,11 @@ language: r
 
 warnings_are_errors: false
 
-r:
-  - release
+matrix:
+  include:
+    -r: devel
+    after_success:
+      - make lintr
+    -r: release
+    after_success:
+      - make lintr

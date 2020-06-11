@@ -20,7 +20,7 @@ test:
 	Rscript -e 'devtools::test()'
 
 lintr:
-	R --slave -e "lintr::lint_package()"
+	R --slave -e "quit(status = length(print(lintr::lint_package())) != 0)"
 
 clang-analyze:
 	scan-build make build
