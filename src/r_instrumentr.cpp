@@ -398,7 +398,7 @@ SEXP r_instrumentr_trace_call_exit(SEXP r_context,
     PackageSPtr package = Package::from_sexp(r_package);
     FunctionSPtr function = Function::from_sexp(r_function);
     CallStackSPtr call_stack = application->get_call_stack();
-    CallSPtr call = call_stack->pop_frame();
+    CallSPtr call = call_stack->peek_frame(0);
     SEXP result = R_NilValue;
 
     if (call->get_function()->get_name() != function->get_name()) {
@@ -421,6 +421,8 @@ SEXP r_instrumentr_trace_call_exit(SEXP r_context,
                                      r_function,
                                      Call::to_sexp(call));
     }
+
+    call_stack->pop_frame();
 
     return result;
 }
