@@ -100,10 +100,6 @@ get_sys_calls <- function() {
         higher_index <- higher_index - 1
     }
 
-    print(lower_index)
-    print(higher_index)
-    print(base_index)
-
     if (higher_index < lower_index) {
         list()
     }
