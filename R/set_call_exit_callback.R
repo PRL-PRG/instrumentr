@@ -7,7 +7,7 @@ set_call_exit_callback.instrumentr_context <- function(context, call_exit_callba
 
     stopifnot(is_undefined(call_exit_callback) ||
               is_closure(call_exit_callback) &&
-              length(formals(call_exit_callback)) >= 5)
+              has_parameters(call_exit_callback, 5))
 
     .Call(C_context_set_call_exit_callback,
           context,

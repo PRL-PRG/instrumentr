@@ -50,6 +50,15 @@ is_instrumentr_function <- function(obj) {
     "instrumentr_function" %in% class(obj)
 }
 
+has_parameters <- function(fun, n, include_varargs = TRUE) {
+    parameters <- formals(fun)
+    cond <- length(parameters) >= n
+    if(!cond && include_varargs) {
+        cond <- "..." %in% names(parameters)
+    }
+    cond
+}
+
 get_package_name <- function(fun) {
     name <- environmentName(environment(fun))
     if (name == "R_GlobalEnv") ".GlobalEnv"

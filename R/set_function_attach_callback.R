@@ -9,7 +9,7 @@ set_function_attach_callback.instrumentr_context <- function(context, function_a
 
     stopifnot(is_undefined(function_attach_callback) ||
               is_closure(function_attach_callback) &&
-              length(formals(function_attach_callback)) >= 4)
+              has_parameters(function_attach_callback, 4))
 
     .Call(C_context_set_function_attach_callback,
           context,

@@ -9,7 +9,7 @@ set_application_load_callback.instrumentr_context <- function(context, applicati
 
     stopifnot(is_undefined(application_load_callback) ||
               is_closure(application_load_callback) &&
-              length(formals(application_load_callback)) >= 2)
+              has_parameters(application_load_callback, 2))
 
     .Call(C_context_set_application_load_callback, context, application_load_callback)
 

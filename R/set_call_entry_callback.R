@@ -7,7 +7,7 @@ set_call_entry_callback.instrumentr_context <- function(context, call_entry_call
 
     stopifnot(is_undefined(call_entry_callback) ||
               is_closure(call_entry_callback) &&
-              length(formals(call_entry_callback)) >= 5)
+              has_parameters(call_entry_callback, 5))
 
     .Call(C_context_set_call_entry_callback,
           context,

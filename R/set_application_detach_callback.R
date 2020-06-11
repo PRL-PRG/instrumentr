@@ -9,7 +9,7 @@ set_application_detach_callback.instrumentr_context <- function(context, applica
 
     stopifnot(is_undefined(application_detach_callback) ||
               is_closure(application_detach_callback) &&
-              length(formals(application_detach_callback)) >= 2)
+              has_parameters(application_detach_callback, 2))
 
     .Call(C_context_set_application_detach_callback, context, application_detach_callback)
 

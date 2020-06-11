@@ -9,7 +9,7 @@ set_package_unload_callback.instrumentr_context <- function(context, package_unl
 
     stopifnot(is_undefined(package_unload_callback) ||
               is_closure(package_unload_callback) &&
-              length(formals(package_unload_callback)) >= 3)
+              has_parameters(package_unload_callback, 3))
 
     .Call(C_context_set_package_unload_callback,
           context,

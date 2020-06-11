@@ -9,7 +9,7 @@ set_function_detach_callback.instrumentr_context <- function(context, function_d
 
     stopifnot(is_undefined(function_detach_callback) ||
               is_closure(function_detach_callback) &&
-              length(formals(function_detach_callback)) >= 4)
+              has_parameters(function_detach_callback, 4))
 
     .Call(C_context_set_function_detach_callback,
           context,
