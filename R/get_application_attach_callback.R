@@ -1,6 +1,6 @@
 
 #' @export
-get_application_attach_callback <- function(context, ...) {
+get_application_attach_callback <- function(context, ...) { # nolint
     UseMethod("get_application_attach_callback")
 }
 

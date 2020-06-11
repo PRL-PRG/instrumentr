@@ -36,12 +36,12 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
     .Call(C_instrumentr_initialize_tracing)
 
     tryCatch({
-        ## NOTE: we manually account for the following four stack frames
-        ## introduced by tryCatch in excess of the existing frames:
-        ## - tryCatch({ <all code> })
-        ## - tryCatchList(expr, classes, parentenv, handlers)
-        ## - tryCatchOne(expr, names, parentenv, handlers[[1L]])
-        ## - doTryCatch(return(expr), name, parentenv, handler)
+        ## nolint NOTE: we manually account for the following four stack frames
+        ## nolint introduced by tryCatch in excess of the existing frames:
+        ## nolint - tryCatch({ <all code> })
+        ## nolint - tryCatchList(expr, classes, parentenv, handlers)
+        ## nolint - tryCatchOne(expr, names, parentenv, handlers[[1L]])
+        ## nolint - doTryCatch(return(expr), name, parentenv, handler)
         n <- sys.nframe() + 4
 
         set_sys_call_base_index(n)

@@ -5,7 +5,7 @@ trace_packages <- function(object, package_names, ...) {
 }
 
 #' @export
-trace_packages.instrumentr_context <- function(object, package_names, ...) {
+trace_packages.instrumentr_context <- function(object, package_names, ...) { # nolint
 
     is_vector_character(package_names)
 

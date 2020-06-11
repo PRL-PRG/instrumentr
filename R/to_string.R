@@ -28,7 +28,7 @@ to_string.NULL <- function(object, ...) {
 }
 
 #' @export
-to_string.instrumentr_undefined <- function(object, ...) {
+to_string.instrumentr_undefined <- function(object, ...) { # nolint
     "<undefined>"
 }
 
@@ -88,7 +88,7 @@ to_string.instrumentr_context <- function(object, ...) {
 }
 
 #' @export
-to_string.instrumentr_application <- function(object, ...) {
+to_string.instrumentr_application <- function(object, ...) { # nolint
     representation <- sprintf("Application(name='%s', directory='%s', environment=%s)",
                               get_name(object),
                               get_directory(object),
@@ -127,7 +127,7 @@ to_string.instrumentr_call <- function(object, ...) {
 }
 
 #' @export
-to_string.instrumentr_parameter <- function(object, ...) {
+to_string.instrumentr_parameter <- function(object, ...) { # nolint
     representation <- sprintf("Parameter(name='%s', position=%d, missing=%s, vararg=%s)",
                               get_name(object),
                               get_position(object),
@@ -162,7 +162,7 @@ to_string.instrumentr_argument <- function(object, ...) {
 }
 
 #' @export
-to_string.instrumentr_call_stack <- function(object, ...) {
+to_string.instrumentr_call_stack <- function(object, ...) { # nolint
     size <- get_size(object)
 
     representation <- sprintf("CallStack(%d frames)", size)

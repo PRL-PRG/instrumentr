@@ -5,6 +5,6 @@ get_parameters <- function(call, ...) {
 }
 
 #' @export
-get_parameters.instrumentr_call <- function(call, ...) {
+get_parameters.instrumentr_call <- function(call, ...) { # nolint
     .Call(C_call_get_parameters, call)
 }

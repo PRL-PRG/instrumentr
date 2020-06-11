@@ -5,6 +5,6 @@ get_functions <- function(object, ...) {
 }
 
 #' @export
-get_functions.instrumentr_package <- function(object, ...) {
+get_functions.instrumentr_package <- function(object, ...) { # nolint
     .Call(C_package_get_functions, object)
 }

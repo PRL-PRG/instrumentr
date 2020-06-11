@@ -5,7 +5,7 @@ trace_functions <- function(object, qualified_function_names, ...) {
 }
 
 #' @export
-trace_functions.instrumentr_context <- function(object, qualified_function_names, ...) {
+trace_functions.instrumentr_context <- function(object, qualified_function_names, ...) { # nolint
     is_vector_character(qualified_function_names)
 
     for (qualified_function_name in qualified_function_names) {

@@ -36,7 +36,7 @@ get_sys_call_base_index <- function() {
 }
 
 #' @export
-get_sys_calls <- function() {
+get_sys_calls <- function() { # nolint
 
     execution_context <- peek_execution_context()
     calls <- sys.calls()

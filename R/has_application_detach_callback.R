@@ -1,6 +1,6 @@
 
 #' @export
-has_application_detach_callback <- function(object, ...) {
+has_application_detach_callback <- function(object, ...) { # nolint
     UseMethod("has_application_detach_callback")
 }
 

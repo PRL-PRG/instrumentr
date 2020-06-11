@@ -5,7 +5,7 @@ get_name <- function(object, ...) {
 }
 
 #' @export
-get_name.instrumentr_application <- function(object, ...) {
+get_name.instrumentr_application <- function(object, ...) { # nolint
     .Call(C_application_get_name, object)
 }
 

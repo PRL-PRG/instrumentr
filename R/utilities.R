@@ -53,7 +53,7 @@ is_instrumentr_function <- function(obj) {
 has_parameters <- function(fun, n, include_varargs = TRUE) {
     parameters <- formals(fun)
     cond <- length(parameters) >= n
-    if(!cond && include_varargs) {
+    if (!cond && include_varargs) {
         cond <- "..." %in% names(parameters)
     }
     cond

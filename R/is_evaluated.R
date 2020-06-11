@@ -5,6 +5,6 @@ is_evaluated <- function(argument, ...) {
 }
 
 #' @export
-is_evaluated.instrumentr_argument <- function(argument, ...) {
+is_evaluated.instrumentr_argument <- function(argument, ...) { # nolint
     .Call(C_argument_is_evaluated, argument)
 }
