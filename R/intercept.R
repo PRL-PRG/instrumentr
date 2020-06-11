@@ -62,7 +62,7 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
     }
 
-    message("Intercepting ", length(get_functions(package_ptr)), " functions from ", package_name)
+    message("Instrumenting ", length(get_functions(package_ptr)), " functions from ", package_name)
 }
 
 is_intercepted <- function(package_name, function_name) {
