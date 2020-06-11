@@ -2,11 +2,33 @@ language: r
 
 warnings_are_errors: false
 
-matrix:
-  include:
-    -r: devel
-    after_success:
-      - make lintr
-    -r: release
-    after_success:
-      - make lintr
+r:
+  - oldrel
+  - release
+  - devel
+
+os:
+  - linux
+  - osx
+
+dist: bionic
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -q; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install gcc-9 -qy; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install g++-9 -qy; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install clang-8 -qy; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install clang-tidy-8 -qy; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install clang-format-8 -qy; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install python-pip; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo pip install scan-build; fi
+
+after_success:
+  - make install-devtools
+  - make install-lintr
+  - make all
+  - make lintr
+  - make clang-analyze
+  - make install
+  - make uninstall

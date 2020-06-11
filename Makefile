@@ -13,14 +13,26 @@ clean:
 	-rm -fr instrumentr.Rcheck
 	-rm -rf src/*.o src/*.so
 
-document:
-	Rscript -e 'devtools::document()'
+install:
+	R CMD INSTALL .
 
-test:
-	Rscript -e 'devtools::test()'
+uninstall:
+	R --slave -e "remove.packages('instrumentr')"
 
-lintr:
+document: install-devtools
+	R --slave -e "devtools::document()"
+
+test: install-devtools
+	R --slave -e "devtools::test()"
+
+lintr: install-lintr
 	R --slave -e "quit(status = length(print(lintr::lint_package())) != 0)"
 
-clang-analyze:
+install-devtools:
+	R --slave -e "if (!require('devtools')) install.packages('devtools')"
+
+install-lintr:
+	R --slave -e "if (!require('lintr')) install.packages('lintr')"
+
+clang-analyze: clean
 	scan-build make build
