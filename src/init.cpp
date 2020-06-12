@@ -27,8 +27,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_trace_package_detach", (DL_FUNC) &r_instrumentr_trace_package_detach, 3},
     {"instrumentr_trace_function_attach", (DL_FUNC) &r_instrumentr_trace_function_attach, 4},
     {"instrumentr_trace_function_detach", (DL_FUNC) &r_instrumentr_trace_function_detach, 4},
-    {"instrumentr_trace_call_entry", (DL_FUNC) &r_instrumentr_trace_call_entry, 5},
-    {"instrumentr_trace_call_exit", (DL_FUNC) &r_instrumentr_trace_call_exit, 5},
+    {"instrumentr_trace_call_entry_conditionally", (DL_FUNC) &r_instrumentr_trace_call_entry_conditionally, 6},
+    {"instrumentr_trace_call_exit_conditionally", (DL_FUNC) &r_instrumentr_trace_call_exit_conditionally, 5},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},

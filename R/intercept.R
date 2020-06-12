@@ -112,47 +112,33 @@ modify_function <- function(context_ptr, application_ptr, package_ptr, function_
 
 create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
     substitute({
-        if (.Call(IS_TRACING_ENABLED)) {
-            .Call(DISABLE_TRACING)
-            .Call(TRACE_CALL_ENTRY,
-                  CONTEXT_PTR,
-                  APPLICATION_PTR,
-                  PACKAGE_PTR,
-                  FUNCTION_PTR,
-                  .Call(CREATE_CALL, FUNCTION_PTR, sys.call(), environment()))
-            .Call(REINSTATE_TRACING)
-        }
-    }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
-            DISABLE_TRACING=C_instrumentr_disable_tracing,
-            TRACE_CALL_ENTRY=C_instrumentr_trace_call_entry,
+        .Call(TRACE_CALL_ENTRY_CONDITIONALLY,
+              CONTEXT_PTR,
+              APPLICATION_PTR,
+              PACKAGE_PTR,
+              FUNCTION_PTR,
+              sys.call(),
+              environment())
+    }, list(TRACE_CALL_ENTRY_CONDITIONALLY=C_instrumentr_trace_call_entry_conditionally,
             CONTEXT_PTR=context_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
-            FUNCTION_PTR=function_ptr,
-            CREATE_CALL=C_call_create_call,
-            REINSTATE_TRACING=C_instrumentr_reinstate_tracing))
+            FUNCTION_PTR=function_ptr))
 }
 
 
 create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
     substitute({
-        if (.Call(IS_TRACING_ENABLED)) {
-            .Call(DISABLE_TRACING)
-            .Call(TRACE_CALL_EXIT,
-                  CONTEXT_PTR,
-                  APPLICATION_PTR,
-                  PACKAGE_PTR,
-                  FUNCTION_PTR,
-                  returnValue(UNDEFINED_OBJECT))
-            .Call(REINSTATE_TRACING)
-        }
-    }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
-            DISABLE_TRACING=C_instrumentr_disable_tracing,
-            TRACE_CALL_EXIT=C_instrumentr_trace_call_exit,
+        .Call(TRACE_CALL_EXIT_CONDITIONALLY,
+              CONTEXT_PTR,
+              APPLICATION_PTR,
+              PACKAGE_PTR,
+              FUNCTION_PTR,
+              returnValue(UNDEFINED_OBJECT))
+    }, list(TRACE_CALL_EXIT_CONDITIONALLY=C_instrumentr_trace_call_exit_conditionally,
             CONTEXT_PTR=context_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
-            UNDEFINED_OBJECT=undefined_object,
-            REINSTATE_TRACING=C_instrumentr_reinstate_tracing))
+            UNDEFINED_OBJECT=undefined_object))
 }
