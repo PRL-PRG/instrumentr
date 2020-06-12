@@ -52,15 +52,4 @@ SEXP r_instrumentr_trace_call_exit(SEXP r_context,
                                    SEXP r_package,
                                    SEXP r_function,
                                    SEXP r_result);
-SEXP r_instrumentr_trace_call_entry_conditionally(SEXP r_context,
-                                                  SEXP r_application,
-                                                  SEXP r_package,
-                                                  SEXP r_function,
-                                                  SEXP r_call_expression,
-                                                  SEXP r_call_environment);
-SEXP r_instrumentr_trace_call_exit_conditionally(SEXP r_context,
-                                                 SEXP r_application,
-                                                 SEXP r_package,
-                                                 SEXP r_function,
-                                                 SEXP r_result);
 }
