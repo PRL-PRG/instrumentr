@@ -1,4 +1,5 @@
-#include "r_api.h"
+#include "r_instrumentr.h"
+#include "r_call.h"
 #include "utilities.h"
 #include "../inst/include/instrumentr.hpp"
 #include "../inst/include/Context.hpp"

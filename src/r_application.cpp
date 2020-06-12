@@ -1,6 +1,6 @@
 #include "../inst/include/Application.hpp"
 #include "../inst/include/Package.hpp"
-#include "r_api.h"
+#include "r_application.h"
 
 using instrumentr::Application;
 using instrumentr::ApplicationSPtr;

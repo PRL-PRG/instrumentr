@@ -1,6 +1,6 @@
 #include "../inst/include/CallStack.hpp"
 #include "../inst/include/Call.hpp"
-#include "r_api.h"
+#include "r_call_stack.h"
 
 using instrumentr::Call;
 using instrumentr::CallStack;

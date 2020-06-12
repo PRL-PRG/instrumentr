@@ -1,5 +1,5 @@
 #include "../inst/include/Object.hpp"
-#include "r_api.h"
+#include "r_object.h"
 
 using instrumentr::Object;
 using instrumentr::ObjectSPtr;

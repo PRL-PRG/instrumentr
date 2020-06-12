@@ -1,5 +1,5 @@
 #include "../inst/include/Argument.hpp"
-#include "r_api.h"
+#include "r_argument.h"
 
 using instrumentr::Argument;
 using instrumentr::ArgumentSPtr;

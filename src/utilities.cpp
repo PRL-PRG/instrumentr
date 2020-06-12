@@ -1,5 +1,4 @@
 #include "utilities.h"
-#include "r_api.h"
 
 SEXP DelayedAssignSymbol = NULL;
 SEXP InstrumentrSymbol = NULL;

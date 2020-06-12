@@ -1,7 +1,7 @@
 #include "../inst/include/Application.hpp"
 #include "../inst/include/Package.hpp"
 #include "../inst/include/Function.hpp"
-#include "r_api.h"
+#include "r_package.h"
 
 using instrumentr::Function;
 using instrumentr::FunctionSPtr;

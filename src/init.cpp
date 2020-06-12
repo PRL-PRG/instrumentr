@@ -1,4 +1,13 @@
-#include "r_api.h"
+#include "r_instrumentr.h"
+#include "r_object.h"
+#include "r_context.h"
+#include "r_application.h"
+#include "r_package.h"
+#include "r_function.h"
+#include "r_call.h"
+#include "r_parameter.h"
+#include "r_argument.h"
+#include "r_call_stack.h"
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>

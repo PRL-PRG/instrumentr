@@ -1,5 +1,5 @@
 #include "../inst/include/Context.hpp"
-#include "r_api.h"
+#include "r_context.h"
 
 using instrumentr::Context;
 using instrumentr::ContextSPtr;

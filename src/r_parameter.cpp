@@ -1,7 +1,7 @@
 #include "../inst/include/Parameter.hpp"
 #include "../inst/include/Call.hpp"
 #include "../inst/include/Argument.hpp"
-#include "r_api.h"
+#include "r_parameter.h"
 
 using instrumentr::Argument;
 using instrumentr::Parameter;
