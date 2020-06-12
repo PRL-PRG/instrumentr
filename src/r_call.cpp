@@ -167,8 +167,9 @@ SEXP r_call_get_parameters(SEXP r_call) {
     CallSPtr call = Call::from_sexp(r_call);
     const std::vector<std::shared_ptr<Parameter>>& parameters =
         call->get_parameters();
-    SEXP r_parameters = PROTECT(allocVector(VECSXP, parameters.size()));
-    for (int i = 0; i < parameters.size(); ++i) {
+    int size = parameters.size();
+    SEXP r_parameters = PROTECT(allocVector(VECSXP, size));
+    for (int i = 0; i < size; ++i) {
         SET_VECTOR_ELT(r_parameters, i, Parameter::to_sexp(parameters.at(i)));
     }
     UNPROTECT(1);

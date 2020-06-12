@@ -31,8 +31,9 @@ SEXP r_parameter_get_arguments(SEXP r_parameter) {
     ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
     const std::vector<std::shared_ptr<Argument>>& arguments =
         parameter->get_arguments();
-    SEXP r_arguments = PROTECT(allocVector(VECSXP, arguments.size()));
-    for (int i = 0; i < arguments.size(); ++i) {
+    int size = arguments.size();
+    SEXP r_arguments = PROTECT(allocVector(VECSXP, size));
+    for (int i = 0; i < size; ++i) {
         SET_VECTOR_ELT(r_arguments, i, Argument::to_sexp(arguments.at(i)));
     }
     UNPROTECT(1);
