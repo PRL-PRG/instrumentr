@@ -1,4 +1,4 @@
-#include "../inst/include/ExecutionContext.hpp"
+#include "ExecutionContext.hpp"
 
 namespace instrumentr {
 

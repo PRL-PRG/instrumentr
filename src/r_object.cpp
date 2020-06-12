@@ -1,4 +1,4 @@
-#include "../inst/include/Object.hpp"
+#include "Object.hpp"
 #include "r_object.h"
 
 using instrumentr::Object;

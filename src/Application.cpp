@@ -1,4 +1,4 @@
-#include "../inst/include/Application.hpp"
+#include "Application.hpp"
 
 namespace instrumentr {
 

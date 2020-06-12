@@ -1,4 +1,4 @@
-#include "../inst/include/Object.hpp"
+#include "Object.hpp"
 
 namespace instrumentr {
 

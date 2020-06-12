@@ -1,12 +1,12 @@
 #include "r_instrumentr.h"
 #include "r_call.h"
 #include "utilities.h"
-#include "../inst/include/instrumentr.hpp"
-#include "../inst/include/Context.hpp"
-#include "../inst/include/Application.hpp"
-#include "../inst/include/Package.hpp"
-#include "../inst/include/Function.hpp"
-#include "../inst/include/Call.hpp"
+#include "instrumentr.hpp"
+#include "Context.hpp"
+#include "Application.hpp"
+#include "Package.hpp"
+#include "Function.hpp"
+#include "Call.hpp"
 
 using instrumentr::Application;
 using instrumentr::ApplicationSPtr;

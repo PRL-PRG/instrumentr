@@ -1,6 +1,6 @@
-#include "../inst/include/Call.hpp"
-#include "../inst/include/Function.hpp"
-#include "../inst/include/Parameter.hpp"
+#include "Call.hpp"
+#include "Function.hpp"
+#include "Parameter.hpp"
 #include "r_call.h"
 #include "utilities.h"
 

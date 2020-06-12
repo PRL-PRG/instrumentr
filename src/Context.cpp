@@ -1,4 +1,4 @@
-#include "../inst/include/Context.hpp"
+#include "Context.hpp"
 
 namespace instrumentr {
 

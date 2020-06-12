@@ -1,4 +1,4 @@
-#include "../inst/include/Context.hpp"
+#include "Context.hpp"
 #include "r_context.h"
 
 using instrumentr::Context;

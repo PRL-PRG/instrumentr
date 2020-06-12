@@ -1,4 +1,4 @@
-#include "../inst/include/CallStack.hpp"
+#include "CallStack.hpp"
 
 namespace instrumentr {
 

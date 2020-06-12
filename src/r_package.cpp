@@ -1,6 +1,6 @@
-#include "../inst/include/Application.hpp"
-#include "../inst/include/Package.hpp"
-#include "../inst/include/Function.hpp"
+#include "Application.hpp"
+#include "Package.hpp"
+#include "Function.hpp"
 #include "r_package.h"
 
 using instrumentr::Function;

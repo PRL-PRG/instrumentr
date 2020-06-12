@@ -1,6 +1,6 @@
-#include "../inst/include/Parameter.hpp"
-#include "../inst/include/Call.hpp"
-#include "../inst/include/Argument.hpp"
+#include "Parameter.hpp"
+#include "Call.hpp"
+#include "Argument.hpp"
 #include "r_parameter.h"
 
 using instrumentr::Argument;

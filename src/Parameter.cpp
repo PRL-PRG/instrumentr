@@ -1,4 +1,4 @@
-#include "../inst/include/Parameter.hpp"
+#include "Parameter.hpp"
 
 namespace instrumentr {
 

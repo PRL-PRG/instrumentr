@@ -1,5 +1,5 @@
-#include "../inst/include/Application.hpp"
-#include "../inst/include/Package.hpp"
+#include "Application.hpp"
+#include "Package.hpp"
 #include "r_application.h"
 
 using instrumentr::Application;

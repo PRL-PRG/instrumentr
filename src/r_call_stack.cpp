@@ -1,5 +1,5 @@
-#include "../inst/include/CallStack.hpp"
-#include "../inst/include/Call.hpp"
+#include "CallStack.hpp"
+#include "Call.hpp"
 #include "r_call_stack.h"
 
 using instrumentr::Call;
