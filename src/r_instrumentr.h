@@ -11,6 +11,7 @@ SEXP r_instrumentr_trace_code(SEXP r_code, SEXP r_environment);
 SEXP r_instrumentr_initialize_instrumentr(SEXP r_package_environment,
                                           SEXP r_state_environment,
                                           SEXP r_undefined_object);
+SEXP r_instrumentr_finalize_instrumentr();
 SEXP r_instrumentr_initialize_tracing();
 SEXP r_instrumentr_finalize_tracing();
 SEXP r_instrumentr_is_undefined_object(SEXP object);

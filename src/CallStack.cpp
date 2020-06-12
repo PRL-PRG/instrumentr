@@ -2,11 +2,16 @@
 
 namespace instrumentr {
 
-SEXP CallStack::class_ = nullptr;
+SEXP CallStack::class_ = NULL;
 
 void CallStack::initialize() {
     class_ = Object::create_class("instrumentr_call_stack");
     R_PreserveObject(class_);
+}
+
+void CallStack::finalize() {
+    R_ReleaseObject(class_);
+    class_ = NULL;
 }
 
 SEXP CallStack::get_class() {
@@ -15,7 +20,7 @@ SEXP CallStack::get_class() {
 
 CallStackSPtr CallStack::from_sexp(SEXP r_call_stack) {
     void* call_stack = R_ExternalPtrAddr(r_call_stack);
-    if (call_stack == nullptr) {
+    if (call_stack == NULL) {
         Rf_errorcall(R_NilValue, "CallStack::from_sexp: object is null");
     } else {
         return *static_cast<CallStackSPtr*>(call_stack);
@@ -37,7 +42,7 @@ SEXP CallStack::to_sexp(CallStackSPtr call) {
 
 void CallStack::destroy_sexp(SEXP r_call_stack) {
     delete static_cast<CallStackSPtr*>(R_ExternalPtrAddr(r_call_stack));
-    R_SetExternalPtrAddr(r_call_stack, nullptr);
+    R_SetExternalPtrAddr(r_call_stack, NULL);
 }
 
 } // namespace instrumentr

@@ -36,6 +36,8 @@ void initialize_instrumentr(SEXP r_package_environment,
                        SEXP r_state_environment,
                        SEXP r_undefined_object);
 
+void finalize_instrumentr();
+
 } // namespace instrumentr
 
 #endif /* INSTRUMENTR_INSTRUMENTR_HPP */

@@ -87,6 +87,8 @@ class Call: public Object {
 
     static void initialize();
 
+    static void finalize();
+
     static SEXP get_class();
 
     static std::shared_ptr<Call> from_sexp(SEXP r_call);

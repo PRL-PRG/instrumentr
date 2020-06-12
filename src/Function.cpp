@@ -2,11 +2,16 @@
 
 namespace instrumentr {
 
-SEXP Function::class_ = nullptr;
+SEXP Function::class_ = NULL;
 
 void Function::initialize() {
     class_ = mkString("instrumentr_function");
     R_PreserveObject(class_);
+}
+
+void Function::finalize() {
+    R_ReleaseObject(class_);
+    class_ = NULL;
 }
 
 SEXP Function::get_class() {
@@ -15,7 +20,7 @@ SEXP Function::get_class() {
 
 FunctionSPtr Function::from_sexp(SEXP r_function) {
     void* function = R_ExternalPtrAddr(r_function);
-    if (function == nullptr) {
+    if (function == NULL) {
         Rf_errorcall(R_NilValue, "Function::from_sexp: object is null");
     } else {
         return *static_cast<FunctionSPtr*>(function);
@@ -37,7 +42,7 @@ SEXP Function::to_sexp(FunctionSPtr function) {
 
 void Function::destroy_sexp(SEXP r_function) {
     delete static_cast<FunctionSPtr*>(R_ExternalPtrAddr(r_function));
-    R_SetExternalPtrAddr(r_function, nullptr);
+    R_SetExternalPtrAddr(r_function, NULL);
 }
 
 } // namespace instrumentr

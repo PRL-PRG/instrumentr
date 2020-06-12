@@ -49,6 +49,11 @@ SEXP r_instrumentr_initialize_instrumentr(SEXP r_package_environment,
     return R_NilValue;
 }
 
+SEXP r_instrumentr_finalize_instrumentr() {
+    instrumentr::finalize_instrumentr();
+    return R_NilValue;
+}
+
 SEXP r_instrumentr_peek_execution_context() {
     std::string execution_context = instrumentr::execution_context_to_string(
         instrumentr::peek_execution_context());

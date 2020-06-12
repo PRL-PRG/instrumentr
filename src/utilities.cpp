@@ -37,6 +37,10 @@ void initialize_utilities(SEXP r_package_environment,
     CallExitCallbackSymbol = Rf_install("call_exit_callback");
 }
 
+void finalize_utilities() {
+    R_ReleaseObject(TemporarySymbolString);
+}
+
 SEXP delayed_assign(SEXP variable_sym,
                     SEXP variable_str,
                     SEXP value,

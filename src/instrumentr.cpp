@@ -73,18 +73,35 @@ bool is_defined_object(SEXP value) {
 }
 
 void initialize_instrumentr(SEXP r_package_environment,
-                       SEXP r_state_environment,
-                       SEXP r_undefined_object) {
-    initialize_utilities(r_package_environment, r_state_environment);
-    UndefinedObject = r_undefined_object;
-    Context::initialize();
-    Application::initialize();
-    CallStack::initialize();
-    Package::initialize();
-    Function::initialize();
-    Call::initialize();
-    Parameter::initialize();
-    Argument::initialize();
+                            SEXP r_state_environment,
+                            SEXP r_undefined_object) {
+    if (UndefinedObject == NULL) {
+        initialize_utilities(r_package_environment, r_state_environment);
+        UndefinedObject = r_undefined_object;
+        Context::initialize();
+        Application::initialize();
+        CallStack::initialize();
+        Package::initialize();
+        Function::initialize();
+        Call::initialize();
+        Parameter::initialize();
+        Argument::initialize();
+    }
+}
+
+void finalize_instrumentr() {
+    if (UndefinedObject != NULL) {
+        finalize_utilities();
+        UndefinedObject = NULL;
+        Context::finalize();
+        Application::finalize();
+        CallStack::finalize();
+        Package::finalize();
+        Function::finalize();
+        Call::initialize();
+        Parameter::initialize();
+        Argument::initialize();
+    }
 }
 
 } // namespace instrumentr

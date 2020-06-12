@@ -15,7 +15,7 @@ SEXP FunctionDetachCallbackSymbol = NULL;
 SEXP CallEntryCallbackSymbol = NULL;
 SEXP CallExitCallbackSymbol = NULL;
 
-SEXP Context::class_ = nullptr;
+SEXP Context::class_ = NULL;
 
 void Context::initialize() {
     class_ = Object::create_class("instrumentr_context");
@@ -34,13 +34,18 @@ void Context::initialize() {
     CallExitCallbackSymbol = Rf_install("call_exit_callback");
 }
 
+void Context::finalize() {
+    R_ReleaseObject(class_);
+    class_ = NULL;
+}
+
 SEXP Context::get_class() {
     return class_;
 }
 
 ContextSPtr Context::from_sexp(SEXP r_context) {
     void* context = R_ExternalPtrAddr(r_context);
-    if (context == nullptr) {
+    if (context == NULL) {
         Rf_errorcall(R_NilValue, "Context::from_sexp: object is null");
     } else {
         return *static_cast<ContextSPtr*>(context);
@@ -62,7 +67,7 @@ SEXP Context::to_sexp(ContextSPtr context) {
 
 void Context::destroy_sexp(SEXP r_context) {
     delete static_cast<ContextSPtr*>(R_ExternalPtrAddr(r_context));
-    R_SetExternalPtrAddr(r_context, nullptr);
+    R_SetExternalPtrAddr(r_context, NULL);
 }
 
 } // namespace instrumentr

@@ -2,11 +2,16 @@
 
 namespace instrumentr {
 
-SEXP Application::class_ = nullptr;
+SEXP Application::class_ = NULL;
 
 void Application::initialize() {
     class_ = Object::create_class("instrumentr_application");
     R_PreserveObject(class_);
+}
+
+void Application::finalize() {
+    R_ReleaseObject(class_);
+    class_ = NULL;
 }
 
 SEXP Application::get_class() {
@@ -15,7 +20,7 @@ SEXP Application::get_class() {
 
 ApplicationSPtr Application::from_sexp(SEXP r_application) {
     void* application = R_ExternalPtrAddr(r_application);
-    if (application == nullptr) {
+    if (application == NULL) {
         Rf_errorcall(R_NilValue, "Application::from_sexp: object is null");
     } else {
         return *static_cast<ApplicationSPtr*>(application);
@@ -37,7 +42,7 @@ SEXP Application::to_sexp(ApplicationSPtr application) {
 
 void Application::destroy_sexp(SEXP r_application) {
     delete static_cast<ApplicationSPtr*>(R_ExternalPtrAddr(r_application));
-    R_SetExternalPtrAddr(r_application, nullptr);
+    R_SetExternalPtrAddr(r_application, NULL);
 }
 
 } // namespace instrumentr

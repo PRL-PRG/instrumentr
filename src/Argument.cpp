@@ -2,11 +2,16 @@
 
 namespace instrumentr {
 
-SEXP Argument::class_ = nullptr;
+SEXP Argument::class_ = NULL;
 
 void Argument::initialize() {
     class_ = Object::create_class("instrumentr_argument");
     R_PreserveObject(class_);
+}
+
+void Argument::finalize() {
+    R_ReleaseObject(class_);
+    class_ = NULL;
 }
 
 SEXP Argument::get_class() {
@@ -15,7 +20,7 @@ SEXP Argument::get_class() {
 
 ArgumentSPtr Argument::from_sexp(SEXP r_argument) {
     void* argument = R_ExternalPtrAddr(r_argument);
-    if (argument == nullptr) {
+    if (argument == NULL) {
         Rf_errorcall(R_NilValue, "Argument::from_sexp: argument is null");
     } else {
         return *static_cast<ArgumentSPtr*>(argument);
@@ -37,7 +42,7 @@ SEXP Argument::to_sexp(ArgumentSPtr argument) {
 
 void Argument::destroy_sexp(SEXP r_argument) {
     delete static_cast<ArgumentSPtr*>(R_ExternalPtrAddr(r_argument));
-    R_SetExternalPtrAddr(r_argument, nullptr);
+    R_SetExternalPtrAddr(r_argument, NULL);
 }
 
 } // namespace instrumentr

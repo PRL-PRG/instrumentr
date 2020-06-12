@@ -48,6 +48,8 @@ class Argument: public Object {
 
     static void initialize();
 
+    static void finalize();
+
     static SEXP get_class();
 
     static std::shared_ptr<Argument> from_sexp(SEXP r_argument);

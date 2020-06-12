@@ -21,6 +21,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_reinstate_tracing", (DL_FUNC) &r_instrumentr_reinstate_tracing, 0},
     {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 2},
     {"instrumentr_initialize_instrumentr", (DL_FUNC) &r_instrumentr_initialize_instrumentr, 3},
+    {"instrumentr_finalize_instrumentr", (DL_FUNC) &r_instrumentr_finalize_instrumentr, 0},
     {"instrumentr_initialize_tracing", (DL_FUNC) &r_instrumentr_initialize_tracing, 0},
     {"instrumentr_finalize_tracing", (DL_FUNC) &r_instrumentr_finalize_tracing, 0},
     {"instrumentr_is_undefined_object", (DL_FUNC)&r_instrumentr_is_undefined_object, 1},
