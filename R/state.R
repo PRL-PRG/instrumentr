@@ -1,50 +1,50 @@
-intercepted_packages <- new.env(parent=emptyenv())
+instrumented_packages <- new.env(parent=emptyenv())
 
 .state_env <- new.env(parent=emptyenv())
 
-add_intercepted_function <- function(package_name, function_name, value) {
-    intercepted_functions <- get0(package_name, envir=intercepted_packages, ifnotfound=NULL)
-    if (is.null(intercepted_functions)) {
-        intercepted_functions <- new.env(parent=emptyenv())
-        assign(package_name, intercepted_functions, envir=intercepted_packages)
+add_instrumented_function <- function(package_name, function_name, value) {
+    instrumented_functions <- get0(package_name, envir=instrumented_packages, ifnotfound=NULL)
+    if (is.null(instrumented_functions)) {
+        instrumented_functions <- new.env(parent=emptyenv())
+        assign(package_name, instrumented_functions, envir=instrumented_packages)
     }
-    assign(function_name, value, envir=intercepted_functions)
+    assign(function_name, value, envir=instrumented_functions)
 }
 
-get_intercepted_function <- function(package_name, function_name) {
-    intercepted_functions <- get0(package_name, envir=intercepted_packages, ifnotfound=NULL)
+get_instrumented_function <- function(package_name, function_name) {
+    instrumented_functions <- get0(package_name, envir=instrumented_packages, ifnotfound=NULL)
 
-    if (is.null(intercepted_functions)) {
+    if (is.null(instrumented_functions)) {
         NULL
     } else {
-        get(function_name, envir=intercepted_functions)
+        get(function_name, envir=instrumented_functions)
     }
 }
 
-has_intercepted_function <- function(package_name, function_name) {
-    intercepted_functions <- get0(package_name, envir=intercepted_packages, ifnotfound=NULL)
+has_instrumented_function <- function(package_name, function_name) {
+    instrumented_functions <- get0(package_name, envir=instrumented_packages, ifnotfound=NULL)
 
-    if (is.null(intercepted_functions)) {
+    if (is.null(instrumented_functions)) {
         FALSE
     } else {
-        exists(function_name, envir=intercepted_functions)
+        exists(function_name, envir=instrumented_functions)
     }
 }
 
-get_intercepted_package_names <- function() {
-    ls(envir=intercepted_packages, all.names = TRUE)
+get_instrumented_package_names <- function() {
+    ls(envir=instrumented_packages, all.names = TRUE)
 }
 
-get_intercepted_function_names <- function(package_name) {
-    intercepted_functions <- get(package_name, envir=intercepted_packages)
-    ls(envir=intercepted_functions, all.names = TRUE)
+get_instrumented_function_names <- function(package_name) {
+    instrumented_functions <- get(package_name, envir=instrumented_packages)
+    ls(envir=instrumented_functions, all.names = TRUE)
 }
 
-remove_intercepted_package <- function(package_name) {
-    rm(list=package_name, envir=intercepted_packages)
+remove_instrumented_package <- function(package_name) {
+    rm(list=package_name, envir=instrumented_packages)
 }
 
-remove_intercepted_function <- function(package_name, function_name) {
-    intercepted_functions <- get(package_name, envir=intercepted_packages)
-    rm(list = function_name, envir=intercepted_functions)
+remove_instrumented_function <- function(package_name, function_name) {
+    instrumented_functions <- get(package_name, envir=instrumented_packages)
+    rm(list = function_name, envir=instrumented_functions)
 }

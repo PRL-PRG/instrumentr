@@ -1,4 +1,4 @@
-insert_interception <- function(context_ptr, application_ptr) {
+insert_instrumentation <- function(context_ptr, application_ptr) {
 
     handle_package <- function(package_name, ...) {
         package_env <- getNamespace(package_name)
@@ -9,7 +9,7 @@ insert_interception <- function(context_ptr, application_ptr) {
 
         .Call(C_instrumentr_trace_package_load, context_ptr, application_ptr, package_ptr)
 
-        intercept_package(context_ptr, application_ptr, package_ptr)
+        instrument_package(context_ptr, application_ptr, package_ptr)
 
         .Call(C_instrumentr_trace_package_attach, context_ptr, application_ptr, package_ptr)
     }
@@ -29,7 +29,7 @@ insert_interception <- function(context_ptr, application_ptr) {
     }
 }
 
-intercept_package <- function(context_ptr, application_ptr, package_ptr) {
+instrument_package <- function(context_ptr, application_ptr, package_ptr) {
 
     package_name <- get_name(package_ptr)
 
@@ -69,18 +69,18 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
         .Call(C_instrumentr_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
 
-        package <- intercept_function(context_ptr, application_ptr, package_ptr, function_ptr)
+        package <- instrument_function(context_ptr, application_ptr, package_ptr, function_ptr)
 
     }
 
     message("Instrumenting ", length(get_functions(package_ptr)), " functions from ", package_name)
 }
 
-is_intercepted <- function(package_name, function_name) {
-    has_intercepted_function(package_name, function_name)
+is_instrumented <- function(package_name, function_name) {
+    has_instrumented_function(package_name, function_name)
 }
 
-intercept_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
+instrument_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
 
     package_name <- get_name(package_ptr)
     package_env <- get_environment(package_ptr)
@@ -88,20 +88,20 @@ intercept_function <- function(context_ptr, application_ptr, package_ptr, functi
     function_name <- get_name(function_ptr)
     function_obj <- get_definition(function_ptr)
 
-    if (is_intercepted(package_name, function_name)) {
-        msg <- sprintf("'%s::%s' already intercepted", package_name, function_name)
+    if (is_instrumented(package_name, function_name)) {
+        msg <- sprintf("'%s::%s' already instrumented", package_name, function_name)
         message(msg)
     }
     else {
         old_function_obj <- modify_function(context_ptr, application_ptr, package_ptr, function_ptr)
 
-        add_intercepted_function(package_name,
-                                 function_name,
-                                 list(package_name=package_name,
-                                      package_env=package_env,
-                                      function_name=function_name,
-                                      new_function_obj=function_obj,
-                                      old_function_obj=old_function_obj))
+        add_instrumented_function(package_name,
+                                  function_name,
+                                  list(package_name=package_name,
+                                       package_env=package_env,
+                                       function_name=function_name,
+                                       new_function_obj=function_obj,
+                                       old_function_obj=old_function_obj))
     }
 }
 

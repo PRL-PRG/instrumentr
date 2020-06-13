@@ -53,7 +53,7 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
 
         .Call(C_instrumentr_trace_application_load, context, application)
 
-        insert_interception(context, application)
+        insert_instrumentation(context, application)
 
         .Call(C_instrumentr_trace_application_attach, context, application)
 
@@ -61,7 +61,7 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
 
         .Call(C_instrumentr_trace_application_detach, context, application)
 
-        remove_interception(context, application)
+        remove_instrumentation(context, application)
 
         .Call(C_instrumentr_trace_application_unload, context, application)
 
