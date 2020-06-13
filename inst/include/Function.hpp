@@ -8,11 +8,19 @@ namespace instrumentr {
 
 class Function: public Object {
   public:
-    Function(const std::string& name, int parameter_count, SEXP r_definition)
+    Function(const std::string& name,
+             int parameter_count,
+             SEXP r_definition,
+             bool pub,
+             bool s3_generic,
+             bool s3_method)
         : Object()
         , name_(name)
         , parameter_count_(parameter_count)
-        , r_definition_(r_definition) {
+        , r_definition_(r_definition)
+        , public_(pub)
+        , s3_generic_(s3_generic)
+        , s3_method_(s3_method) {
         R_PreserveObject(r_definition_);
     }
 
@@ -32,6 +40,18 @@ class Function: public Object {
         return r_definition_;
     }
 
+    bool is_public() const {
+        return public_;
+    }
+
+    bool is_s3_generic() const {
+        return s3_generic_;
+    }
+
+    bool is_s3_method() const {
+        return s3_method_;
+    }
+
     static void initialize();
 
     static void finalize();
@@ -48,6 +68,9 @@ class Function: public Object {
     std::string name_;
     int parameter_count_;
     SEXP r_definition_;
+    bool public_;
+    bool s3_generic_;
+    bool s3_method_;
 
     static SEXP class_;
 };

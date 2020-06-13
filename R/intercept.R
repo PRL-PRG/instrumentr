@@ -35,6 +35,8 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
     package_env <- get_environment(package_ptr)
 
+    function_table <- get_function_table(package_env)
+
     all_function_names <- ls(envir=package_env, all.names = TRUE)
 
     traced_function_names <- get_traced_functions(context_ptr, package_name)
@@ -54,7 +56,16 @@ intercept_package <- function(context_ptr, application_ptr, package_ptr) {
 
         if (!is_closure(function_obj)) next
 
-        function_ptr <- create_function(function_name, length(formals(function_obj)), function_obj)
+        function_entry <- get0(function_name,
+                               envir=function_table,
+                               ifnotfound=list(public=FALSE, s3_generic=FALSE, s3_method=FALSE))
+
+        function_ptr <- create_function(function_name,
+                                        length(formals(function_obj)),
+                                        function_obj,
+                                        function_entry$public,
+                                        function_entry$s3_generic,
+                                        function_entry$s3_method)
 
         .Call(C_instrumentr_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
 

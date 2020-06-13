@@ -113,10 +113,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"package_add_function", (DL_FUNC) &r_package_add_function, 2},
 
     /* Function */
-    {"function_create_function", (DL_FUNC) &r_function_create_function, 3},
+    {"function_create_function", (DL_FUNC) &r_function_create_function, 6},
     {"function_get_name", (DL_FUNC) &r_function_get_name, 1},
     {"function_get_parameter_count", (DL_FUNC) &r_function_get_parameter_count, 1},
     {"function_get_definition", (DL_FUNC) &r_function_get_definition, 1},
+    {"function_is_public", (DL_FUNC) &r_function_is_public, 1},
+    {"function_is_s3_generic", (DL_FUNC) &r_function_is_s3_generic, 1},
+    {"function_is_s3_method", (DL_FUNC) &r_function_is_s3_method, 1},
 
     /* Call */
     {"call_create_call", (DL_FUNC) &r_call_create_call, 3},

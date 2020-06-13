@@ -109,10 +109,13 @@ to_string.instrumentr_package <- function(object, ...) {
 
 #' @export
 to_string.instrumentr_function <- function(object, ...) {
-    representation <- sprintf("Function(name='%s', parameter_count=%d, definition=%s)",
+    representation <- sprintf("Function(name='%s', parameter_count=%d, definition=%s, public=%s, s3_generic=%s, s3_method=%s)",
                               get_name(object),
                               get_parameter_count(object),
-                              to_string(get_definition(object)))
+                              to_string(get_definition(object)),
+                              logical_to_string(is_public(object)),
+                              logical_to_string(is_s3_generic(object)),
+                              logical_to_string(is_s3_method(object)))
 
     representation
 }
