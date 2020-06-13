@@ -35,7 +35,7 @@ get_instrumented_package_names <- function() {
     ls(envir=instrumented_packages, all.names = TRUE)
 }
 
-get_instrumented_function_names <- function(package_name) {
+get_instrumented_function_names <- function(package_name) { # nolint
     instrumented_functions <- get(package_name, envir=instrumented_packages)
     ls(envir=instrumented_functions, all.names = TRUE)
 }

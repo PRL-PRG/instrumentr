@@ -8,18 +8,18 @@ get_function_table <- function(package_env) {
 
     public_function_names <- character(0)
 
-    if(!is.null(package_ns)) {
+    if (!is.null(package_ns)) {
 
         s3_table <- package_ns$S3methods
 
         exports_env <- package_ns$exports
 
-        if(!is.null(s3_table)) {
-            s3_generic_function_names <- s3_table[,1]
-            s3_method_function_names <- paste(s3_table[,1], s3_table[,2], sep=".")
+        if (!is.null(s3_table)) {
+            s3_generic_function_names <- s3_table[, 1]
+            s3_method_function_names <- paste(s3_table[, 1], s3_table[, 2], sep = ".")
         }
 
-        if(!is.null(exports_env)) {
+        if (!is.null(exports_env)) {
             public_function_names <- ls(exports_env, all.names = TRUE)
         }
     }
