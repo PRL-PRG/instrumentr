@@ -14,11 +14,13 @@ class Call: public Object {
   public:
     Call(std::shared_ptr<Function> function,
          SEXP r_expression,
-         SEXP r_environment)
+         SEXP r_environment,
+         int frame_position)
         : Object()
         , function_(function)
         , r_expression_(r_expression)
         , r_environment_(r_environment)
+        , frame_position_(frame_position)
         , active_(false)
         , r_result_(get_undefined_object()) {
         R_PreserveObject(r_expression_);
@@ -47,6 +49,10 @@ class Call: public Object {
 
     SEXP get_environment() {
         return r_environment_;
+    }
+
+    int get_frame_position() const {
+        return frame_position_;
     }
 
     bool is_active() const {
@@ -101,6 +107,7 @@ class Call: public Object {
     std::shared_ptr<Function> function_;
     SEXP r_expression_;
     SEXP r_environment_;
+    int frame_position_;
     bool active_;
     SEXP r_result_;
     std::vector<std::shared_ptr<Parameter>> parameters_;

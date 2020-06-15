@@ -132,7 +132,7 @@ create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr
                   APPLICATION_PTR,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
-                  .Call(CREATE_CALL, FUNCTION_PTR, sys.call(), environment()))
+                  .Call(CREATE_CALL, FUNCTION_PTR, sys.call(), environment(), sys.nframe()))
             .Call(REINSTATE_TRACING)
         }
     }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,

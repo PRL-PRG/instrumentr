@@ -122,10 +122,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"function_is_s3_method", (DL_FUNC) &r_function_is_s3_method, 1},
 
     /* Call */
-    {"call_create_call", (DL_FUNC) &r_call_create_call, 3},
+    {"call_create_call", (DL_FUNC) &r_call_create_call, 4},
     {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
     {"call_get_expression", (DL_FUNC) &r_call_get_expression, 1},
     {"call_get_environment", (DL_FUNC) &r_call_get_environment, 1},
+    {"call_get_frame_position", (DL_FUNC) &r_call_get_frame_position, 1},
     {"call_is_active", (DL_FUNC) &r_call_is_active, 1},
     {"call_is_successful", (DL_FUNC) &r_call_is_successful, 1},
     {"call_get_result", (DL_FUNC) &r_call_get_result, 1},

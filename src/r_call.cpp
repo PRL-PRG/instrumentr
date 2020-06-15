@@ -37,10 +37,12 @@ ArgumentSPtr create_argument(SEXP r_argument_name,
 
 SEXP r_call_create_call(SEXP r_function,
                         SEXP r_call_expression,
-                        SEXP r_environment) {
+                        SEXP r_environment,
+                        SEXP r_frame_position) {
     FunctionSPtr function = Function::from_sexp(r_function);
-    CallSPtr call =
-        std::make_shared<Call>(function, r_call_expression, r_environment);
+    int frame_position = asInteger(r_frame_position);
+    CallSPtr call = std::make_shared<Call>(
+        function, r_call_expression, r_environment, frame_position);
     SEXP r_definition = function->get_definition();
 
     std::string argument_name;
@@ -146,6 +148,11 @@ SEXP r_call_get_expression(SEXP r_call) {
 SEXP r_call_get_environment(SEXP r_call) {
     CallSPtr call = Call::from_sexp(r_call);
     return call->get_environment();
+}
+
+SEXP r_call_get_frame_position(SEXP r_call) {
+    CallSPtr call = Call::from_sexp(r_call);
+    return ScalarInteger(call->get_frame_position());
 }
 
 SEXP r_call_is_active(SEXP r_call) {
