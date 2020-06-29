@@ -13,12 +13,14 @@ class Application: public Object {
     Application(const std::string& name,
                 const std::string& directory,
                 SEXP r_code,
-                SEXP r_environment)
+                SEXP r_environment,
+                int frame_position)
         : Object()
         , name_(name)
         , directory_(directory)
         , r_code_(r_code)
         , r_environment_(r_environment)
+        , frame_position_(frame_position)
         , call_stack_(new CallStack()) {
         R_PreserveObject(r_environment_);
         R_PreserveObject(r_code_);
@@ -43,6 +45,10 @@ class Application: public Object {
 
     SEXP get_environment() {
         return r_environment_;
+    }
+
+    int get_frame_position() const {
+        return frame_position_;
     }
 
     const CallStackSPtr get_call_stack() const {
@@ -91,6 +97,7 @@ class Application: public Object {
     std::string directory_;
     SEXP r_code_;
     SEXP r_environment_;
+    int frame_position_;
     CallStackSPtr call_stack_;
     std::vector<PackageSPtr> packages_;
 

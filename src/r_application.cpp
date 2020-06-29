@@ -12,12 +12,14 @@ using instrumentr::PackageSPtr;
 SEXP r_application_create_application(SEXP r_name,
                                       SEXP r_directory,
                                       SEXP r_code,
-                                      SEXP r_environment) {
+                                      SEXP r_environment,
+                                      SEXP r_frame_position) {
     std::string name = CHAR(asChar(r_name));
     std::string directory = CHAR(asChar(r_directory));
+    int frame_position = asInteger(r_frame_position);
 
-    ApplicationSPtr application =
-        std::make_shared<Application>(name, directory, r_code, r_environment);
+    ApplicationSPtr application = std::make_shared<Application>(
+        name, directory, r_code, r_environment, frame_position);
 
     return Application::to_sexp(application);
 }
@@ -44,6 +46,12 @@ SEXP r_application_get_environment(SEXP r_application) {
     ApplicationSPtr application = Application::from_sexp(r_application);
     SEXP r_environment = application->get_environment();
     return r_environment;
+}
+
+SEXP r_application_get_frame_position(SEXP r_application) {
+    ApplicationSPtr application = Application::from_sexp(r_application);
+    int frame_position = application->get_frame_position();
+    return ScalarInteger(frame_position);
 }
 
 SEXP r_application_get_packages(SEXP r_application) {

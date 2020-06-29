@@ -42,14 +42,15 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
         ## nolint - tryCatchList(expr, classes, parentenv, handlers)
         ## nolint - tryCatchOne(expr, names, parentenv, handlers[[1L]])
         ## nolint - doTryCatch(return(expr), name, parentenv, handler)
-        n <- sys.nframe() + 4
+        frame_position <- (function() sys.nframe())()
 
-        set_sys_call_base_index(n)
+        #set_sys_call_base_index(n)
 
         application <- create_application(infer_application_name(),
                                           getwd(),
                                           substitute(code),
-                                          environment)
+                                          environment,
+                                          frame_position)
 
         .Call(C_instrumentr_trace_application_load, context, application)
 
