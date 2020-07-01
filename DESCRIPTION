@@ -12,6 +12,7 @@ License: Apache 2 + file LICENSE
 URL: https://prl-prg.github.io/instrumentr/
 Encoding: UTF-8
 LazyData: true
+SystemRequirements: C++11
 Imports:
     injectr
 Remotes:
