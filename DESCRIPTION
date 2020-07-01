@@ -12,7 +12,7 @@ Description: instrumentr is an instrumentation framework for R that
              helps you address common dynamic analysis problems.
              It exposes hooks for key program execution events.
              Callbacks can be attached to these hooks to extract
-             information about the state of the running program
+             information about the state of the running program.
 License: MIT + file LICENSE
 URL: https://prl-prg.github.io/instrumentr/
 BugReports: https://github.com/PRL-PRG/instrumentr/issues
