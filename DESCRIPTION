@@ -8,7 +8,7 @@ Authors@R:
            email = "goel.aviral@gmail.com",
            comment = c(ORCID = "0000-0002-0814-5015"))
 Description: Lightweight Tracer for R
-License: Apache 2 + file LICENSE
+License: MIT + file LICENSE
 URL: https://prl-prg.github.io/instrumentr/
 Encoding: UTF-8
 LazyData: true
