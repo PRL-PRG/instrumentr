@@ -34,11 +34,11 @@ class Parameter: public Object {
         arguments_.push_back(argument);
     }
 
-    bool is_missing() {
+    bool is_missing() const {
         return arguments_.size() == 0;
     }
 
-    bool is_vararg() {
+    bool is_vararg() const {
         return name_ == "...";
     }
 

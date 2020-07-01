@@ -51,11 +51,7 @@ class Application: public Object {
         return frame_position_;
     }
 
-    const CallStackSPtr get_call_stack() const {
-        return call_stack_;
-    }
-
-    CallStackSPtr get_call_stack() {
+    CallStackSPtr get_call_stack() const {
         return call_stack_;
     }
 
@@ -71,7 +67,7 @@ class Application: public Object {
         packages_.push_back(package);
     }
 
-    void remove_package(PackageSPtr package) {
+    void remove_package(const PackageSPtr& package) {
         for (int index = packages_.size() - 1; index >= 0; --index) {
             if (packages_[index] == package) {
                 packages_.erase(packages_.begin() + index);

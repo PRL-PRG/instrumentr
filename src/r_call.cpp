@@ -45,7 +45,6 @@ SEXP r_call_create_call(SEXP r_function,
         function, r_call_expression, r_environment, frame_position);
     SEXP r_definition = function->get_definition();
 
-    std::string argument_name;
     SEXP r_parameters = FORMALS(r_definition);
 
     for (int parameter_position = 0; r_parameters != R_NilValue;
@@ -69,8 +68,6 @@ SEXP r_call_create_call(SEXP r_function,
             std::vector<SEXP> dot_arguments;
             std::vector<SEXP> dot_tags;
 
-            int index = 0;
-
             for (SEXP r_dot_argument_pointer = r_argument_value;
                  r_dot_argument_pointer != R_NilValue;
                  r_dot_argument_pointer = CDR(r_dot_argument_pointer)) {
@@ -87,8 +84,6 @@ SEXP r_call_create_call(SEXP r_function,
                 }
 
                 dot_tags.push_back(r_dot_argument_tag);
-
-                ++index;
             }
 
             SEXP dots = PROTECT(R_NilValue);
