@@ -7,3 +7,4 @@
 ^.lintr$
 ^.travis.yml$
 ^codecov\.yml$
+^LICENSE\.md$
