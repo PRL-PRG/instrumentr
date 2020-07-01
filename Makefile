@@ -5,6 +5,7 @@ SOURCES := $(shell find $(SOURCEDIR) -name '*.cpp')
 INCLUDES := $(shell find $(INCLUDEDIR) -name '*.hpp') $(shell find $(SOURCEDIR) -name '*.h')
 
 CPPCHECK := cppcheck
+SCAN_BUILD ?= scan-build
 
 .PHONY: all build check document test
 
@@ -42,8 +43,8 @@ install-devtools:
 install-lintr:
 	R --slave -e "if (!require('lintr')) install.packages('lintr')"
 
-clang-analyze: clean
-	scan-build make build
+clang-tidy: clean
+	$(SCAN_BUILD) make build
 
 cppcheck:
 	$(CPPCHECK) --version
