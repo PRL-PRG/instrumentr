@@ -1,28 +1,64 @@
 # instrumentr
 
 <!-- badges: start -->
+[![CRAN Status](https://www.r-pkg.org/badges/version/instrumentr)](https://cran.r-project.org/package=instrumentr)
+[![Package Lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License: MIT](https://img.shields.io/github/license/PRL-PRG/instrumentr)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/PRL-PRG/instrumentr/workflows/R-CMD-check/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions)
-[![Code Coverage](https://codecov.io/gh/PRL-PRG/instrumentr/branch/master/graph/badge.svg)](https://codecov.io/gh/PRL-PRG/instrumentr)
 [![lintr Status](https://github.com/PRL-PRG/instrumentr/workflows/lintr/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Alintr)
 [![cppcheck Status](https://github.com/PRL-PRG/instrumentr/workflows/cppcheck/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Acppcheck)
-[![Package Lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![CRAN Status](https://www.r-pkg.org/badges/version/instrumentr)](https://cran.r-project.org/package=instrumentr)
+[![Code Coverage](https://codecov.io/gh/PRL-PRG/instrumentr/branch/master/graph/badge.svg)](https://codecov.io/gh/PRL-PRG/instrumentr)
 <!-- badges: end -->
 
-[instrumentr](https://prl-prg.github.io/instrumentr/) is a lightweight framework for dynamic analysis of R.
+
+## Overview
+
+[instrumentr](https://prl-prg.github.io/instrumentr/) is an instrumentation framework for R that helps you address common dynamic analysis problems. It exposes hooks for the following program execution events :
+
+  - Application
+    - Load
+    - Unload
+    - Attach
+    - Detach
+
+  - Package
+    - Load
+    - Unload
+    - Attach
+    - Detach
+
+  - Function
+    - Attach
+    - Detach
+
+  - Call
+    - Entry
+    - Exit
+
+These hooks invoke user defined callbacks that receive the state of the running program in the form of model objects.
+Model object properties can be queried using a comprehensive API at both R and C++ level.
 
 
-# Administration
+## Setup
 
-To install:
+To install the latest version, run the following R command:
 
-```sh
-$ R CMD INSTALL instrumentr
+```r
+devtools::install_github("PRL-PRG/instrumentr")
 ```
 
-To uninstall:
+To uninstall the existing version, run the following R command:
 
-```sh
-$ R -e "remove.packages('instrumentr')"
+```r
+remove.packages("instrumentr")
 ```
+
+
+## Getting help
+
+Please report bugs with a minimal reproducible example at [GitHub](https://github.com/PRL-PRG/instrumentr/issues).
+
+Request new features with use cases at [GitHub](https://github.com/PRL-PRG/instrumentr/issues).
+
+For questions please contact [Aviral Goel](http://aviral.io).
+
