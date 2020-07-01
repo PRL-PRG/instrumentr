@@ -49,7 +49,7 @@ get_caller.instrumentr_call <- function(object, ...) { # nolint
 
         while (package_name == "") {
             definition_depth <- definition_depth + 1
-            if(is.null(env)) {
+            if (is.null(env)) {
                 print(definition)
                 print(function_name)
                 stop("problem here")

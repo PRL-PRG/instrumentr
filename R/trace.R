@@ -44,8 +44,6 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
         ## nolint - doTryCatch(return(expr), name, parentenv, handler)
         frame_position <- (function() sys.nframe())()
 
-        #set_sys_call_base_index(n)
-
         application <- create_application(infer_application_name(),
                                           getwd(),
                                           substitute(code),
