@@ -2,7 +2,6 @@
 
 <!-- badges: start -->
 [![License: MIT](https://img.shields.io/github/license/PRL-PRG/instrumentr)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.com/PRL-PRG/instrumentr.svg?branch=master)](https://travis-ci.com/PRL-PRG/instrumentr)
 [![Build Status](https://github.com/PRL-PRG/instrumentr/workflows/R-CMD-check/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions)
 [![Code Coverage](https://codecov.io/gh/PRL-PRG/instrumentr/branch/master/graph/badge.svg)](https://codecov.io/gh/PRL-PRG/instrumentr)
 ![R Linter](https://github.com/PRL-PRG/instrumentr/workflows/lint/badge.svg)
