@@ -58,6 +58,7 @@ cppcheck:
 	             --quiet                                                  \
 	             --suppress=missingIncludeSystem                          \
 	             --suppress=unusedFunction                                \
+	             --suppress=useStlAlgorithm                               \
 	              -I inst/include/                                        \
 	             $(SOURCES)                                               \
 	             $(INCLUDES)
