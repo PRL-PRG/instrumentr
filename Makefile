@@ -1,3 +1,11 @@
+SOURCEDIR := src
+INCLUDEDIR := inst/include
+
+SOURCES := $(shell find $(SOURCEDIR) -name '*.cpp')
+INCLUDES := $(shell find $(INCLUDEDIR) -name '*.hpp') $(shell find $(SOURCEDIR) -name '*.h')
+
+CPPCHECK ?= cppcheck
+
 .PHONY: all build check document test
 
 all: clean document build check
@@ -36,3 +44,21 @@ install-lintr:
 
 clang-analyze: clean
 	scan-build make build
+
+cppcheck:
+	$(CPPCHECK) --version
+	@$(CPPCHECK) --force                                                  \
+	             --enable=all                                             \
+	             --language=c++                                           \
+	             --inconclusive                                           \
+	             --std=c++11                                              \
+	             --std=c++14                                              \
+	             --std=posix                                              \
+	             --inline-suppr                                           \
+	             --error-exitcode=1                                       \
+	             --quiet                                                  \
+	             --suppress=missingIncludeSystem                          \
+	             --suppress=unusedFunction                                \
+	              -I inst/include/                                        \
+	             $(SOURCES)                                               \
+	             $(INCLUDES)
