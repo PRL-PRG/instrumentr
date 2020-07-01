@@ -1,0 +1,17 @@
+url: https://prl-prg.github.io/instrumentr/
+
+template:
+  params:
+    bootswatch: cosmo
+
+navbar:
+  title: "instrumentr"
+  left:
+    - text: "Articles"
+      href: articles/index.html
+    - text: "Reference"
+      href: reference/index.html
+  right:
+   - icon: fa-github
+     href: https://github.com/PRL-PRG/instrumentr
+
