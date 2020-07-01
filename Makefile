@@ -1,6 +1,6 @@
 .PHONY: all build check document test
 
-all: document build check
+all: clean document build check
 
 build: document
 	R CMD build .
@@ -13,7 +13,7 @@ clean:
 	-rm -fr instrumentr.Rcheck
 	-rm -rf src/*.o src/*.so
 
-install:
+install: clean
 	R CMD INSTALL .
 
 uninstall:
