@@ -22,7 +22,7 @@ extern SEXP CallExitCallbackSymbol;
 
 class Context: public Object {
   public:
-    Context(SEXP r_environment): Object(), r_environment_(r_environment) {
+    explicit Context(SEXP r_environment): Object(), r_environment_(r_environment) {
         R_PreserveObject(r_environment_);
     }
 

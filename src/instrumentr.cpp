@@ -68,8 +68,8 @@ bool is_undefined_object(SEXP object) {
     return object == UndefinedObject;
 }
 
-bool is_defined_object(SEXP value) {
-    return !(is_undefined_object(value));
+bool is_defined_object(SEXP object) {
+    return !(is_undefined_object(object));
 }
 
 void initialize_instrumentr(SEXP r_package_environment,

@@ -4,7 +4,7 @@
 
 extern "C" {
 SEXP r_call_create_call(SEXP r_function,
-                        SEXP r_call_obj,
+                        SEXP r_call_expression,
                         SEXP r_environment,
                         SEXP r_frame_position);
 SEXP r_call_get_function(SEXP r_call);

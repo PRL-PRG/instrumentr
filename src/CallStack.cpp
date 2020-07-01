@@ -27,9 +27,9 @@ CallStackSPtr CallStack::from_sexp(SEXP r_call_stack) {
     }
 }
 
-SEXP CallStack::to_sexp(CallStackSPtr call) {
+SEXP CallStack::to_sexp(CallStackSPtr call_stack) {
     SEXP r_call_stack = PROTECT(
-        R_MakeExternalPtr(new CallStackSPtr(call), R_NilValue, R_NilValue));
+        R_MakeExternalPtr(new CallStackSPtr(call_stack), R_NilValue, R_NilValue));
 
     R_RegisterCFinalizerEx(r_call_stack, CallStack::destroy_sexp, TRUE);
 

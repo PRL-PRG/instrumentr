@@ -48,7 +48,7 @@ class Package: public Object {
         functions_.push_back(function);
     }
 
-    void remove_function(FunctionSPtr function) {
+    void remove_function(const FunctionSPtr& function) {
         for (int index = functions_.size() - 1; index >= 0; --index) {
             if (functions_[index] == function) {
                 functions_.erase(functions_.begin() + index);

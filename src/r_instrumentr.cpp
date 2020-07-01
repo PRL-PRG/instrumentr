@@ -184,10 +184,9 @@ SEXP r_instrumentr_trace_package(ExecutionContext execution_context,
                                  SEXP r_application,
                                  SEXP r_package) {
     ContextSPtr context = Context::from_sexp(r_context);
-    ApplicationSPtr application = Application::from_sexp(r_application);
-    PackageSPtr package = Package::from_sexp(r_package);
 
     SEXP r_environment = context->get_environment();
+
     SEXP result = r_instrumentr_trace(
         false,
         execution_context,

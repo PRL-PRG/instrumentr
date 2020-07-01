@@ -12,7 +12,7 @@ class Parameter;
 
 class Call: public Object {
   public:
-    Call(std::shared_ptr<Function> function,
+    Call(std::shared_ptr<Function>& function,
          SEXP r_expression,
          SEXP r_environment,
          int frame_position)
@@ -35,11 +35,7 @@ class Call: public Object {
         }
     }
 
-    const std::shared_ptr<Function> get_function() const {
-        return function_;
-    }
-
-    std::shared_ptr<Function> get_function() {
+    std::shared_ptr<Function> get_function() const {
         return function_;
     }
 

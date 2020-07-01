@@ -4,7 +4,7 @@ INCLUDEDIR := inst/include
 SOURCES := $(shell find $(SOURCEDIR) -name '*.cpp')
 INCLUDES := $(shell find $(INCLUDEDIR) -name '*.hpp') $(shell find $(SOURCEDIR) -name '*.h')
 
-CPPCHECK ?= cppcheck
+CPPCHECK := cppcheck
 
 .PHONY: all build check document test
 
@@ -53,7 +53,6 @@ cppcheck:
 	             --inconclusive                                           \
 	             --std=c++11                                              \
 	             --std=c++14                                              \
-	             --std=posix                                              \
 	             --inline-suppr                                           \
 	             --error-exitcode=1                                       \
 	             --quiet                                                  \
