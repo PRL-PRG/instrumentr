@@ -1,6 +1,7 @@
+Type: Package
 Package: instrumentr
 Title: Lightweight Tracer for R
-Version: 0.0.0.9000
+Version: 0.1
 Authors@R: 
     person(given = "Aviral",
            family = "Goel",
@@ -10,6 +11,7 @@ Authors@R:
 Description: Lightweight Tracer for R
 License: MIT + file LICENSE
 URL: https://prl-prg.github.io/instrumentr/
+BugReports: https://github.com/aviralg/instrumentr/issues
 Encoding: UTF-8
 LazyData: true
 SystemRequirements: C++11
@@ -17,7 +19,7 @@ Imports:
     injectr
 Remotes:
     PRL-PRG/injectr
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
 Suggests:
     covr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
