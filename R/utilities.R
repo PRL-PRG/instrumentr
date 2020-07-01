@@ -26,6 +26,10 @@ is_null <- function(obj) {
     is.null(obj)
 }
 
+is_symbol <- function(obj) {
+    is.symbol(obj)
+}
+
 is_closure <- function(obj) {
     typeof(obj) == "closure"
 }
