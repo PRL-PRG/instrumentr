@@ -18,3 +18,5 @@ Remotes:
     PRL-PRG/injectr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
+Suggests:
+    covr
