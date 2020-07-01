@@ -2,9 +2,9 @@
 ^docs$
 ^pkgdown$
 ^\.github$
-^.clang-format$
-^.clang-tidy$
-^.lintr$
-^.travis.yml$
+^\.clang-format$
+^\.clang-tidy$
+^\.lintr$
+^\.travis\.yml$
 ^codecov\.yml$
 ^LICENSE\.md$
