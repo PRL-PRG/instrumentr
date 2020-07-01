@@ -9,6 +9,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-0814-5015"))
 Description: Lightweight Tracer for R
 License: Apache + file LICENSE
+URL: https://prl-prg.github.io/instrumentr/
 Encoding: UTF-8
 LazyData: true
 Imports:
