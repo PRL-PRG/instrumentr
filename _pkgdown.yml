@@ -15,3 +15,6 @@ navbar:
    - icon: fa-github
      href: https://github.com/PRL-PRG/instrumentr
 
+authors:
+  Aviral Goel:
+    href: http://aviral.io
