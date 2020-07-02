@@ -9,7 +9,7 @@ on:
 name: lintr
 
 jobs:
-  lint:
+  lintr:
     runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
