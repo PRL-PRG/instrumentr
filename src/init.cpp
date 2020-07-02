@@ -132,6 +132,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"call_is_successful", (DL_FUNC) &r_call_is_successful, 1},
     {"call_get_result", (DL_FUNC) &r_call_get_result, 1},
     {"call_get_parameters", (DL_FUNC) &r_call_get_parameters, 1},
+    {"call_get_parameter_by_name", (DL_FUNC) &r_call_get_parameter_by_name, 2},
+    {"call_get_parameter_by_position", (DL_FUNC) &r_call_get_parameter_by_position, 2},
 
     /* Parameter */
     {"parameter_get_name", (DL_FUNC) &r_parameter_get_name, 1},

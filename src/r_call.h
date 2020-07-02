@@ -15,4 +15,6 @@ SEXP r_call_is_active(SEXP r_call);
 SEXP r_call_is_successful(SEXP r_call);
 SEXP r_call_get_result(SEXP r_call);
 SEXP r_call_get_parameters(SEXP r_call);
+SEXP r_call_get_parameter_by_name(SEXP r_call, SEXP r_name);
+SEXP r_call_get_parameter_by_position(SEXP r_call, SEXP r_position);
 }
