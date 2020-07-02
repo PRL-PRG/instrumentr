@@ -8,6 +8,7 @@
 [![lintr Status](https://github.com/PRL-PRG/instrumentr/workflows/lintr/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Alintr)
 [![clang-tidy](https://github.com/PRL-PRG/instrumentr/workflows/clang-tidy/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Aclang-tidy)
 [![cppcheck Status](https://github.com/PRL-PRG/instrumentr/workflows/cppcheck/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Acppcheck)
+[![rchk](https://github.com/PRL-PRG/instrumentr/workflows/rchk/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Archk)
 [![Code Coverage](https://codecov.io/gh/PRL-PRG/instrumentr/branch/master/graph/badge.svg)](https://codecov.io/gh/PRL-PRG/instrumentr)
 <!-- badges: end -->
 
