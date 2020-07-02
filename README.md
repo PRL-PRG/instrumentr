@@ -4,7 +4,7 @@
 [![CRAN Status](https://www.r-pkg.org/badges/version/instrumentr)](https://cran.r-project.org/package=instrumentr)
 [![Package Lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License: MIT](https://img.shields.io/github/license/PRL-PRG/instrumentr)](https://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/PRL-PRG/instrumentr/workflows/R-CMD-check/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions)
+[![Build Status](https://github.com/PRL-PRG/instrumentr/workflows/R-CMD-check/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3AR-CMD-check)
 [![lintr Status](https://github.com/PRL-PRG/instrumentr/workflows/lintr/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Alintr)
 [![clang-tidy](https://github.com/PRL-PRG/instrumentr/workflows/clang-tidy/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Aclang-tidy)
 [![cppcheck Status](https://github.com/PRL-PRG/instrumentr/workflows/cppcheck/badge.svg)](https://github.com/PRL-PRG/instrumentr/actions?query=workflow%3Acppcheck)
