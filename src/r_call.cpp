@@ -167,13 +167,19 @@ SEXP r_call_get_result(SEXP r_call) {
 
 SEXP r_call_get_parameters(SEXP r_call) {
     CallSPtr call = Call::from_sexp(r_call);
-    const std::vector<std::shared_ptr<Parameter>>& parameters =
-        call->get_parameters();
+    const std::vector<ParameterSPtr>& parameters = call->get_parameters();
     int size = parameters.size();
+
     SEXP r_parameters = PROTECT(allocVector(VECSXP, size));
+    SEXP r_names = PROTECT(allocVector(STRSXP, size));
+
     for (int i = 0; i < size; ++i) {
-        SET_VECTOR_ELT(r_parameters, i, Parameter::to_sexp(parameters.at(i)));
+        ParameterSPtr parameter = parameters.at(i);
+        SET_VECTOR_ELT(r_parameters, i, Parameter::to_sexp(parameter));
+        SET_STRING_ELT(r_names, i, mkChar(parameter->get_name().c_str()));
     }
-    UNPROTECT(1);
+
+    Rf_setAttrib(r_parameters, R_NamesSymbol, r_names);
+    UNPROTECT(2);
     return r_parameters;
 }
