@@ -60,11 +60,26 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
 
         .Call(C_instrumentr_trace_application_detach, context, application)
 
+        result <- create_result(value)
+    },
+    error = function(e) {
+        print(e)
+
+        result <<- create_result(e, peek_execution_context())
+    })
+
+    ##NOTE: all user callbacks are evaluated in tryCatch.
+    ##      This code is tricky. If error has happened
+    ##      previously, we do not execute user callback.
+    ##      If user callback errors, we override the result
+    ##      with the error object
+    tryCatch({
         remove_instrumentation(context, application)
 
-        .Call(C_instrumentr_trace_application_unload, context, application)
-
-        result <- create_result(value)
+        ## NOTE: invoke callback if tracing does not error
+        if (is_value(result)) {
+            .Call(C_instrumentr_trace_application_unload, context, application)
+        }
     },
     error = function(e) {
         print(e)
@@ -73,8 +88,6 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
     },
     finally = {
         .Call(C_instrumentr_finalize_tracing)
-
-        set_sys_call_base_index(0)
     })
 
     result
