@@ -183,3 +183,42 @@ SEXP r_call_get_parameters(SEXP r_call) {
     UNPROTECT(2);
     return r_parameters;
 }
+
+SEXP r_call_get_parameter_by_name(SEXP r_call, SEXP r_name) {
+    CallSPtr call = Call::from_sexp(r_call);
+    const std::string name(CHAR(asChar(r_name)));
+
+    const std::vector<ParameterSPtr>& parameters = call->get_parameters();
+    int size = parameters.size();
+
+    for (int i = 0; i < size; ++i) {
+        ParameterSPtr parameter = parameters.at(i);
+        if (parameter->get_name() == name) {
+            return Parameter::to_sexp(parameter);
+        }
+    }
+
+    Rf_error("parameter named '%s' does not exist", name.c_str());
+
+    return R_NilValue;
+}
+
+SEXP r_call_get_parameter_by_position(SEXP r_call, SEXP r_position) {
+    CallSPtr call = Call::from_sexp(r_call);
+    /* NOTE: 1 based indexing at R level and 0 based indexing at C++ level */
+    int position = asInteger(r_position) - 1;
+
+    const std::vector<ParameterSPtr>& parameters = call->get_parameters();
+    int size = parameters.size();
+
+    if (position < 0 || position >= size) {
+        Rf_error("accessing parameter at position %d from a call with %d "
+                 "parameter(s)",
+                 position + 1,
+                 size);
+        return R_NilValue;
+    }
+
+    ParameterSPtr parameter = parameters.at(position);
+    return Parameter::to_sexp(parameter);
+}

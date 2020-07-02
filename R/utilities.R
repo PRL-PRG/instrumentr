@@ -14,6 +14,10 @@ is_scalar_integer <- function(vector) {
     is.integer(vector) && (length(vector) == 1)
 }
 
+is_scalar_real <- function(object) {
+    is.double(object) && (length(object) == 1)
+}
+
 is_environment <- function(env) {
     is.environment(env)
 }
