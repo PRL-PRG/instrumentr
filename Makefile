@@ -5,7 +5,7 @@ SOURCES := $(shell find $(SOURCEDIR) -name '*.cpp')
 INCLUDES := $(shell find $(INCLUDEDIR) -name '*.hpp') $(shell find $(SOURCEDIR) -name '*.h')
 
 CPPCHECK := cppcheck
-SCAN_BUILD ?= scan-build
+SCAN_BUILD := scan-build
 
 .PHONY: all build check document test
 
