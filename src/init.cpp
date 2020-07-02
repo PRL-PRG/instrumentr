@@ -141,6 +141,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"parameter_is_missing", (DL_FUNC) &r_parameter_is_missing, 1},
     {"parameter_is_vararg", (DL_FUNC) &r_parameter_is_vararg, 1},
     {"parameter_get_arguments", (DL_FUNC) &r_parameter_get_arguments, 1},
+    {"parameter_get_argument_by_name", (DL_FUNC) &r_parameter_get_argument_by_name, 2},
+    {"parameter_get_argument_by_position", (DL_FUNC) &r_parameter_get_argument_by_position, 2},
 
     /* Argument */
     {"argument_get_name", (DL_FUNC) &r_argument_get_name, 1},

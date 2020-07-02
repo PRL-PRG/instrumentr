@@ -51,3 +51,42 @@ SEXP r_parameter_get_arguments(SEXP r_parameter) {
     UNPROTECT(1);
     return r_arguments;
 }
+
+SEXP r_parameter_get_argument_by_name(SEXP r_parameter, SEXP r_name) {
+    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    const std::string name(CHAR(asChar(r_name)));
+
+    const std::vector<ArgumentSPtr>& arguments = parameter->get_arguments();
+    int size = arguments.size();
+
+    for (int i = 0; i < size; ++i) {
+        ArgumentSPtr argument = arguments.at(i);
+        if (argument->get_name() == name) {
+            return Argument::to_sexp(argument);
+        }
+    }
+
+    Rf_error("argument named '%s' does not exist", name.c_str());
+
+    return R_NilValue;
+}
+
+SEXP r_parameter_get_argument_by_position(SEXP r_parameter, SEXP r_position) {
+    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    /* NOTE: 1 based indexing at R level and 0 based indexing at C++ level */
+    int position = asInteger(r_position) - 1;
+
+    const std::vector<ArgumentSPtr>& arguments = parameter->get_arguments();
+    int size = arguments.size();
+
+    if (position < 0 || position >= size) {
+        Rf_error("accessing argument at position %d from a parameter with %d "
+                 "argument(s)",
+                 position + 1,
+                 size);
+        return R_NilValue;
+    }
+
+    ArgumentSPtr argument = arguments.at(position);
+    return Argument::to_sexp(argument);
+}
