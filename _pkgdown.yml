@@ -12,6 +12,8 @@ navbar:
       href: articles/index.html
     - text: "Reference"
       href: reference/index.html
+    - text: "Issues"
+      href: https://github.com/PRL-PRG/instrumentr/issues
   right:
    - icon: fa-github
      href: https://github.com/PRL-PRG/instrumentr
