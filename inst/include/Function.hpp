@@ -16,8 +16,8 @@ class Function: public Object {
              bool s3_method)
         : Object()
         , name_(name)
-        , parameter_count_(parameter_count)
         , r_definition_(r_definition)
+        , parameter_count_(parameter_count) //(length(FORMALS(r_definition)))
         , public_(pub)
         , s3_generic_(s3_generic)
         , s3_method_(s3_method) {
@@ -32,12 +32,48 @@ class Function: public Object {
         return name_;
     }
 
+    SEXP get_definition() {
+        return r_definition_;
+    }
+
     int get_parameter_count() const {
         return parameter_count_;
     }
 
-    SEXP get_definition() {
-        return r_definition_;
+    SEXP get_default_argument(const int parameter_position) {
+        int index = 0;
+        SEXP r_formals = FORMALS(get_definition());
+
+        while (r_formals != R_NilValue) {
+            if (index == parameter_position) {
+                SEXP r_argument = CAR(r_formals);
+                if (r_argument == R_MissingArg) {
+                    r_argument = get_undefined_object();
+                }
+                return r_argument;
+            }
+            index += 1;
+            r_formals = CDR(r_formals);
+        }
+
+        return NULL;
+    }
+
+    SEXP get_default_argument(const std::string& parameter_name) {
+        SEXP r_formals = FORMALS(get_definition());
+
+        while (r_formals != R_NilValue) {
+            if (parameter_name == CHAR(PRINTNAME(TAG(r_formals)))) {
+                SEXP r_argument = CAR(r_formals);
+                if (r_argument == R_MissingArg) {
+                    r_argument = get_undefined_object();
+                }
+                return r_argument;
+            }
+            r_formals = CDR(r_formals);
+        }
+
+        return NULL;
     }
 
     bool is_public() const {
@@ -66,8 +102,8 @@ class Function: public Object {
 
   private:
     std::string name_;
-    int parameter_count_;
     SEXP r_definition_;
+    int parameter_count_;
     bool public_;
     bool s3_generic_;
     bool s3_method_;

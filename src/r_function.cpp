@@ -57,3 +57,36 @@ SEXP r_function_is_s3_method(SEXP r_function) {
     bool s3_method = function->is_s3_method();
     return ScalarLogical(s3_method);
 }
+
+SEXP r_function_get_default_argument_by_position(SEXP r_function,
+                                                 SEXP r_parameter_position) {
+    FunctionSPtr function = Function::from_sexp(r_function);
+    /* NOTE: 1 based indexing at R level and 0 based indexing at C++ level */
+    int parameter_position = asInteger(r_parameter_position) - 1;
+
+    int size = function->get_parameter_count();
+
+    if (parameter_position < 0 || parameter_position >= size) {
+        Rf_error("accessing parameter at position %d from a function "
+                 "with %d parameter(s)",
+                 parameter_position + 1,
+                 size);
+        return R_NilValue;
+    }
+
+    return function->get_default_argument(parameter_position);
+}
+
+SEXP r_function_get_default_argument_by_name(SEXP r_function,
+                                             SEXP r_parameter_name) {
+    FunctionSPtr function = Function::from_sexp(r_function);
+    const std::string parameter_name(CHAR(asChar(r_parameter_name)));
+
+    SEXP r_value = function->get_default_argument(parameter_name);
+
+    if (r_value == nullptr) {
+        Rf_error("parameter named '%s' does not exist", parameter_name.c_str());
+    }
+
+    return r_value;
+}
