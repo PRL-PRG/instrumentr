@@ -121,6 +121,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"function_is_public", (DL_FUNC) &r_function_is_public, 1},
     {"function_is_s3_generic", (DL_FUNC) &r_function_is_s3_generic, 1},
     {"function_is_s3_method", (DL_FUNC) &r_function_is_s3_method, 1},
+    {"function_get_default_argument_by_position", (DL_FUNC) &r_function_get_default_argument_by_position, 2},
+    {"function_get_default_argument_by_name", (DL_FUNC) &r_function_get_default_argument_by_name, 2},
 
     /* Call */
     {"call_create_call", (DL_FUNC) &r_call_create_call, 4},
