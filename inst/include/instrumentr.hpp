@@ -6,6 +6,8 @@
 
 namespace instrumentr {
 
+const char* get_commit_hash();
+
 bool is_tracing_enabled();
 
 void set_tracing_status(bool tracing_status);
