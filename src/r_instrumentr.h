@@ -3,6 +3,7 @@
 #include <Rdefines.h>
 
 extern "C" {
+SEXP r_instrumentr_get_commit_hash();
 SEXP r_instrumentr_is_tracing_enabled();
 SEXP r_instrumentr_disable_tracing();
 SEXP r_instrumentr_enable_tracing();

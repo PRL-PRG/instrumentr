@@ -16,6 +16,10 @@ std::vector<ExecutionContext> execution_context_stack;
 
 SEXP UndefinedObject = NULL;
 
+const char* get_commit_hash() {
+    return GIT_COMMIT_HASH;
+}
+
 bool is_tracing_enabled() {
     return !tracing_status_stack.empty() && tracing_status_stack.back();
 }

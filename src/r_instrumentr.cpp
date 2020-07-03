@@ -22,6 +22,10 @@ using instrumentr::FunctionSPtr;
 using instrumentr::Package;
 using instrumentr::PackageSPtr;
 
+SEXP r_instrumentr_get_commit_hash() {
+    return mkString(instrumentr::get_commit_hash());
+}
+
 SEXP r_instrumentr_is_tracing_enabled() {
     return ScalarLogical(instrumentr::is_tracing_enabled());
 }

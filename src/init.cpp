@@ -15,6 +15,7 @@
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     /* instrumentr */
+    {"instrumentr_get_commit_hash", (DL_FUNC) &r_instrumentr_get_commit_hash, 0},
     {"instrumentr_is_tracing_enabled", (DL_FUNC) &r_instrumentr_is_tracing_enabled, 0},
     {"instrumentr_disable_tracing", (DL_FUNC) &r_instrumentr_disable_tracing, 0},
     {"instrumentr_enable_tracing", (DL_FUNC) &r_instrumentr_enable_tracing, 0},
