@@ -1,9 +1,11 @@
 #ifndef INSTRUMENTR_CONTEXT_HPP
 #define INSTRUMENTR_CONTEXT_HPP
+
 #include "Object.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include "ExecutionContext.hpp"
 
 namespace instrumentr {
 
@@ -22,7 +24,8 @@ extern SEXP CallExitCallbackSymbol;
 
 class Context: public Object {
   public:
-    explicit Context(SEXP r_environment): Object(), r_environment_(r_environment) {
+    explicit Context(SEXP r_environment)
+        : Object(), r_environment_(r_environment) {
         R_PreserveObject(r_environment_);
     }
 
@@ -241,6 +244,51 @@ class Context: public Object {
         return function_names.find(function_name) != function_names.end();
     }
 
+    void initialize_tracing() {
+        push_execution_context(ExecutionContext::Instrumentr);
+    }
+
+    void finalize_tracing() {
+        execution_context_stack_.clear();
+        tracing_status_stack_.clear();
+    }
+
+    bool is_tracing_enabled() const {
+        return !tracing_status_stack_.empty() && tracing_status_stack_.back();
+    }
+
+    void set_tracing_status(bool tracing_status) {
+        tracing_status_stack_.push_back(tracing_status);
+    }
+
+    void enable_tracing() {
+        set_tracing_status(true);
+    }
+
+    void disable_tracing() {
+        set_tracing_status(false);
+    }
+
+    void reinstate_tracing() {
+        if (!tracing_status_stack_.empty()) {
+            tracing_status_stack_.pop_back();
+        }
+    }
+
+    ExecutionContext get_current_execution_context() const {
+        return execution_context_stack_.back();
+    }
+
+    void push_execution_context(ExecutionContext execution_context) {
+        execution_context_stack_.push_back(execution_context);
+    }
+
+    ExecutionContext pop_execution_context() {
+        ExecutionContext execution_context = execution_context_stack_.back();
+        execution_context_stack_.pop_back();
+        return execution_context;
+    }
+
     static void initialize();
 
     static void finalize();
@@ -269,6 +317,8 @@ class Context: public Object {
 
     SEXP r_environment_;
     std::unordered_map<std::string, std::unordered_set<std::string>> packages_;
+    std::vector<bool> tracing_status_stack_;
+    std::vector<ExecutionContext> execution_context_stack_;
 
     static SEXP class_;
 };

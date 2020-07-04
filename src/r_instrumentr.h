@@ -4,21 +4,17 @@
 
 extern "C" {
 SEXP r_instrumentr_get_commit_hash();
+SEXP r_instrumentr_is_undefined_object(SEXP object);
+SEXP r_instrumentr_is_defined_object(SEXP object);
 SEXP r_instrumentr_is_tracing_enabled();
-SEXP r_instrumentr_disable_tracing();
 SEXP r_instrumentr_enable_tracing();
+SEXP r_instrumentr_disable_tracing();
 SEXP r_instrumentr_reinstate_tracing();
-SEXP r_instrumentr_trace_code(SEXP r_code, SEXP r_environment);
 SEXP r_instrumentr_initialize_instrumentr(SEXP r_package_environment,
                                           SEXP r_state_environment,
                                           SEXP r_undefined_object);
 SEXP r_instrumentr_finalize_instrumentr();
-SEXP r_instrumentr_initialize_tracing();
-SEXP r_instrumentr_finalize_tracing();
-SEXP r_instrumentr_is_undefined_object(SEXP object);
-SEXP r_instrumentr_is_defined_object(SEXP object);
-
-SEXP r_instrumentr_peek_execution_context();
+SEXP r_instrumentr_trace_code(SEXP r_context, SEXP r_code, SEXP r_environment);
 SEXP r_instrumentr_trace_application_load(SEXP r_context, SEXP r_application);
 SEXP r_instrumentr_trace_application_unload(SEXP r_context, SEXP r_application);
 SEXP r_instrumentr_trace_application_attach(SEXP r_context, SEXP r_application);

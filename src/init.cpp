@@ -16,18 +16,15 @@ extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     /* instrumentr */
     {"instrumentr_get_commit_hash", (DL_FUNC) &r_instrumentr_get_commit_hash, 0},
+    {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 3},
     {"instrumentr_is_tracing_enabled", (DL_FUNC) &r_instrumentr_is_tracing_enabled, 0},
     {"instrumentr_disable_tracing", (DL_FUNC) &r_instrumentr_disable_tracing, 0},
     {"instrumentr_enable_tracing", (DL_FUNC) &r_instrumentr_enable_tracing, 0},
     {"instrumentr_reinstate_tracing", (DL_FUNC) &r_instrumentr_reinstate_tracing, 0},
-    {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 2},
     {"instrumentr_initialize_instrumentr", (DL_FUNC) &r_instrumentr_initialize_instrumentr, 3},
     {"instrumentr_finalize_instrumentr", (DL_FUNC) &r_instrumentr_finalize_instrumentr, 0},
-    {"instrumentr_initialize_tracing", (DL_FUNC) &r_instrumentr_initialize_tracing, 0},
-    {"instrumentr_finalize_tracing", (DL_FUNC) &r_instrumentr_finalize_tracing, 0},
     {"instrumentr_is_undefined_object", (DL_FUNC)&r_instrumentr_is_undefined_object, 1},
     {"instrumentr_is_defined_object", (DL_FUNC)&r_instrumentr_is_defined_object, 1},
-    {"instrumentr_peek_execution_context", (DL_FUNC) &r_instrumentr_peek_execution_context, 0},
     {"instrumentr_trace_application_load", (DL_FUNC) &r_instrumentr_trace_application_load, 2},
     {"instrumentr_trace_application_unload", (DL_FUNC) &r_instrumentr_trace_application_unload, 2},
     {"instrumentr_trace_application_attach", (DL_FUNC) &r_instrumentr_trace_application_attach, 2},
@@ -94,6 +91,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_get_traced_functions", (DL_FUNC) &r_context_get_traced_functions, 2},
     {"context_is_package_traced", (DL_FUNC) &r_context_is_package_traced, 2},
     {"context_is_function_traced", (DL_FUNC) &r_context_is_function_traced, 3},
+    {"context_is_tracing_enabled", (DL_FUNC) &r_context_is_tracing_enabled, 1},
+    {"context_disable_tracing", (DL_FUNC) &r_context_disable_tracing, 1},
+    {"context_enable_tracing", (DL_FUNC) &r_context_enable_tracing, 1},
+    {"context_reinstate_tracing", (DL_FUNC) &r_context_reinstate_tracing, 1},
+    {"context_initialize_tracing", (DL_FUNC) &r_context_initialize_tracing, 1},
+    {"context_finalize_tracing", (DL_FUNC) &r_context_finalize_tracing, 1},
+    {"context_get_current_execution_context", (DL_FUNC) &r_context_get_current_execution_context, 1},
 
     /* Application */
     {"application_create_application", (DL_FUNC) &r_application_create_application, 5},
