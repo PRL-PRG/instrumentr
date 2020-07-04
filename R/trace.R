@@ -33,7 +33,7 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
 
     result <- NULL
 
-    .Call(C_instrumentr_initialize_tracing)
+    .Call(C_context_initialize_tracing, context)
 
     tryCatch({
         ## nolint NOTE: we manually account for the following four stack frames
@@ -56,7 +56,7 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
 
         .Call(C_instrumentr_trace_application_attach, context, application)
 
-        value <- .Call(C_instrumentr_trace_code, code, environment)
+        value <- .Call(C_instrumentr_trace_code, context, code, environment)
 
         .Call(C_instrumentr_trace_application_detach, context, application)
 
@@ -65,7 +65,8 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
     error = function(e) {
         print(e)
 
-        result <<- create_result(e, peek_execution_context())
+        execution_context <- .Call(C_context_get_current_execution_context, context)
+        result <<- create_result(e, execution_context)
     })
 
     ##NOTE: all user callbacks are evaluated in tryCatch.
@@ -84,10 +85,11 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
     error = function(e) {
         print(e)
 
-        result <<- create_result(e, peek_execution_context())
+        execution_context <- .Call(C_context_get_current_execution_context, context)
+        result <<- create_result(e, execution_context)
     },
     finally = {
-        .Call(C_instrumentr_finalize_tracing)
+        .Call(C_context_finalize_tracing, context)
     })
 
     result
@@ -115,8 +117,4 @@ with_tracing_disabled <- function(code) {
     })
 
     code
-}
-
-peek_execution_context <- function() {
-    .Call(C_instrumentr_peek_execution_context)
 }

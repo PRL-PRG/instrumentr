@@ -26,6 +26,14 @@ SEXP r_instrumentr_get_commit_hash() {
     return mkString(instrumentr::get_commit_hash());
 }
 
+SEXP r_instrumentr_is_undefined_object(SEXP object) {
+    return ScalarLogical(instrumentr::is_undefined_object(object));
+}
+
+SEXP r_instrumentr_is_defined_object(SEXP object) {
+    return ScalarLogical(instrumentr::is_defined_object(object));
+}
+
 SEXP r_instrumentr_is_tracing_enabled() {
     return ScalarLogical(instrumentr::is_tracing_enabled());
 }
@@ -58,49 +66,27 @@ SEXP r_instrumentr_finalize_instrumentr() {
     return R_NilValue;
 }
 
-SEXP r_instrumentr_peek_execution_context() {
-    std::string execution_context = instrumentr::execution_context_to_string(
-        instrumentr::peek_execution_context());
-    return mkString(execution_context.c_str());
-}
-
-SEXP r_instrumentr_initialize_tracing() {
-    instrumentr::push_execution_context(ExecutionContext::Instrumentr);
-    return R_NilValue;
-}
-
-SEXP r_instrumentr_finalize_tracing() {
-    instrumentr::clear_execution_context();
-    instrumentr::clear_tracing();
-    return R_NilValue;
-}
-
-SEXP r_instrumentr_is_undefined_object(SEXP object) {
-    return ScalarLogical(instrumentr::is_undefined_object(object));
-}
-
-SEXP r_instrumentr_is_defined_object(SEXP object) {
-    return ScalarLogical(instrumentr::is_defined_object(object));
-}
-
 SEXP r_instrumentr_trace(bool tracing_status,
                          ExecutionContext execution_context,
+                         ContextSPtr context,
                          SEXP r_code,
                          SEXP r_environment) {
-    instrumentr::set_tracing_status(tracing_status);
-    instrumentr::push_execution_context(execution_context);
+    context->set_tracing_status(tracing_status);
+    context->push_execution_context(execution_context);
 
     SEXP result = Rf_eval(r_code, r_environment);
 
-    instrumentr::pop_execution_context();
-    instrumentr::reinstate_tracing();
+    context->pop_execution_context();
+    context->reinstate_tracing();
 
     return result;
 }
 
-SEXP r_instrumentr_trace_code(SEXP r_code, SEXP r_environment) {
+SEXP r_instrumentr_trace_code(SEXP r_context, SEXP r_code, SEXP r_environment) {
+    ContextSPtr context = Context::from_sexp(r_context);
+
     return r_instrumentr_trace(
-        true, ExecutionContext::Application, r_code, r_environment);
+        true, ExecutionContext::Application, context, r_code, r_environment);
 }
 
 SEXP r_instrumentr_trace_application(ExecutionContext execution_context,
@@ -113,6 +99,7 @@ SEXP r_instrumentr_trace_application(ExecutionContext execution_context,
     SEXP result = r_instrumentr_trace(
         false,
         execution_context,
+        context,
         Rf_lang3(r_callback_symbol, r_context, r_application),
         r_environment);
 
@@ -194,6 +181,7 @@ SEXP r_instrumentr_trace_package(ExecutionContext execution_context,
     SEXP result = r_instrumentr_trace(
         false,
         execution_context,
+        context,
         Rf_lang4(r_callback_symbol, r_context, r_application, r_package),
         r_environment);
 
@@ -296,6 +284,7 @@ SEXP r_instrumentr_trace_function(ExecutionContext execution_context,
     SEXP result = r_instrumentr_trace(
         false,
         execution_context,
+        context,
         Rf_lang5(
             r_callback_symbol, r_context, r_application, r_package, r_function),
         r_environment);
@@ -365,6 +354,7 @@ SEXP r_instrumentr_trace_call(ExecutionContext execution_context,
 
     SEXP result = r_instrumentr_trace(false,
                                       execution_context,
+                                      context,
                                       Rf_lang6(r_callback_symbol,
                                                r_context,
                                                r_application,

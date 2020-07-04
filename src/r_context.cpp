@@ -290,3 +290,49 @@ SEXP r_context_is_function_traced(SEXP r_context,
     return ScalarLogical(
         context->is_function_traced(package_name, function_name));
 }
+
+SEXP r_context_is_tracing_enabled(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    return ScalarLogical(context->is_tracing_enabled());
+}
+
+SEXP r_context_disable_tracing(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    context->disable_tracing();
+    return R_NilValue;
+}
+
+SEXP r_context_enable_tracing(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    context->enable_tracing();
+    return R_NilValue;
+}
+
+SEXP r_context_reinstate_tracing(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    context->reinstate_tracing();
+    return R_NilValue;
+}
+
+SEXP r_context_get_current_execution_context(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    instrumentr::ExecutionContext execution_context =
+        context->get_current_execution_context();
+    std::string execution_context_str =
+        instrumentr::execution_context_to_string(execution_context);
+    return mkString(execution_context_str.c_str());
+}
+
+SEXP r_context_initialize_tracing(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    context->initialize_tracing();
+    instrumentr::add_context(context);
+    return R_NilValue;
+}
+
+SEXP r_context_finalize_tracing(SEXP r_context) {
+    ContextSPtr context = Context::from_sexp(r_context);
+    instrumentr::remove_context(context);
+    context->finalize_tracing();
+    return R_NilValue;
+}

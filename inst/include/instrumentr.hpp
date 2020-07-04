@@ -2,11 +2,25 @@
 #define INSTRUMENTR_INSTRUMENTR_HPP
 
 #include <Rinternals.h>
-#include "ExecutionContext.hpp"
+#include <memory>
 
 namespace instrumentr {
 
+class Context;
+
+using ContextSPtr = std::shared_ptr<Context>;
+
 const char* get_commit_hash();
+
+SEXP get_undefined_object();
+
+bool is_undefined_object(SEXP object);
+
+bool is_defined_object(SEXP object);
+
+void add_context(ContextSPtr context);
+
+void remove_context(ContextSPtr context);
 
 bool is_tracing_enabled();
 
@@ -18,25 +32,9 @@ void disable_tracing();
 
 void reinstate_tracing();
 
-void clear_tracing();
-
-ExecutionContext peek_execution_context();
-
-void push_execution_context(ExecutionContext execution_context);
-
-ExecutionContext pop_execution_context();
-
-void clear_execution_context();
-
-SEXP get_undefined_object();
-
-bool is_undefined_object(SEXP object);
-
-bool is_defined_object(SEXP object);
-
 void initialize_instrumentr(SEXP r_package_environment,
-                       SEXP r_state_environment,
-                       SEXP r_undefined_object);
+                            SEXP r_state_environment,
+                            SEXP r_undefined_object);
 
 void finalize_instrumentr();
 

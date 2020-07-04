@@ -67,4 +67,11 @@ SEXP r_context_is_package_traced(SEXP r_context, SEXP r_package_name);
 SEXP r_context_is_function_traced(SEXP r_context,
                                   SEXP r_package_name,
                                   SEXP r_function_name);
+SEXP r_context_is_tracing_enabled(SEXP r_context);
+SEXP r_context_disable_tracing(SEXP r_context);
+SEXP r_context_enable_tracing(SEXP r_context);
+SEXP r_context_reinstate_tracing(SEXP r_context);
+SEXP r_context_initialize_tracing(SEXP r_context);
+SEXP r_context_finalize_tracing(SEXP r_context);
+SEXP r_context_get_current_execution_context(SEXP r_context);
 }

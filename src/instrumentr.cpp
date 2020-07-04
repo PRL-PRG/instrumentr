@@ -11,57 +11,11 @@
 
 namespace instrumentr {
 
-std::vector<bool> tracing_status_stack;
-std::vector<ExecutionContext> execution_context_stack;
-
 SEXP UndefinedObject = NULL;
+std::vector<ContextSPtr> contexts;
 
 const char* get_commit_hash() {
     return GIT_COMMIT_HASH;
-}
-
-bool is_tracing_enabled() {
-    return !tracing_status_stack.empty() && tracing_status_stack.back();
-}
-
-void set_tracing_status(bool tracing_status) {
-    tracing_status_stack.push_back(tracing_status);
-}
-
-void enable_tracing() {
-    tracing_status_stack.push_back(true);
-}
-
-void disable_tracing() {
-    tracing_status_stack.push_back(false);
-}
-
-void reinstate_tracing() {
-    if (!tracing_status_stack.empty()) {
-        tracing_status_stack.pop_back();
-    }
-}
-
-void clear_tracing() {
-    tracing_status_stack.clear();
-}
-
-ExecutionContext peek_execution_context() {
-    return execution_context_stack.back();
-}
-
-void push_execution_context(ExecutionContext execution_context) {
-    execution_context_stack.push_back(execution_context);
-}
-
-ExecutionContext pop_execution_context() {
-    ExecutionContext execution_context = execution_context_stack.back();
-    execution_context_stack.pop_back();
-    return execution_context;
-}
-
-void clear_execution_context() {
-    execution_context_stack.clear();
 }
 
 SEXP get_undefined_object() {
@@ -74,6 +28,43 @@ bool is_undefined_object(SEXP object) {
 
 bool is_defined_object(SEXP object) {
     return !(is_undefined_object(object));
+}
+
+void add_context(ContextSPtr context) {
+    contexts.push_back(context);
+}
+
+void remove_context(ContextSPtr context) {
+    for (int index = contexts.size() - 1; index >= 0; --index) {
+        if (contexts[index] == context) {
+            contexts.erase(contexts.begin() + index);
+            return;
+        }
+    }
+}
+
+bool is_tracing_enabled() {
+    return !contexts.empty() && contexts.back()->is_tracing_enabled();
+}
+
+void set_tracing_status(bool tracing_status) {
+    for (int index = 0; index < contexts.size(); ++index) {
+        contexts[index]->set_tracing_status(tracing_status);
+    }
+}
+
+void enable_tracing() {
+    set_tracing_status(true);
+}
+
+void disable_tracing() {
+    set_tracing_status(false);
+}
+
+void reinstate_tracing() {
+    for (int index = 0; index < contexts.size(); ++index) {
+        contexts[index]->reinstate_tracing();
+    }
 }
 
 void initialize_instrumentr(SEXP r_package_environment,
