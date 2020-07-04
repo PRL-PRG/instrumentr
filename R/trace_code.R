@@ -1,35 +1,15 @@
-
+ 
 #' @export
-is_tracing_enabled <- function() {
-    .Call(C_instrumentr_is_tracing_enabled)
+trace_code <- function(context, code, environment = .GlobalEnv, quote = TRUE, ...) {
+    UseMethod("trace_code")
 }
 
 #' @export
-disable_tracing <- function() {
-    .Call(C_instrumentr_disable_tracing)
-    invisible(NULL)
-}
-
-#' @export
-enable_tracing <- function() {
-    .Call(C_instrumentr_enable_tracing)
-    invisible(NULL)
-}
-
-#' @export
-reinstate_tracing <- function() {
-    .Call(C_instrumentr_reinstate_tracing)
-    invisible(NULL)
-}
-
-#' @export
-trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
+trace_code.instrumentr_context <- function(context, code, environment = .GlobalEnv, quote = TRUE, ...) {
 
     if (quote) {
         code <- substitute(code)
     }
-
-    stopifnot(is_instrumentr_context(context))
 
     result <- NULL
 
@@ -93,28 +73,4 @@ trace_code <- function(code, context, environment = .GlobalEnv, quote = TRUE) {
     })
 
     result
-}
-
-#' @export
-with_tracing_enabled <- function(code) {
-
-    enable_tracing()
-
-    on.exit({
-        reinstate_tracing()
-    })
-
-    code
-}
-
-#' @export
-with_tracing_disabled <- function(code) {
-
-    disable_tracing()
-
-    on.exit({
-        reinstate_tracing()
-    })
-
-    code
 }
