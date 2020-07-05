@@ -24,6 +24,10 @@ Imports:
 Remotes:
     PRL-PRG/injectr
 Suggests:
-    covr
+    covr,
+    knitr,
+    rmarkdown,
+    dplyr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
+VignetteBuilder: knitr

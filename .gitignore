@@ -138,3 +138,4 @@ dkms.conf
 *.exe
 *.out
 *.app
+inst/doc
