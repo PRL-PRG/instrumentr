@@ -56,9 +56,10 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
     ##      with the error object
     tryCatch({
         remove_instrumentation(context, application)
-
         ## NOTE: invoke callback if tracing does not error
-        if (is_value(result)) {
+        ##       or if error happened only in the code
+        ##       being traced but not in the tracing code
+        if (is_value(result) || get_source(get_error(result)) == "application") {
             .Call(C_instrumentr_trace_application_unload, context, application)
         }
     },
