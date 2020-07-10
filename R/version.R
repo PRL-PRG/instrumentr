@@ -4,32 +4,33 @@ get_commit_hash <- function() {
 }
 
 #' @importFrom utils packageVersion
-show_version_information <- function() {
+get_version_information <- function() {
 
-    bullet <- "\u2022"
-    line <- "\u2500"
-    r_major_version <- R.Version()$major
-    r_minor_version <- R.Version()$minor
+    r_version <- R.Version()
+    r_version_string <- sprintf("%s.%s (%s-%s-%s)",
+                                r_version$major,
+                                r_version$minor,
+                                r_version$year,
+                                r_version$month,
+                                r_version$day)
+
     instrumentr_version <- packageVersion("instrumentr")
+
     instrumentr_hash <- get_commit_hash()
+
+    if (instrumentr_hash != "") {
+        instrumentr_version_string <- sprintf("%s (%s)",
+                                              instrumentr_version,
+                                              instrumentr_hash)
+    }
+    else {
+        instrumentr_version_string <- sprintf("%s", instrumentr_version)
+    }
+
     injectr_version <- packageVersion("injectr")
 
-    message_template <- paste(
-        "%s Environment %s",
-        "%s R           %s.%s",
-        "%s instrumentr %s (%s)",
-        "%s injectr     %s",
-        "%s",
-        "\n",
-        sep = "\n"
-    )
-
-    message <- sprintf(message_template,
-                       strrep(line, 2), strrep(line, 65),
-                       bullet, r_major_version, r_minor_version,
-                       bullet, instrumentr_version, instrumentr_hash,
-                       bullet, injectr_version,
-                       strrep(line, 80))
-
-    packageStartupMessage(message)
+    structure(list(r_version = r_version_string,
+                   instrumentr_version = instrumentr_version_string,
+                   injectr_version = injectr_version),
+              class = "version_info")
 }
