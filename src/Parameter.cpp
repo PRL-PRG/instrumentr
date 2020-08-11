@@ -5,7 +5,7 @@ namespace instrumentr {
 SEXP Parameter::class_ = NULL;
 
 void Parameter::initialize() {
-    class_ = Object::create_class("instrumentr_parameter");
+    class_ = Object::create_class({"instrumentr_parameter"});
     R_PreserveObject(class_);
 }
 

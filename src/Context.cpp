@@ -18,7 +18,7 @@ SEXP CallExitCallbackSymbol = NULL;
 SEXP Context::class_ = NULL;
 
 void Context::initialize() {
-    class_ = Object::create_class("instrumentr_context");
+    class_ = Object::create_class({"instrumentr_context"});
     R_PreserveObject(class_);
     ApplicationLoadCallbackSymbol = Rf_install("application_load_callback");
     ApplicationUnloadCallbackSymbol = Rf_install("application_unload_callback");

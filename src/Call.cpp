@@ -5,7 +5,7 @@ namespace instrumentr {
 SEXP Call::class_ = NULL;
 
 void Call::initialize() {
-    class_ = Object::create_class("instrumentr_call");
+    class_ = Object::create_class({"instrumentr_call"});
     R_PreserveObject(class_);
 }
 

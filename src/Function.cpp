@@ -5,7 +5,7 @@ namespace instrumentr {
 SEXP Function::class_ = NULL;
 
 void Function::initialize() {
-    class_ = mkString("instrumentr_function");
+    class_ = Object::create_class({"instrumentr_function"});
     R_PreserveObject(class_);
 }
 

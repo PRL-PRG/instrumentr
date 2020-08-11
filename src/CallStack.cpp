@@ -5,7 +5,7 @@ namespace instrumentr {
 SEXP CallStack::class_ = NULL;
 
 void CallStack::initialize() {
-    class_ = Object::create_class("instrumentr_call_stack");
+    class_ = Object::create_class({"instrumentr_call_stack"});
     R_PreserveObject(class_);
 }
 
@@ -28,8 +28,8 @@ CallStackSPtr CallStack::from_sexp(SEXP r_call_stack) {
 }
 
 SEXP CallStack::to_sexp(CallStackSPtr call_stack) {
-    SEXP r_call_stack = PROTECT(
-        R_MakeExternalPtr(new CallStackSPtr(call_stack), R_NilValue, R_NilValue));
+    SEXP r_call_stack = PROTECT(R_MakeExternalPtr(
+        new CallStackSPtr(call_stack), R_NilValue, R_NilValue));
 
     R_RegisterCFinalizerEx(r_call_stack, CallStack::destroy_sexp, TRUE);
 
