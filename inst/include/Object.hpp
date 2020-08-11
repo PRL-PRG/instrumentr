@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include "instrumentr.hpp"
 
 namespace instrumentr {
@@ -40,9 +41,7 @@ class Object {
         return is_defined_object(r_data_);
     }
 
-    static SEXP create_class(const char* subclass);
-
-    static SEXP create_class(const std::string& subclass);
+    static SEXP create_class(const std::vector<const char*>& subclasses);
 
     static std::shared_ptr<Object> from_sexp(SEXP r_object);
 

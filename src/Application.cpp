@@ -5,7 +5,7 @@ namespace instrumentr {
 SEXP Application::class_ = NULL;
 
 void Application::initialize() {
-    class_ = Object::create_class("instrumentr_application");
+    class_ = Object::create_class({"instrumentr_application"});
     R_PreserveObject(class_);
 }
 
