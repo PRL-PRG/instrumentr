@@ -4,48 +4,57 @@
 #include "Call.hpp"
 #include "Function.hpp"
 #include "Package.hpp"
+#include "rdyntrace.h"
 
+using instrumentr::Application;
 using instrumentr::ApplicationAttachCallback;
 using instrumentr::ApplicationAttachCallbackSPtr;
 using instrumentr::ApplicationDetachCallback;
 using instrumentr::ApplicationDetachCallbackSPtr;
 using instrumentr::ApplicationLoadCallback;
 using instrumentr::ApplicationLoadCallbackSPtr;
+using instrumentr::ApplicationSPtr;
 using instrumentr::ApplicationUnloadCallback;
 using instrumentr::ApplicationUnloadCallbackSPtr;
+using instrumentr::Call;
 using instrumentr::CallEntryCallback;
 using instrumentr::CallEntryCallbackSPtr;
 using instrumentr::CallExitCallback;
 using instrumentr::CallExitCallbackSPtr;
+using instrumentr::CallSPtr;
+using instrumentr::CallStack;
+using instrumentr::CallStackSPtr;
 using instrumentr::Context;
 using instrumentr::ContextSPtr;
 using instrumentr::from_sexp;
+using instrumentr::Function;
 using instrumentr::FunctionAttachCallback;
 using instrumentr::FunctionAttachCallbackSPtr;
 using instrumentr::FunctionDetachCallback;
 using instrumentr::FunctionDetachCallbackSPtr;
+using instrumentr::FunctionSPtr;
+using instrumentr::Package;
 using instrumentr::PackageAttachCallback;
 using instrumentr::PackageAttachCallbackSPtr;
 using instrumentr::PackageDetachCallback;
 using instrumentr::PackageDetachCallbackSPtr;
 using instrumentr::PackageLoadCallback;
 using instrumentr::PackageLoadCallbackSPtr;
+using instrumentr::PackageSPtr;
 using instrumentr::PackageUnloadCallback;
 using instrumentr::PackageUnloadCallbackSPtr;
 using instrumentr::to_sexp;
-using instrumentr::Application;
-using instrumentr::Call;
-using instrumentr::Function;
-using instrumentr::Package;
-using instrumentr::ApplicationSPtr;
-using instrumentr::CallSPtr;
-using instrumentr::FunctionSPtr;
-using instrumentr::PackageSPtr;
-using instrumentr::CallStackSPtr;
-using instrumentr::CallStack;
+using instrumentr::VariableAssignmentCallback;
+using instrumentr::VariableAssignmentCallbackSPtr;
+using instrumentr::VariableDefinitionCallback;
+using instrumentr::VariableDefinitionCallbackSPtr;
+using instrumentr::VariableLookupCallback;
+using instrumentr::VariableLookupCallbackSPtr;
+using instrumentr::VariableRemovalCallback;
+using instrumentr::VariableRemovalCallbackSPtr;
 
 SEXP r_context_create_context(SEXP r_environment) {
-    ContextSPtr context = std::make_shared<Context>(r_environment);
+    ContextSPtr context = Context::create(r_environment);
     return to_sexp<Context>(context);
 }
 
@@ -284,6 +293,88 @@ SEXP r_context_has_call_exit_callback(SEXP r_context) {
     return ScalarLogical(context->has_call_exit_callback());
 }
 
+SEXP r_context_set_variable_definition_callback(SEXP r_context,
+                                                SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableDefinitionCallbackSPtr callback =
+        from_sexp<VariableDefinitionCallback>(r_callback);
+    context->set_variable_definition_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_variable_definition_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableDefinitionCallbackSPtr callback =
+        context->get_variable_definition_callback();
+    return to_sexp<VariableDefinitionCallback>(callback);
+}
+
+SEXP r_context_has_variable_definition_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_variable_definition_callback());
+}
+
+SEXP r_context_set_variable_assignment_callback(SEXP r_context,
+                                                SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableAssignmentCallbackSPtr callback =
+        from_sexp<VariableAssignmentCallback>(r_callback);
+    context->set_variable_assignment_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_variable_assignment_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableAssignmentCallbackSPtr callback =
+        context->get_variable_assignment_callback();
+    return to_sexp<VariableAssignmentCallback>(callback);
+}
+
+SEXP r_context_has_variable_assignment_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_variable_assignment_callback());
+}
+
+SEXP r_context_set_variable_removal_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableRemovalCallbackSPtr callback =
+        from_sexp<VariableRemovalCallback>(r_callback);
+    context->set_variable_removal_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_variable_removal_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableRemovalCallbackSPtr callback =
+        context->get_variable_removal_callback();
+    return to_sexp<VariableRemovalCallback>(callback);
+}
+
+SEXP r_context_has_variable_removal_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_variable_removal_callback());
+}
+
+SEXP r_context_set_variable_lookup_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableLookupCallbackSPtr callback =
+        from_sexp<VariableLookupCallback>(r_callback);
+    context->set_variable_lookup_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_variable_lookup_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VariableLookupCallbackSPtr callback =
+        context->get_variable_lookup_callback();
+    return to_sexp<VariableLookupCallback>(callback);
+}
+
+SEXP r_context_has_variable_lookup_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_variable_lookup_callback());
+}
+
 SEXP r_context_set_environment(SEXP r_context, SEXP r_environment) {
     ContextSPtr context = from_sexp<Context>(r_context);
     context->set_environment(r_environment);
@@ -386,8 +477,7 @@ SEXP r_context_get_current_callback_type(SEXP r_context) {
     ContextSPtr context = from_sexp<Context>(r_context);
     instrumentr::Callback::Type callback_type =
         context->get_current_callback_type();
-    std::string callback_type_string =
-        callback_type_to_string(callback_type);
+    std::string callback_type_string = callback_type_to_string(callback_type);
     return mkString(callback_type_string.c_str());
 }
 
@@ -411,7 +501,12 @@ SEXP r_context_trace_code(SEXP r_context, SEXP r_code, SEXP r_environment) {
     context->set_tracing_status(true);
     context->push_callback_type(instrumentr::Callback::Type::Application);
 
+#ifdef USING_DYNTRACE
+    SEXP r_result =
+        dyntrace_trace_code(context->get_dyntracer(), r_code, r_environment);
+#else
     SEXP r_result = Rf_eval(r_code, r_environment);
+#endif /* USING_DYNTRACE */
 
     context->pop_callback_type();
     context->reinstate_tracing();
@@ -421,12 +516,19 @@ SEXP r_context_trace_code(SEXP r_context, SEXP r_code, SEXP r_environment) {
 
 SEXP r_context_trace_application_load(SEXP r_context, SEXP r_application) {
     ContextSPtr context = from_sexp<Context>(r_context);
+    ApplicationSPtr application = from_sexp<Application>(r_application);
+
+    context->set_application(application);
 
     if (context->has_application_load_callback()) {
         ApplicationLoadCallbackSPtr callback =
             context->get_application_load_callback();
 
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -439,8 +541,14 @@ SEXP r_context_trace_application_unload(SEXP r_context, SEXP r_application) {
         ApplicationUnloadCallbackSPtr callback =
             context->get_application_unload_callback();
 
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application);
+
+        context->finalize_callback_invocation();
     }
+
+    context->free_application();
 
     return R_NilValue;
 }
@@ -452,7 +560,11 @@ SEXP r_context_trace_application_attach(SEXP r_context, SEXP r_application) {
         ApplicationAttachCallbackSPtr callback =
             context->get_application_attach_callback();
 
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -465,7 +577,11 @@ SEXP r_context_trace_application_detach(SEXP r_context, SEXP r_application) {
         ApplicationDetachCallbackSPtr callback =
             context->get_application_detach_callback();
 
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -482,7 +598,12 @@ SEXP r_context_trace_package_load(SEXP r_context,
 
     if (context->has_package_load_callback()) {
         PackageLoadCallbackSPtr callback = context->get_package_load_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application, r_package);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -498,7 +619,12 @@ SEXP r_context_trace_package_unload(SEXP r_context,
     if (context->has_package_unload_callback()) {
         PackageUnloadCallbackSPtr callback =
             context->get_package_unload_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application, r_package);
+
+        context->finalize_callback_invocation();
     }
 
     application->remove_package(package);
@@ -514,7 +640,12 @@ SEXP r_context_trace_package_attach(SEXP r_context,
     if (context->has_package_attach_callback()) {
         PackageAttachCallbackSPtr callback =
             context->get_package_attach_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application, r_package);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -528,7 +659,12 @@ SEXP r_context_trace_package_detach(SEXP r_context,
     if (context->has_package_detach_callback()) {
         PackageDetachCallbackSPtr callback =
             context->get_package_detach_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application, r_package);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -547,7 +683,12 @@ SEXP r_context_trace_function_attach(SEXP r_context,
     if (context->has_function_attach_callback()) {
         FunctionAttachCallbackSPtr callback =
             context->get_function_attach_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application, r_package, r_function);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -564,7 +705,12 @@ SEXP r_context_trace_function_detach(SEXP r_context,
     if (context->has_function_detach_callback()) {
         FunctionDetachCallbackSPtr callback =
             context->get_function_detach_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context, r_application, r_package, r_function);
+
+        context->finalize_callback_invocation();
     }
 
     package->remove_function(function);
@@ -588,8 +734,13 @@ SEXP r_context_trace_call_entry(SEXP r_context,
 
     if (context->has_call_entry_callback()) {
         CallEntryCallbackSPtr callback = context->get_call_entry_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(
             r_context, r_application, r_package, r_function, r_call);
+
+        context->finalize_callback_invocation();
     }
 
     return R_NilValue;
@@ -619,11 +770,16 @@ SEXP r_context_trace_call_exit(SEXP r_context,
 
     if (context->has_call_exit_callback()) {
         CallExitCallbackSPtr callback = context->get_call_exit_callback();
+
+        context->initialize_callback_invocation(callback);
+
         callback->invoke(r_context,
                          r_application,
                          r_package,
                          r_function,
                          to_sexp<Call>(call));
+
+        context->finalize_callback_invocation();
     }
 
     call_stack->pop_frame();

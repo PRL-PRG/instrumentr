@@ -133,3 +133,19 @@ is_instrumentr_call_entry_callback <- function(object) {
 is_instrumentr_call_exit_callback <- function(object) {
     inherits(object, "instrumentr_call_exit_callback")
 }
+
+is_instrumentr_variable_definition_callback <- function(object) {
+    inherits(object, "instrumentr_variable_definition_callback")
+}
+
+is_instrumentr_variable_assignment_callback <- function(object) {
+    inherits(object, "instrumentr_variable_assignment_callback")
+}
+
+is_instrumentr_variable_removal_callback <- function(object) {
+    inherits(object, "instrumentr_variable_removal_callback")
+}
+
+is_instrumentr_variable_lookup_callback <- function(object) {
+    inherits(object, "instrumentr_variable_lookup_callback")
+}

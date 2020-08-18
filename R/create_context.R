@@ -12,6 +12,10 @@ create_context <- function(application_load_callback,
                            function_detach_callback,
                            call_entry_callback,
                            call_exit_callback,
+                           variable_definition_callback,
+                           variable_assignment_callback,
+                           variable_removal_callback,
+                           variable_lookup_callback,
                            packages = character(0),
                            functions = character(0)) {
 
@@ -73,6 +77,22 @@ create_context <- function(application_load_callback,
 
     if (!missing(call_exit_callback)) {
         set_call_exit_callback(context, call_exit_callback)
+    }
+
+    if (!missing(variable_definition_callback)) {
+        set_variable_definition_callback(context, variable_definition_callback)
+    }
+
+    if (!missing(variable_assignment_callback)) {
+        set_variable_assignment_callback(context, variable_assignment_callback)
+    }
+
+    if (!missing(variable_removal_callback)) {
+        set_variable_removal_callback(context, variable_removal_callback)
+    }
+
+    if (!missing(variable_lookup_callback)) {
+        set_variable_lookup_callback(context, variable_lookup_callback)
     }
 
     context

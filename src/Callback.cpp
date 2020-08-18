@@ -16,16 +16,6 @@ SEXP Callback::create_class(const char* subclass) {
     return Object::create_class({subclass, "instrumentr_callback"});
 }
 
-void Callback::initialize_pre_invocation_(ContextSPtr context) const {
-    context->disable_tracing();
-    context->push_callback_type(get_type());
-}
-
-void Callback::finalize_post_invocation_(ContextSPtr context) const {
-    context->pop_callback_type();
-    context->reinstate_tracing();
-}
-
 std::string callback_type_to_string(Callback::Type callback_type) {
     switch (callback_type) {
     case Callback::Type::Instrumentr:
@@ -56,6 +46,14 @@ std::string callback_type_to_string(Callback::Type callback_type) {
         return "CallEntryCallback";
     case Callback::Type::CallExitCallback:
         return "CallExitCallback";
+    case Callback::Type::VariableDefinitionCallback:
+        return "VariableDefinitionCallback";
+    case Callback::Type::VariableAssignmentCallback:
+        return "VariableAssignmentCallback";
+    case Callback::Type::VariableRemovalCallback:
+        return "VariableRemovalCallback";
+    case Callback::Type::VariableLookupCallback:
+        return "VariableLookupCallback";
     }
     return "Undefined";
 }

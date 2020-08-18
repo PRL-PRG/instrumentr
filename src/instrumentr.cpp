@@ -93,6 +93,10 @@ void initialize_instrumentr(SEXP r_package_environment,
         FunctionDetachCallback::initialize();
         CallEntryCallback::initialize();
         CallExitCallback::initialize();
+        VariableDefinitionCallback::initialize();
+        VariableAssignmentCallback::initialize();
+        VariableRemovalCallback::initialize();
+        VariableLookupCallback::initialize();
     }
 }
 
@@ -120,6 +124,10 @@ void finalize_instrumentr() {
         FunctionDetachCallback::finalize();
         CallEntryCallback::finalize();
         CallExitCallback::finalize();
+        VariableDefinitionCallback::finalize();
+        VariableAssignmentCallback::finalize();
+        VariableRemovalCallback::finalize();
+        VariableLookupCallback::finalize();
     }
 }
 

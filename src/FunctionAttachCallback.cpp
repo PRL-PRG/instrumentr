@@ -42,8 +42,6 @@ void FunctionAttachCallback::invoke(SEXP r_context,
                                     SEXP r_function) {
     ContextSPtr context = from_sexp<Context>(r_context);
 
-    initialize_pre_invocation_(context);
-
     if (is_c_callback()) {
         ApplicationSPtr application = from_sexp<Application>(r_application);
         PackageSPtr package = from_sexp<Package>(r_package);
@@ -62,8 +60,6 @@ void FunctionAttachCallback::invoke(SEXP r_context,
                 r_callback, r_context, r_application, r_package, r_function),
             r_environment);
     }
-
-    finalize_post_invocation_(context);
 }
 
 } // namespace instrumentr

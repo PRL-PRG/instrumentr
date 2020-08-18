@@ -1,7 +1,7 @@
 #ifndef INSTRUMENTR_UTILITIES_H
 #define INSTRUMENTR_UTILITIES_H
 
-#include <Rinternals.h>
+#include "Rincludes.h"
 
 extern SEXP CallEntryCallbackSymbol;
 extern SEXP CallExitCallbackSymbol;

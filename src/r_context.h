@@ -1,6 +1,4 @@
-#include <R.h>
-#include <R_ext/Error.h>
-#include <Rdefines.h>
+#include "Rincludes.h"
 
 extern "C" {
 SEXP r_context_create_context(SEXP r_environment);
@@ -40,6 +38,18 @@ SEXP r_context_has_call_entry_callback(SEXP r_context);
 SEXP r_context_set_call_exit_callback(SEXP r_context, SEXP r_callback);
 SEXP r_context_get_call_exit_callback(SEXP r_context);
 SEXP r_context_has_call_exit_callback(SEXP r_context);
+SEXP r_context_set_variable_definition_callback(SEXP r_context, SEXP r_callback);
+SEXP r_context_get_variable_definition_callback(SEXP r_context);
+SEXP r_context_has_variable_definition_callback(SEXP r_context);
+SEXP r_context_set_variable_assignment_callback(SEXP r_context, SEXP r_callback);
+SEXP r_context_get_variable_assignment_callback(SEXP r_context);
+SEXP r_context_has_variable_assignment_callback(SEXP r_context);
+SEXP r_context_set_variable_removal_callback(SEXP r_context, SEXP r_callback);
+SEXP r_context_get_variable_removal_callback(SEXP r_context);
+SEXP r_context_has_variable_removal_callback(SEXP r_context);
+SEXP r_context_set_variable_lookup_callback(SEXP r_context, SEXP r_callback);
+SEXP r_context_get_variable_lookup_callback(SEXP r_context);
+SEXP r_context_has_variable_lookup_callback(SEXP r_context);
 SEXP r_context_set_environment(SEXP r_context, SEXP r_environment);
 SEXP r_context_get_environment(SEXP r_context);
 SEXP r_context_trace_package(SEXP r_context, SEXP r_package_name);

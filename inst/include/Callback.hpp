@@ -24,7 +24,11 @@ class Callback: public Object {
         FunctionAttachCallback,
         FunctionDetachCallback,
         CallEntryCallback,
-        CallExitCallback
+        CallExitCallback,
+        VariableDefinitionCallback,
+        VariableAssignmentCallback,
+        VariableRemovalCallback,
+        VariableLookupCallback
     };
 
     Callback(Type type, void* function, bool is_r_function);
@@ -66,11 +70,6 @@ class Callback: public Object {
     }
 
     static SEXP create_class(const char* subclass);
-
-  protected:
-    void initialize_pre_invocation_(ContextSPtr context) const;
-
-    void finalize_post_invocation_(ContextSPtr context) const;
 
   private:
     Type type_;

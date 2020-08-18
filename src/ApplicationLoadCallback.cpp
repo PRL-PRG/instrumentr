@@ -29,8 +29,6 @@ SEXP ApplicationLoadCallback::get_class() {
 void ApplicationLoadCallback::invoke(SEXP r_context, SEXP r_application) {
     ContextSPtr context = from_sexp<Context>(r_context);
 
-    initialize_pre_invocation_(context);
-
     if (is_c_callback()) {
         ApplicationSPtr application = from_sexp<Application>(r_application);
 
@@ -42,8 +40,6 @@ void ApplicationLoadCallback::invoke(SEXP r_context, SEXP r_application) {
 
         Rf_eval(Rf_lang3(r_callback, r_context, r_application), r_environment);
     }
-
-    finalize_post_invocation_(context);
 }
 
 } // namespace instrumentr

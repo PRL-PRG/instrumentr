@@ -1,7 +1,7 @@
 #ifndef INSTRUMENTR_INSTRUMENTR_HPP
 #define INSTRUMENTR_INSTRUMENTR_HPP
 
-#include <Rinternals.h>
+#include "Rincludes.h"
 #include <memory>
 
 namespace instrumentr {
