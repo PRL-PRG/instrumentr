@@ -5,37 +5,39 @@
 
 using instrumentr::Argument;
 using instrumentr::ArgumentSPtr;
+using instrumentr::from_sexp;
 using instrumentr::Parameter;
 using instrumentr::ParameterSPtr;
+using instrumentr::to_sexp;
 
 SEXP r_parameter_get_name(SEXP r_parameter) {
-    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    ParameterSPtr parameter = from_sexp<Parameter>(r_parameter);
     return mkString(parameter->get_name().c_str());
 }
 
 SEXP r_parameter_get_position(SEXP r_parameter) {
-    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    ParameterSPtr parameter = from_sexp<Parameter>(r_parameter);
     return ScalarInteger(parameter->get_position());
 }
 
 SEXP r_parameter_is_missing(SEXP r_parameter) {
-    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    ParameterSPtr parameter = from_sexp<Parameter>(r_parameter);
     return ScalarLogical(parameter->is_missing());
 }
 
 SEXP r_parameter_is_vararg(SEXP r_parameter) {
-    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    ParameterSPtr parameter = from_sexp<Parameter>(r_parameter);
     return ScalarLogical(parameter->is_vararg());
 }
 
 SEXP r_parameter_get_arguments(SEXP r_parameter) {
-    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    ParameterSPtr parameter = from_sexp<Parameter>(r_parameter);
     const std::vector<ArgumentSPtr>& arguments = parameter->get_arguments();
     int size = arguments.size();
     SEXP r_arguments = PROTECT(allocVector(VECSXP, size));
 
     for (int i = 0; i < size; ++i) {
-        SET_VECTOR_ELT(r_arguments, i, Argument::to_sexp(arguments.at(i)));
+        SET_VECTOR_ELT(r_arguments, i, to_sexp<Argument>(arguments.at(i)));
     }
 
     if (parameter->is_vararg()) {
@@ -53,7 +55,7 @@ SEXP r_parameter_get_arguments(SEXP r_parameter) {
 }
 
 SEXP r_parameter_get_argument_by_name(SEXP r_parameter, SEXP r_name) {
-    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    ParameterSPtr parameter = from_sexp<Parameter>(r_parameter);
     const std::string name(CHAR(asChar(r_name)));
 
     const std::vector<ArgumentSPtr>& arguments = parameter->get_arguments();
@@ -62,7 +64,7 @@ SEXP r_parameter_get_argument_by_name(SEXP r_parameter, SEXP r_name) {
     for (int i = 0; i < size; ++i) {
         ArgumentSPtr argument = arguments.at(i);
         if (argument->get_name() == name) {
-            return Argument::to_sexp(argument);
+            return to_sexp<Argument>(argument);
         }
     }
 
@@ -72,7 +74,7 @@ SEXP r_parameter_get_argument_by_name(SEXP r_parameter, SEXP r_name) {
 }
 
 SEXP r_parameter_get_argument_by_position(SEXP r_parameter, SEXP r_position) {
-    ParameterSPtr parameter = Parameter::from_sexp(r_parameter);
+    ParameterSPtr parameter = from_sexp<Parameter>(r_parameter);
     /* NOTE: 1 based indexing at R level and 0 based indexing at C++ level */
     int position = asInteger(r_position) - 1;
 
@@ -88,5 +90,5 @@ SEXP r_parameter_get_argument_by_position(SEXP r_parameter, SEXP r_position) {
     }
 
     ArgumentSPtr argument = arguments.at(position);
-    return Argument::to_sexp(argument);
+    return to_sexp<Argument>(argument);
 }

@@ -63,12 +63,6 @@ class Package: public Object {
 
     static SEXP get_class();
 
-    static std::shared_ptr<Package> from_sexp(SEXP r_package);
-
-    static SEXP to_sexp(std::shared_ptr<Package> package);
-
-    static void destroy_sexp(SEXP r_package);
-
   private:
     std::string name_;
     std::string directory_;

@@ -1,17 +1,17 @@
 
-set_call_exit_callback <- function(context, call_exit_callback, ...) {
+#' @export
+set_call_exit_callback <- function(context, callback, ...) {
     UseMethod("set_call_exit_callback")
 }
 
-set_call_exit_callback.instrumentr_context <- function(context, call_exit_callback, ...) {  # nolint
+#' @export
+set_call_exit_callback.instrumentr_context <- function(context, callback, ...) {  # nolint
 
-    stopifnot(is_undefined(call_exit_callback) ||
-              is_closure(call_exit_callback) &&
-              has_parameters(call_exit_callback, 5))
+    if (!is_instrumentr_call_exit_callback(callback)) {
+        callback <- create_call_exit_callback(callback)
+    }
 
-    .Call(C_context_set_call_exit_callback,
-          context,
-          call_exit_callback)
+    .Call(C_context_set_call_exit_callback, context, callback)
 
     invisible(NULL)
 }

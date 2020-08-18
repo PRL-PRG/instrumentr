@@ -94,12 +94,6 @@ class Function: public Object {
 
     static SEXP get_class();
 
-    static std::shared_ptr<Function> from_sexp(SEXP r_function);
-
-    static SEXP to_sexp(std::shared_ptr<Function> function);
-
-    static void destroy_sexp(SEXP r_function);
-
   private:
     std::string name_;
     SEXP r_definition_;

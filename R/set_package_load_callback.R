@@ -1,19 +1,17 @@
 
 #' @export
-set_package_load_callback <- function(context, package_load_callback, ...) {
+set_package_load_callback <- function(context, callback, ...) {
     UseMethod("set_package_load_callback")
 }
 
 #' @export
-set_package_load_callback.instrumentr_context <- function(context, package_load_callback, ...) { # nolint
+set_package_load_callback.instrumentr_context <- function(context, callback, ...) { # nolint
 
-    stopifnot(is_undefined(package_load_callback) ||
-              is_closure(package_load_callback) &&
-              has_parameters(package_load_callback, 3))
+    if (!is_instrumentr_package_load_callback(callback)) {
+        callback <- create_package_load_callback(callback)
+    }
 
-    .Call(C_context_set_package_load_callback,
-          context,
-          package_load_callback)
+    .Call(C_context_set_package_load_callback, context, callback)
 
     invisible(NULL)
 }

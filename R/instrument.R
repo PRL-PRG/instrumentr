@@ -7,11 +7,11 @@ insert_instrumentation <- function(context_ptr, application_ptr) {
 
         package_ptr <- create_package(package_name, package_dir, package_env)
 
-        .Call(C_instrumentr_trace_package_load, context_ptr, application_ptr, package_ptr)
+        .Call(C_context_trace_package_load, context_ptr, application_ptr, package_ptr)
 
         instrument_package(context_ptr, application_ptr, package_ptr)
 
-        .Call(C_instrumentr_trace_package_attach, context_ptr, application_ptr, package_ptr)
+        .Call(C_context_trace_package_attach, context_ptr, application_ptr, package_ptr)
     }
 
     traced_packages <- get_traced_packages(context_ptr)
@@ -67,7 +67,7 @@ instrument_package <- function(context_ptr, application_ptr, package_ptr) {
                                         function_entry$s3_generic,
                                         function_entry$s3_method)
 
-        .Call(C_instrumentr_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
+        .Call(C_context_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
 
         package <- instrument_function(context_ptr, application_ptr, package_ptr, function_ptr)
 
@@ -137,7 +137,7 @@ create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr
         }
     }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
             DISABLE_TRACING=C_instrumentr_disable_tracing,
-            TRACE_CALL_ENTRY=C_instrumentr_trace_call_entry,
+            TRACE_CALL_ENTRY=C_context_trace_call_entry,
             CONTEXT_PTR=context_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
@@ -162,7 +162,7 @@ create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr
         }
     }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
             DISABLE_TRACING=C_instrumentr_disable_tracing,
-            TRACE_CALL_EXIT=C_instrumentr_trace_call_exit,
+            TRACE_CALL_EXIT=C_context_trace_call_exit,
             CONTEXT_PTR=context_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,

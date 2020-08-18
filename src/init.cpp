@@ -8,6 +8,20 @@
 #include "r_parameter.h"
 #include "r_argument.h"
 #include "r_call_stack.h"
+#include "r_callback.h"
+#include "r_application_attach_callback.h"
+#include "r_application_detach_callback.h"
+#include "r_application_load_callback.h"
+#include "r_application_unload_callback.h"
+#include "r_package_attach_callback.h"
+#include "r_package_detach_callback.h"
+#include "r_package_load_callback.h"
+#include "r_package_unload_callback.h"
+#include "r_function_attach_callback.h"
+#include "r_function_detach_callback.h"
+#include "r_call_entry_callback.h"
+#include "r_call_exit_callback.h"
+
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>
@@ -16,7 +30,6 @@ extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     /* instrumentr */
     {"instrumentr_get_commit_hash", (DL_FUNC) &r_instrumentr_get_commit_hash, 0},
-    {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 3},
     {"instrumentr_is_tracing_enabled", (DL_FUNC) &r_instrumentr_is_tracing_enabled, 0},
     {"instrumentr_disable_tracing", (DL_FUNC) &r_instrumentr_disable_tracing, 0},
     {"instrumentr_enable_tracing", (DL_FUNC) &r_instrumentr_enable_tracing, 0},
@@ -25,18 +38,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_finalize_instrumentr", (DL_FUNC) &r_instrumentr_finalize_instrumentr, 0},
     {"instrumentr_is_undefined_object", (DL_FUNC)&r_instrumentr_is_undefined_object, 1},
     {"instrumentr_is_defined_object", (DL_FUNC)&r_instrumentr_is_defined_object, 1},
-    {"instrumentr_trace_application_load", (DL_FUNC) &r_instrumentr_trace_application_load, 2},
-    {"instrumentr_trace_application_unload", (DL_FUNC) &r_instrumentr_trace_application_unload, 2},
-    {"instrumentr_trace_application_attach", (DL_FUNC) &r_instrumentr_trace_application_attach, 2},
-    {"instrumentr_trace_application_detach", (DL_FUNC) &r_instrumentr_trace_application_detach, 2},
-    {"instrumentr_trace_package_load", (DL_FUNC) &r_instrumentr_trace_package_load, 3},
-    {"instrumentr_trace_package_unload", (DL_FUNC) &r_instrumentr_trace_package_unload, 3},
-    {"instrumentr_trace_package_attach", (DL_FUNC) &r_instrumentr_trace_package_attach, 3},
-    {"instrumentr_trace_package_detach", (DL_FUNC) &r_instrumentr_trace_package_detach, 3},
-    {"instrumentr_trace_function_attach", (DL_FUNC) &r_instrumentr_trace_function_attach, 4},
-    {"instrumentr_trace_function_detach", (DL_FUNC) &r_instrumentr_trace_function_detach, 4},
-    {"instrumentr_trace_call_entry", (DL_FUNC) &r_instrumentr_trace_call_entry, 5},
-    {"instrumentr_trace_call_exit", (DL_FUNC) &r_instrumentr_trace_call_exit, 5},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
@@ -97,7 +98,20 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_reinstate_tracing", (DL_FUNC) &r_context_reinstate_tracing, 1},
     {"context_initialize_tracing", (DL_FUNC) &r_context_initialize_tracing, 1},
     {"context_finalize_tracing", (DL_FUNC) &r_context_finalize_tracing, 1},
-    {"context_get_current_execution_context", (DL_FUNC) &r_context_get_current_execution_context, 1},
+    {"context_get_current_callback_type", (DL_FUNC) &r_context_get_current_callback_type, 1},
+    {"context_trace_code", (DL_FUNC) &r_context_trace_code, 3},
+    {"context_trace_application_load", (DL_FUNC) &r_context_trace_application_load, 2},
+    {"context_trace_application_unload", (DL_FUNC) &r_context_trace_application_unload, 2},
+    {"context_trace_application_attach", (DL_FUNC) &r_context_trace_application_attach, 2},
+    {"context_trace_application_detach", (DL_FUNC) &r_context_trace_application_detach, 2},
+    {"context_trace_package_load", (DL_FUNC) &r_context_trace_package_load, 3},
+    {"context_trace_package_unload", (DL_FUNC) &r_context_trace_package_unload, 3},
+    {"context_trace_package_attach", (DL_FUNC) &r_context_trace_package_attach, 3},
+    {"context_trace_package_detach", (DL_FUNC) &r_context_trace_package_detach, 3},
+    {"context_trace_function_attach", (DL_FUNC) &r_context_trace_function_attach, 4},
+    {"context_trace_function_detach", (DL_FUNC) &r_context_trace_function_detach, 4},
+    {"context_trace_call_entry", (DL_FUNC) &r_context_trace_call_entry, 5},
+    {"context_trace_call_exit", (DL_FUNC) &r_context_trace_call_exit, 5},
 
     /* Application */
     {"application_create_application", (DL_FUNC) &r_application_create_application, 5},
@@ -160,6 +174,59 @@ static const R_CallMethodDef CallEntries[] = {
     /* CallStack */
     {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},
     {"call_stack_peek_frame", (DL_FUNC) &r_call_stack_peek_frame, 2},
+
+    /* Callback */
+    {"callback_is_r_callback", (DL_FUNC) &r_callback_is_r_callback, 1},
+    {"callback_is_c_callback", (DL_FUNC) &r_callback_is_c_callback, 1},
+    {"callback_get_function", (DL_FUNC) &r_callback_get_function, 1},
+
+    /* ApplicationAttachCallback */
+    {"application_attach_callback_create_from_r_function", (DL_FUNC) &r_application_attach_callback_create_from_r_function, 1},
+    {"application_attach_callback_create_from_c_function", (DL_FUNC) &r_application_attach_callback_create_from_c_function, 1},
+
+    /* ApplicationDetachCallback */
+    {"application_detach_callback_create_from_r_function", (DL_FUNC) &r_application_detach_callback_create_from_r_function, 1},
+    {"application_detach_callback_create_from_c_function", (DL_FUNC) &r_application_detach_callback_create_from_c_function, 1},
+
+    /* ApplicationLoadCallback */
+    {"application_load_callback_create_from_r_function", (DL_FUNC) &r_application_load_callback_create_from_r_function, 1},
+    {"application_load_callback_create_from_c_function", (DL_FUNC) &r_application_load_callback_create_from_c_function, 1},
+
+    /* ApplicationUnloadCallback */
+    {"application_unload_callback_create_from_r_function", (DL_FUNC) &r_application_unload_callback_create_from_r_function, 1},
+    {"application_unload_callback_create_from_c_function", (DL_FUNC) &r_application_unload_callback_create_from_c_function, 1},
+
+    /* PackageAttachCallback */
+    {"package_attach_callback_create_from_r_function", (DL_FUNC) &r_package_attach_callback_create_from_r_function, 1},
+    {"package_attach_callback_create_from_c_function", (DL_FUNC) &r_package_attach_callback_create_from_c_function, 1},
+
+    /* PackageDetachCallback */
+    {"package_detach_callback_create_from_r_function", (DL_FUNC) &r_package_detach_callback_create_from_r_function, 1},
+    {"package_detach_callback_create_from_c_function", (DL_FUNC) &r_package_detach_callback_create_from_c_function, 1},
+
+    /* PackageLoadCallback */
+    {"package_load_callback_create_from_r_function", (DL_FUNC) &r_package_load_callback_create_from_r_function, 1},
+    {"package_load_callback_create_from_c_function", (DL_FUNC) &r_package_load_callback_create_from_c_function, 1},
+
+    /* PackageUnloadCallback */
+    {"package_unload_callback_create_from_r_function", (DL_FUNC) &r_package_unload_callback_create_from_r_function, 1},
+    {"package_unload_callback_create_from_c_function", (DL_FUNC) &r_package_unload_callback_create_from_c_function, 1},
+
+    /* FunctionAttachCallback */
+    {"function_attach_callback_create_from_r_function", (DL_FUNC) &r_function_attach_callback_create_from_r_function, 1},
+    {"function_attach_callback_create_from_c_function", (DL_FUNC) &r_function_attach_callback_create_from_c_function, 1},
+
+    /* FunctionDetachCallback */
+    {"function_detach_callback_create_from_r_function", (DL_FUNC) &r_function_detach_callback_create_from_r_function, 1},
+    {"function_detach_callback_create_from_c_function", (DL_FUNC) &r_function_detach_callback_create_from_c_function, 1},
+
+    /* CallEntryCallback */
+    {"call_entry_callback_create_from_r_function", (DL_FUNC) &r_call_entry_callback_create_from_r_function, 1},
+    {"call_entry_callback_create_from_c_function", (DL_FUNC) &r_call_entry_callback_create_from_c_function, 1},
+
+    /* CallExitCallback */
+    {"call_exit_callback_create_from_r_function", (DL_FUNC) &r_call_exit_callback_create_from_r_function, 1},
+    {"call_exit_callback_create_from_c_function", (DL_FUNC) &r_call_exit_callback_create_from_c_function, 1},
 
     {NULL, NULL, 0}};
 

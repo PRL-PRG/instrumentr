@@ -93,12 +93,6 @@ class Call: public Object {
 
     static SEXP get_class();
 
-    static std::shared_ptr<Call> from_sexp(SEXP r_call);
-
-    static SEXP to_sexp(std::shared_ptr<Call> call);
-
-    static void destroy_sexp(SEXP r_call);
-
   private:
     std::shared_ptr<Function> function_;
     SEXP r_expression_;

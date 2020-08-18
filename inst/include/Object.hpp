@@ -43,8 +43,6 @@ class Object {
 
     static SEXP create_class(const std::vector<const char*>& subclasses);
 
-    static std::shared_ptr<Object> from_sexp(SEXP r_object);
-
   private:
     int id_;
     SEXP r_data_;

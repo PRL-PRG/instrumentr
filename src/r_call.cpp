@@ -8,10 +8,12 @@ using instrumentr::Argument;
 using instrumentr::ArgumentSPtr;
 using instrumentr::Call;
 using instrumentr::CallSPtr;
+using instrumentr::from_sexp;
 using instrumentr::Function;
 using instrumentr::FunctionSPtr;
 using instrumentr::Parameter;
 using instrumentr::ParameterSPtr;
+using instrumentr::to_sexp;
 
 ArgumentSPtr create_argument(SEXP r_argument_name,
                              SEXP r_argument_value,
@@ -39,7 +41,7 @@ SEXP r_call_create_call(SEXP r_function,
                         SEXP r_call_expression,
                         SEXP r_environment,
                         SEXP r_frame_position) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     int frame_position = asInteger(r_frame_position);
     CallSPtr call = std::make_shared<Call>(
         function, r_call_expression, r_environment, frame_position);
@@ -127,46 +129,46 @@ SEXP r_call_create_call(SEXP r_function,
         }
     }
 
-    return Call::to_sexp(call);
+    return to_sexp<Call>(call);
 }
 
 SEXP r_call_get_function(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
-    return Function::to_sexp(call->get_function());
+    CallSPtr call = from_sexp<Call>(r_call);
+    return to_sexp<Function>(call->get_function());
 }
 
 SEXP r_call_get_expression(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     return call->get_expression();
 }
 
 SEXP r_call_get_environment(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     return call->get_environment();
 }
 
 SEXP r_call_get_frame_position(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     return ScalarInteger(call->get_frame_position());
 }
 
 SEXP r_call_is_active(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     return ScalarLogical(call->is_active());
 }
 
 SEXP r_call_is_successful(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     return ScalarLogical(call->is_successful());
 }
 
 SEXP r_call_get_result(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     return call->get_result();
 }
 
 SEXP r_call_get_parameters(SEXP r_call) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     const std::vector<ParameterSPtr>& parameters = call->get_parameters();
     int size = parameters.size();
 
@@ -175,7 +177,7 @@ SEXP r_call_get_parameters(SEXP r_call) {
 
     for (int i = 0; i < size; ++i) {
         ParameterSPtr parameter = parameters.at(i);
-        SET_VECTOR_ELT(r_parameters, i, Parameter::to_sexp(parameter));
+        SET_VECTOR_ELT(r_parameters, i, to_sexp<Parameter>(parameter));
         SET_STRING_ELT(r_names, i, mkChar(parameter->get_name().c_str()));
     }
 
@@ -185,7 +187,7 @@ SEXP r_call_get_parameters(SEXP r_call) {
 }
 
 SEXP r_call_get_parameter_by_name(SEXP r_call, SEXP r_name) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     const std::string name(CHAR(asChar(r_name)));
 
     const std::vector<ParameterSPtr>& parameters = call->get_parameters();
@@ -194,7 +196,7 @@ SEXP r_call_get_parameter_by_name(SEXP r_call, SEXP r_name) {
     for (int i = 0; i < size; ++i) {
         ParameterSPtr parameter = parameters.at(i);
         if (parameter->get_name() == name) {
-            return Parameter::to_sexp(parameter);
+            return to_sexp<Parameter>(parameter);
         }
     }
 
@@ -204,7 +206,7 @@ SEXP r_call_get_parameter_by_name(SEXP r_call, SEXP r_name) {
 }
 
 SEXP r_call_get_parameter_by_position(SEXP r_call, SEXP r_position) {
-    CallSPtr call = Call::from_sexp(r_call);
+    CallSPtr call = from_sexp<Call>(r_call);
     /* NOTE: 1 based indexing at R level and 0 based indexing at C++ level */
     int position = asInteger(r_position) - 1;
 
@@ -220,5 +222,5 @@ SEXP r_call_get_parameter_by_position(SEXP r_call, SEXP r_position) {
     }
 
     ParameterSPtr parameter = parameters.at(position);
-    return Parameter::to_sexp(parameter);
+    return to_sexp<Parameter>(parameter);
 }

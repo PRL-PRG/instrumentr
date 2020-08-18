@@ -3,8 +3,10 @@
 #include "Function.hpp"
 #include "r_function.h"
 
+using instrumentr::from_sexp;
 using instrumentr::Function;
 using instrumentr::FunctionSPtr;
+using instrumentr::to_sexp;
 
 SEXP r_function_create_function(SEXP r_name,
                                 SEXP r_parameter_count,
@@ -19,48 +21,48 @@ SEXP r_function_create_function(SEXP r_name,
     bool s3_method = asLogical(r_s3_method);
     FunctionSPtr function = std::make_shared<Function>(
         name, parameter_count, r_definition, pub, s3_generic, s3_method);
-    return Function::to_sexp(function);
+    return to_sexp<Function>(function);
 }
 
 SEXP r_function_get_name(SEXP r_function) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     const std::string& name = function->get_name();
     return mkString(name.c_str());
 }
 
 SEXP r_function_get_parameter_count(SEXP r_function) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     int parameter_count = function->get_parameter_count();
     return ScalarInteger(parameter_count);
 }
 
 SEXP r_function_get_definition(SEXP r_function) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     SEXP r_definition = function->get_definition();
     return r_definition;
 }
 
 SEXP r_function_is_public(SEXP r_function) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     bool pub = function->is_public();
     return ScalarLogical(pub);
 }
 
 SEXP r_function_is_s3_generic(SEXP r_function) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     bool s3_generic = function->is_s3_generic();
     return ScalarLogical(s3_generic);
 }
 
 SEXP r_function_is_s3_method(SEXP r_function) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     bool s3_method = function->is_s3_method();
     return ScalarLogical(s3_method);
 }
 
 SEXP r_function_get_default_argument_by_position(SEXP r_function,
                                                  SEXP r_parameter_position) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     /* NOTE: 1 based indexing at R level and 0 based indexing at C++ level */
     int parameter_position = asInteger(r_parameter_position) - 1;
 
@@ -79,7 +81,7 @@ SEXP r_function_get_default_argument_by_position(SEXP r_function,
 
 SEXP r_function_get_default_argument_by_name(SEXP r_function,
                                              SEXP r_parameter_name) {
-    FunctionSPtr function = Function::from_sexp(r_function);
+    FunctionSPtr function = from_sexp<Function>(r_function);
     const std::string parameter_name(CHAR(asChar(r_parameter_name)));
 
     SEXP r_value = function->get_default_argument(parameter_name);
