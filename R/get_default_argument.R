@@ -1,6 +1,6 @@
 
 #' @export
-get_default_argument <- function(object, ...) {
+get_default_argument <- function(func, position_or_name, ...) {
     UseMethod("get_default_argument")
 }
 
