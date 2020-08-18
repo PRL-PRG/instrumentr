@@ -2,25 +2,23 @@
 #define INSTRUMENTR_CONTEXT_HPP
 
 #include "Object.hpp"
+#include "ApplicationLoadCallback.hpp"
+#include "ApplicationUnloadCallback.hpp"
+#include "ApplicationAttachCallback.hpp"
+#include "ApplicationDetachCallback.hpp"
+#include "PackageLoadCallback.hpp"
+#include "PackageUnloadCallback.hpp"
+#include "PackageAttachCallback.hpp"
+#include "PackageDetachCallback.hpp"
+#include "FunctionAttachCallback.hpp"
+#include "FunctionDetachCallback.hpp"
+#include "CallEntryCallback.hpp"
+#include "CallExitCallback.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "ExecutionContext.hpp"
 
 namespace instrumentr {
-
-extern SEXP ApplicationLoadCallbackSymbol;
-extern SEXP ApplicationUnloadCallbackSymbol;
-extern SEXP ApplicationAttachCallbackSymbol;
-extern SEXP ApplicationDetachCallbackSymbol;
-extern SEXP PackageLoadCallbackSymbol;
-extern SEXP PackageUnloadCallbackSymbol;
-extern SEXP PackageAttachCallbackSymbol;
-extern SEXP PackageDetachCallbackSymbol;
-extern SEXP FunctionAttachCallbackSymbol;
-extern SEXP FunctionDetachCallbackSymbol;
-extern SEXP CallEntryCallbackSymbol;
-extern SEXP CallExitCallbackSymbol;
 
 class Context: public Object {
   public:
@@ -33,152 +31,151 @@ class Context: public Object {
         R_ReleaseObject(r_environment_);
     }
 
-    void set_application_load_callback(SEXP r_application_load_callback) {
-        set_callback_(ApplicationLoadCallbackSymbol,
-                      r_application_load_callback);
+    void set_application_load_callback(ApplicationLoadCallbackSPtr callback) {
+        set_callback_(application_load_callback_, callback);
     }
 
-    SEXP get_application_load_callback() {
-        return get_callback_(ApplicationLoadCallbackSymbol);
+    ApplicationLoadCallbackSPtr get_application_load_callback() {
+        return application_load_callback_;
     }
 
-    bool has_application_load_callback() {
-        return has_callback_(ApplicationLoadCallbackSymbol);
+    bool has_application_load_callback() const {
+        return (bool) (application_load_callback_);
     }
 
-    void set_application_unload_callback(SEXP r_application_unload_callback) {
-        set_callback_(ApplicationUnloadCallbackSymbol,
-                      r_application_unload_callback);
+    void
+    set_application_unload_callback(ApplicationUnloadCallbackSPtr callback) {
+        set_callback_(application_unload_callback_, callback);
     }
 
-    SEXP get_application_unload_callback() {
-        return get_callback_(ApplicationUnloadCallbackSymbol);
+    ApplicationUnloadCallbackSPtr get_application_unload_callback() {
+        return application_unload_callback_;
     }
 
-    bool has_application_unload_callback() {
-        return has_callback_(ApplicationUnloadCallbackSymbol);
+    bool has_application_unload_callback() const {
+        return (bool) (application_unload_callback_);
     }
 
-    void set_application_attach_callback(SEXP r_application_attach_callback) {
-        set_callback_(ApplicationAttachCallbackSymbol,
-                      r_application_attach_callback);
+    void
+    set_application_attach_callback(ApplicationAttachCallbackSPtr callback) {
+        set_callback_(application_attach_callback_, callback);
     }
 
-    SEXP get_application_attach_callback() {
-        return get_callback_(ApplicationAttachCallbackSymbol);
+    ApplicationAttachCallbackSPtr get_application_attach_callback() {
+        return application_attach_callback_;
     }
 
-    bool has_application_attach_callback() {
-        return has_callback_(ApplicationAttachCallbackSymbol);
+    bool has_application_attach_callback() const {
+        return (bool) (application_attach_callback_);
     }
 
-    void set_application_detach_callback(SEXP r_application_detach_callback) {
-        set_callback_(ApplicationDetachCallbackSymbol,
-                      r_application_detach_callback);
+    void
+    set_application_detach_callback(ApplicationDetachCallbackSPtr callback) {
+        set_callback_(application_detach_callback_, callback);
     }
 
-    SEXP get_application_detach_callback() {
-        return get_callback_(ApplicationDetachCallbackSymbol);
+    ApplicationDetachCallbackSPtr get_application_detach_callback() {
+        return application_detach_callback_;
     }
 
-    bool has_application_detach_callback() {
-        return has_callback_(ApplicationDetachCallbackSymbol);
+    bool has_application_detach_callback() const {
+        return (bool) (application_detach_callback_);
     }
 
-    void set_package_load_callback(SEXP r_package_load_callback) {
-        set_callback_(PackageLoadCallbackSymbol, r_package_load_callback);
+    void set_package_load_callback(PackageLoadCallbackSPtr callback) {
+        set_callback_(package_load_callback_, callback);
     }
 
-    SEXP get_package_load_callback() {
-        return get_callback_(PackageLoadCallbackSymbol);
+    PackageLoadCallbackSPtr get_package_load_callback() {
+        return package_load_callback_;
     }
 
-    bool has_package_load_callback() {
-        return has_callback_(PackageLoadCallbackSymbol);
+    bool has_package_load_callback() const {
+        return (bool) (package_load_callback_);
     }
 
-    void set_package_unload_callback(SEXP r_package_unload_callback) {
-        set_callback_(PackageUnloadCallbackSymbol, r_package_unload_callback);
+    void set_package_unload_callback(PackageUnloadCallbackSPtr callback) {
+        set_callback_(package_unload_callback_, callback);
     }
 
-    SEXP get_package_unload_callback() {
-        return get_callback_(PackageUnloadCallbackSymbol);
+    PackageUnloadCallbackSPtr get_package_unload_callback() {
+        return package_unload_callback_;
     }
 
-    bool has_package_unload_callback() {
-        return has_callback_(PackageUnloadCallbackSymbol);
+    bool has_package_unload_callback() const {
+        return (bool) (package_unload_callback_);
     }
 
-    void set_package_attach_callback(SEXP r_package_attach_callback) {
-        set_callback_(PackageAttachCallbackSymbol, r_package_attach_callback);
+    void set_package_attach_callback(PackageAttachCallbackSPtr callback) {
+        set_callback_(package_attach_callback_, callback);
     }
 
-    SEXP get_package_attach_callback() {
-        return get_callback_(PackageAttachCallbackSymbol);
+    PackageAttachCallbackSPtr get_package_attach_callback() {
+        return package_attach_callback_;
     }
 
-    bool has_package_attach_callback() {
-        return has_callback_(PackageAttachCallbackSymbol);
+    bool has_package_attach_callback() const {
+        return (bool) (package_attach_callback_);
     }
 
-    void set_package_detach_callback(SEXP r_package_detach_callback) {
-        set_callback_(PackageDetachCallbackSymbol, r_package_detach_callback);
+    void set_package_detach_callback(PackageDetachCallbackSPtr callback) {
+        set_callback_(package_detach_callback_, callback);
     }
 
-    SEXP get_package_detach_callback() {
-        return get_callback_(PackageDetachCallbackSymbol);
+    PackageDetachCallbackSPtr get_package_detach_callback() {
+        return package_detach_callback_;
     }
 
-    bool has_package_detach_callback() {
-        return has_callback_(PackageDetachCallbackSymbol);
+    bool has_package_detach_callback() const {
+        return (bool) (package_detach_callback_);
     }
 
-    void set_function_attach_callback(SEXP r_function_attach_callback) {
-        set_callback_(FunctionAttachCallbackSymbol, r_function_attach_callback);
+    void set_function_attach_callback(FunctionAttachCallbackSPtr callback) {
+        set_callback_(function_attach_callback_, callback);
     }
 
-    SEXP get_function_attach_callback() {
-        return get_callback_(FunctionAttachCallbackSymbol);
+    FunctionAttachCallbackSPtr get_function_attach_callback() {
+        return function_attach_callback_;
     }
 
-    bool has_function_attach_callback() {
-        return has_callback_(FunctionAttachCallbackSymbol);
+    bool has_function_attach_callback() const {
+        return (bool) (function_attach_callback_);
     }
 
-    void set_function_detach_callback(SEXP r_function_detach_callback) {
-        set_callback_(FunctionDetachCallbackSymbol, r_function_detach_callback);
+    void set_function_detach_callback(FunctionDetachCallbackSPtr callback) {
+        set_callback_(function_detach_callback_, callback);
     }
 
-    SEXP get_function_detach_callback() {
-        return get_callback_(FunctionDetachCallbackSymbol);
+    FunctionDetachCallbackSPtr get_function_detach_callback() {
+        return function_detach_callback_;
     }
 
-    bool has_function_detach_callback() {
-        return has_callback_(FunctionDetachCallbackSymbol);
+    bool has_function_detach_callback() const {
+        return (bool) (function_detach_callback_);
     }
 
-    void set_call_entry_callback(SEXP r_call_entry_callback) {
-        set_callback_(CallEntryCallbackSymbol, r_call_entry_callback);
+    void set_call_entry_callback(CallEntryCallbackSPtr callback) {
+        set_callback_(call_entry_callback_, callback);
     }
 
-    SEXP get_call_entry_callback() {
-        return get_callback_(CallEntryCallbackSymbol);
+    CallEntryCallbackSPtr get_call_entry_callback() {
+        return call_entry_callback_;
     }
 
-    bool has_call_entry_callback() {
-        return has_callback_(CallEntryCallbackSymbol);
+    bool has_call_entry_callback() const {
+        return (bool) (call_entry_callback_);
     }
 
-    void set_call_exit_callback(SEXP r_call_exit_callback) {
-        set_callback_(CallExitCallbackSymbol, r_call_exit_callback);
+    void set_call_exit_callback(CallExitCallbackSPtr callback) {
+        set_callback_(call_exit_callback_, callback);
     }
 
-    SEXP get_call_exit_callback() {
-        return get_callback_(CallExitCallbackSymbol);
+    CallExitCallbackSPtr get_call_exit_callback() {
+        return call_exit_callback_;
     }
 
-    bool has_call_exit_callback() {
-        return has_callback_(CallExitCallbackSymbol);
+    bool has_call_exit_callback() const {
+        return (bool) (call_exit_callback_);
     }
 
     void set_environment(SEXP r_environment) {
@@ -245,11 +242,11 @@ class Context: public Object {
     }
 
     void initialize_tracing() {
-        push_execution_context(ExecutionContext::Instrumentr);
+        push_callback_type(Callback::Type::Instrumentr);
     }
 
     void finalize_tracing() {
-        execution_context_stack_.clear();
+        callback_type_stack_.clear();
         tracing_status_stack_.clear();
     }
 
@@ -275,18 +272,18 @@ class Context: public Object {
         }
     }
 
-    ExecutionContext get_current_execution_context() const {
-        return execution_context_stack_.back();
+    Callback::Type get_current_callback_type() const {
+        return callback_type_stack_.back();
     }
 
-    void push_execution_context(ExecutionContext execution_context) {
-        execution_context_stack_.push_back(execution_context);
+    void push_callback_type(Callback::Type callback_type) {
+        callback_type_stack_.push_back(callback_type);
     }
 
-    ExecutionContext pop_execution_context() {
-        ExecutionContext execution_context = execution_context_stack_.back();
-        execution_context_stack_.pop_back();
-        return execution_context;
+    Callback::Type pop_callback_type() {
+        Callback::Type callback_type = callback_type_stack_.back();
+        callback_type_stack_.pop_back();
+        return callback_type;
     }
 
     static void initialize();
@@ -295,32 +292,34 @@ class Context: public Object {
 
     static SEXP get_class();
 
-    static std::shared_ptr<Context> from_sexp(SEXP r_context);
-
-    static SEXP to_sexp(std::shared_ptr<Context> context);
-
-    static void destroy_sexp(SEXP r_context);
-
   private:
-    void set_callback_(SEXP r_symbol, SEXP r_callback) {
-        Rf_defineVar(r_symbol, r_callback, get_environment());
-    }
-
-    SEXP get_callback_(SEXP r_symbol) {
-        SEXP value = Rf_findVarInFrame(get_environment(), r_symbol);
-        return value == R_UnboundValue ? get_undefined_object() : value;
-    }
-
-    bool has_callback_(SEXP r_symbol) {
-        return is_defined_object(get_callback_(r_symbol));
-    }
-
+    ApplicationLoadCallbackSPtr application_load_callback_;
+    ApplicationUnloadCallbackSPtr application_unload_callback_;
+    ApplicationAttachCallbackSPtr application_attach_callback_;
+    ApplicationDetachCallbackSPtr application_detach_callback_;
+    PackageLoadCallbackSPtr package_load_callback_;
+    PackageUnloadCallbackSPtr package_unload_callback_;
+    PackageAttachCallbackSPtr package_attach_callback_;
+    PackageDetachCallbackSPtr package_detach_callback_;
+    FunctionAttachCallbackSPtr function_attach_callback_;
+    FunctionDetachCallbackSPtr function_detach_callback_;
+    CallEntryCallbackSPtr call_entry_callback_;
+    CallExitCallbackSPtr call_exit_callback_;
     SEXP r_environment_;
     std::unordered_map<std::string, std::unordered_set<std::string>> packages_;
     std::vector<bool> tracing_status_stack_;
-    std::vector<ExecutionContext> execution_context_stack_;
+    std::vector<Callback::Type> callback_type_stack_;
 
     static SEXP class_;
+
+    template <typename T>
+    void set_callback_(T& left, T& right) {
+        if (left) {
+            left->unbind(get_environment());
+        }
+        left = right;
+        left->bind(get_environment());
+    }
 };
 
 using ContextSPtr = std::shared_ptr<Context>;

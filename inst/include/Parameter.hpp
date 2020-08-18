@@ -48,12 +48,6 @@ class Parameter: public Object {
 
     static SEXP get_class();
 
-    static std::shared_ptr<Parameter> from_sexp(SEXP r_parameter);
-
-    static SEXP to_sexp(std::shared_ptr<Parameter> parameter);
-
-    static void destroy_sexp(SEXP r_parameter);
-
   private:
     const std::string name_;
     const int position_;

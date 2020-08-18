@@ -30,23 +30,23 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
                                           environment,
                                           frame_position)
 
-        .Call(C_instrumentr_trace_application_load, context, application)
+        .Call(C_context_trace_application_load, context, application)
 
         insert_instrumentation(context, application)
 
-        .Call(C_instrumentr_trace_application_attach, context, application)
+        .Call(C_context_trace_application_attach, context, application)
 
-        value <- .Call(C_instrumentr_trace_code, context, code, environment)
+        value <- .Call(C_context_trace_code, context, code, environment)
 
-        .Call(C_instrumentr_trace_application_detach, context, application)
+        .Call(C_context_trace_application_detach, context, application)
 
         result <- create_result(value)
     },
     error = function(e) {
         print(e)
 
-        execution_context <- .Call(C_context_get_current_execution_context, context)
-        result <<- create_result(e, execution_context)
+        callback_type <- .Call(C_context_get_current_callback_type, context)
+        result <<- create_result(e, callback_type)
     })
 
     ##NOTE: all user callbacks are evaluated in tryCatch.
@@ -59,14 +59,14 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
 
         ## NOTE: invoke callback if tracing does not error
         if (is_value(result)) {
-            .Call(C_instrumentr_trace_application_unload, context, application)
+            .Call(C_context_trace_application_unload, context, application)
         }
     },
     error = function(e) {
         print(e)
 
-        execution_context <- .Call(C_context_get_current_execution_context, context)
-        result <<- create_result(e, execution_context)
+        callback_type <- .Call(C_context_get_current_callback_type, context)
+        result <<- create_result(e, callback_type)
     },
     finally = {
         .Call(C_context_finalize_tracing, context)

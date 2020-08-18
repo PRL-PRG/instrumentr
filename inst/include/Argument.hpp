@@ -52,12 +52,6 @@ class Argument: public Object {
 
     static SEXP get_class();
 
-    static std::shared_ptr<Argument> from_sexp(SEXP r_argument);
-
-    static SEXP to_sexp(std::shared_ptr<Argument> argument);
-
-    static void destroy_sexp(SEXP r_argument);
-
   private:
     std::string name_;
     SEXP r_argument_;

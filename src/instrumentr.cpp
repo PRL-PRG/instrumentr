@@ -81,6 +81,18 @@ void initialize_instrumentr(SEXP r_package_environment,
         Call::initialize();
         Parameter::initialize();
         Argument::initialize();
+        ApplicationLoadCallback::initialize();
+        ApplicationUnloadCallback::initialize();
+        ApplicationAttachCallback::initialize();
+        ApplicationDetachCallback::initialize();
+        PackageLoadCallback::initialize();
+        PackageUnloadCallback::initialize();
+        PackageAttachCallback::initialize();
+        PackageDetachCallback::initialize();
+        FunctionAttachCallback::initialize();
+        FunctionDetachCallback::initialize();
+        CallEntryCallback::initialize();
+        CallExitCallback::initialize();
     }
 }
 
@@ -93,9 +105,21 @@ void finalize_instrumentr() {
         CallStack::finalize();
         Package::finalize();
         Function::finalize();
-        Call::initialize();
-        Parameter::initialize();
-        Argument::initialize();
+        Call::finalize();
+        Parameter::finalize();
+        Argument::finalize();
+        ApplicationLoadCallback::finalize();
+        ApplicationUnloadCallback::finalize();
+        ApplicationAttachCallback::finalize();
+        ApplicationDetachCallback::finalize();
+        PackageLoadCallback::finalize();
+        PackageUnloadCallback::finalize();
+        PackageAttachCallback::finalize();
+        PackageDetachCallback::finalize();
+        FunctionAttachCallback::finalize();
+        FunctionDetachCallback::finalize();
+        CallEntryCallback::finalize();
+        CallExitCallback::finalize();
     }
 }
 

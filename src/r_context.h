@@ -73,5 +73,41 @@ SEXP r_context_enable_tracing(SEXP r_context);
 SEXP r_context_reinstate_tracing(SEXP r_context);
 SEXP r_context_initialize_tracing(SEXP r_context);
 SEXP r_context_finalize_tracing(SEXP r_context);
-SEXP r_context_get_current_execution_context(SEXP r_context);
+SEXP r_context_get_current_callback_type(SEXP r_context);
+
+SEXP r_context_trace_code(SEXP r_context, SEXP r_code, SEXP r_environment);
+SEXP r_context_trace_application_load(SEXP r_context, SEXP r_application);
+SEXP r_context_trace_application_unload(SEXP r_context, SEXP r_application);
+SEXP r_context_trace_application_attach(SEXP r_context, SEXP r_application);
+SEXP r_context_trace_application_detach(SEXP r_context, SEXP r_application);
+SEXP r_context_trace_package_load(SEXP r_context,
+                                  SEXP r_application,
+                                  SEXP r_package);
+SEXP r_context_trace_package_unload(SEXP r_context,
+                                    SEXP r_application,
+                                    SEXP r_package);
+SEXP r_context_trace_package_attach(SEXP r_context,
+                                    SEXP r_application,
+                                    SEXP r_package);
+SEXP r_context_trace_package_detach(SEXP r_context,
+                                    SEXP r_application,
+                                    SEXP r_package);
+SEXP r_context_trace_function_attach(SEXP r_context,
+                                     SEXP r_application,
+                                     SEXP r_package,
+                                     SEXP r_function);
+SEXP r_context_trace_function_detach(SEXP r_context,
+                                     SEXP r_application,
+                                     SEXP r_package,
+                                     SEXP r_function);
+SEXP r_context_trace_call_entry(SEXP r_context,
+                                SEXP r_application,
+                                SEXP r_package,
+                                SEXP r_function,
+                                SEXP r_call);
+SEXP r_context_trace_call_exit(SEXP r_context,
+                               SEXP r_application,
+                               SEXP r_package,
+                               SEXP r_function,
+                               SEXP r_call);
 }

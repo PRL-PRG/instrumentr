@@ -24,13 +24,4 @@ SEXP Object::create_class(const std::vector<const char*>& subclasses) {
     return classnames;
 }
 
-ObjectSPtr Object::from_sexp(SEXP r_object) {
-    void* object = R_ExternalPtrAddr(r_object);
-    if (object == NULL) {
-        Rf_errorcall(R_NilValue, "Object::from_sexp: object is null");
-    } else {
-        return *static_cast<ObjectSPtr*>(object);
-    }
-}
-
 } // namespace instrumentr
