@@ -68,9 +68,9 @@ class Callback: public Object {
     static SEXP create_class(const char* subclass);
 
   protected:
-    void initialize_pre_invocation_(ContextSPtr context);
+    void initialize_pre_invocation_(ContextSPtr context) const;
 
-    void finalize_post_invocation_(ContextSPtr context);
+    void finalize_post_invocation_(ContextSPtr context) const;
 
   private:
     Type type_;

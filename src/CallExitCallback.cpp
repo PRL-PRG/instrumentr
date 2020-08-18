@@ -53,7 +53,6 @@ void CallExitCallback::invoke(SEXP r_context,
         ApplicationSPtr application = from_sexp<Application>(r_application);
         PackageSPtr package = from_sexp<Package>(r_package);
         FunctionSPtr function = from_sexp<Function>(r_function);
-        CallStackSPtr call_stack = application->get_call_stack();
         CallSPtr call = from_sexp<Call>(r_call);
 
         callback_t callback = get_function<callback_t>();

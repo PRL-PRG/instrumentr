@@ -16,12 +16,12 @@ SEXP Callback::create_class(const char* subclass) {
     return Object::create_class({subclass, "instrumentr_callback"});
 }
 
-void Callback::initialize_pre_invocation_(ContextSPtr context) {
+void Callback::initialize_pre_invocation_(ContextSPtr context) const {
     context->disable_tracing();
     context->push_callback_type(get_type());
 }
 
-void Callback::finalize_post_invocation_(ContextSPtr context) {
+void Callback::finalize_post_invocation_(ContextSPtr context) const {
     context->pop_callback_type();
     context->reinstate_tracing();
 }

@@ -60,7 +60,7 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
         if (is_value(result) || get_source(get_error(result)) == "application") {
-            .Call(C_instrumentr_trace_application_unload, context, application)
+            .Call(C_context_trace_application_unload, context, application)
         }
     },
     error = function(e) {

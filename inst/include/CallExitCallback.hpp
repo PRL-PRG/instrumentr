@@ -15,7 +15,7 @@ class CallExitCallback: public Callback {
                 SEXP r_application,
                 SEXP r_package,
                 SEXP r_function,
-                SEXP r_result);
+                SEXP r_call);
 
     static void initialize();
 
