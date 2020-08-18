@@ -84,13 +84,13 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(instrumentr)</span>
-<span id="cb1-2"><a href="#cb1-2"></a>┣ ── Setup ───────────────────────────────────────────────────────────────────────</span>
-<span id="cb1-3"><a href="#cb1-3"></a>┣ • R           <span class="dv">4</span>.<span class="fl">0.2</span> (<span class="dv">2020-06-22</span>)</span>
-<span id="cb1-4"><a href="#cb1-4"></a>┣ • instrumentr <span class="fl">0.1</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>┣ • injectr     <span class="fl">0.1</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>┣ ────────────────────────────────────────────────────────────────────────────────</span>
-<span id="cb1-7"><a href="#cb1-7"></a>┣ • srcref      <span class="dv">1056</span> base srcrefs added <span class="cf">in</span> <span class="fl">0.299000</span> seconds</span>
-<span id="cb1-8"><a href="#cb1-8"></a>┣ ────────────────────────────────────────────────────────────────────────────────</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;</span><span class="st"> </span>── Setup ───────────────────────────────────────────────────────────────────────</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="op">&gt;</span><span class="st"> </span>• R           <span class="dv">4</span>.<span class="fl">0.2</span> (<span class="dv">2020-06-22</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="op">&gt;</span><span class="st"> </span>• instrumentr <span class="fl">0.1</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&gt;</span><span class="st"> </span>• injectr     <span class="fl">0.1</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="op">&gt;</span><span class="st"> </span>• srcref      <span class="dv">1056</span> base srcrefs added <span class="cf">in</span> <span class="fl">1.064000</span> seconds</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 
 <span class="kw">functions</span> <span class="op">&lt;-</span> <span class="fu">get_package_function_names</span>(<span class="st">"dplyr"</span>, public = <span class="fl">TRUE</span>, private = <span class="fl">FALSE</span>)
@@ -225,32 +225,10 @@
 <span id="cb3-22"><a href="#cb3-22"></a>      ) <span class="op">%&gt;%</span></span>
 <span id="cb3-23"><a href="#cb3-23"></a><span class="st">      </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>)</span>
 <span id="cb3-24"><a href="#cb3-24"></a>})</span>
-<span id="cb3-25"><a href="#cb3-25"></a>┣ Instrumenting <span class="dv">240</span> functions from dplyr</span>
-<span id="cb3-26"><a href="#cb3-26"></a>┣ <span class="st">`</span><span class="dt">summarise()</span><span class="st">`</span> ungrouping <span class="kw">output</span> (override with <span class="st">`</span><span class="dt">.groups</span><span class="st">`</span> argument)</span>
-<span id="cb3-27"><a href="#cb3-27"></a>┣ arrange <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ..., any<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-28"><a href="#cb3-28"></a>┣ desc <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>double<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>double</span>
-<span id="cb3-29"><a href="#cb3-29"></a>┣ dplyr_col_modify <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-30"><a href="#cb3-30"></a>┣ dplyr_reconstruct <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-31"><a href="#cb3-31"></a>┣ dplyr_row_slice <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, logical<span class="op">|</span>integer, ...<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-32"><a href="#cb3-32"></a>┣ filter <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ..., any<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-33"><a href="#cb3-33"></a>┣ group_by <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ..., any, any<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-34"><a href="#cb3-34"></a>┣ group_by_drop_default <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>logical</span>
-<span id="cb3-35"><a href="#cb3-35"></a>┣ group_by_prepare <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ..., logical, any, any<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-36"><a href="#cb3-36"></a>┣ group_data <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-37"><a href="#cb3-37"></a>┣ group_keys <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ...<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-38"><a href="#cb3-38"></a>┣ group_rows <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-39"><a href="#cb3-39"></a>┣ group_vars <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>character</span>
-<span id="cb3-40"><a href="#cb3-40"></a>┣ grouped_df <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, character, logical<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-41"><a href="#cb3-41"></a>┣ is_grouped_df <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>logical</span>
-<span id="cb3-42"><a href="#cb3-42"></a>┣ mutate <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ...<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-43"><a href="#cb3-43"></a>┣ n <span class="op">::</span><span class="st"> </span><span class="er">&lt;&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>integer</span>
-<span id="cb3-44"><a href="#cb3-44"></a>┣ new_grouped_df <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, list, ..., character<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-45"><a href="#cb3-45"></a>┣ select <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ...<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-46"><a href="#cb3-46"></a>┣ summarise <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ..., any<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-47"><a href="#cb3-47"></a>┣ tbl_vars <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>character</span>
-<span id="cb3-48"><a href="#cb3-48"></a>┣ transmute <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, ...<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-49"><a href="#cb3-49"></a>┣ validate_grouped_df <span class="op">::</span><span class="st"> </span><span class="er">&lt;</span>list, logical<span class="op">&gt;</span><span class="st"> </span><span class="er">=&gt;</span><span class="st"> </span>list</span>
-<span id="cb3-50"><a href="#cb3-50"></a>┣ <span class="kw">Result</span>(<span class="dt">value=</span><span class="op">&lt;</span>list<span class="op">:</span><span class="st"> </span><span class="dv">0x7fbb19b5f878</span><span class="op">&gt;</span>)</span></code></pre></div>
+<span id="cb3-25"><a href="#cb3-25"></a><span class="op">&gt;</span><span class="st"> </span>Instrumenting <span class="dv">241</span> functions from dplyr</span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="op">&gt;</span><span class="st"> `</span><span class="dt">summarise()</span><span class="st">`</span> ungrouping <span class="kw">output</span> (override with <span class="st">`</span><span class="dt">.groups</span><span class="st">`</span> argument)</span>
+<span id="cb3-27"><a href="#cb3-27"></a><span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>simpleError <span class="cf">in</span> <span class="kw">doTryCatch</span>(<span class="kw">return</span>(expr), name, parentenv, handler)<span class="op">:</span><span class="st"> </span>object <span class="st">'C_instrumentr_trace_application_unload'</span> not found<span class="op">&gt;</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="er">&gt;</span><span class="st"> </span><span class="kw">Result</span>(<span class="dt">error=</span><span class="kw">Error</span>(<span class="dt">source=</span><span class="st">'instrumentr'</span>, <span class="dt">message=</span><span class="st">'object '</span>C_instrumentr_trace_application_unload<span class="st">' not found'</span>, <span class="dt">call=</span><span class="kw">doTryCatch</span>(<span class="kw">return</span>(expr), name, parentenv, handler)))</span></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
