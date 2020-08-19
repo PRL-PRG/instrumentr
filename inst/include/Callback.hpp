@@ -36,7 +36,7 @@ class Callback: public Object {
 
     virtual ~Callback() {
         if (is_r_callback()) {
-            R_ReleaseObject(r_symbol_);
+            R_ReleaseObject(r_function_name_);
             R_ReleaseObject(get_function<SEXP>());
         }
     }
@@ -58,15 +58,20 @@ class Callback: public Object {
         return (T)(function_);
     }
 
+    SEXP get_function_name() const {
+        return r_function_name_;
+    }
+
     void bind(SEXP r_environment) {
         if (is_r_callback()) {
-            Rf_defineVar(r_symbol_, get_function<SEXP>(), r_environment);
+            Rf_defineVar(
+                get_function_name(), get_function<SEXP>(), r_environment);
         }
     }
 
     void unbind(SEXP r_environment) {
         if (is_r_callback()) {
-            R_removeVarFromFrame(r_symbol_, r_environment);
+            R_removeVarFromFrame(get_function_name(), r_environment);
         }
     }
 
@@ -76,7 +81,7 @@ class Callback: public Object {
     Type type_;
     void* function_;
     bool is_r_function_;
-    SEXP r_symbol_;
+    SEXP r_function_name_;
 };
 
 using CallbackSPtr = std::shared_ptr<Callback>;

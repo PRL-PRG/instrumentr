@@ -41,13 +41,16 @@ void VariableAssignmentCallback::invoke(SEXP r_context,
     }
     /**/
     else {
-        SEXP r_callback = get_function<SEXP>();
+        SEXP r_function_name = get_function_name();
         SEXP r_environment = context->get_environment();
 
-        Rf_eval(
-            Rf_lang6(
-                r_callback, r_context, r_application, r_variable, r_value, r_rho),
-            r_environment);
+        Rf_eval(Rf_lang6(r_function_name,
+                         r_context,
+                         r_application,
+                         r_variable,
+                         r_value,
+                         r_rho),
+                r_environment);
     }
 }
 

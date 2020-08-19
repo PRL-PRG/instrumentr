@@ -35,10 +35,11 @@ void ApplicationLoadCallback::invoke(SEXP r_context, SEXP r_application) {
         callback_t callback = get_function<callback_t>();
         callback(context, application);
     } else {
-        SEXP r_callback = get_function<SEXP>();
+        SEXP r_function_name = get_function_name();
         SEXP r_environment = context->get_environment();
 
-        Rf_eval(Rf_lang3(r_callback, r_context, r_application), r_environment);
+        Rf_eval(Rf_lang3(r_function_name, r_context, r_application),
+                r_environment);
     }
 }
 

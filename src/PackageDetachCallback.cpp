@@ -46,10 +46,10 @@ void PackageDetachCallback::invoke(SEXP r_context,
     }
     /**/
     else {
-        SEXP r_callback = get_function<SEXP>();
+        SEXP r_function_name = get_function_name();
         SEXP r_environment = context->get_environment();
 
-        Rf_eval(Rf_lang4(r_callback, r_context, r_application, r_package),
+        Rf_eval(Rf_lang4(r_function_name, r_context, r_application, r_package),
                 r_environment);
     }
 }

@@ -6,8 +6,8 @@ namespace instrumentr {
 Callback::Callback(Type type, void* function, bool is_r_function)
     : type_(type), function_(function), is_r_function_(is_r_function) {
     if (is_r_callback()) {
-        r_symbol_ = Rf_install(callback_type_to_string(type_).c_str());
-        R_PreserveObject(r_symbol_);
+        r_function_name_ = Rf_install(callback_type_to_string(type_).c_str());
+        R_PreserveObject(r_function_name_);
         R_PreserveObject(get_function<SEXP>());
     }
 }
