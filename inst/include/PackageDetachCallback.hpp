@@ -8,7 +8,7 @@ namespace instrumentr {
 class PackageDetachCallback: public Callback {
   public:
     PackageDetachCallback(void* function, bool is_r_callback)
-        : Callback(Type::PackageDetachCallback, function, is_r_callback) {
+        : Callback(Type::PackageDetach, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context, SEXP r_application, SEXP r_package);

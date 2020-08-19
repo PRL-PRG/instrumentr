@@ -8,7 +8,7 @@ namespace instrumentr {
 class FunctionAttachCallback: public Callback {
   public:
     FunctionAttachCallback(void* function, bool is_r_callback)
-        : Callback(Type::FunctionAttachCallback, function, is_r_callback) {
+        : Callback(Type::FunctionAttach, function, is_r_callback) {
     }
 
     void

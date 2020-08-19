@@ -8,7 +8,7 @@ namespace instrumentr {
 class PackageAttachCallback: public Callback {
   public:
     PackageAttachCallback(void* function, bool is_r_callback)
-        : Callback(Type::PackageAttachCallback, function, is_r_callback) {
+        : Callback(Type::PackageAttach, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context, SEXP r_application, SEXP r_package);

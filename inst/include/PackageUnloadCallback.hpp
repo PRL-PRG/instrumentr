@@ -8,7 +8,7 @@ namespace instrumentr {
 class PackageUnloadCallback: public Callback {
   public:
     PackageUnloadCallback(void* function, bool is_r_callback)
-        : Callback(Type::PackageUnloadCallback, function, is_r_callback) {
+        : Callback(Type::PackageUnload, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context, SEXP r_application, SEXP r_package);

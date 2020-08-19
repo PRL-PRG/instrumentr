@@ -8,7 +8,7 @@ namespace instrumentr {
 class CallExitCallback: public Callback {
   public:
     CallExitCallback(void* function, bool is_r_callback)
-        : Callback(Type::CallExitCallback, function, is_r_callback) {
+        : Callback(Type::CallExit, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context,

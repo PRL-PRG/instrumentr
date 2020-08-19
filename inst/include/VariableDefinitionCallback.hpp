@@ -8,7 +8,7 @@ namespace instrumentr {
 class VariableDefinitionCallback: public Callback {
   public:
     VariableDefinitionCallback(void* function, bool is_r_callback)
-        : Callback(Type::VariableDefinitionCallback, function, is_r_callback) {
+        : Callback(Type::VariableDefinition, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context,

@@ -8,7 +8,7 @@ namespace instrumentr {
 class VariableRemovalCallback: public Callback {
   public:
     VariableRemovalCallback(void* function, bool is_r_callback)
-        : Callback(Type::VariableRemovalCallback, function, is_r_callback) {
+        : Callback(Type::VariableRemoval, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context, SEXP r_application, SEXP r_variable, SEXP r_rho);

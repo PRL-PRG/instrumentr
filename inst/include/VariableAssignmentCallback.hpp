@@ -8,7 +8,7 @@ namespace instrumentr {
 class VariableAssignmentCallback: public Callback {
   public:
     VariableAssignmentCallback(void* function, bool is_r_callback)
-        : Callback(Type::VariableAssignmentCallback, function, is_r_callback) {
+        : Callback(Type::VariableAssignment, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context,

@@ -8,7 +8,7 @@ namespace instrumentr {
 class VariableLookupCallback: public Callback {
   public:
     VariableLookupCallback(void* function, bool is_r_callback)
-        : Callback(Type::VariableLookupCallback, function, is_r_callback) {
+        : Callback(Type::VariableLookup, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context,

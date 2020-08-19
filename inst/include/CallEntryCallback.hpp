@@ -8,7 +8,7 @@ namespace instrumentr {
 class CallEntryCallback: public Callback {
   public:
     CallEntryCallback(void* function, bool is_r_callback)
-        : Callback(Type::CallEntryCallback, function, is_r_callback) {
+        : Callback(Type::CallEntry, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context,

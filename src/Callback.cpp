@@ -22,42 +22,42 @@ std::string callback_type_to_string(Callback::Type callback_type) {
         return "instrumentr";
     case Callback::Type::Application:
         return "application";
-    case Callback::Type::ApplicationLoadCallback:
-        return "ApplicationLoadCallback";
-    case Callback::Type::ApplicationUnloadCallback:
-        return "ApplicationUnloadCallback";
-    case Callback::Type::ApplicationAttachCallback:
-        return "ApplicationAttachCallback";
-    case Callback::Type::ApplicationDetachCallback:
-        return "ApplicationDetachCallback";
-    case Callback::Type::PackageLoadCallback:
-        return "PackageLoadCallback";
-    case Callback::Type::PackageUnloadCallback:
-        return "PackageUnloadCallback";
-    case Callback::Type::PackageAttachCallback:
-        return "PackageAttachCallback";
-    case Callback::Type::PackageDetachCallback:
-        return "PackageDetachCallback";
-    case Callback::Type::FunctionAttachCallback:
-        return "FunctionAttachCallback";
-    case Callback::Type::FunctionDetachCallback:
-        return "FunctionDetachCallback";
-    case Callback::Type::CallEntryCallback:
-        return "CallEntryCallback";
-    case Callback::Type::CallExitCallback:
-        return "CallExitCallback";
-    case Callback::Type::GcAllocationCallback:
-        return "GcAllocationCallback";
-    case Callback::Type::VariableDefinitionCallback:
-        return "VariableDefinitionCallback";
-    case Callback::Type::VariableAssignmentCallback:
-        return "VariableAssignmentCallback";
-    case Callback::Type::VariableRemovalCallback:
-        return "VariableRemovalCallback";
-    case Callback::Type::VariableLookupCallback:
-        return "VariableLookupCallback";
+    case Callback::Type::ApplicationLoad:
+        return "instrumentr_application_load_callback";
+    case Callback::Type::ApplicationUnload:
+        return "instrumentr_application_unload_callback";
+    case Callback::Type::ApplicationAttach:
+        return "instrumentr_application_attach_callback";
+    case Callback::Type::ApplicationDetach:
+        return "instrumentr_application_detach_callback";
+    case Callback::Type::PackageLoad:
+        return "instrumentr_package_load_callback";
+    case Callback::Type::PackageUnload:
+        return "instrumentr_package_unload_callback";
+    case Callback::Type::PackageAttach:
+        return "instrumentr_package_attach_callback";
+    case Callback::Type::PackageDetach:
+        return "instrumentr_package_detach_callback";
+    case Callback::Type::FunctionAttach:
+        return "instrumentr_function_attach_callback";
+    case Callback::Type::FunctionDetach:
+        return "instrumentr_function_detach_callback";
+    case Callback::Type::CallEntry:
+        return "instrumentr_call_entry_callback";
+    case Callback::Type::CallExit:
+        return "instrumentr_call_exit_callback";
+    case Callback::Type::GcAllocation:
+        return "instrumentr_gc_allocation_callback";
+    case Callback::Type::VariableDefinition:
+        return "instrumentr_variable_definition_callback";
+    case Callback::Type::VariableAssignment:
+        return "instrumentr_variable_assignment_callback";
+    case Callback::Type::VariableRemoval:
+        return "instrumentr_variable_removal_callback";
+    case Callback::Type::VariableLookup:
+        return "instrumentr_variable_lookup_callback";
     }
-    return "Undefined";
+    return "undefined";
 }
 
 } // namespace instrumentr

@@ -8,7 +8,7 @@ namespace instrumentr {
 class FunctionDetachCallback: public Callback {
   public:
     FunctionDetachCallback(void* function, bool is_r_callback)
-        : Callback(Type::FunctionDetachCallback, function, is_r_callback) {
+        : Callback(Type::FunctionDetach, function, is_r_callback) {
     }
 
     void

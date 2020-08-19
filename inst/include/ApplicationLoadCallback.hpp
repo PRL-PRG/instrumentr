@@ -8,7 +8,7 @@ namespace instrumentr {
 class ApplicationLoadCallback: public Callback {
   public:
     ApplicationLoadCallback(void* function, bool is_r_callback)
-        : Callback(Type::ApplicationLoadCallback, function, is_r_callback) {
+        : Callback(Type::ApplicationLoad, function, is_r_callback) {
     }
 
     void invoke(SEXP r_context, SEXP r_application);
