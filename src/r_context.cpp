@@ -33,6 +33,8 @@ using instrumentr::FunctionAttachCallbackSPtr;
 using instrumentr::FunctionDetachCallback;
 using instrumentr::FunctionDetachCallbackSPtr;
 using instrumentr::FunctionSPtr;
+using instrumentr::GcAllocationCallback;
+using instrumentr::GcAllocationCallbackSPtr;
 using instrumentr::Package;
 using instrumentr::PackageAttachCallback;
 using instrumentr::PackageAttachCallbackSPtr;
@@ -291,6 +293,25 @@ SEXP r_context_get_call_exit_callback(SEXP r_context) {
 SEXP r_context_has_call_exit_callback(SEXP r_context) {
     ContextSPtr context = from_sexp<Context>(r_context);
     return ScalarLogical(context->has_call_exit_callback());
+}
+
+SEXP r_context_set_gc_allocation_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    GcAllocationCallbackSPtr callback =
+        from_sexp<GcAllocationCallback>(r_callback);
+    context->set_gc_allocation_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_gc_allocation_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    GcAllocationCallbackSPtr callback = context->get_gc_allocation_callback();
+    return to_sexp<GcAllocationCallback>(callback);
+}
+
+SEXP r_context_has_gc_allocation_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_gc_allocation_callback());
 }
 
 SEXP r_context_set_variable_definition_callback(SEXP r_context,

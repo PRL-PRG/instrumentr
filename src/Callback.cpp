@@ -46,6 +46,8 @@ std::string callback_type_to_string(Callback::Type callback_type) {
         return "CallEntryCallback";
     case Callback::Type::CallExitCallback:
         return "CallExitCallback";
+    case Callback::Type::GcAllocationCallback:
+        return "GcAllocationCallback";
     case Callback::Type::VariableDefinitionCallback:
         return "VariableDefinitionCallback";
     case Callback::Type::VariableAssignmentCallback:

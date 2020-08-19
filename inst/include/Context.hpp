@@ -15,6 +15,7 @@
 #include "FunctionDetachCallback.hpp"
 #include "CallEntryCallback.hpp"
 #include "CallExitCallback.hpp"
+#include "GcAllocationCallback.hpp"
 #include "VariableDefinitionCallback.hpp"
 #include "VariableAssignmentCallback.hpp"
 #include "VariableRemovalCallback.hpp"
@@ -183,6 +184,18 @@ class Context: public Object {
 
     bool has_call_exit_callback() const {
         return (bool) (call_exit_callback_);
+    }
+
+    void set_gc_allocation_callback(GcAllocationCallbackSPtr callback) {
+        set_callback_(gc_allocation_callback_, callback);
+    }
+
+    GcAllocationCallbackSPtr get_gc_allocation_callback() {
+        return gc_allocation_callback_;
+    }
+
+    bool has_gc_allocation_callback() const {
+        return (bool) (gc_allocation_callback_);
     }
 
     void
@@ -392,6 +405,7 @@ class Context: public Object {
     FunctionDetachCallbackSPtr function_detach_callback_;
     CallEntryCallbackSPtr call_entry_callback_;
     CallExitCallbackSPtr call_exit_callback_;
+    GcAllocationCallbackSPtr gc_allocation_callback_;
     VariableDefinitionCallbackSPtr variable_definition_callback_;
     VariableAssignmentCallbackSPtr variable_assignment_callback_;
     VariableRemovalCallbackSPtr variable_removal_callback_;

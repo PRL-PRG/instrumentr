@@ -93,6 +93,7 @@ void initialize_instrumentr(SEXP r_package_environment,
         FunctionDetachCallback::initialize();
         CallEntryCallback::initialize();
         CallExitCallback::initialize();
+        GcAllocationCallback::initialize();
         VariableDefinitionCallback::initialize();
         VariableAssignmentCallback::initialize();
         VariableRemovalCallback::initialize();
@@ -124,6 +125,7 @@ void finalize_instrumentr() {
         FunctionDetachCallback::finalize();
         CallEntryCallback::finalize();
         CallExitCallback::finalize();
+        GcAllocationCallback::finalize();
         VariableDefinitionCallback::finalize();
         VariableAssignmentCallback::finalize();
         VariableRemovalCallback::finalize();

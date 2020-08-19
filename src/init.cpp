@@ -21,6 +21,7 @@
 #include "r_function_detach_callback.h"
 #include "r_call_entry_callback.h"
 #include "r_call_exit_callback.h"
+#include "r_gc_allocation_callback.h"
 #include "r_variable_definition_callback.h"
 #include "r_variable_assignment_callback.h"
 #include "r_variable_removal_callback.h"
@@ -88,6 +89,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_set_call_exit_callback", (DL_FUNC) &r_context_set_call_exit_callback, 2},
     {"context_get_call_exit_callback", (DL_FUNC) &r_context_get_call_exit_callback, 1},
     {"context_has_call_exit_callback", (DL_FUNC) &r_context_has_call_exit_callback, 1},
+    {"context_set_gc_allocation_callback", (DL_FUNC) &r_context_set_gc_allocation_callback, 2},
+    {"context_get_gc_allocation_callback", (DL_FUNC) &r_context_get_gc_allocation_callback, 1},
+    {"context_has_gc_allocation_callback", (DL_FUNC) &r_context_has_gc_allocation_callback, 1},
     {"context_set_variable_definition_callback", (DL_FUNC) &r_context_set_variable_definition_callback, 2},
     {"context_get_variable_definition_callback", (DL_FUNC) &r_context_get_variable_definition_callback, 1},
     {"context_has_variable_definition_callback", (DL_FUNC) &r_context_has_variable_definition_callback, 1},
@@ -243,6 +247,10 @@ static const R_CallMethodDef CallEntries[] = {
     /* CallExitCallback */
     {"call_exit_callback_create_from_r_function", (DL_FUNC) &r_call_exit_callback_create_from_r_function, 1},
     {"call_exit_callback_create_from_c_function", (DL_FUNC) &r_call_exit_callback_create_from_c_function, 1},
+
+    /* GcAllocationCallback */
+    {"gc_allocation_callback_create_from_r_function", (DL_FUNC) &r_gc_allocation_callback_create_from_r_function, 1},
+    {"gc_allocation_callback_create_from_c_function", (DL_FUNC) &r_gc_allocation_callback_create_from_c_function, 1},
 
     /* VariableDefinitionCallback */
     {"variable_definition_callback_create_from_r_function", (DL_FUNC) &r_variable_definition_callback_create_from_r_function, 1},

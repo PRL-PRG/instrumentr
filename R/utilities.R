@@ -134,6 +134,10 @@ is_instrumentr_call_exit_callback <- function(object) {
     inherits(object, "instrumentr_call_exit_callback")
 }
 
+is_instrumentr_gc_allocation_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_gc_allocation_callback")
+}
+
 is_instrumentr_variable_definition_callback <- function(object) {
     inherits(object, "instrumentr_variable_definition_callback")
 }

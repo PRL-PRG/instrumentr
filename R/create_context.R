@@ -12,6 +12,7 @@ create_context <- function(application_load_callback,
                            function_detach_callback,
                            call_entry_callback,
                            call_exit_callback,
+                           gc_allocation_callback,
                            variable_definition_callback,
                            variable_assignment_callback,
                            variable_removal_callback,
@@ -77,6 +78,10 @@ create_context <- function(application_load_callback,
 
     if (!missing(call_exit_callback)) {
         set_call_exit_callback(context, call_exit_callback)
+    }
+
+    if (!missing(gc_allocation_callback)) {
+        set_gc_allocation_callback(context, gc_allocation_callback)
     }
 
     if (!missing(variable_definition_callback)) {

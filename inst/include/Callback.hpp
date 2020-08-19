@@ -25,6 +25,7 @@ class Callback: public Object {
         FunctionDetachCallback,
         CallEntryCallback,
         CallExitCallback,
+        GcAllocationCallback,
         VariableDefinitionCallback,
         VariableAssignmentCallback,
         VariableRemovalCallback,

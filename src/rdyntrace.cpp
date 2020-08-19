@@ -11,6 +11,8 @@ using instrumentr::Application;
 using instrumentr::ApplicationSPtr;
 using instrumentr::Context;
 using instrumentr::ContextSPtr;
+using instrumentr::GcAllocationCallback;
+using instrumentr::GcAllocationCallbackSPtr;
 using instrumentr::VariableAssignmentCallback;
 using instrumentr::VariableAssignmentCallbackSPtr;
 using instrumentr::VariableDefinitionCallback;
@@ -31,6 +33,26 @@ inline ContextSPtr extract_context_from_dyntracer(dyntracer_t* dyntracer) {
     return context;
 }
 
+void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
+    ContextSPtr context = extract_context_from_dyntracer(dyntracer);
+
+    if (context->is_tracing_enabled() &&
+        context->has_gc_allocation_callback()) {
+        GcAllocationCallbackSPtr callback =
+            context->get_gc_allocation_callback();
+
+        context->initialize_callback_invocation(callback);
+
+        ApplicationSPtr application = context->get_application();
+        SEXP r_context = to_sexp(context);
+        SEXP r_application = to_sexp(application);
+
+        callback->invoke(r_context, r_application, r_object);
+
+        context->finalize_callback_invocation();
+    }
+}
+
 void dyntrace_variable_definition(dyntracer_t* dyntracer,
                                   const SEXP r_symbol,
                                   const SEXP r_value,
@@ -39,14 +61,14 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
 
     if (context->is_tracing_enabled() &&
         context->has_variable_definition_callback()) {
-        ApplicationSPtr application = context->get_application();
-        SEXP r_application = to_sexp(application);
-        SEXP r_context = to_sexp(context);
-
         VariableDefinitionCallbackSPtr callback =
             context->get_variable_definition_callback();
 
         context->initialize_callback_invocation(callback);
+
+        ApplicationSPtr application = context->get_application();
+        SEXP r_application = to_sexp(application);
+        SEXP r_context = to_sexp(context);
 
         SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
 
@@ -66,14 +88,14 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
 
     if (context->is_tracing_enabled() &&
         context->has_variable_assignment_callback()) {
-        ApplicationSPtr application = context->get_application();
-        SEXP r_application = to_sexp(application);
-        SEXP r_context = to_sexp(context);
-
         VariableAssignmentCallbackSPtr callback =
             context->get_variable_assignment_callback();
 
         context->initialize_callback_invocation(callback);
+
+        ApplicationSPtr application = context->get_application();
+        SEXP r_application = to_sexp(application);
+        SEXP r_context = to_sexp(context);
 
         SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
 
@@ -92,14 +114,14 @@ void dyntrace_variable_removal(dyntracer_t* dyntracer,
 
     if (context->is_tracing_enabled() &&
         context->has_variable_removal_callback()) {
-        ApplicationSPtr application = context->get_application();
-        SEXP r_application = to_sexp(application);
-        SEXP r_context = to_sexp(context);
-
         VariableRemovalCallbackSPtr callback =
             context->get_variable_removal_callback();
 
         context->initialize_callback_invocation(callback);
+
+        ApplicationSPtr application = context->get_application();
+        SEXP r_application = to_sexp(application);
+        SEXP r_context = to_sexp(context);
 
         SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
 
@@ -119,14 +141,14 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
 
     if (context->is_tracing_enabled() &&
         context->has_variable_lookup_callback()) {
-        ApplicationSPtr application = context->get_application();
-        SEXP r_context = to_sexp(context);
-        SEXP r_application = to_sexp(application);
-
         VariableLookupCallbackSPtr callback =
             context->get_variable_lookup_callback();
 
         context->initialize_callback_invocation(callback);
+
+        ApplicationSPtr application = context->get_application();
+        SEXP r_context = to_sexp(context);
+        SEXP r_application = to_sexp(application);
 
         SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
 
@@ -141,6 +163,7 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
 dyntracer_t* rdyntrace_create_dyntracer() {
     dyntracer_t* dyntracer = dyntracer_create(NULL);
 
+    dyntracer_set_gc_allocate_callback(dyntracer, dyntrace_gc_allocation);
     dyntracer_set_environment_variable_define_callback(
         dyntracer, dyntrace_variable_definition);
     dyntracer_set_environment_variable_assign_callback(
@@ -149,7 +172,6 @@ dyntracer_t* rdyntrace_create_dyntracer() {
         dyntracer, dyntrace_variable_removal);
     dyntracer_set_environment_variable_lookup_callback(
         dyntracer, dyntrace_variable_lookup);
-    dyntracer_set_gc_allocate_callback(dyntracer, dyntrace_gc_allocate);
 
     return dyntracer;
 }

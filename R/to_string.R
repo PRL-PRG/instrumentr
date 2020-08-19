@@ -68,7 +68,7 @@ to_string.instrumentr_context <- function(object, ...) {
     }
 
     representation <-
-      sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+      sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
               get_field_representation("application_load_callback", get_application_load_callback),
               get_field_representation("application_unload_callback", get_application_unload_callback),
               get_field_representation("application_attach_callback", get_application_attach_callback),
@@ -81,6 +81,7 @@ to_string.instrumentr_context <- function(object, ...) {
               get_field_representation("function_detach_callback", get_function_detach_callback),
               get_field_representation("call_entry_callback", get_call_entry_callback),
               get_field_representation("call_exit_callback", get_call_exit_callback),
+              get_field_representation("gc_allocation_callback", get_gc_allocation_callback),
               get_field_representation("variable_definition_callback", get_variable_definition_callback),
               get_field_representation("variable_assignment_callback", get_variable_assignment_callback),
               get_field_representation("variable_removal_callback", get_variable_removal_callback),
