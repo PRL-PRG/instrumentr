@@ -8,10 +8,6 @@ SEXP TemporarySymbol = NULL;
 SEXP TemporarySymbolString = NULL;
 SEXP StateEnvironment = NULL;
 SEXP PackageEnvironment = NULL;
-SEXP FunctionEntryCallbackSymbol = NULL;
-SEXP FunctionExitCallbackSymbol = NULL;
-SEXP CallEntryCallbackSymbol = NULL;
-SEXP CallExitCallbackSymbol = NULL;
 
 void initialize_utilities(SEXP r_package_environment,
                           SEXP r_state_environment) {
@@ -31,10 +27,6 @@ void initialize_utilities(SEXP r_package_environment,
     PackageEnvironment = r_package_environment;
 
     StateEnvironment = r_state_environment;
-
-    CallEntryCallbackSymbol = Rf_install("call_entry_callback");
-
-    CallExitCallbackSymbol = Rf_install("call_exit_callback");
 }
 
 void finalize_utilities() {

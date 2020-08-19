@@ -3,9 +3,6 @@
 
 #include "Rincludes.h"
 
-extern SEXP CallEntryCallbackSymbol;
-extern SEXP CallExitCallbackSymbol;
-
 void initialize_utilities(SEXP r_package_environment, SEXP r_state_environment);
 
 void finalize_utilities();
