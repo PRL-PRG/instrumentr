@@ -5,9 +5,7 @@
 
     version_info <- get_version_information()
 
-    srcref_info <- attach_base_srcref()
-
-    show_setup_info(version_info, srcref_info)
+    show_setup_info(version_info)
 
 }
 
