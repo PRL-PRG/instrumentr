@@ -22,4 +22,8 @@ extern "C" {
 SEXP r_callback_is_r_callback(SEXP r_callback);
 SEXP r_callback_is_c_callback(SEXP r_callback);
 SEXP r_callback_get_function(SEXP r_callback);
+SEXP r_callback_activate(SEXP r_callback);
+SEXP r_callback_deactivate(SEXP r_callback);
+SEXP r_callback_reinstate(SEXP r_callback);
+SEXP r_callback_is_active(SEXP r_callback);
 }

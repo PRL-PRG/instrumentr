@@ -62,6 +62,22 @@ class Callback: public Object {
         return r_function_name_;
     }
 
+    void activate() {
+        status_.push_back(true);
+    }
+
+    void deactivate() {
+        status_.push_back(false);
+    }
+
+    void reinstate() {
+        status_.pop_back();
+    }
+
+    bool is_active() const {
+        return !status_.empty() && status_.back();
+    }
+
     void bind(SEXP r_environment) const {
         if (is_r_callback()) {
             Rf_defineVar(
@@ -82,6 +98,7 @@ class Callback: public Object {
     void* function_;
     bool is_r_function_;
     SEXP r_function_name_;
+    std::vector<bool> status_;
 };
 
 using CallbackSPtr = std::shared_ptr<Callback>;

@@ -199,6 +199,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"callback_is_r_callback", (DL_FUNC) &r_callback_is_r_callback, 1},
     {"callback_is_c_callback", (DL_FUNC) &r_callback_is_c_callback, 1},
     {"callback_get_function", (DL_FUNC) &r_callback_get_function, 1},
+    {"callback_activate", (DL_FUNC) &r_callback_activate, 1},
+    {"callback_deactivate", (DL_FUNC) &r_callback_deactivate, 1},
+    {"callback_reinstate", (DL_FUNC) &r_callback_reinstate, 1},
+    {"callback_is_active", (DL_FUNC) &r_callback_is_active, 1},
 
     /* ApplicationAttachCallback */
     {"application_attach_callback_create_from_r_function", (DL_FUNC) &r_application_attach_callback_create_from_r_function, 1},

@@ -27,3 +27,26 @@ SEXP r_callback_get_function(SEXP r_callback) {
         return R_MakeExternalPtr(function, R_NilValue, R_NilValue);
     }
 }
+
+SEXP r_callback_activate(SEXP r_callback) {
+    CallbackSPtr callback = from_sexp<Callback>(r_callback);
+    callback->activate();
+    return r_callback;
+}
+
+SEXP r_callback_deactivate(SEXP r_callback) {
+    CallbackSPtr callback = from_sexp<Callback>(r_callback);
+    callback->deactivate();
+    return r_callback;
+}
+
+SEXP r_callback_reinstate(SEXP r_callback) {
+    CallbackSPtr callback = from_sexp<Callback>(r_callback);
+    callback->reinstate();
+    return r_callback;
+}
+
+SEXP r_callback_is_active(SEXP r_callback) {
+    CallbackSPtr callback = from_sexp<Callback>(r_callback);
+    return ScalarLogical(callback->is_active());
+}
