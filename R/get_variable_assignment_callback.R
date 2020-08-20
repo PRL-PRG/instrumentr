@@ -1,6 +1,6 @@
 
 #' @export
-get_variable_assignment_callback <- function(context, ...) {
+get_variable_assignment_callback <- function(context, ...) { # nolint
     UseMethod("get_variable_assignment_callback")
 }
 

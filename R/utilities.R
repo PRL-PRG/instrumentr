@@ -86,51 +86,51 @@ add_package_prefix <- function(package_names) {
     paste0(prefix, package_names)
 }
 
-is_instrumentr_application_load_callback <- function(object) {
+is_instrumentr_application_load_callback <- function(object) { # nolint
     inherits(object, "instrumentr_application_load_callback")
 }
 
-is_instrumentr_application_unload_callback <- function(object) {
+is_instrumentr_application_unload_callback <- function(object) { # nolint
     inherits(object, "instrumentr_application_unload_callback")
 }
 
-is_instrumentr_application_attach_callback <- function(object) {
+is_instrumentr_application_attach_callback <- function(object) { # nolint
     inherits(object, "instrumentr_application_attach_callback")
 }
 
-is_instrumentr_application_detach_callback <- function(object) {
+is_instrumentr_application_detach_callback <- function(object) { # nolint
     inherits(object, "instrumentr_application_detach_callback")
 }
 
-is_instrumentr_package_load_callback <- function(object) {
+is_instrumentr_package_load_callback <- function(object) { # nolint
     inherits(object, "instrumentr_package_load_callback")
 }
 
-is_instrumentr_package_unload_callback <- function(object) {
+is_instrumentr_package_unload_callback <- function(object) { # nolint
     inherits(object, "instrumentr_package_unload_callback")
 }
 
-is_instrumentr_package_attach_callback <- function(object) {
+is_instrumentr_package_attach_callback <- function(object) { # nolint
     inherits(object, "instrumentr_package_attach_callback")
 }
 
-is_instrumentr_package_detach_callback <- function(object) {
+is_instrumentr_package_detach_callback <- function(object) { # nolint
     inherits(object, "instrumentr_package_detach_callback")
 }
 
-is_instrumentr_function_attach_callback <- function(object) {
+is_instrumentr_function_attach_callback <- function(object) { # nolint
     inherits(object, "instrumentr_function_attach_callback")
 }
 
-is_instrumentr_function_detach_callback <- function(object) {
+is_instrumentr_function_detach_callback <- function(object) { # nolint
     inherits(object, "instrumentr_function_detach_callback")
 }
 
-is_instrumentr_call_entry_callback <- function(object) {
+is_instrumentr_call_entry_callback <- function(object) { # nolint
     inherits(object, "instrumentr_call_entry_callback")
 }
 
-is_instrumentr_call_exit_callback <- function(object) {
+is_instrumentr_call_exit_callback <- function(object) { # nolint
     inherits(object, "instrumentr_call_exit_callback")
 }
 
@@ -138,18 +138,18 @@ is_instrumentr_gc_allocation_callback <- function(object) { # nolint
     inherits(object, "instrumentr_gc_allocation_callback")
 }
 
-is_instrumentr_variable_definition_callback <- function(object) {
+is_instrumentr_variable_definition_callback <- function(object) { # nolint
     inherits(object, "instrumentr_variable_definition_callback")
 }
 
-is_instrumentr_variable_assignment_callback <- function(object) {
+is_instrumentr_variable_assignment_callback <- function(object) { # nolint
     inherits(object, "instrumentr_variable_assignment_callback")
 }
 
-is_instrumentr_variable_removal_callback <- function(object) {
+is_instrumentr_variable_removal_callback <- function(object) { # nolint
     inherits(object, "instrumentr_variable_removal_callback")
 }
 
-is_instrumentr_variable_lookup_callback <- function(object) {
+is_instrumentr_variable_lookup_callback <- function(object) { # nolint
     inherits(object, "instrumentr_variable_lookup_callback")
 }

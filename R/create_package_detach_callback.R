@@ -1,17 +1,17 @@
 
 #' @export
-create_package_detach_callback <- function(object) {
+create_package_detach_callback <- function(object) { # nolint
     UseMethod("create_package_detach_callback")
 }
 
 #' @export
-create_package_detach_callback.function <- function(object) {
+create_package_detach_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
     .Call(C_package_detach_callback_create_from_r_function, object)
 }
 
 #' @export
-create_package_detach_callback.externalptr <- function(object) {
+create_package_detach_callback.externalptr <- function(object) { # nolint
     .Call(C_package_detach_callback_create_from_c_function, object)
 }

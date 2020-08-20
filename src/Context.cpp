@@ -24,6 +24,7 @@ std::shared_ptr<Context> Context::create(SEXP r_environment) {
     Context* context_ptr = new Context(r_environment);
     ContextSPtr context(context_ptr);
 #endif /* USING_DYNTRACE  */
+    // cppcheck-suppress deallocret
     return context;
 }
 

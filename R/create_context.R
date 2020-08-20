@@ -1,6 +1,6 @@
 
 #' @export
-create_context <- function(application_load_callback,
+create_context <- function(application_load_callback,  # nolint
                            application_unload_callback,
                            application_attach_callback,
                            application_detach_callback,

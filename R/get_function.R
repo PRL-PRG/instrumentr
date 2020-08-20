@@ -10,6 +10,6 @@ get_function.instrumentr_call <- function(object, ...) {
 }
 
 #' @export
-get_function.instrumentr_callback <- function(object, ...) {
+get_function.instrumentr_callback <- function(object, ...) { # nolint
     .Call(C_callback_get_function, object)
 }

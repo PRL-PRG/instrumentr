@@ -1,6 +1,6 @@
 
 #' @export
-has_variable_definition_callback <- function(object, ...) {
+has_variable_definition_callback <- function(object, ...) { # nolint
     UseMethod("has_variable_definition_callback")
 }
 

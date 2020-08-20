@@ -62,14 +62,14 @@ class Callback: public Object {
         return r_function_name_;
     }
 
-    void bind(SEXP r_environment) {
+    void bind(SEXP r_environment) const {
         if (is_r_callback()) {
             Rf_defineVar(
                 get_function_name(), get_function<SEXP>(), r_environment);
         }
     }
 
-    void unbind(SEXP r_environment) {
+    void unbind(SEXP r_environment) const {
         if (is_r_callback()) {
             R_removeVarFromFrame(get_function_name(), r_environment);
         }
