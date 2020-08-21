@@ -16,4 +16,10 @@ SEXP delayed_assign(SEXP variable_sym,
 
 SEXP create_promise(SEXP value, SEXP eval_env);
 
+SEXP Rf_lang7(SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x);
+
+SEXP Rf_lang8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x);
+
+SEXP Rf_list7(SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x);
+
 #endif /* INSTRUMENTR_UTILITIES_H */

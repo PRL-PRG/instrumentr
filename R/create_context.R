@@ -12,6 +12,14 @@ create_context <- function(application_load_callback,  # nolint
                            function_detach_callback,
                            call_entry_callback,
                            call_exit_callback,
+                           builtin_call_entry_callback,
+                           builtin_call_exit_callback,
+                           special_call_entry_callback,
+                           special_call_exit_callback,
+                           closure_call_entry_callback,
+                           closure_call_exit_callback,
+                           eval_entry_callback,
+                           eval_exit_callback,
                            gc_allocation_callback,
                            variable_definition_callback,
                            variable_assignment_callback,
@@ -78,6 +86,38 @@ create_context <- function(application_load_callback,  # nolint
 
     if (!missing(call_exit_callback)) {
         set_call_exit_callback(context, call_exit_callback)
+    }
+
+    if (!missing(builtin_call_entry_callback)) {
+        set_builtin_call_entry_callback(context, builtin_call_entry_callback)
+    }
+
+    if (!missing(builtin_call_exit_callback)) {
+        set_builtin_call_exit_callback(context, builtin_call_exit_callback)
+    }
+
+    if (!missing(special_call_entry_callback)) {
+        set_special_call_entry_callback(context, special_call_entry_callback)
+    }
+
+    if (!missing(special_call_exit_callback)) {
+        set_special_call_exit_callback(context, special_call_exit_callback)
+    }
+
+    if (!missing(closure_call_entry_callback)) {
+        set_closure_call_entry_callback(context, closure_call_entry_callback)
+    }
+
+    if (!missing(closure_call_exit_callback)) {
+        set_closure_call_exit_callback(context, closure_call_exit_callback)
+    }
+
+    if (!missing(eval_entry_callback)) {
+        set_eval_entry_callback(context, eval_entry_callback)
+    }
+
+    if (!missing(eval_exit_callback)) {
+        set_eval_exit_callback(context, eval_exit_callback)
     }
 
     if (!missing(gc_allocation_callback)) {

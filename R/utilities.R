@@ -134,6 +134,38 @@ is_instrumentr_call_exit_callback <- function(object) { # nolint
     inherits(object, "instrumentr_call_exit_callback")
 }
 
+is_instrumentr_builtin_call_entry_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_builtin_call_entry_callback")
+}
+
+is_instrumentr_builtin_call_exit_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_builtin_call_exit_callback")
+}
+
+is_instrumentr_special_call_entry_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_special_call_entry_callback")
+}
+
+is_instrumentr_special_call_exit_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_special_call_exit_callback")
+}
+
+is_instrumentr_closure_call_entry_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_closure_call_entry_callback")
+}
+
+is_instrumentr_closure_call_exit_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_closure_call_exit_callback")
+}
+
+is_instrumentr_eval_entry_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_eval_entry_callback")
+}
+
+is_instrumentr_eval_exit_callback <- function(object) { # nolint
+    inherits(object, "instrumentr_eval_exit_callback")
+}
+
 is_instrumentr_gc_allocation_callback <- function(object) { # nolint
     inherits(object, "instrumentr_gc_allocation_callback")
 }

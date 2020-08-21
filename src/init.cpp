@@ -21,6 +21,14 @@
 #include "r_function_detach_callback.h"
 #include "r_call_entry_callback.h"
 #include "r_call_exit_callback.h"
+#include "r_builtin_call_entry_callback.h"
+#include "r_builtin_call_exit_callback.h"
+#include "r_special_call_entry_callback.h"
+#include "r_special_call_exit_callback.h"
+#include "r_closure_call_entry_callback.h"
+#include "r_closure_call_exit_callback.h"
+#include "r_eval_entry_callback.h"
+#include "r_eval_exit_callback.h"
 #include "r_gc_allocation_callback.h"
 #include "r_variable_definition_callback.h"
 #include "r_variable_assignment_callback.h"
@@ -89,6 +97,30 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_set_call_exit_callback", (DL_FUNC) &r_context_set_call_exit_callback, 2},
     {"context_get_call_exit_callback", (DL_FUNC) &r_context_get_call_exit_callback, 1},
     {"context_has_call_exit_callback", (DL_FUNC) &r_context_has_call_exit_callback, 1},
+    {"context_set_builtin_call_entry_callback", (DL_FUNC) &r_context_set_builtin_call_entry_callback, 2},
+    {"context_get_builtin_call_entry_callback", (DL_FUNC) &r_context_get_builtin_call_entry_callback, 1},
+    {"context_has_builtin_call_entry_callback", (DL_FUNC) &r_context_has_builtin_call_entry_callback, 1},
+    {"context_set_builtin_call_exit_callback", (DL_FUNC) &r_context_set_builtin_call_exit_callback, 2},
+    {"context_get_builtin_call_exit_callback", (DL_FUNC) &r_context_get_builtin_call_exit_callback, 1},
+    {"context_has_builtin_call_exit_callback", (DL_FUNC) &r_context_has_builtin_call_exit_callback, 1},
+    {"context_set_special_call_entry_callback", (DL_FUNC) &r_context_set_special_call_entry_callback, 2},
+    {"context_get_special_call_entry_callback", (DL_FUNC) &r_context_get_special_call_entry_callback, 1},
+    {"context_has_special_call_entry_callback", (DL_FUNC) &r_context_has_special_call_entry_callback, 1},
+    {"context_set_special_call_exit_callback", (DL_FUNC) &r_context_set_special_call_exit_callback, 2},
+    {"context_get_special_call_exit_callback", (DL_FUNC) &r_context_get_special_call_exit_callback, 1},
+    {"context_has_special_call_exit_callback", (DL_FUNC) &r_context_has_special_call_exit_callback, 1},
+    {"context_set_closure_call_entry_callback", (DL_FUNC) &r_context_set_closure_call_entry_callback, 2},
+    {"context_get_closure_call_entry_callback", (DL_FUNC) &r_context_get_closure_call_entry_callback, 1},
+    {"context_has_closure_call_entry_callback", (DL_FUNC) &r_context_has_closure_call_entry_callback, 1},
+    {"context_set_closure_call_exit_callback", (DL_FUNC) &r_context_set_closure_call_exit_callback, 2},
+    {"context_get_closure_call_exit_callback", (DL_FUNC) &r_context_get_closure_call_exit_callback, 1},
+    {"context_has_closure_call_exit_callback", (DL_FUNC) &r_context_has_closure_call_exit_callback, 1},
+    {"context_set_eval_entry_callback", (DL_FUNC) &r_context_set_eval_entry_callback, 2},
+    {"context_get_eval_entry_callback", (DL_FUNC) &r_context_get_eval_entry_callback, 1},
+    {"context_has_eval_entry_callback", (DL_FUNC) &r_context_has_eval_entry_callback, 1},
+    {"context_set_eval_exit_callback", (DL_FUNC) &r_context_set_eval_exit_callback, 2},
+    {"context_get_eval_exit_callback", (DL_FUNC) &r_context_get_eval_exit_callback, 1},
+    {"context_has_eval_exit_callback", (DL_FUNC) &r_context_has_eval_exit_callback, 1},
     {"context_set_gc_allocation_callback", (DL_FUNC) &r_context_set_gc_allocation_callback, 2},
     {"context_get_gc_allocation_callback", (DL_FUNC) &r_context_get_gc_allocation_callback, 1},
     {"context_has_gc_allocation_callback", (DL_FUNC) &r_context_has_gc_allocation_callback, 1},
@@ -251,6 +283,38 @@ static const R_CallMethodDef CallEntries[] = {
     /* CallExitCallback */
     {"call_exit_callback_create_from_r_function", (DL_FUNC) &r_call_exit_callback_create_from_r_function, 1},
     {"call_exit_callback_create_from_c_function", (DL_FUNC) &r_call_exit_callback_create_from_c_function, 1},
+
+    /* BuiltinCallEntryCallback */
+    {"builtin_call_entry_callback_create_from_r_function", (DL_FUNC) &r_builtin_call_entry_callback_create_from_r_function, 1},
+    {"builtin_call_entry_callback_create_from_c_function", (DL_FUNC) &r_builtin_call_entry_callback_create_from_c_function, 1},
+
+    /* BuiltinCallExitCallback */
+    {"builtin_call_exit_callback_create_from_r_function", (DL_FUNC) &r_builtin_call_exit_callback_create_from_r_function, 1},
+    {"builtin_call_exit_callback_create_from_c_function", (DL_FUNC) &r_builtin_call_exit_callback_create_from_c_function, 1},
+
+    /* SpecialCallEntryCallback */
+    {"special_call_entry_callback_create_from_r_function", (DL_FUNC) &r_special_call_entry_callback_create_from_r_function, 1},
+    {"special_call_entry_callback_create_from_c_function", (DL_FUNC) &r_special_call_entry_callback_create_from_c_function, 1},
+
+    /* SpecialCallExitCallback */
+    {"special_call_exit_callback_create_from_r_function", (DL_FUNC) &r_special_call_exit_callback_create_from_r_function, 1},
+    {"special_call_exit_callback_create_from_c_function", (DL_FUNC) &r_special_call_exit_callback_create_from_c_function, 1},
+
+    /* ClosureCallEntryCallback */
+    {"closure_call_entry_callback_create_from_r_function", (DL_FUNC) &r_closure_call_entry_callback_create_from_r_function, 1},
+    {"closure_call_entry_callback_create_from_c_function", (DL_FUNC) &r_closure_call_entry_callback_create_from_c_function, 1},
+
+    /* ClosureCallExitCallback */
+    {"closure_call_exit_callback_create_from_r_function", (DL_FUNC) &r_closure_call_exit_callback_create_from_r_function, 1},
+    {"closure_call_exit_callback_create_from_c_function", (DL_FUNC) &r_closure_call_exit_callback_create_from_c_function, 1},
+
+    /* EvalEntryCallback */
+    {"eval_entry_callback_create_from_r_function", (DL_FUNC) &r_eval_entry_callback_create_from_r_function, 1},
+    {"eval_entry_callback_create_from_c_function", (DL_FUNC) &r_eval_entry_callback_create_from_c_function, 1},
+
+    /* EvalExitCallback */
+    {"eval_exit_callback_create_from_r_function", (DL_FUNC) &r_eval_exit_callback_create_from_r_function, 1},
+    {"eval_exit_callback_create_from_c_function", (DL_FUNC) &r_eval_exit_callback_create_from_c_function, 1},
 
     /* GcAllocationCallback */
     {"gc_allocation_callback_create_from_r_function", (DL_FUNC) &r_gc_allocation_callback_create_from_r_function, 1},

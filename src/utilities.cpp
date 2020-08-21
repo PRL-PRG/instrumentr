@@ -65,3 +65,24 @@ SEXP create_promise(SEXP value, SEXP eval_env) {
 
     return promise;
 }
+
+SEXP Rf_lang7(SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
+    PROTECT(r);
+    r = LCONS(r, Rf_list6(s, t, u, v, w, x));
+    UNPROTECT(1);
+    return r;
+}
+
+SEXP Rf_lang8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
+    PROTECT(q);
+    q = LCONS(q, Rf_list7(r, s, t, u, v, w, x));
+    UNPROTECT(1);
+    return q;
+}
+
+SEXP Rf_list7(SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
+    PROTECT(r);
+    r = CONS(r, Rf_list6(s, t, u, v, w, x));
+    UNPROTECT(1);
+    return r;
+}

@@ -49,6 +49,22 @@ std::string callback_type_to_string(Callback::Type callback_type) {
         return "instrumentr_call_entry_callback";
     case Callback::Type::CallExit:
         return "instrumentr_call_exit_callback";
+    case Callback::Type::BuiltinCallEntry:
+        return "instrumentr_builtin_call_entry_callback";
+    case Callback::Type::BuiltinCallExit:
+        return "instrumentr_builtin_call_exit_callback";
+    case Callback::Type::SpecialCallEntry:
+        return "instrumentr_special_call_entry_callback";
+    case Callback::Type::SpecialCallExit:
+        return "instrumentr_special_call_exit_callback";
+    case Callback::Type::ClosureCallEntry:
+        return "instrumentr_closure_call_entry_callback";
+    case Callback::Type::ClosureCallExit:
+        return "instrumentr_closure_call_exit_callback";
+    case Callback::Type::EvalEntry:
+        return "instrumentr_eval_entry_callback";
+    case Callback::Type::EvalExit:
+        return "instrumentr_eval_exit_callback";
     case Callback::Type::GcAllocation:
         return "instrumentr_gc_allocation_callback";
     case Callback::Type::VariableDefinition:

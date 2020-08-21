@@ -20,6 +20,14 @@
 #include "VariableAssignmentCallback.hpp"
 #include "VariableRemovalCallback.hpp"
 #include "VariableLookupCallback.hpp"
+#include "BuiltinCallEntryCallback.hpp"
+#include "SpecialCallEntryCallback.hpp"
+#include "BuiltinCallExitCallback.hpp"
+#include "SpecialCallExitCallback.hpp"
+#include "ClosureCallEntryCallback.hpp"
+#include "ClosureCallExitCallback.hpp"
+#include "EvalEntryCallback.hpp"
+#include "EvalExitCallback.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -184,6 +192,105 @@ class Context: public Object {
 
     bool has_call_exit_callback() const {
         return (bool) (call_exit_callback_);
+    }
+
+    void
+    set_builtin_call_entry_callback(BuiltinCallEntryCallbackSPtr callback) {
+        set_callback_(builtin_call_entry_callback_, callback);
+    }
+
+    BuiltinCallEntryCallbackSPtr get_builtin_call_entry_callback() {
+        return builtin_call_entry_callback_;
+    }
+
+    bool has_builtin_call_entry_callback() const {
+        return (bool) (builtin_call_entry_callback_);
+    }
+
+    void set_builtin_call_exit_callback(BuiltinCallExitCallbackSPtr callback) {
+        set_callback_(builtin_call_exit_callback_, callback);
+    }
+
+    BuiltinCallExitCallbackSPtr get_builtin_call_exit_callback() {
+        return builtin_call_exit_callback_;
+    }
+
+    bool has_builtin_call_exit_callback() const {
+        return (bool) (builtin_call_exit_callback_);
+    }
+
+    void
+    set_special_call_entry_callback(SpecialCallEntryCallbackSPtr callback) {
+        set_callback_(special_call_entry_callback_, callback);
+    }
+
+    SpecialCallEntryCallbackSPtr get_special_call_entry_callback() {
+        return special_call_entry_callback_;
+    }
+
+    bool has_special_call_entry_callback() const {
+        return (bool) (special_call_entry_callback_);
+    }
+
+    void set_special_call_exit_callback(SpecialCallExitCallbackSPtr callback) {
+        set_callback_(special_call_exit_callback_, callback);
+    }
+
+    SpecialCallExitCallbackSPtr get_special_call_exit_callback() {
+        return special_call_exit_callback_;
+    }
+
+    bool has_special_call_exit_callback() const {
+        return (bool) (special_call_exit_callback_);
+    }
+
+    void
+    set_closure_call_entry_callback(ClosureCallEntryCallbackSPtr callback) {
+        set_callback_(closure_call_entry_callback_, callback);
+    }
+
+    ClosureCallEntryCallbackSPtr get_closure_call_entry_callback() {
+        return closure_call_entry_callback_;
+    }
+
+    bool has_closure_call_entry_callback() const {
+        return (bool) (closure_call_entry_callback_);
+    }
+
+    void set_closure_call_exit_callback(ClosureCallExitCallbackSPtr callback) {
+        set_callback_(closure_call_exit_callback_, callback);
+    }
+
+    ClosureCallExitCallbackSPtr get_closure_call_exit_callback() {
+        return closure_call_exit_callback_;
+    }
+
+    bool has_closure_call_exit_callback() const {
+        return (bool) (closure_call_exit_callback_);
+    }
+
+    void set_eval_entry_callback(EvalEntryCallbackSPtr callback) {
+        set_callback_(eval_entry_callback_, callback);
+    }
+
+    EvalEntryCallbackSPtr get_eval_entry_callback() {
+        return eval_entry_callback_;
+    }
+
+    bool has_eval_entry_callback() const {
+        return (bool) (eval_entry_callback_);
+    }
+
+    void set_eval_exit_callback(EvalExitCallbackSPtr callback) {
+        set_callback_(eval_exit_callback_, callback);
+    }
+
+    EvalExitCallbackSPtr get_eval_exit_callback() {
+        return eval_exit_callback_;
+    }
+
+    bool has_eval_exit_callback() const {
+        return (bool) (eval_exit_callback_);
     }
 
     void set_gc_allocation_callback(GcAllocationCallbackSPtr callback) {
@@ -405,6 +512,14 @@ class Context: public Object {
     FunctionDetachCallbackSPtr function_detach_callback_;
     CallEntryCallbackSPtr call_entry_callback_;
     CallExitCallbackSPtr call_exit_callback_;
+    BuiltinCallEntryCallbackSPtr builtin_call_entry_callback_;
+    BuiltinCallExitCallbackSPtr builtin_call_exit_callback_;
+    SpecialCallEntryCallbackSPtr special_call_entry_callback_;
+    SpecialCallExitCallbackSPtr special_call_exit_callback_;
+    ClosureCallEntryCallbackSPtr closure_call_entry_callback_;
+    ClosureCallExitCallbackSPtr closure_call_exit_callback_;
+    EvalEntryCallbackSPtr eval_entry_callback_;
+    EvalExitCallbackSPtr eval_exit_callback_;
     GcAllocationCallbackSPtr gc_allocation_callback_;
     VariableDefinitionCallbackSPtr variable_definition_callback_;
     VariableAssignmentCallbackSPtr variable_assignment_callback_;

@@ -16,6 +16,10 @@ using instrumentr::ApplicationLoadCallbackSPtr;
 using instrumentr::ApplicationSPtr;
 using instrumentr::ApplicationUnloadCallback;
 using instrumentr::ApplicationUnloadCallbackSPtr;
+using instrumentr::BuiltinCallEntryCallback;
+using instrumentr::BuiltinCallEntryCallbackSPtr;
+using instrumentr::BuiltinCallExitCallback;
+using instrumentr::BuiltinCallExitCallbackSPtr;
 using instrumentr::Call;
 using instrumentr::CallEntryCallback;
 using instrumentr::CallEntryCallbackSPtr;
@@ -24,8 +28,16 @@ using instrumentr::CallExitCallbackSPtr;
 using instrumentr::CallSPtr;
 using instrumentr::CallStack;
 using instrumentr::CallStackSPtr;
+using instrumentr::ClosureCallEntryCallback;
+using instrumentr::ClosureCallEntryCallbackSPtr;
+using instrumentr::ClosureCallExitCallback;
+using instrumentr::ClosureCallExitCallbackSPtr;
 using instrumentr::Context;
 using instrumentr::ContextSPtr;
+using instrumentr::EvalEntryCallback;
+using instrumentr::EvalEntryCallbackSPtr;
+using instrumentr::EvalExitCallback;
+using instrumentr::EvalExitCallbackSPtr;
 using instrumentr::from_sexp;
 using instrumentr::Function;
 using instrumentr::FunctionAttachCallback;
@@ -45,6 +57,10 @@ using instrumentr::PackageLoadCallbackSPtr;
 using instrumentr::PackageSPtr;
 using instrumentr::PackageUnloadCallback;
 using instrumentr::PackageUnloadCallbackSPtr;
+using instrumentr::SpecialCallEntryCallback;
+using instrumentr::SpecialCallEntryCallbackSPtr;
+using instrumentr::SpecialCallExitCallback;
+using instrumentr::SpecialCallExitCallbackSPtr;
 using instrumentr::to_sexp;
 using instrumentr::VariableAssignmentCallback;
 using instrumentr::VariableAssignmentCallbackSPtr;
@@ -293,6 +309,165 @@ SEXP r_context_get_call_exit_callback(SEXP r_context) {
 SEXP r_context_has_call_exit_callback(SEXP r_context) {
     ContextSPtr context = from_sexp<Context>(r_context);
     return ScalarLogical(context->has_call_exit_callback());
+}
+
+SEXP r_context_set_builtin_call_entry_callback(SEXP r_context,
+                                               SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    BuiltinCallEntryCallbackSPtr callback =
+        from_sexp<BuiltinCallEntryCallback>(r_callback);
+    context->set_builtin_call_entry_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_builtin_call_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    BuiltinCallEntryCallbackSPtr callback =
+        context->get_builtin_call_entry_callback();
+    return to_sexp<BuiltinCallEntryCallback>(callback);
+}
+
+SEXP r_context_has_builtin_call_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_builtin_call_entry_callback());
+}
+
+SEXP r_context_set_builtin_call_exit_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    BuiltinCallExitCallbackSPtr callback =
+        from_sexp<BuiltinCallExitCallback>(r_callback);
+    context->set_builtin_call_exit_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_builtin_call_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    BuiltinCallExitCallbackSPtr callback =
+        context->get_builtin_call_exit_callback();
+    return to_sexp<BuiltinCallExitCallback>(callback);
+}
+
+SEXP r_context_has_builtin_call_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_builtin_call_exit_callback());
+}
+
+SEXP r_context_set_special_call_entry_callback(SEXP r_context,
+                                               SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    SpecialCallEntryCallbackSPtr callback =
+        from_sexp<SpecialCallEntryCallback>(r_callback);
+    context->set_special_call_entry_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_special_call_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    SpecialCallEntryCallbackSPtr callback =
+        context->get_special_call_entry_callback();
+    return to_sexp<SpecialCallEntryCallback>(callback);
+}
+
+SEXP r_context_has_special_call_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_special_call_entry_callback());
+}
+
+SEXP r_context_set_special_call_exit_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    SpecialCallExitCallbackSPtr callback =
+        from_sexp<SpecialCallExitCallback>(r_callback);
+    context->set_special_call_exit_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_special_call_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    SpecialCallExitCallbackSPtr callback =
+        context->get_special_call_exit_callback();
+    return to_sexp<SpecialCallExitCallback>(callback);
+}
+
+SEXP r_context_has_special_call_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_special_call_exit_callback());
+}
+
+SEXP r_context_set_closure_call_entry_callback(SEXP r_context,
+                                               SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ClosureCallEntryCallbackSPtr callback =
+        from_sexp<ClosureCallEntryCallback>(r_callback);
+    context->set_closure_call_entry_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_closure_call_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ClosureCallEntryCallbackSPtr callback =
+        context->get_closure_call_entry_callback();
+    return to_sexp<ClosureCallEntryCallback>(callback);
+}
+
+SEXP r_context_has_closure_call_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_closure_call_entry_callback());
+}
+
+SEXP r_context_set_closure_call_exit_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ClosureCallExitCallbackSPtr callback =
+        from_sexp<ClosureCallExitCallback>(r_callback);
+    context->set_closure_call_exit_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_closure_call_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ClosureCallExitCallbackSPtr callback =
+        context->get_closure_call_exit_callback();
+    return to_sexp<ClosureCallExitCallback>(callback);
+}
+
+SEXP r_context_has_closure_call_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_closure_call_exit_callback());
+}
+
+SEXP r_context_set_eval_entry_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    EvalEntryCallbackSPtr callback = from_sexp<EvalEntryCallback>(r_callback);
+    context->set_eval_entry_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_eval_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    EvalEntryCallbackSPtr callback = context->get_eval_entry_callback();
+    return to_sexp<EvalEntryCallback>(callback);
+}
+
+SEXP r_context_has_eval_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_eval_entry_callback());
+}
+
+SEXP r_context_set_eval_exit_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    EvalExitCallbackSPtr callback = from_sexp<EvalExitCallback>(r_callback);
+    context->set_eval_exit_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_eval_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    EvalExitCallbackSPtr callback = context->get_eval_exit_callback();
+    return to_sexp<EvalExitCallback>(callback);
+}
+
+SEXP r_context_has_eval_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_eval_exit_callback());
 }
 
 SEXP r_context_set_gc_allocation_callback(SEXP r_context, SEXP r_callback) {
