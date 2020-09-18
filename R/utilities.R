@@ -73,19 +73,6 @@ get_package_name <- function(fun) {
     else name
 }
 
-remove_package_prefix <- function(package_names) {
-    prefix <- "package:"
-    ifelse(startsWith(package_names, prefix),
-           substring(package_names, nchar(prefix) + 1),
-           package_names)
-}
-
-
-add_package_prefix <- function(package_names) {
-    prefix <- "package:"
-    paste0(prefix, package_names)
-}
-
 is_instrumentr_application_load_callback <- function(object) { # nolint
     inherits(object, "instrumentr_application_load_callback")
 }

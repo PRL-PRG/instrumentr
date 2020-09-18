@@ -60,11 +60,7 @@ to_string.instrumentr_context <- function(object, ...) {
     }
 
     get_value_representation <- function(name, value, check, sep) {
-        representation <- ""
-        if (check(value)) {
-            representation <- sprintf("%s=%s%s", name, to_string(value), sep)
-        }
-        representation
+        sprintf("%s=%s%s", name, to_string(value), sep)
     }
 
     representation <-

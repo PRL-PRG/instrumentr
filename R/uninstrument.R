@@ -24,14 +24,17 @@ uninstrument_function <- function(context_ptr, application_ptr, package_ptr, fun
 
 uninstrument_package <- function(context_ptr, application_ptr, package_ptr) {
 
+    package_name <- get_name(package_ptr)
+
     .Call(C_context_trace_package_detach, context_ptr, application_ptr, package_ptr)
 
-    package_name <- get_name(package_ptr)
     function_ptrs <- rev(get_functions(package_ptr))
 
     for (function_ptr in function_ptrs) {
         uninstrument_function(context_ptr, application_ptr, package_ptr, function_ptr)
     }
+
+    message("Uninstrumented ", length(function_ptrs), " functions from ", package_name)
 
     .Call(C_context_trace_package_unload, context_ptr, application_ptr, package_ptr)
 

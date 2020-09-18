@@ -12,20 +12,23 @@ insert_instrumentation <- function(context_ptr, application_ptr) {
         instrument_package(context_ptr, application_ptr, package_ptr)
 
         .Call(C_context_trace_package_attach, context_ptr, application_ptr, package_ptr)
+
+        ## remove hook after its job is done
+        setHook(packageEvent(package_name, "onLoad"), NULL, "replace")
     }
 
     traced_packages <- get_traced_packages(context_ptr)
 
-    remove_packages <- c(".GlobalEnv", "Autoloads", "tools:callr", "tools:rstudio", "instrumentr")
+    remove_packages <- c("tools:callr", "tools:rstudio", "instrumentr")
 
-    loaded_packages <- setdiff(remove_package_prefix(search()), remove_packages)
+    loaded_packages <- setdiff(loadedNamespaces(), remove_packages)
 
     for (package in intersect(traced_packages, loaded_packages)) {
         handle_package(package)
     }
 
     for (package in setdiff(traced_packages, loaded_packages)) {
-        setHook(packageEvent(package, "attach"), handle_package)
+        setHook(packageEvent(package, "onLoad"), handle_package)
     }
 }
 
@@ -73,7 +76,7 @@ instrument_package <- function(context_ptr, application_ptr, package_ptr) {
 
     }
 
-    message("Instrumenting ", length(get_functions(package_ptr)), " functions from ", package_name)
+    message("Instrumented ", length(get_functions(package_ptr)), " functions from ", package_name)
 }
 
 is_instrumented <- function(package_name, function_name) {

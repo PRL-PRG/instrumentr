@@ -55,7 +55,9 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
     ##      If user callback errors, we override the result
     ##      with the error object
     tryCatch({
+
         remove_instrumentation(context, application)
+
         ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
