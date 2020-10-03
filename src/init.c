@@ -6,7 +6,7 @@
 #include "r_function.h"
 #include "r_call.h"
 #include "r_parameter.h"
-#include "r_argument.h"
+#include <instrumentr/argument.h>
 #include "r_call_stack.h"
 #include "r_callback.h"
 #include "r_application_attach_callback.h"
@@ -217,11 +217,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"parameter_get_argument_by_name", (DL_FUNC) &r_parameter_get_argument_by_name, 2},
     {"parameter_get_argument_by_position", (DL_FUNC) &r_parameter_get_argument_by_position, 2},
 
-    /* Argument */
-    {"argument_get_name", (DL_FUNC) &r_argument_get_name, 1},
-    {"argument_is_evaluated", (DL_FUNC) &r_argument_is_evaluated, 1},
-    {"argument_get_expression", (DL_FUNC) &r_argument_get_expression, 1},
-    {"argument_get_result", (DL_FUNC) &r_argument_get_result, 1},
+    /* argument */
+    {"instrumentr_argument_has_name", (DL_FUNC) &r_instrumentr_argument_has_name, 1},
+    {"instrumentr_argument_get_name", (DL_FUNC) &r_instrumentr_argument_get_name, 1},
+    {"instrumentr_argument_is_evaluated", (DL_FUNC) &r_instrumentr_argument_is_evaluated, 1},
+    {"instrumentr_argument_get_promise", (DL_FUNC) &r_instrumentr_argument_get_promise, 1},
+    {"instrumentr_argument_get_expression", (DL_FUNC) &r_instrumentr_argument_get_expression, 1},
+    {"instrumentr_argument_get_value", (DL_FUNC) &r_instrumentr_argument_get_value, 1},
 
     /* CallStack */
     {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},
