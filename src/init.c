@@ -5,7 +5,7 @@
 #include "r_package.h"
 #include "r_function.h"
 #include "r_call.h"
-#include "r_parameter.h"
+#include <instrumentr/parameter.h>
 #include <instrumentr/argument.h>
 #include "r_call_stack.h"
 #include "r_callback.h"
@@ -209,13 +209,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"call_get_parameter_by_position", (DL_FUNC) &r_call_get_parameter_by_position, 2},
 
     /* Parameter */
-    {"parameter_get_name", (DL_FUNC) &r_parameter_get_name, 1},
-    {"parameter_get_position", (DL_FUNC) &r_parameter_get_position, 1},
-    {"parameter_is_missing", (DL_FUNC) &r_parameter_is_missing, 1},
-    {"parameter_is_vararg", (DL_FUNC) &r_parameter_is_vararg, 1},
-    {"parameter_get_arguments", (DL_FUNC) &r_parameter_get_arguments, 1},
-    {"parameter_get_argument_by_name", (DL_FUNC) &r_parameter_get_argument_by_name, 2},
-    {"parameter_get_argument_by_position", (DL_FUNC) &r_parameter_get_argument_by_position, 2},
+    {"instrumentr_parameter_get_name", (DL_FUNC) &r_instrumentr_parameter_get_name, 1},
+    {"instrumentr_parameter_get_position", (DL_FUNC) &r_instrumentr_parameter_get_position, 1},
+    {"instrumentr_parameter_get_arguments", (DL_FUNC) &r_instrumentr_parameter_get_arguments, 1},
+    {"instrumentr_parameter_is_missing", (DL_FUNC) &r_instrumentr_parameter_is_missing, 1},
+    {"instrumentr_parameter_is_vararg", (DL_FUNC) &r_instrumentr_parameter_is_vararg, 1},
 
     /* argument */
     {"instrumentr_argument_has_name", (DL_FUNC) &r_instrumentr_argument_has_name, 1},
