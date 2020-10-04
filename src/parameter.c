@@ -1,10 +1,8 @@
 #include <instrumentr/parameter.h>
 #include <instrumentr/argument_vector.h>
 #include <instrumentr/conversion.h>
-#include <instrumentr/logging.h>
+#include <instrumentr/log.h>
 #include <string.h>
-
-
 
 /********************************************************************************
  * definition
@@ -62,14 +60,9 @@ SEXP instrumentr_parameter_wrap(instrumentr_parameter_t parameter) {
 }
 
 instrumentr_parameter_t instrumentr_parameter_unwrap(SEXP r_parameter) {
-    instrumentr_object_t object = instrumentr_object_unwrap(r_parameter);
-    if (instrumentr_object_is_parameter(object)) {
-        return (instrumentr_parameter_t)(object);
-    } else {
-        /* TODO: add type of R object  */
-        instrumentr_raise_error("attempt to unwrap parameter from an "
-                                "instrumentr object of incorrect type");
-    }
+    instrumentr_object_t object =
+        instrumentr_object_unwrap(r_parameter, INSTRUMENTR_PARAMETER);
+    return (instrumentr_parameter_t)(object);
 }
 
 /********************************************************************************
