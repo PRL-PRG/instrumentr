@@ -1,9 +1,9 @@
-#include <instrumentr/string.h>
+#include <instrumentr/character.h>
 #include <instrumentr/log.h>
 #include <string.h>
 #include <stdlib.h>
 
-char* instrumentr_duplicate_string(const char* original) {
+char* instrumentr_character_duplicate(const char* original) {
     if (original == NULL) {
         return NULL;
     }
@@ -13,7 +13,7 @@ char* instrumentr_duplicate_string(const char* original) {
     return duplicate;
 }
 
-SEXP instrumentr_c_string_wrap(const char* string) {
+SEXP instrumentr_character_wrap(const char* string) {
     if (string == NULL) {
         SEXP r_character = PROTECT(allocVector(STRSXP, 1));
         SET_STRING_ELT(r_character, 0, NA_STRING);
@@ -24,7 +24,7 @@ SEXP instrumentr_c_string_wrap(const char* string) {
     }
 }
 
-const char* instrumentr_c_string_unwrap(SEXP r_character, int index) {
+const char* instrumentr_character_unwrap(SEXP r_character, int index) {
     if (TYPEOF(r_character) == STRSXP) {
         int length = Rf_length(r_character);
         if (index < length) {
