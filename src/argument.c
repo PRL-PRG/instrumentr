@@ -1,7 +1,9 @@
 #include <instrumentr/argument.h>
 #include <instrumentr/object.h>
 #include <instrumentr/conversion.h>
-#include <instrumentr/logging.h>
+#include <instrumentr/log.h>
+#include <instrumentr/string.h>
+#include <instrumentr/memory.h>
 
 /********************************************************************************
  * definition
@@ -63,14 +65,9 @@ SEXP instrumentr_argument_wrap(instrumentr_argument_t argument) {
 }
 
 instrumentr_argument_t instrumentr_argument_unwrap(SEXP r_argument) {
-    instrumentr_object_t object = instrumentr_object_unwrap(r_argument);
-    if (instrumentr_object_is_argument(object)) {
-        return (instrumentr_argument_t)(object);
-    } else {
-        /* TODO: add type of R object  */
-        instrumentr_raise_error("attempt to unwrap argument from an "
-                                "instrumentr object of incorrect type");
-    }
+    instrumentr_object_t object =
+        instrumentr_object_unwrap(r_argument, INSTRUMENTR_ARGUMENT);
+    return (instrumentr_argument_t)(object);
 }
 
 /********************************************************************************

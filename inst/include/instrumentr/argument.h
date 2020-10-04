@@ -37,7 +37,7 @@ const char* instrumentr_argument_get_name(instrumentr_argument_t argument);
 SEXP r_instrumentr_argument_get_name(SEXP r_argument);
 
 /********************************************************************************
- * r_sexp
+ * r_promise
  *******************************************************************************/
 
 /* accessor  */
