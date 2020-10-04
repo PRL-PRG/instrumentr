@@ -2,7 +2,7 @@
 #include "r_object.h"
 #include "r_context.h"
 #include "r_application.h"
-#include "r_package.h"
+#include <instrumentr/package.h>
 #include <instrumentr/function.h>
 #include "r_call.h"
 #include <instrumentr/parameter.h>
@@ -176,13 +176,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"application_get_call_stack", (DL_FUNC) &r_application_get_call_stack, 1},
     {"application_add_package", (DL_FUNC) &r_application_add_package, 2},
 
-    /* Package */
-    {"package_create_package", (DL_FUNC) &r_package_create_package, 3},
-    {"package_get_name", (DL_FUNC) &r_package_get_name, 1},
-    {"package_get_directory", (DL_FUNC) &r_package_get_directory, 1},
-    {"package_get_environment", (DL_FUNC) &r_package_get_environment, 1},
-    {"package_get_functions", (DL_FUNC) &r_package_get_functions, 1},
-    {"package_add_function", (DL_FUNC) &r_package_add_function, 2},
+    /* package */
+    {"instrumentr_package_create_package", (DL_FUNC) &r_instrumentr_package_create_package, 3},
+    {"instrumentr_package_get_name", (DL_FUNC) &r_instrumentr_package_get_name, 1},
+    {"instrumentr_package_get_directory", (DL_FUNC) &r_instrumentr_package_get_directory, 1},
+    {"instrumentr_package_get_namespace", (DL_FUNC) &r_instrumentr_package_get_namespace, 1},
+    {"instrumentr_package_get_functions", (DL_FUNC) &r_instrumentr_package_get_functions, 1},
 
     /* function */
     {"instrumentr_function_create_function", (DL_FUNC) &r_instrumentr_function_create_function, 6},
