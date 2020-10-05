@@ -3,6 +3,7 @@
 #include <instrumentr/conversion.h>
 #include <instrumentr/log.h>
 #include <string.h>
+#include "object_internals.h"
 
 /********************************************************************************
  * definition

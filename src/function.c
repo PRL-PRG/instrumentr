@@ -4,6 +4,7 @@
 #include <instrumentr/log.h>
 #include <instrumentr/memory.h>
 #include <instrumentr/string.h>
+#include "object_internals.h"
 
 /********************************************************************************
  * definition

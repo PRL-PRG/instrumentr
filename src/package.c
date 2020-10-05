@@ -1,5 +1,6 @@
 #include <instrumentr/package.h>
 #include <instrumentr/memory.h>
+#include "object_internals.h"
 
 /********************************************************************************
  * definition
