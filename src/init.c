@@ -1,5 +1,6 @@
 #include "r_instrumentr.h"
-#include "r_object.h"
+#include "object_internals.h"
+#include <instrumentr/object.h>
 #include "r_context.h"
 #include "r_application.h"
 #include <instrumentr/package.h>
@@ -39,7 +40,6 @@
 
 #include <stdio.h>
 
-extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     /* instrumentr */
     {"instrumentr_get_commit_hash", (DL_FUNC) &r_instrumentr_get_commit_hash, 0},
@@ -52,12 +52,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_is_undefined_object", (DL_FUNC)&r_instrumentr_is_undefined_object, 1},
     {"instrumentr_is_defined_object", (DL_FUNC)&r_instrumentr_is_defined_object, 1},
 
-    /* Object */
-    {"object_get_id", (DL_FUNC) &r_object_get_id, 1},
-    {"object_set_data", (DL_FUNC) &r_object_set_data, 2},
-    {"object_get_data", (DL_FUNC) &r_object_get_data, 1},
-    {"object_remove_data", (DL_FUNC) &r_object_remove_data, 1},
-    {"object_has_data", (DL_FUNC) &r_object_has_data, 1},
+    /* object */
+    {"instrumentr_object_get_id", (DL_FUNC) &r_instrumentr_object_get_id, 1},
+    {"instrumentr_object_has_c_data", (DL_FUNC) &r_instrumentr_object_has_c_data, 1},
+    {"instrumentr_object_get_c_data", (DL_FUNC) &r_instrumentr_object_get_c_data, 1},
+    {"instrumentr_object_set_c_data", (DL_FUNC) &r_instrumentr_object_set_c_data, 2},
+    {"instrumentr_object_remove_c_data", (DL_FUNC) &r_instrumentr_object_remove_c_data, 1},
+    {"instrumentr_object_has_r_data", (DL_FUNC) &r_instrumentr_object_has_r_data, 1},
+    {"instrumentr_object_get_r_data", (DL_FUNC) &r_instrumentr_object_get_r_data, 1},
+    {"instrumentr_object_set_r_data", (DL_FUNC) &r_instrumentr_object_set_r_data, 2},
+    {"instrumentr_object_remove_r_data", (DL_FUNC) &r_instrumentr_object_remove_r_data, 1},
 
     /* Context */
     {"context_create_context", (DL_FUNC) &r_context_create_context, 1},
@@ -339,5 +343,6 @@ static const R_CallMethodDef CallEntries[] = {
 void R_init_instrumentr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
-}
+
+    instrumentr_object_class_initialize();
 }
