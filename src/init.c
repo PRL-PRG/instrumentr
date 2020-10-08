@@ -8,7 +8,7 @@
 #include "r_call.h"
 #include <instrumentr/parameter.h>
 #include <instrumentr/argument.h>
-#include "r_call_stack.h"
+#include <instrumentr/call_stack.h>
 #include <instrumentr/callback.h>
 
 #include <R_ext/Rdynload.h>
@@ -203,9 +203,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_argument_get_expression", (DL_FUNC) &r_instrumentr_argument_get_expression, 1},
     {"instrumentr_argument_get_value", (DL_FUNC) &r_instrumentr_argument_get_value, 1},
 
-    /* CallStack */
-    {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},
-    {"call_stack_peek_frame", (DL_FUNC) &r_call_stack_peek_frame, 2},
+    /* call_stack */
+    {"instrumentr_call_stack_get_size", (DL_FUNC) &r_instrumentr_call_stack_get_size, 1},
+    {"instrumentr_call_stack_peek_frame", (DL_FUNC) &r_instrumentr_call_stack_peek_frame, 2},
 
     /* callback */
     {"instrumentr_callback_has_r_function", (DL_FUNC) &r_instrumentr_callback_has_r_function, 1},
