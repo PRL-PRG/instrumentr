@@ -10,35 +10,14 @@
 #include <instrumentr/argument.h>
 #include "r_call_stack.h"
 #include "r_callback.h"
-#include "r_application_attach_callback.h"
-#include "r_application_detach_callback.h"
-#include "r_application_load_callback.h"
-#include "r_application_unload_callback.h"
-#include "r_package_attach_callback.h"
-#include "r_package_detach_callback.h"
-#include "r_package_load_callback.h"
-#include "r_package_unload_callback.h"
-#include "r_function_attach_callback.h"
-#include "r_function_detach_callback.h"
-#include "r_call_entry_callback.h"
-#include "r_call_exit_callback.h"
-#include "r_builtin_call_entry_callback.h"
-#include "r_builtin_call_exit_callback.h"
-#include "r_special_call_entry_callback.h"
-#include "r_special_call_exit_callback.h"
-#include "r_closure_call_entry_callback.h"
-#include "r_closure_call_exit_callback.h"
-#include "r_eval_entry_callback.h"
-#include "r_eval_exit_callback.h"
-#include "r_gc_allocation_callback.h"
-#include "r_variable_definition_callback.h"
-#include "r_variable_assignment_callback.h"
-#include "r_variable_removal_callback.h"
-#include "r_variable_lookup_callback.h"
 
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>
+
+#define INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(NAME)                                                                       \
+    {"instrumentr_callback_create_" #NAME "_from_r_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_r_function, 1}, \
+    {"instrumentr_callback_create_" #NAME "_from_c_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_c_function, 1},
 
 static const R_CallMethodDef CallEntries[] = {
     /* instrumentr */
@@ -170,15 +149,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_trace_call_exit", (DL_FUNC) &r_context_trace_call_exit, 5},
 
     /* Application */
-    {"application_create_application", (DL_FUNC) &r_application_create_application, 5},
-    {"application_get_name", (DL_FUNC) &r_application_get_name, 1},
-    {"application_get_directory", (DL_FUNC) &r_application_get_directory, 1},
-    {"application_get_code", (DL_FUNC) &r_application_get_code, 1},
-    {"application_get_environment", (DL_FUNC) &r_application_get_environment, 1},
-    {"application_get_frame_position", (DL_FUNC) &r_application_get_frame_position, 1},
-    {"application_get_packages", (DL_FUNC) &r_application_get_packages, 1},
-    {"application_get_call_stack", (DL_FUNC) &r_application_get_call_stack, 1},
-    {"application_add_package", (DL_FUNC) &r_application_add_package, 2},
+    {"instrumentr_application_create", (DL_FUNC) &r_instrumentr_application_create_application, 5},
+    {"instrumentr_application_get_name", (DL_FUNC) &r_instrumentr_application_get_name, 1},
+    {"instrumentr_application_get_directory", (DL_FUNC) &r_instrumentr_application_get_directory, 1},
+    {"instrumentr_application_get_code", (DL_FUNC) &r_instrumentr_application_get_code, 1},
+    {"instrumentr_application_get_environment", (DL_FUNC) &r_instrumentr_application_get_environment, 1},
+    {"instrumentr_application_get_frame_position", (DL_FUNC) &r_instrumentr_application_get_frame_position, 1},
+    {"instrumentr_application_get_packages", (DL_FUNC) &r_instrumentr_application_get_packages, 1},
+    {"instrumentr_application_get_call_stack", (DL_FUNC) &r_instrumentr_application_get_call_stack, 1},
+    {"instrumentr_application_add_package", (DL_FUNC) &r_instrumentr_application_add_package, 2},
 
     /* package */
     {"instrumentr_package_create_package", (DL_FUNC) &r_instrumentr_package_create_package, 3},
@@ -228,7 +207,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"call_stack_get_size", (DL_FUNC) &r_call_stack_get_size, 1},
     {"call_stack_peek_frame", (DL_FUNC) &r_call_stack_peek_frame, 2},
 
-    /* Callback */
+    /* callback */
     {"callback_is_r_callback", (DL_FUNC) &r_callback_is_r_callback, 1},
     {"callback_is_c_callback", (DL_FUNC) &r_callback_is_c_callback, 1},
     {"callback_get_function", (DL_FUNC) &r_callback_get_function, 1},
@@ -237,105 +216,31 @@ static const R_CallMethodDef CallEntries[] = {
     {"callback_reinstate", (DL_FUNC) &r_callback_reinstate, 1},
     {"callback_is_active", (DL_FUNC) &r_callback_is_active, 1},
 
-    /* ApplicationAttachCallback */
-    {"application_attach_callback_create_from_r_function", (DL_FUNC) &r_application_attach_callback_create_from_r_function, 1},
-    {"application_attach_callback_create_from_c_function", (DL_FUNC) &r_application_attach_callback_create_from_c_function, 1},
-
-    /* ApplicationDetachCallback */
-    {"application_detach_callback_create_from_r_function", (DL_FUNC) &r_application_detach_callback_create_from_r_function, 1},
-    {"application_detach_callback_create_from_c_function", (DL_FUNC) &r_application_detach_callback_create_from_c_function, 1},
-
-    /* ApplicationLoadCallback */
-    {"application_load_callback_create_from_r_function", (DL_FUNC) &r_application_load_callback_create_from_r_function, 1},
-    {"application_load_callback_create_from_c_function", (DL_FUNC) &r_application_load_callback_create_from_c_function, 1},
-
-    /* ApplicationUnloadCallback */
-    {"application_unload_callback_create_from_r_function", (DL_FUNC) &r_application_unload_callback_create_from_r_function, 1},
-    {"application_unload_callback_create_from_c_function", (DL_FUNC) &r_application_unload_callback_create_from_c_function, 1},
-
-    /* PackageAttachCallback */
-    {"package_attach_callback_create_from_r_function", (DL_FUNC) &r_package_attach_callback_create_from_r_function, 1},
-    {"package_attach_callback_create_from_c_function", (DL_FUNC) &r_package_attach_callback_create_from_c_function, 1},
-
-    /* PackageDetachCallback */
-    {"package_detach_callback_create_from_r_function", (DL_FUNC) &r_package_detach_callback_create_from_r_function, 1},
-    {"package_detach_callback_create_from_c_function", (DL_FUNC) &r_package_detach_callback_create_from_c_function, 1},
-
-    /* PackageLoadCallback */
-    {"package_load_callback_create_from_r_function", (DL_FUNC) &r_package_load_callback_create_from_r_function, 1},
-    {"package_load_callback_create_from_c_function", (DL_FUNC) &r_package_load_callback_create_from_c_function, 1},
-
-    /* PackageUnloadCallback */
-    {"package_unload_callback_create_from_r_function", (DL_FUNC) &r_package_unload_callback_create_from_r_function, 1},
-    {"package_unload_callback_create_from_c_function", (DL_FUNC) &r_package_unload_callback_create_from_c_function, 1},
-
-    /* FunctionAttachCallback */
-    {"function_attach_callback_create_from_r_function", (DL_FUNC) &r_function_attach_callback_create_from_r_function, 1},
-    {"function_attach_callback_create_from_c_function", (DL_FUNC) &r_function_attach_callback_create_from_c_function, 1},
-
-    /* FunctionDetachCallback */
-    {"function_detach_callback_create_from_r_function", (DL_FUNC) &r_function_detach_callback_create_from_r_function, 1},
-    {"function_detach_callback_create_from_c_function", (DL_FUNC) &r_function_detach_callback_create_from_c_function, 1},
-
-    /* CallEntryCallback */
-    {"call_entry_callback_create_from_r_function", (DL_FUNC) &r_call_entry_callback_create_from_r_function, 1},
-    {"call_entry_callback_create_from_c_function", (DL_FUNC) &r_call_entry_callback_create_from_c_function, 1},
-
-    /* CallExitCallback */
-    {"call_exit_callback_create_from_r_function", (DL_FUNC) &r_call_exit_callback_create_from_r_function, 1},
-    {"call_exit_callback_create_from_c_function", (DL_FUNC) &r_call_exit_callback_create_from_c_function, 1},
-
-    /* BuiltinCallEntryCallback */
-    {"builtin_call_entry_callback_create_from_r_function", (DL_FUNC) &r_builtin_call_entry_callback_create_from_r_function, 1},
-    {"builtin_call_entry_callback_create_from_c_function", (DL_FUNC) &r_builtin_call_entry_callback_create_from_c_function, 1},
-
-    /* BuiltinCallExitCallback */
-    {"builtin_call_exit_callback_create_from_r_function", (DL_FUNC) &r_builtin_call_exit_callback_create_from_r_function, 1},
-    {"builtin_call_exit_callback_create_from_c_function", (DL_FUNC) &r_builtin_call_exit_callback_create_from_c_function, 1},
-
-    /* SpecialCallEntryCallback */
-    {"special_call_entry_callback_create_from_r_function", (DL_FUNC) &r_special_call_entry_callback_create_from_r_function, 1},
-    {"special_call_entry_callback_create_from_c_function", (DL_FUNC) &r_special_call_entry_callback_create_from_c_function, 1},
-
-    /* SpecialCallExitCallback */
-    {"special_call_exit_callback_create_from_r_function", (DL_FUNC) &r_special_call_exit_callback_create_from_r_function, 1},
-    {"special_call_exit_callback_create_from_c_function", (DL_FUNC) &r_special_call_exit_callback_create_from_c_function, 1},
-
-    /* ClosureCallEntryCallback */
-    {"closure_call_entry_callback_create_from_r_function", (DL_FUNC) &r_closure_call_entry_callback_create_from_r_function, 1},
-    {"closure_call_entry_callback_create_from_c_function", (DL_FUNC) &r_closure_call_entry_callback_create_from_c_function, 1},
-
-    /* ClosureCallExitCallback */
-    {"closure_call_exit_callback_create_from_r_function", (DL_FUNC) &r_closure_call_exit_callback_create_from_r_function, 1},
-    {"closure_call_exit_callback_create_from_c_function", (DL_FUNC) &r_closure_call_exit_callback_create_from_c_function, 1},
-
-    /* EvalEntryCallback */
-    {"eval_entry_callback_create_from_r_function", (DL_FUNC) &r_eval_entry_callback_create_from_r_function, 1},
-    {"eval_entry_callback_create_from_c_function", (DL_FUNC) &r_eval_entry_callback_create_from_c_function, 1},
-
-    /* EvalExitCallback */
-    {"eval_exit_callback_create_from_r_function", (DL_FUNC) &r_eval_exit_callback_create_from_r_function, 1},
-    {"eval_exit_callback_create_from_c_function", (DL_FUNC) &r_eval_exit_callback_create_from_c_function, 1},
-
-    /* GcAllocationCallback */
-    {"gc_allocation_callback_create_from_r_function", (DL_FUNC) &r_gc_allocation_callback_create_from_r_function, 1},
-    {"gc_allocation_callback_create_from_c_function", (DL_FUNC) &r_gc_allocation_callback_create_from_c_function, 1},
-
-    /* VariableDefinitionCallback */
-    {"variable_definition_callback_create_from_r_function", (DL_FUNC) &r_variable_definition_callback_create_from_r_function, 1},
-    {"variable_definition_callback_create_from_c_function", (DL_FUNC) &r_variable_definition_callback_create_from_c_function, 1},
-
-    /* VariableAssignmentCallback */
-    {"variable_assignment_callback_create_from_r_function", (DL_FUNC) &r_variable_assignment_callback_create_from_r_function, 1},
-    {"variable_assignment_callback_create_from_c_function", (DL_FUNC) &r_variable_assignment_callback_create_from_c_function, 1},
-
-    /* VariableRemovalCallback */
-    {"variable_removal_callback_create_from_r_function", (DL_FUNC) &r_variable_removal_callback_create_from_r_function, 1},
-    {"variable_removal_callback_create_from_c_function", (DL_FUNC) &r_variable_removal_callback_create_from_c_function, 1},
-
-    /* VariableLookupCallback */
-    {"variable_lookup_callback_create_from_r_function", (DL_FUNC) &r_variable_lookup_callback_create_from_r_function, 1},
-    {"variable_lookup_callback_create_from_c_function", (DL_FUNC) &r_variable_lookup_callback_create_from_c_function, 1},
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_load)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_unload)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_attach)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_detach)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_load)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_unload)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_attach)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_detach)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(function_attach)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(function_detach)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(call_entry)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(call_exit)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(builtin_call_entry)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(builtin_call_exit)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(special_call_entry)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(special_call_exit)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(closure_call_entry)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(closure_call_exit)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(eval_entry)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(eval_exit)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(gc_allocation)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_definition)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_assignment)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_removal)
+    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_lookup)
 
     {NULL, NULL, 0}
 };
