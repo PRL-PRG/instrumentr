@@ -9,13 +9,13 @@
 #include <instrumentr/parameter.h>
 #include <instrumentr/argument.h>
 #include "r_call_stack.h"
-#include "r_callback.h"
+#include <instrumentr/callback.h>
 
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>
 
-#define INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(NAME)                                                                       \
+#define INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(TYPE, NAME)                                                                 \
     {"instrumentr_callback_create_" #NAME "_from_r_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_r_function, 1}, \
     {"instrumentr_callback_create_" #NAME "_from_c_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_c_function, 1},
 
@@ -208,39 +208,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"call_stack_peek_frame", (DL_FUNC) &r_call_stack_peek_frame, 2},
 
     /* callback */
-    {"callback_is_r_callback", (DL_FUNC) &r_callback_is_r_callback, 1},
-    {"callback_is_c_callback", (DL_FUNC) &r_callback_is_c_callback, 1},
-    {"callback_get_function", (DL_FUNC) &r_callback_get_function, 1},
-    {"callback_activate", (DL_FUNC) &r_callback_activate, 1},
-    {"callback_deactivate", (DL_FUNC) &r_callback_deactivate, 1},
-    {"callback_reinstate", (DL_FUNC) &r_callback_reinstate, 1},
-    {"callback_is_active", (DL_FUNC) &r_callback_is_active, 1},
+    {"instrumentr_callback_has_r_function", (DL_FUNC) &r_instrumentr_callback_has_r_function, 1},
+    {"instrumentr_callback_has_c_function", (DL_FUNC) &r_instrumentr_callback_has_c_function, 1},
+    {"instrumentr_callback_get_r_function", (DL_FUNC) &r_instrumentr_callback_get_r_function, 1},
+    {"instrumentr_callback_get_c_function", (DL_FUNC) &r_instrumentr_callback_get_c_function, 1},
+    {"instrumentr_callback_activate", (DL_FUNC) &r_instrumentr_callback_activate, 1},
+    {"instrumentr_callback_deactivate", (DL_FUNC) &r_instrumentr_callback_deactivate, 1},
+    {"instrumentr_callback_reinstate", (DL_FUNC) &r_instrumentr_callback_reinstate, 1},
+    {"instrumentr_callback_is_active", (DL_FUNC) &r_instrumentr_callback_is_active, 1},
 
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_load)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_unload)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_attach)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(application_detach)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_load)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_unload)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_attach)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(package_detach)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(function_attach)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(function_detach)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(call_entry)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(call_exit)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(builtin_call_entry)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(builtin_call_exit)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(special_call_entry)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(special_call_exit)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(closure_call_entry)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(closure_call_exit)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(eval_entry)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(eval_exit)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(gc_allocation)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_definition)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_assignment)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_removal)
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(variable_lookup)
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE)
 
     {NULL, NULL, 0}
 };
