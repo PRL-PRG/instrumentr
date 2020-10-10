@@ -7,6 +7,7 @@
 #include "parameter_internals.h"
 #include <instrumentr/argument.h>
 #include "argument_internals.h"
+#include "vec.h"
 
 typedef vec_t(instrumentr_parameter_t) instrumentr_parameter_vector_t;
 
@@ -88,7 +89,7 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
          ++parameter_position, r_parameter_list = CDR(r_parameter_list)) {
         SEXP r_argument_name = TAG(r_parameter_list);
 
-        SEXP r_default_expression = CAR(r_parameters_list);
+        SEXP r_default_argument = CAR(r_parameters_list);
 
         SEXP r_argument_value =
             Rf_findVarInFrame(r_environment, r_argument_name);
@@ -96,7 +97,7 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
         instrumentr_parameter_t parameter = instrumentr_parameter_create(
             R_CHAR(PRINTNAME(r_argument_name)),
             parameter_position,
-            r_default_expression == R_MissingArg ? NULL : r_default_expression);
+            r_default_argument == R_MissingArg ? NULL : r_default_argument);
 
         instrumentr_call_append_parameter(parameter);
 
