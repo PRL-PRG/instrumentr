@@ -2,7 +2,8 @@
 #include "object_internals.h"
 #include <instrumentr/object.h>
 #include "r_context.h"
-#include "r_application.h"
+#include <instrumentr/application.h>
+#include "application_internals.h"
 #include <instrumentr/package.h>
 #include <instrumentr/function.h>
 #include <instrumentr/call.h>
@@ -149,7 +150,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_trace_call_entry", (DL_FUNC) &r_context_trace_call_entry, 5},
     {"context_trace_call_exit", (DL_FUNC) &r_context_trace_call_exit, 5},
 
-    /* Application */
+    /* application */
     {"instrumentr_application_create", (DL_FUNC) &r_instrumentr_application_create_application, 5},
     {"instrumentr_application_get_name", (DL_FUNC) &r_instrumentr_application_get_name, 1},
     {"instrumentr_application_get_directory", (DL_FUNC) &r_instrumentr_application_get_directory, 1},
