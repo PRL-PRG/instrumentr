@@ -5,7 +5,8 @@
 #include "r_application.h"
 #include <instrumentr/package.h>
 #include <instrumentr/function.h>
-#include "r_call.h"
+#include <instrumentr/call.h>
+#include "call_internals.h"
 #include <instrumentr/parameter.h>
 #include <instrumentr/argument.h>
 #include <instrumentr/call_stack.h>
@@ -175,18 +176,19 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_function_is_s3_generic", (DL_FUNC) &r_instrumentr_function_is_s3_generic, 1},
     {"instrumentr_function_is_s3_method", (DL_FUNC) &r_instrumentr_function_is_s3_method, 1},
 
-    /* Call */
-    {"call_create_call", (DL_FUNC) &r_call_create_call, 4},
-    {"call_get_function", (DL_FUNC) &r_call_get_function, 1},
-    {"call_get_expression", (DL_FUNC) &r_call_get_expression, 1},
-    {"call_get_environment", (DL_FUNC) &r_call_get_environment, 1},
-    {"call_get_frame_position", (DL_FUNC) &r_call_get_frame_position, 1},
-    {"call_is_active", (DL_FUNC) &r_call_is_active, 1},
-    {"call_is_successful", (DL_FUNC) &r_call_is_successful, 1},
-    {"call_get_result", (DL_FUNC) &r_call_get_result, 1},
-    {"call_get_parameters", (DL_FUNC) &r_call_get_parameters, 1},
-    {"call_get_parameter_by_name", (DL_FUNC) &r_call_get_parameter_by_name, 2},
-    {"call_get_parameter_by_position", (DL_FUNC) &r_call_get_parameter_by_position, 2},
+    /* call */
+    {"instrumentr_call_create", (DL_FUNC) &r_instrumentr_call_create, 4},
+    {"instrumentr_call_get_function", (DL_FUNC) &r_instrumentr_call_get_function, 1},
+    {"instrumentr_call_get_expression", (DL_FUNC) &r_instrumentr_call_get_expression, 1},
+    {"instrumentr_call_get_environment", (DL_FUNC) &r_instrumentr_call_get_environment, 1},
+    {"instrumentr_call_get_frame_position", (DL_FUNC) &r_instrumentr_call_get_frame_position, 1},
+    {"instrumentr_call_is_active", (DL_FUNC) &r_instrumentr_call_is_active, 1},
+    {"instrumentr_call_has_result", (DL_FUNC) &r_instrumentr_call_has_result, 1},
+    {"instrumentr_call_get_result", (DL_FUNC) &r_instrumentr_call_get_result, 1},
+    {"instrumentr_call_get_parameter_count", (DL_FUNC) &r_instrumentr_call_get_parameter_count, 1},
+    {"instrumentr_call_get_parameter_by_name", (DL_FUNC) &r_instrumentr_call_get_parameter_by_name, 2},
+    {"instrumentr_call_get_parameter_by_position", (DL_FUNC) &r_instrumentr_call_get_parameter_by_position, 2},
+    {"instrumentr_call_get_parameters", (DL_FUNC) &r_instrumentr_call_get_parameters, 1},
 
     /* parameter */
     {"instrumentr_parameter_get_name", (DL_FUNC) &r_instrumentr_parameter_get_name, 1},
