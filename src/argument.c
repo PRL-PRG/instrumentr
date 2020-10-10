@@ -1,4 +1,5 @@
 #include <instrumentr/argument.h>
+#include "argument_internals.h"
 #include <instrumentr/object.h>
 #include <instrumentr/conversion.h>
 #include <instrumentr/log.h>
