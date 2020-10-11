@@ -1,5 +1,6 @@
 #include "object_internals.h"
 #include <instrumentr/tracer.h>
+#include "tracer_internals.h"
 #include <instrumentr/callback.h>
 #include <instrumentr/application.h>
 #include "vec.h"
@@ -186,6 +187,24 @@ SEXP r_instrumentr_tracer_get_active_callback(SEXP r_tracer) {
     instrumentr_callback_t callback =
         instrumentr_tracer_get_active_callback(tracer);
     return instrumentr_callback_wrap(callback);
+}
+
+/* mutator  */
+void instrumentr_tracer_set_active_callback(instrumentr_tracer_t tracer,
+                                            instrumentr_callback_t callback) {
+    if (tracer->active_callback != NULL) {
+        instrumentr_raise_error(
+            "attempt to set active callback when it is already set");
+    } else {
+        tracer->active_callback = callback;
+        instrumentr_object_increment_reference(callback);
+    }
+}
+
+/* mutator  */
+void instrumentr_tracer_unset_active_callback(instrumentr_tracer_t tracer) {
+    instrumentr_object_decrement_reference(tracer->active_callback);
+    tracer->active_callback = NULL;
 }
 
 /********************************************************************************

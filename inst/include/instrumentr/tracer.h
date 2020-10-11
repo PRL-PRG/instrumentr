@@ -40,6 +40,13 @@ instrumentr_callback_t
 instrumentr_tracer_get_active_callback(instrumentr_tracer_t tracer);
 SEXP r_instrumentr_tracer_get_active_callback(SEXP r_tracer);
 
+/* mutator  */
+void instrumentr_tracer_set_active_callback(instrumentr_tracer_t tracer,
+                                            instrumentr_callback_t callback);
+
+/* mutator  */
+void instrumentr_tracer_unset_active_callback(instrumentr_tracer_t tracer);
+
 /********************************************************************************
  * status
  *******************************************************************************/

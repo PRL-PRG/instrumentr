@@ -1,5 +1,6 @@
 #include <instrumentr/callback.h>
-#include <instrumentr/object_internals.h>
+#include "callback_internals.h"
+#include "object_internals.h"
 #include "vec.h"
 
 /********************************************************************************
@@ -281,13 +282,23 @@ SEXP r_instrumentr_callback_get_c_function(SEXP r_callback) {
 
 /* accessor  */
 int instrumentr_callback_is_active(instrumentr_callback_t callback) {
-    return (callback->active.length != 0) && vec_last(&callback->active);
+    return callback->active;
 }
 
 SEXP r_instrumentr_callback_is_active(SEXP r_callback) {
     instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
     int result = instrumentr_callback_is_active(callback);
     return instrumentr_c_int_to_r_logical(result);
+}
+
+/* mutator  */
+int instrumentr_callback_activate(instrumentr_callback_t callback) {
+    callback->active = 1;
+}
+
+/* mutator  */
+int instrumentr_callback_deactivate(instrumentr_callback_t callback) {
+    callback->active = 0;
 }
 
 /********************************************************************************

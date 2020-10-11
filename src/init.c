@@ -1,4 +1,5 @@
-#include "r_instrumentr.h"
+#include "instrumentr_internals.h"
+#include "trace.h"
 #include "object_internals.h"
 #include <instrumentr/object.h>
 #include <instrumentr/tracer.h>
@@ -24,10 +25,23 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_disable_tracing", (DL_FUNC) &r_instrumentr_disable_tracing, 0},
     {"instrumentr_enable_tracing", (DL_FUNC) &r_instrumentr_enable_tracing, 0},
     {"instrumentr_reinstate_tracing", (DL_FUNC) &r_instrumentr_reinstate_tracing, 0},
-    {"instrumentr_initialize_instrumentr", (DL_FUNC) &r_instrumentr_initialize_instrumentr, 3},
-    {"instrumentr_finalize_instrumentr", (DL_FUNC) &r_instrumentr_finalize_instrumentr, 0},
-    {"instrumentr_is_undefined_object", (DL_FUNC)&r_instrumentr_is_undefined_object, 1},
-    {"instrumentr_is_defined_object", (DL_FUNC)&r_instrumentr_is_defined_object, 1},
+    {"instrumentr_initialize", (DL_FUNC) &r_instrumentr_initialize, 2},
+    {"instrumentr_finalize", (DL_FUNC) &r_instrumentr_finalize, 0},
+
+    /* trace */
+    {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 3},
+    {"instrumentr_trace_application_load", (DL_FUNC) &r_instrumentr_trace_application_load, 2},
+    {"instrumentr_trace_application_unload", (DL_FUNC) &r_instrumentr_trace_application_unload, 2},
+    {"instrumentr_trace_application_attach", (DL_FUNC) &r_instrumentr_trace_application_attach, 2},
+    {"instrumentr_trace_application_detach", (DL_FUNC) &r_instrumentr_trace_application_detach, 2},
+    {"instrumentr_trace_package_load", (DL_FUNC) &r_instrumentr_trace_package_load, 3},
+    {"instrumentr_trace_package_unload", (DL_FUNC) &r_instrumentr_trace_package_unload, 3},
+    {"instrumentr_trace_package_attach", (DL_FUNC) &r_instrumentr_trace_package_attach, 3},
+    {"instrumentr_trace_package_detach", (DL_FUNC) &r_instrumentr_trace_package_detach, 3},
+    {"instrumentr_trace_function_attach", (DL_FUNC) &r_instrumentr_trace_function_attach, 4},
+    {"instrumentr_trace_function_detach", (DL_FUNC) &r_instrumentr_trace_function_detach, 4},
+    {"instrumentr_trace_call_entry", (DL_FUNC) &r_instrumentr_trace_call_entry, 5},
+    {"instrumentr_trace_call_exit", (DL_FUNC) &r_instrumentr_trace_call_exit, 5},
 
     /* object */
     {"instrumentr_object_get_id", (DL_FUNC) &r_instrumentr_object_get_id, 1},
