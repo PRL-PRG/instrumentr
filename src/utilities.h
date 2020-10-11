@@ -3,9 +3,9 @@
 
 #include "Rincludes.h"
 
-void initialize_utilities(SEXP r_package_environment, SEXP r_state_environment);
+void instrumentr_initialize_utilities(SEXP r_package_environment, SEXP r_state_environment);
 
-void finalize_utilities();
+void instrumentr_finalize_utilities();
 
 SEXP delayed_assign(SEXP variable_sym,
                     SEXP variable_str,
