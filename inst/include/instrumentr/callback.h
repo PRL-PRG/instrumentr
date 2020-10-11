@@ -7,7 +7,7 @@
  * create
  *******************************************************************************/
 
-#define INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(TYPE, NAME)          \
+#define CALLBACK_CREATE(TYPE, NAME)                                           \
     instrumentr_callback_t instrumentr_callback_create_NAME_from_r_function(  \
         SEXP r_function);                                                     \
                                                                               \
@@ -18,10 +18,9 @@
                                                                               \
     SEXP r_instrumentr_callback_create_NAME_from_c_function(SEXP r_c_function);
 
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE)
+INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_CREATE)
 
-#undef INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE
+#undef CALLBACK_CREATE
 
 /********************************************************************************
  * interop
@@ -41,15 +40,14 @@ instrumentr_callback_get_type(instrumentr_callback_t callback);
 SEXP r_instrumentr_callback_get_type(SEXP r_callback);
 
 /* accessor  */
-#define INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_IS_TYPE(TYPE, NAME)    \
+#define CALLBACK_IS_TYPE(TYPE, NAME)                                     \
     int instrumentr_callback_is_##NAME(instrumentr_callback_t callback); \
                                                                          \
     SEXP r_instrumentr_callback_is_##NAME(SEXP r_callback);
 
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(
-    INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_IS_TYPE)
+INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_IS_TYPE)
 
-#undef INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_IS_TYPE
+#undef CALLBACK_IS_TYPE
 
 /********************************************************************************
  * name
@@ -99,13 +97,21 @@ SEXP r_instrumentr_callback_get_c_function(SEXP r_callback);
 int instrumentr_callback_is_active(instrumentr_callback_t callback);
 SEXP r_instrumentr_callback_is_active(SEXP r_callback);
 
-/* mutator  */
-void instrumentr_callback_activate(instrumentr_callback_t callback);
-SEXP r_instrumentr_callback_activate(SEXP r_callback);
+/********************************************************************************
+ * status
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_callback_is_enabled(instrumentr_callback_t callback);
+SEXP r_instrumentr_callback_is_enabled(SEXP r_callback);
 
 /* mutator  */
-void instrumentr_callback_deactivate(instrumentr_callback_t callback);
-void r_instrumentr_callback_deactivate(instrumentr_callback_t callback);
+void instrumentr_callback_enable(instrumentr_callback_t callback);
+SEXP r_instrumentr_callback_enable(SEXP r_callback);
+
+/* mutator  */
+void instrumentr_callback_disable(instrumentr_callback_t callback);
+void r_instrumentr_callback_disable(instrumentr_callback_t callback);
 
 /* mutator  */
 void instrumentr_callback_reinstate(instrumentr_callback_t callback);

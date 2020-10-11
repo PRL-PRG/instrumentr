@@ -17,10 +17,6 @@
 
 #include <stdio.h>
 
-#define INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE(TYPE, NAME)                                                                 \
-    {"instrumentr_callback_create_" #NAME "_from_r_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_r_function, 1}, \
-    {"instrumentr_callback_create_" #NAME "_from_c_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_c_function, 1},
-
 static const R_CallMethodDef CallEntries[] = {
     /* instrumentr */
     {"instrumentr_get_commit_hash", (DL_FUNC) &r_instrumentr_get_commit_hash, 0},
@@ -215,12 +211,19 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_callback_has_c_function", (DL_FUNC) &r_instrumentr_callback_has_c_function, 1},
     {"instrumentr_callback_get_r_function", (DL_FUNC) &r_instrumentr_callback_get_r_function, 1},
     {"instrumentr_callback_get_c_function", (DL_FUNC) &r_instrumentr_callback_get_c_function, 1},
-    {"instrumentr_callback_activate", (DL_FUNC) &r_instrumentr_callback_activate, 1},
-    {"instrumentr_callback_deactivate", (DL_FUNC) &r_instrumentr_callback_deactivate, 1},
-    {"instrumentr_callback_reinstate", (DL_FUNC) &r_instrumentr_callback_reinstate, 1},
     {"instrumentr_callback_is_active", (DL_FUNC) &r_instrumentr_callback_is_active, 1},
+    {"instrumentr_callback_is_enabled", (DL_FUNC) &r_instrumentr_callback_is_enabled, 1},
+    {"instrumentr_callback_enable", (DL_FUNC) &r_instrumentr_callback_enable, 1},
+    {"instrumentr_callback_disable", (DL_FUNC) &r_instrumentr_callback_disable, 1},
+    {"instrumentr_callback_reinstate", (DL_FUNC) &r_instrumentr_callback_reinstate, 1},
 
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INSTRUMENTR_GENERATE_DECLARATION_CALLBACK_CREATE)
+#define CALLBACK_CREATE(TYPE, NAME)                                                                                                  \
+    {"instrumentr_callback_create_" #NAME "_from_r_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_r_function, 1}, \
+    {"instrumentr_callback_create_" #NAME "_from_c_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_c_function, 1},
+
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_CREATE)
+
+#undef CALLBACK_CREATE
 
     {NULL, NULL, 0}
 };

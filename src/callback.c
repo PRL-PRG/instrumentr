@@ -16,7 +16,8 @@ struct instrumentr_callback_impl_t {
     enum instrumentr_callback_type_t type;
     function_t function;
     int has_r_function;
-    vec_int_t active;
+    int active;
+    vec_int_t status;
 };
 
 /********************************************************************************
@@ -31,7 +32,7 @@ void instrumentr_callback_finalize(instrumentr_object_t object) {
     }
     callback->function.r = NULL;
 
-    vec_deinit(&callback->active);
+    vec_deinit(&callback->status);
 }
 
 /********************************************************************************
@@ -70,7 +71,9 @@ instrumentr_callback_t instrumentr_callback_create_from_r_function(
 
     callback->has_r_function = 1;
 
-    vec_init(&callback->active);
+    callback->active = 0;
+
+    vec_init(&callback->status);
 
     return callback;
 }
@@ -287,32 +290,47 @@ SEXP r_instrumentr_callback_is_active(SEXP r_callback) {
     return instrumentr_c_int_to_r_logical(result);
 }
 
-/* mutator  */
-void instrumentr_callback_activate(instrumentr_callback_t callback) {
-    vec_push(&callback->active, 1);
+/********************************************************************************
+ * status
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_callback_is_enabled(instrumentr_callback_t callback) {
+    return (callback->status.length != 0) && vec_last(&callback->status);
 }
 
-SEXP r_instrumentr_callback_activate(SEXP r_callback) {
+SEXP r_instrumentr_callback_is_enabled(SEXP r_callback) {
     instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
-    instrumentr_callback_activate(callback);
+    int result = instrumentr_callback_is_enabled(callback);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+/* mutator  */
+void instrumentr_callback_enable(instrumentr_callback_t callback) {
+    vec_push(&callback->status, 1);
+}
+
+SEXP r_instrumentr_callback_enable(SEXP r_callback) {
+    instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
+    instrumentr_callback_enable(callback);
     return R_NilValue;
 }
 
 /* mutator  */
-void instrumentr_callback_deactivate(instrumentr_callback_t callback) {
-    vec_push(&callback->active, 0);
+void instrumentr_callback_disable(instrumentr_callback_t callback) {
+    vec_push(&callback->status, 0);
 }
 
-void r_instrumentr_callback_deactivate(instrumentr_callback_t callback) {
+void r_instrumentr_callback_disable(instrumentr_callback_t callback) {
     instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
-    instrumentr_callback_deactivate(callback);
+    instrumentr_callback_disable(callback);
     return R_NilValue;
 }
 
 /* mutator  */
 void instrumentr_callback_reinstate(instrumentr_callback_t callback) {
-    if (callback->active.length != 0) {
-        vec_pop(&callback->active);
+    if (callback->status.length != 0) {
+        vec_pop(&callback->status);
     }
 }
 
