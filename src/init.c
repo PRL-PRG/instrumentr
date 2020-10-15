@@ -1,3 +1,4 @@
+#include <instrumentr/instrumentr.h>
 #include "instrumentr_internals.h"
 #include "trace.h"
 #include "object_internals.h"
@@ -176,4 +177,8 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 void R_init_instrumentr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
+
+#define INSTRUMENTR_API_EXPORTER(FUNCTION, OUTPUT_TYPE, ...) R_RegisterCCallable("instrumentr", #FUNCTION, (DL_FUNC)(FUNCTION));
+
+    INSTRUMENTR_API_MAP(INSTRUMENTR_API_EXPORTER)
 }
