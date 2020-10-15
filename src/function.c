@@ -13,7 +13,7 @@ struct instrumentr_function_impl_t {
     const char* name;
     int parameter_count;
     SEXP r_definition;
-    int public;
+    int pub;
     int s3_generic;
     int s3_method;
 };
@@ -38,7 +38,7 @@ void instrumentr_function_finalize(instrumentr_object_t object) {
 instrumentr_function_t instrumentr_function_create(const char* name,
                                                    int parameter_count,
                                                    SEXP r_definition,
-                                                   int public,
+                                                   int pub,
                                                    int s3_generic,
                                                    int s3_method) {
     const char* duplicate_name = instrumentr_duplicate_string(name);
@@ -56,7 +56,7 @@ instrumentr_function_t instrumentr_function_create(const char* name,
     instrumentr_sexp_acquire(r_definition);
     function->r_definition = r_definition;
 
-    function->public = public;
+    function->pub = pub;
     function->s3_generic = s3_generic;
     function->s3_method = s3_method;
 
@@ -66,16 +66,16 @@ instrumentr_function_t instrumentr_function_create(const char* name,
 SEXP r_instrumentr_function_create(SEXP r_name,
                                    SEXP r_parameter_count,
                                    SEXP r_definition,
-                                   SEXP r_public,
+                                   SEXP r_pub,
                                    SEXP r_s3_generic,
                                    SEXP r_s3_method) {
     const char* name = instrumentr_r_character_to_c_string(r_name);
     int parameter_count = instrumentr_r_integer_to_c_int(r_parameter_count);
-    int public = instrumentr_r_logical_to_c_int(r_public);
+    int pub = instrumentr_r_logical_to_c_int(r_pub);
     int s3_generic = instrumentr_r_logical_to_c_int(r_s3_generic);
     int s3_method = instrumentr_r_logical_to_c_int(r_s3_method);
     instrumentr_function_t function = instrumentr_function_create(
-        name, parameter_count, r_definition, public, s3_generic, s3_method);
+        name, parameter_count, r_definition, pub, s3_generic, s3_method);
     return instrumentr_function_wrap(function);
 }
 
@@ -138,12 +138,12 @@ SEXP r_instrumentr_function_get_parameter_count(SEXP r_function) {
 }
 
 /********************************************************************************
- * public
+ * pub
  *******************************************************************************/
 
 /* accessor  */
 int instrumentr_function_is_public(instrumentr_function_t function) {
-    return function->public;
+    return function->pub;
 }
 
 SEXP r_instrumentr_function_is_public(SEXP r_function) {

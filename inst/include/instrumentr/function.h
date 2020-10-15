@@ -16,7 +16,7 @@ typedef struct instrumentr_function_impl_t* instrumentr_function_t;
 instrumentr_function_t instrumentr_function_create(const char* name,
                                                    int parameter_count,
                                                    SEXP r_definition,
-                                                   int public,
+                                                   int pub,
                                                    int s3_generic,
                                                    int s3_method);
 
