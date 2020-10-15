@@ -1,11 +1,11 @@
- 
+
 #' @export
-trace_code <- function(context, code, environment = .GlobalEnv, quote = TRUE, ...) {
+trace_code <- function(tracer, code, environment = .GlobalEnv, quote = TRUE, ...) {
     UseMethod("trace_code")
 }
 
 #' @export
-trace_code.instrumentr_context <- function(context, code, environment = .GlobalEnv, quote = TRUE, ...) {
+trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv, quote = TRUE, ...) {
 
     if (quote) {
         code <- substitute(code)
@@ -13,7 +13,7 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
 
     result <- NULL
 
-    .Call(C_context_initialize_tracing, context)
+    .Call(C_instrumentr_initialize_tracing, tracer)
 
     tryCatch({
         ## nolint NOTE: we manually account for the following four stack frames
@@ -30,22 +30,22 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
                                           environment,
                                           frame_position)
 
-        .Call(C_context_trace_application_load, context, application)
+        .Call(C_instrumentr_trace_application_load, tracer, application)
 
-        insert_instrumentation(context, application)
+        insert_instrumentation(tracer, application)
 
-        .Call(C_context_trace_application_attach, context, application)
+        .Call(C_instrumentr_trace_application_attach, tracer, application)
 
-        value <- .Call(C_context_trace_code, context, code, environment)
+        value <- .Call(C_instrumentr_trace_code, tracer, code, environment)
 
-        .Call(C_context_trace_application_detach, context, application)
+        .Call(C_instrumentr_trace_application_detach, tracer, application)
 
         result <- create_result(value)
     },
     error = function(e) {
         print(e)
 
-        callback_type <- .Call(C_context_get_current_callback_type, context)
+        callback_type <- "don't know"#.Call(C_instrumentr_tracer_get_callback_current_type, tracer)
         result <<- create_result(e, callback_type)
     })
 
@@ -56,23 +56,23 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
     ##      with the error object
     tryCatch({
 
-        remove_instrumentation(context, application)
+        remove_instrumentation(tracer, application)
 
         ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
         if (is_value(result) || get_source(get_error(result)) == "application") {
-            .Call(C_context_trace_application_unload, context, application)
+            .Call(C_instrumentr_trace_application_unload, tracer, application)
         }
     },
     error = function(e) {
         print(e)
 
-        callback_type <- .Call(C_context_get_current_callback_type, context)
+        callback_type <- "don't know"#.Call(C_instrumentr_tracer_get_callback_current_type, tracer)
         result <<- create_result(e, callback_type)
     },
     finally = {
-        .Call(C_context_finalize_tracing, context)
+        .Call(C_instrumentr_finalize_tracing, tracer)
     })
 
     result

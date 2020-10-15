@@ -2,6 +2,7 @@
 #define INSTRUMENTR_PARAMETER_H
 
 #include <instrumentr/Rincludes.h>
+#include <instrumentr/argument.h>
 
 /********************************************************************************
  * declaration

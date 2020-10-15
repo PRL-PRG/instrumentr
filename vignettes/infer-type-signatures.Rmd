@@ -22,12 +22,15 @@ library(instrumentr)
 
 functions <- get_package_function_names("dplyr", public = TRUE, private = FALSE)
 
-application_load_callback <- function(context, application) {
-    set_data(context, new.env(parent=emptyenv()))
+application_load_callback <- function(tracer, callback, application) {
+    set_r_data(tracer, new.env(parent=emptyenv()))
 }
 
-application_unload_callback <- function(context, application) {
-    data <- get_data(context)
+application_unload_callback <- function(tracer, callback, application) {
+    print("application_unload_callback")
+    data <- get_r_data(tracer)
+
+    print(ls(data))
 
     for(name in ls(data)) {
         cat(name, ":: ")
@@ -74,12 +77,15 @@ merge_type <- function(type_sig, index, type) {
     type_sig
 }
 
-call_exit_callback <- function(context, application, package, func, call) {
+call_exit_callback <- function(tracer, callback, application, package, func, call) {
+    print("call-exit")
     fun_name <- get_name(func)
+    
+    print(fun_name)
 
     parameters <- get_parameters(call)
 
-    data <- get_data(context)
+    data <- get_r_data(tracer)
 
     if (exists(fun_name, envir=data)) {
         type_sig <- get(fun_name, envir=data)
@@ -104,7 +110,7 @@ call_exit_callback <- function(context, application, package, func, call) {
             type_sig <- merge_type(type_sig, index, "any")
         }
         else {
-            argument_value <- get_result(arguments[[1]])
+            argument_value <- get_value(arguments[[1]])
             type_sig <- merge_type(type_sig, index, infer_type(argument_value))
         }
 
@@ -113,7 +119,7 @@ call_exit_callback <- function(context, application, package, func, call) {
 
     result_type <- "any"
 
-    if(is_successful(call)) {
+    if(has_result(call)) {
         result <- get_result(call)
         result_type <- infer_type(result)
     }
@@ -123,14 +129,14 @@ call_exit_callback <- function(context, application, package, func, call) {
     assign(fun_name, type_sig, envir=data)
 }
 
-context <- create_context(application_load_callback = application_load_callback,
-                          application_unload_callback = application_unload_callback,
-                          call_exit_callback = call_exit_callback,
-                          functions = functions)
+tracer <- create_tracer(application_load_callback = application_load_callback,
+                        application_unload_callback = application_unload_callback,
+                        call_exit_callback = call_exit_callback,
+                        functions = functions)
 ```
 
 ```{r trace_code}
-trace_code(context, {
+result <- trace_code(tracer, {
     suppressPackageStartupMessages(library(dplyr))
 
     starwars %>%
@@ -154,4 +160,6 @@ trace_code(context, {
       ) %>%
       filter(n > 1)
 })
+
+print(get_value(result))
 ```

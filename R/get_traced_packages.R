@@ -5,6 +5,6 @@ get_traced_packages <- function(object, ...) {
 }
 
 #' @export
-get_traced_packages.instrumentr_context <- function(object, ...) { # nolint
-    .Call(C_context_get_traced_packages, object)
+get_traced_packages.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_get_traced_packages, object)
 }

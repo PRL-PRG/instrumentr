@@ -1,9 +1,7 @@
 #include <instrumentr/function.h>
 #include <instrumentr/object.h>
-#include <instrumentr/conversion.h>
-#include <instrumentr/log.h>
-#include <instrumentr/memory.h>
-#include <instrumentr/string.h>
+#include "interop.h"
+#include "utilities.h"
 #include "object_internals.h"
 
 /********************************************************************************
@@ -11,7 +9,7 @@
  *******************************************************************************/
 
 struct instrumentr_function_impl_t {
-    instrumentr_object_impl_t object;
+    struct instrumentr_object_impl_t object;
     const char* name;
     int parameter_count;
     SEXP r_definition;
@@ -27,9 +25,9 @@ struct instrumentr_function_impl_t {
 void instrumentr_function_finalize(instrumentr_object_t object) {
     instrumentr_function_t function = (instrumentr_function_t)(object);
 
-    free(function->name);
+    free((char*)(function->name));
 
-    instrumentr_release_sexp(function->r_definition);
+    instrumentr_sexp_release(function->r_definition);
     function->r_definition = NULL;
 }
 
@@ -46,7 +44,7 @@ instrumentr_function_t instrumentr_function_create(const char* name,
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(instrumentr_function_impl_t),
+        instrumentr_object_create(sizeof(struct instrumentr_function_impl_t),
                                   INSTRUMENTR_FUNCTION,
                                   instrumentr_function_finalize);
 
@@ -55,7 +53,7 @@ instrumentr_function_t instrumentr_function_create(const char* name,
     function->name = duplicate_name;
     function->parameter_count = parameter_count;
 
-    instrumentr_acquire_sexp(r_definition);
+    instrumentr_sexp_acquire(r_definition);
     function->r_definition = r_definition;
 
     function->public = public;
@@ -129,7 +127,7 @@ SEXP r_instrumentr_function_get_definition(SEXP r_function) {
  *******************************************************************************/
 
 /* accessor  */
-SEXP instrumentr_function_get_parameter_count(instrumentr_function_t function) {
+int instrumentr_function_get_parameter_count(instrumentr_function_t function) {
     return function->parameter_count;
 }
 

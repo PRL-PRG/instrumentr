@@ -6,5 +6,5 @@ get_definition <- function(object, ...) {
 
 #' @export
 get_definition.instrumentr_function <- function(object, ...) { # nolint
-    .Call(C_function_get_definition, object)
+    .Call(C_instrumentr_function_get_definition, object)
 }

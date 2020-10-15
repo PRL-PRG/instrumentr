@@ -42,8 +42,8 @@ is_language <- function(obj) {
     is.language(obj)
 }
 
-is_instrumentr_context <- function(obj) {
-    "instrumentr_context" %in% class(obj)
+is_instrumentr_tracer <- function(obj) {
+    "instrumentr_tracer" %in% class(obj)
 }
 
 is_instrumentr_application <- function(obj) {

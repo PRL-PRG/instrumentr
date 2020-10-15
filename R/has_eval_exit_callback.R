@@ -5,6 +5,6 @@ has_eval_exit_callback <- function(object, ...) {
 }
 
 #' @export
-has_eval_exit_callback.instrumentr_context <- function(object, ...) { # nolint
-    .Call(C_context_has_eval_exit_callback, object)
+has_eval_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_eval_exit, object)
 }

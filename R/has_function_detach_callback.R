@@ -5,6 +5,6 @@ has_function_detach_callback <- function(object, ...) {
 }
 
 #' @export
-has_function_detach_callback.instrumentr_context <- function(object, ...) { # nolint
-    .Call(C_context_has_function_detach_callback, object)
+has_function_detach_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_function_detach, object)
 }

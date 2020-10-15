@@ -1,12 +1,12 @@
 
 #' @export
-trace_text <- function(context, text, environment = .GlobalEnv, ...) {
+trace_text <- function(tracer, text, environment = .GlobalEnv, ...) {
     UseMethod("trace_text")
 }
 
 #' @export
-trace_text.instrumentr_context <- function(context, text, environment = .GlobalEnv, ...) {
+trace_text.instrumentr_tracer <- function(tracer, text, environment = .GlobalEnv, ...) {
     code <- parse(text = text, keep.source = TRUE)
 
-    trace_code(context, code, environment = environment, quote = FALSE)
+    trace_code(tracer, code, environment = environment, quote = FALSE)
 }

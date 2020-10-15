@@ -8,7 +8,7 @@ create_function <- function(function_name, parameter_count, function_object, pub
     stopifnot(is_scalar_logical(s3_generic))
     stopifnot(is_scalar_logical(s3_method))
 
-    .Call(C_function_create_function,
+    .Call(C_instrumentr_function_create,
           function_name,
           parameter_count,
           function_object,

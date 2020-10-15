@@ -6,5 +6,5 @@ get_packages <- function(application, ...) {
 
 #' @export
 get_packages.instrumentr_application <- function(application, ...) { # nolint
-    .Call(C_application_get_packages, application)
+    .Call(C_instrumentr_application_get_packages, application)
 }

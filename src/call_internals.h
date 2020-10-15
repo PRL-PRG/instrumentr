@@ -13,6 +13,24 @@ SEXP r_instrumentr_call_create(SEXP r_function,
                                SEXP r_frame_position);
 
 /********************************************************************************
+ * active
+ *******************************************************************************/
+
+/* mutator  */
+void instrumentr_call_activate(instrumentr_call_t call);
+
+/* mutator  */
+void instrumentr_call_deactivate(instrumentr_call_t call);
+
+
+/********************************************************************************
+ * r_result
+ *******************************************************************************/
+
+/* mutator */
+void instrumentr_call_set_result(instrumentr_call_t call, SEXP r_result);
+
+/********************************************************************************
  * parameters
  *******************************************************************************/
 

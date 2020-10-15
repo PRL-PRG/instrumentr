@@ -1,7 +1,7 @@
 #ifndef INSTRUMENTR_CALLBACK_TYPE_H
 #define INSTRUMENTR_CALLBACK_TYPE_H
 
-enum class instrumentr_callback_type_t {
+typedef enum {
     INSTRUMENTR_CALLBACK_APPLICATION_LOAD = 0,
     INSTRUMENTR_CALLBACK_APPLICATION_UNLOAD,
     INSTRUMENTR_CALLBACK_APPLICATION_ATTACH,
@@ -27,7 +27,8 @@ enum class instrumentr_callback_type_t {
     INSTRUMENTR_CALLBACK_VARIABLE_ASSIGNMENT,
     INSTRUMENTR_CALLBACK_VARIABLE_REMOVAL,
     INSTRUMENTR_CALLBACK_VARIABLE_LOOKUP
-}
+} instrumentr_callback_type_t;
+
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(MACRO)                       \
     MACRO(INSTRUMENTR_CALLBACK_APPLICATION_LOAD, application_load)       \
     MACRO(INSTRUMENTR_CALLBACK_APPLICATION_UNLOAD, application_unload)   \
@@ -37,8 +38,8 @@ enum class instrumentr_callback_type_t {
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_UNLOAD, package_unload)           \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_ATTACH, package_attach)           \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_DETACH, package_detach)           \
-    MACRO(INSTRUMENTR_CALLBACK_MACROCTION_ATTACH, function_attach)       \
-    MACRO(INSTRUMENTR_CALLBACK_MACROCTION_DETACH, function_detach)       \
+    MACRO(INSTRUMENTR_CALLBACK_FUNCTION_ATTACH, function_attach)         \
+    MACRO(INSTRUMENTR_CALLBACK_FUNCTION_DETACH, function_detach)         \
     MACRO(INSTRUMENTR_CALLBACK_CALL_ENTRY, call_entry)                   \
     MACRO(INSTRUMENTR_CALLBACK_CALL_EXIT, call_exit)                     \
     MACRO(INSTRUMENTR_CALLBACK_BUILTIN_CALL_ENTRY, builtin_call_entry)   \
@@ -55,9 +56,10 @@ enum class instrumentr_callback_type_t {
     MACRO(INSTRUMENTR_CALLBACK_VARIABLE_REMOVAL, variable_removal)       \
     MACRO(INSTRUMENTR_CALLBACK_VARIABLE_LOOKUP, variable_lookup)
 
+int instrumentr_callback_type_get_parameter_count(
+    instrumentr_callback_type_t callback_type);
 
-int instrumentr_callback_type_get_parameter_count(enum instrumentr_callback_type_t callback_type);
-
-const char* instrumentr_callback_type_get_name(enum instrumentr_callback_type_t callback_type);
+const char*
+instrumentr_callback_type_get_name(instrumentr_callback_type_t callback_type);
 
 #endif /* INSTRUMENTR_CALLBACK_TYPE_H */

@@ -38,7 +38,7 @@ to_string.call <- function(object, ...) {
 }
 
 #' @export
-to_string.instrumentr_context <- function(object, ...) {
+to_string.instrumentr_tracer <- function(object, ...) {
 
     packages <- get_traced_packages(object)
     functions <- character(0)
@@ -176,7 +176,7 @@ to_string.instrumentr_call_stack <- function(object, ...) { # nolint
         frames <- character(0)
 
         for (index in 1:size) {
-            call_object <- peek_frame(object, index)
+            call_object <- peek(object, index)
             frames <- c(frames, to_string(call_object))
         }
 

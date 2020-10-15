@@ -1,12 +1,12 @@
 #include <instrumentr/callback_type.h>
 
-typedef struct callback_type_info {
-    enum instrumentr_callback_type_t type;
+typedef struct {
+    instrumentr_callback_type_t type;
     const char* name;
     int parameter_count;
-};
+} callback_type_info_t;
 
-callback_type_info table[] = {
+callback_type_info_t table[] = {
     /* INSTRUMENTR_CALLBACK_APPLICATION_LOAD */
     {INSTRUMENTR_CALLBACK_APPLICATION_LOAD, "application_load", 3},
     /* INSTRUMENTR_CALLBACK_APPLICATION_UNLOAD */
@@ -59,13 +59,13 @@ callback_type_info table[] = {
     {INSTRUMENTR_CALLBACK_VARIABLE_LOOKUP, "variable_lookup", 6}};
 
 int instrumentr_callback_type_get_parameter_count(
-    enum instrumentr_callback_type_t callback_type) {
+    instrumentr_callback_type_t callback_type) {
     int index = (int) (callback_type);
     return table[index].parameter_count;
 }
 
-const char* instrumentr_callback_type_get_name(
-    enum instrumentr_callback_type_t callback_type) {
+const char*
+instrumentr_callback_type_get_name(instrumentr_callback_type_t callback_type) {
     int index = (int) (callback_type);
     return table[index].name;
 }

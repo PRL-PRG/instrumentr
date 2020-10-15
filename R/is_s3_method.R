@@ -6,5 +6,5 @@ is_s3_method <- function(object, ...) {
 
 #' @export
 is_s3_method.instrumentr_function <- function(object, ...) { # nolint
-    .Call(C_function_is_s3_method, object)
+    .Call(C_instrumentr_function_is_s3_method, object)
 }

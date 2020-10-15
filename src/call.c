@@ -1,6 +1,3 @@
-#ifndef INSTRUMENTR_CALL_H
-#define INSTRUMENTR_CALL_H
-
 #include <instrumentr/call.h>
 #include "call_internals.h"
 #include <instrumentr/parameter.h>
@@ -8,15 +5,19 @@
 #include <instrumentr/argument.h>
 #include "argument_internals.h"
 #include "vec.h"
-
-typedef vec_t(instrumentr_parameter_t) instrumentr_parameter_vector_t;
+#include "interop.h"
+#include "utilities.h"
+#include <instrumentr/object.h>
+#include "object_internals.h"
 
 /********************************************************************************
  * definition
  *******************************************************************************/
 
+typedef vec_t(instrumentr_parameter_t) instrumentr_parameter_vector_t;
+
 struct instrumentr_call_impl_t {
-    instrumentr_object_impl_t object;
+    struct instrumentr_object_impl_t object;
     instrumentr_function_t function;
     SEXP r_expression;
     SEXP r_environment;
@@ -33,18 +34,18 @@ struct instrumentr_call_impl_t {
 void instrumentr_call_finalize(instrumentr_object_t object) {
     instrumentr_call_t call = (instrumentr_call_t)(object);
 
-    instrumentr_object_decrement_reference(call->function);
+    instrumentr_object_release(call->function);
 
-    instrumentr_release_sexp(call->r_expression);
-    instrumentr_release_sexp(call->r_environment);
-    instrumentr_release_sexp(call->r_result);
+    instrumentr_sexp_release(call->r_expression);
+    instrumentr_sexp_release(call->r_environment);
+    instrumentr_sexp_release(call->r_result);
 
     int count = call->parameters.length;
-    instrumentr_parameter_t parameters[] = call->parameters.data;
+    instrumentr_parameter_t* parameters = call->parameters.data;
 
     for (int i = 0; i < count; ++i) {
         instrumentr_parameter_t parameter = parameters[i];
-        instrumentr_object_decrement_reference(parameter);
+        instrumentr_object_release(parameter);
     }
 
     vec_deinit(&call->parameters);
@@ -58,38 +59,34 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
                                            SEXP r_expression,
                                            SEXP r_environment,
                                            int frame_position) {
-    instrumentr_function_vector_t functions =
-        instrumentr_function_vector_create();
-
-    const char* duplicate_name = instrumentr_duplicate_string(name);
-
-    const char* duplicate_directory = instrumentr_duplicate_string(directory);
-
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(instrumentr_call_impl_t),
+        instrumentr_object_create(sizeof(struct instrumentr_call_impl_t),
                                   INSTRUMENTR_CALL,
                                   instrumentr_call_finalize);
 
     instrumentr_call_t call = (instrumentr_call_t)(object);
 
     call->function = function;
-    instrumentr_object_increment_reference(call->function);
+    instrumentr_object_acquire(call->function);
 
     call->r_expression = r_expression;
-    instrumentr_acquire_sexp(call->r_expression);
+    instrumentr_sexp_acquire(call->r_expression);
 
     call->r_environment = r_environment;
-    instrumentr_acquire_sexp(call->r_environment);
+    instrumentr_sexp_acquire(call->r_environment);
 
     call->frame_position = frame_position;
 
     vec_init(&call->parameters);
 
+    SEXP r_parameter_list =
+        FORMALS(instrumentr_function_get_definition(function));
+
     for (int parameter_position = 0; r_parameter_list != R_NilValue;
          ++parameter_position, r_parameter_list = CDR(r_parameter_list)) {
         SEXP r_argument_name = TAG(r_parameter_list);
 
-        SEXP r_default_argument = CAR(r_parameters_list);
+        SEXP r_default_argument = CAR(r_parameter_list);
 
         SEXP r_argument_value =
             Rf_findVarInFrame(r_environment, r_argument_name);
@@ -99,10 +96,10 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
             parameter_position,
             r_default_argument == R_MissingArg ? NULL : r_default_argument);
 
-        instrumentr_call_append_parameter(parameter);
+        instrumentr_call_append_parameter(call, parameter);
 
         /* NOTE: parameter owned by call now */
-        instrumentr_object_decrement_reference(parameter);
+        instrumentr_object_release(parameter);
 
         /* missing argument */
         if (r_argument_value == R_UnboundValue ||
@@ -130,16 +127,16 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
                         create_promise(r_dot_argument_value, r_environment);
                 }
 
-                dot_arguments.push_back(PROTECT(r_dot_argument_value));
+                vec_push(&dot_arguments, PROTECT(r_dot_argument_value));
 
-                dot_names.push_back(r_dot_argument_name);
+                vec_push(&dot_names, r_dot_argument_name);
             }
 
             SEXP dots = PROTECT(R_NilValue);
 
             for (int i = dot_arguments.length - 1; i >= 0; --i) {
                 SEXP r_dot_argument_value = dot_arguments.data[i];
-                SEXP r_dot_argument_name = dot_tags.data[i];
+                SEXP r_dot_argument_name = dot_names.data[i];
 
                 const char* argument_name = NULL;
 
@@ -159,12 +156,12 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
                 SET_TAG(dots, r_dot_argument_name);
 
                 instrumentr_argument_t argument = instrumentr_argument_create(
-                    argument_name, r_argument_value);
+                    argument_name, r_dot_argument_value);
 
-                instrumentr_parameter_append_argument(argument);
+                instrumentr_parameter_append_argument(parameter, argument);
 
                 /* NOTE: argument is owned by parameter now */
-                instrumentr_object_decrement_reference(argument);
+                instrumentr_object_release(argument);
             }
 
             SET_TYPEOF(dots, DOTSXP);
@@ -197,10 +194,10 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
             instrumentr_argument_t argument =
                 instrumentr_argument_create(NULL, r_argument_value);
 
-            instrumentr_parameter_append_argument(argument);
+            instrumentr_parameter_append_argument(parameter, argument);
 
             /* NOTE: argument is owned by parameter now */
-            instrumentr_object_decrement_reference(argument);
+            instrumentr_object_release(argument);
         }
     }
 
@@ -214,14 +211,13 @@ SEXP r_instrumentr_call_create(SEXP r_function,
     instrumentr_function_t function = instrumentr_function_unwrap(r_function);
     int frame_position = instrumentr_r_integer_to_c_int(r_frame_position);
     SEXP r_definition = instrumentr_function_get_definition(function);
-    SEXP r_parameter_list = FORMALS(r_definition);
 
     instrumentr_call_t call = instrumentr_call_create(
         function, r_expression, r_environment, frame_position);
 
     SEXP r_call = instrumentr_call_wrap(call);
 
-    instrumentr_object_decrement_reference(call);
+    instrumentr_object_release(call);
 
     return r_call;
 }
@@ -261,7 +257,7 @@ SEXP r_instrumentr_call_get_function(SEXP r_call) {
 
 /* accessor  */
 SEXP instrumentr_call_get_expression(instrumentr_call_t call) {
-    return call->expression;
+    return call->r_expression;
 }
 
 SEXP r_instrumentr_call_get_expression(SEXP r_call) {
@@ -275,7 +271,7 @@ SEXP r_instrumentr_call_get_expression(SEXP r_call) {
 
 /* accessor  */
 SEXP instrumentr_call_get_environment(instrumentr_call_t call) {
-    return call->environment;
+    return call->r_environment;
 }
 
 SEXP r_instrumentr_call_get_environment(SEXP r_call) {
@@ -313,13 +309,23 @@ SEXP r_instrumentr_call_is_active(SEXP r_call) {
     return instrumentr_c_int_to_r_logical(active);
 }
 
+/* mutator  */
+void instrumentr_call_activate(instrumentr_call_t call) {
+    call->active = 1;
+}
+
+/* mutator  */
+void instrumentr_call_deactivate(instrumentr_call_t call) {
+    call->active = 0;
+}
+
 /********************************************************************************
- * result
+ * r_result
  *******************************************************************************/
 
 /* accessor  */
 int instrumentr_call_has_result(instrumentr_call_t call) {
-    return call->result != NULL;
+    return call->r_result != NULL;
 }
 
 SEXP r_instrumentr_call_has_result(SEXP r_call) {
@@ -331,15 +337,23 @@ SEXP r_instrumentr_call_has_result(SEXP r_call) {
 /* accessor  */
 SEXP instrumentr_call_get_result(instrumentr_call_t call) {
     if (instrumentr_call_has_result(call)) {
-        return call->result;
+        return call->r_result;
     } else {
-        instrumentr_raise_error("call does not have a result");
+        instrumentr_log_error("call does not have a result");
+        /* NOTE: never executed*/
+        return NULL;
     }
 }
 
 SEXP r_instrumentr_call_get_result(SEXP r_call) {
     instrumentr_call_t call = instrumentr_call_unwrap(r_call);
     return instrumentr_call_get_result(call);
+}
+
+/* mutator */
+void instrumentr_call_set_result(instrumentr_call_t call, SEXP r_result) {
+    call->r_result = r_result;
+    instrumentr_sexp_acquire(r_result);
 }
 
 /********************************************************************************
@@ -365,10 +379,12 @@ instrumentr_call_get_parameter_by_position(instrumentr_call_t call,
     if (position < count && position >= 0) {
         return call->parameters.data[position];
     } else {
-        instrumentr_raise_error(
+        instrumentr_log_error(
             "attempt to access %d parameter of a call with %d parameters",
             position,
             count);
+        /* NOTE: never executed*/
+        return NULL;
     }
 }
 
@@ -387,17 +403,20 @@ instrumentr_parameter_t
 instrumentr_call_get_parameter_by_name(instrumentr_call_t call,
                                        const char* name) {
     int count = instrumentr_call_get_parameter_count(call);
-    instrumentr_parameter_t parameters[] = call->parameters.data;
+    instrumentr_parameter_t* parameters = call->parameters.data;
 
     for (int i = 0; i < count; ++i) {
         instrumentr_parameter_t parameter = parameters[i];
         if (strcmp(instrumentr_parameter_get_name(parameter), name) == 0) {
-            return instrumentr_parameter_wrap(parameter);
+            return parameter;
         }
     }
 
-    instrumentr_raise_errro(
-        "parameter with name '%s' does not exist for this call", name);
+    instrumentr_log_error(
+        "parameter with name '%s' does not exist for this call",
+        name);
+    /* NOTE: never executed*/
+    return NULL;
 }
 
 SEXP r_instrumentr_call_get_parameter_by_name(SEXP r_call, SEXP r_name) {
@@ -411,7 +430,7 @@ SEXP r_instrumentr_call_get_parameter_by_name(SEXP r_call, SEXP r_name) {
 /* accessor  */
 SEXP r_instrumentr_call_get_parameters(SEXP r_call) {
     instrumentr_call_t call = instrumentr_call_unwrap(r_call);
-    instrumentr_parameter_t parameters[] = call->parameters.data;
+    instrumentr_parameter_t* parameters = call->parameters.data;
     int count = instrumentr_call_get_parameter_count(call);
 
     SEXP r_parameters = PROTECT(allocVector(VECSXP, count));
@@ -433,7 +452,5 @@ SEXP r_instrumentr_call_get_parameters(SEXP r_call) {
 void instrumentr_call_append_parameter(instrumentr_call_t call,
                                        instrumentr_parameter_t parameter) {
     vec_push(&call->parameters, parameter);
-    instrumentr_object_increment_reference(parameter);
+    instrumentr_object_acquire(parameter);
 }
-
-#endif /* INSTRUMENTR_CALL_H */

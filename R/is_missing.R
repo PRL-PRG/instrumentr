@@ -6,5 +6,5 @@ is_missing <- function(object, ...) {
 
 #' @export
 is_missing.instrumentr_parameter <- function(object, ...) { # nolint
-    .Call(C_parameter_is_missing, object)
+    .Call(C_instrumentr_parameter_is_missing, object)
 }

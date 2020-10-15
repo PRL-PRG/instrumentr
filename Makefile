@@ -58,8 +58,7 @@ cppcheck:
 	             --error-exitcode=1                                       \
 	             --quiet                                                  \
 	             --suppress=missingIncludeSystem                          \
-	             --suppress=unusedFunction                                \
-	             --suppress=useStlAlgorithm                               \
+	             --suppress=unusedStructMember                            \
 	              -I inst/include/                                        \
 	             $(SOURCES)                                               \
 	             $(INCLUDES)

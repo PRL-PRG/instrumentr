@@ -1,10 +1,8 @@
 #include <instrumentr/argument.h>
 #include "argument_internals.h"
 #include <instrumentr/object.h>
-#include <instrumentr/conversion.h>
-#include <instrumentr/log.h>
-#include <instrumentr/string.h>
-#include <instrumentr/memory.h>
+#include "interop.h"
+#include "utilities.h"
 #include "object_internals.h"
 
 /********************************************************************************
@@ -12,7 +10,7 @@
  *******************************************************************************/
 
 struct instrumentr_argument_impl_t {
-    instrumentr_object_impl_t object;
+    struct instrumentr_object_impl_t object;
     const char* name;
     SEXP r_promise;
 };
@@ -24,9 +22,9 @@ struct instrumentr_argument_impl_t {
 void instrumentr_argument_finalize(instrumentr_object_t object) {
     instrumentr_argument_t argument = (instrumentr_argument_t)(object);
 
-    free(argument->name);
+    free((char*)(argument->name));
 
-    instrumentr_release_sexp(argument->r_promise);
+    instrumentr_sexp_release(argument->r_promise);
     argument->r_promise = NULL;
 }
 
@@ -37,14 +35,14 @@ void instrumentr_argument_finalize(instrumentr_object_t object) {
 instrumentr_argument_t instrumentr_argument_create(const char* name,
                                                    SEXP r_promise) {
     if (TYPEOF(r_promise) != PROMSXP) {
-        instrumentr_raise_error(
+        instrumentr_log_error(
             "attempt to create argument object from a non promise");
     }
 
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(instrumentr_argument_impl_t),
+        instrumentr_object_create(sizeof(struct instrumentr_argument_impl_t),
                                   INSTRUMENTR_ARGUMENT,
                                   instrumentr_argument_finalize);
 
@@ -52,7 +50,7 @@ instrumentr_argument_t instrumentr_argument_create(const char* name,
 
     argument->name = duplicate_name;
 
-    instrumentr_acquire_sexp(r_promise);
+    instrumentr_sexp_acquire(r_promise);
     argument->r_promise = r_promise;
 
     return argument;
@@ -92,7 +90,9 @@ const char* instrumentr_argument_get_name(instrumentr_argument_t argument) {
     if (instrumentr_argument_has_name(argument)) {
         return argument->name;
     } else {
-        instrumentr_raise_error("argument does not have a name");
+        instrumentr_log_error("argument does not have a name");
+        /* NOTE: not extecuted */
+        return NULL;
     }
 }
 
@@ -142,7 +142,9 @@ SEXP instrumentr_argument_get_value(instrumentr_argument_t argument) {
     if (instrumentr_argument_is_evaluated(argument)) {
         return PRVALUE(argument->r_promise);
     } else {
-        instrumentr_raise_error("argument is not evaluated");
+        instrumentr_log_error("argument is not evaluated");
+        /* NOTE: not extecuted */
+        return NULL;
     }
 }
 

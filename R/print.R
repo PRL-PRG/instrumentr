@@ -5,7 +5,7 @@ print.instrumentr_undefined <- function(x, ...) {
 }
 
 #' @export
-print.instrumentr_context <- function(x, ...) {
+print.instrumentr_tracer <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 

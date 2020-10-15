@@ -6,5 +6,5 @@ is_vararg <- function(object, ...) {
 
 #' @export
 is_vararg.instrumentr_parameter <- function(object, ...) { # nolint
-    .Call(C_parameter_is_vararg, object)
+    .Call(C_instrumentr_parameter_is_vararg, object)
 }

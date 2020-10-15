@@ -1,4 +1,6 @@
 #include "utilities.h"
+#include <string.h>
+#include <stdlib.h>
 
 SEXP DelayedAssignSymbol = NULL;
 SEXP InstrumentrSymbol = NULL;
@@ -66,6 +68,10 @@ SEXP create_promise(SEXP value, SEXP eval_env) {
     return promise;
 }
 
+SEXP create_environment(SEXP hash, SEXP parent) {
+    return Rf_eval(Rf_lang3(Rf_install("new.env"), hash, parent), R_BaseEnv);
+}
+
 SEXP Rf_lang7(SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
     PROTECT(r);
     r = LCONS(r, Rf_list6(s, t, u, v, w, x));
@@ -80,9 +86,33 @@ SEXP Rf_lang8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
     return q;
 }
 
+SEXP Rf_lang9(SEXP p, SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
+    PROTECT(p);
+    p = LCONS(p, Rf_list8(q, r, s, t, u, v, w, x));
+    UNPROTECT(1);
+    return p;
+}
+
 SEXP Rf_list7(SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
     PROTECT(r);
     r = CONS(r, Rf_list6(s, t, u, v, w, x));
     UNPROTECT(1);
     return r;
+}
+
+SEXP Rf_list8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
+    PROTECT(q);
+    q = CONS(q, Rf_list7(r, s, t, u, v, w, x));
+    UNPROTECT(1);
+    return q;
+}
+
+char* instrumentr_duplicate_string(const char* original) {
+    if (original == NULL) {
+        return NULL;
+    }
+    int length = strlen(original);
+    char* duplicate = (char*) malloc(length * sizeof(char));
+    strcpy(duplicate, original);
+    return duplicate;
 }

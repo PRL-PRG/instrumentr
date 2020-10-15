@@ -7,5 +7,5 @@ create_application <- function(name, directory, code, environment, frame_positio
     stopifnot(is_environment(environment))
     stopifnot(is_scalar_integer(frame_position))
 
-    .Call(C_application_create_application, name, directory, code, environment, frame_position)
+    .Call(C_instrumentr_application_create, name, directory, code, environment, frame_position)
 }

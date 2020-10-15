@@ -6,5 +6,5 @@ is_s3_generic <- function(object, ...) {
 
 #' @export
 is_s3_generic.instrumentr_function <- function(object, ...) { # nolint
-    .Call(C_function_is_s3_generic, object)
+    .Call(C_instrumentr_function_is_s3_generic, object)
 }

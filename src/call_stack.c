@@ -1,5 +1,5 @@
 #include <instrumentr/call_stack.h>
-#include <instrumentr/memory.h>
+#include "interop.h"
 #include "object_internals.h"
 #include "vec.h"
 
@@ -10,7 +10,7 @@
 typedef vec_t(instrumentr_call_t) vec_call_t;
 
 struct instrumentr_call_stack_impl_t {
-    instrumentr_object_impl_t object;
+    struct instrumentr_object_impl_t object;
     vec_call_t calls;
 };
 
@@ -36,7 +36,7 @@ void instrumentr_call_stack_finalize(instrumentr_object_t object) {
 
 instrumentr_call_stack_t instrumentr_call_stack_create() {
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(instrumentr_call_stack_impl_t),
+        instrumentr_object_create(sizeof(struct instrumentr_call_stack_impl_t),
                                   INSTRUMENTR_CALL_STACK,
                                   instrumentr_call_stack_finalize);
 
@@ -84,14 +84,14 @@ SEXP r_instrumentr_call_stack_get_size(SEXP r_call_stack) {
 /* mutator  */
 void instrumentr_call_stack_push(instrumentr_call_stack_t call_stack,
                                  instrumentr_call_t call) {
-    instrumentr_object_increment_reference(call);
+    instrumentr_object_acquire(call);
     vec_push(&call_stack->calls, call);
 }
 
 /* mutator  */
 void instrumentr_call_stack_pop(instrumentr_call_stack_t call_stack) {
     instrumentr_call_t call = vec_pop(&call_stack->calls);
-    instrumentr_object_decrement_reference(call);
+    instrumentr_object_release(call);
 }
 
 /* accessor  */
@@ -99,8 +99,10 @@ instrumentr_call_t
 instrumentr_call_stack_peek(instrumentr_call_stack_t call_stack, int index) {
     int reverse_index = instrumentr_call_stack_get_size(call_stack) - 1 - index;
     if (reverse_index < 0) {
-        instrumentr_raise_error(
+        instrumentr_log_error(
             "attempt to peek beyond the length of call stack");
+        /* NOTE: not extecuted */
+        return NULL;
     } else {
         return call_stack->calls.data[reverse_index];
     }
@@ -114,4 +116,3 @@ SEXP r_instrumentr_call_stack_peek(SEXP r_call_stack, SEXP r_index) {
     return instrumentr_call_wrap(call);
 }
 
-#endif /* INSTRUMENTR_CALL_STACK_H */

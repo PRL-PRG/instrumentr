@@ -3,6 +3,7 @@
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/parameter.h>
+#include <instrumentr/function.h>
 
 /********************************************************************************
  * declaration

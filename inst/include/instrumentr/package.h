@@ -2,7 +2,7 @@
 #define INSTRUMENTR_PACKAGE_H
 
 #include <instrumentr/Rincludes.h>
-#include <instrumentr/function_vector.h>
+#include <instrumentr/function.h>
 
 /********************************************************************************
  * declaration
@@ -59,8 +59,23 @@ SEXP r_instrumentr_package_get_namespace(SEXP r_package);
  *******************************************************************************/
 
 /* accessor  */
-function_vector_t
-instrumentr_package_get_functions(instrumentr_package_t package);
+int instrumentr_package_get_function_count(instrumentr_package_t package);
+SEXP r_instrumentr_package_get_function_count(SEXP r_package);
+
+/* accessor  */
+instrumentr_function_t
+instrumentr_package_get_function_by_position(instrumentr_package_t package,
+                                             int position);
+SEXP r_instrumentr_package_get_function_by_position(SEXP r_package,
+                                                    SEXP r_position);
+
+/* accessor  */
+instrumentr_function_t
+instrumentr_package_get_function_by_name(instrumentr_package_t package,
+                                         const char* name);
+SEXP r_instrumentr_package_get_function_by_name(SEXP r_package, SEXP r_name);
+
+/* accessor  */
 SEXP r_instrumentr_package_get_functions(SEXP r_package);
 
 #endif /* INSTRUMENTR_PACKAGE_H */

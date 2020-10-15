@@ -1,22 +1,36 @@
 #ifndef INSTRUMENTR_CALLBACK_H
 #define INSTRUMENTR_CALLBACK_H
 
-#include <Rincludes.h>
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/callback_type.h>
+#include <instrumentr/application.h>
+#include <instrumentr/package.h>
+#include <instrumentr/function.h>
+#include <instrumentr/call.h>
+
+/********************************************************************************
+ * declaration
+ *******************************************************************************/
+
+typedef struct instrumentr_callback_impl_t* instrumentr_callback_t;
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
-#define CALLBACK_CREATE(TYPE, NAME)                                           \
-    instrumentr_callback_t instrumentr_callback_create_NAME_from_r_function(  \
-        SEXP r_function);                                                     \
-                                                                              \
-    SEXP r_instrumentr_callback_create_NAME_from_r_function(SEXP r_function); \
-                                                                              \
-    instrumentr_callback_t instrumentr_callback_create_NAME_from_c_function(  \
-        void* c_function);                                                    \
-                                                                              \
-    SEXP r_instrumentr_callback_create_NAME_from_c_function(SEXP r_c_function);
+#define CALLBACK_CREATE(TYPE, NAME)                                            \
+    instrumentr_callback_t                                                     \
+        instrumentr_callback_##NAME##_create_from_r_function(SEXP r_function); \
+                                                                               \
+    SEXP r_instrumentr_callback_##NAME##_create_from_r_function(               \
+        SEXP r_function);                                                      \
+                                                                               \
+    instrumentr_callback_t                                                     \
+        instrumentr_callback_##NAME##_create_from_c_function(                  \
+            void* c_function);                                                 \
+                                                                               \
+    SEXP r_instrumentr_callback_##NAME##_create_from_c_function(               \
+        SEXP r_c_function);
 
 INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_CREATE)
 
@@ -35,7 +49,7 @@ instrumentr_callback_t instrumentr_callback_unwrap(SEXP r_callback);
  *******************************************************************************/
 
 /* accessor  */
-enum instrumentr_callback_type_t
+instrumentr_callback_type_t
 instrumentr_callback_get_type(instrumentr_callback_t callback);
 SEXP r_instrumentr_callback_get_type(SEXP r_callback);
 
@@ -111,10 +125,10 @@ SEXP r_instrumentr_callback_enable(SEXP r_callback);
 
 /* mutator  */
 void instrumentr_callback_disable(instrumentr_callback_t callback);
-void r_instrumentr_callback_disable(instrumentr_callback_t callback);
+SEXP r_instrumentr_callback_disable(SEXP r_callback);
 
 /* mutator  */
 void instrumentr_callback_reinstate(instrumentr_callback_t callback);
-void r_instrumentr_callback_reinstate(instrumentr_callback_t callback);
+SEXP r_instrumentr_callback_reinstate(SEXP r_callback);
 
 #endif /* INSTRUMENTR_CALLBACK_H */

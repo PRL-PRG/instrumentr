@@ -1,10 +1,10 @@
 
 #' @export
-with_tracing_disabled <- function(code) {
+with_tracing_disabled <- function(tracer, code) {
 
-    .Call(C_instrumentr_disable_tracing)
+    .Call(C_instrumentr_tracer_disable, tracer)
 
-    on.exit(.Call(C_instrumentr_reinstate_tracing))
+    on.exit(.Call(C_instrumentr_tracer_reinstate, tracer))
 
     code
 }

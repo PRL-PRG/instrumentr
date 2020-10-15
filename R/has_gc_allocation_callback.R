@@ -5,6 +5,6 @@ has_gc_allocation_callback <- function(object, ...) {
 }
 
 #' @export
-has_gc_allocation_callback.instrumentr_context <- function(object, ...) { # nolint
-    .Call(C_context_has_gc_allocation_callback, object)
+has_gc_allocation_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_gc_allocation, object)
 }

@@ -1,4 +1,6 @@
-#include "object_layout.h"
+#ifndef INSTRUMENTR_TRACER_H
+#define INSTRUMENTR_TRACER_H
+
 #include <instrumentr/application.h>
 #include <instrumentr/package.h>
 #include <instrumentr/call_stack.h>
@@ -9,6 +11,14 @@
  *******************************************************************************/
 
 typedef struct instrumentr_tracer_impl_t* instrumentr_tracer_t;
+
+/********************************************************************************
+ * interop
+ *******************************************************************************/
+
+SEXP instrumentr_tracer_wrap(instrumentr_tracer_t tracer);
+
+instrumentr_tracer_t instrumentr_tracer_unwrap(SEXP r_tracer);
 
 /********************************************************************************
  * application
@@ -61,39 +71,78 @@ SEXP r_instrumentr_tracer_enable(SEXP r_tracer);
 
 /* mutator  */
 void instrumentr_tracer_disable(instrumentr_tracer_t tracer);
-void r_instrumentr_tracer_disable(instrumentr_tracer_t tracer);
+SEXP r_instrumentr_tracer_disable(SEXP r_tracer);
 
 /* mutator  */
 void instrumentr_tracer_reinstate(instrumentr_tracer_t tracer);
-void r_instrumentr_tracer_reinstate(instrumentr_tracer_t tracer);
+SEXP r_instrumentr_tracer_reinstate(SEXP r_tracer);
+
+/********************************************************************************
+ * packages
+ *******************************************************************************/
+
+int instrumentr_tracer_get_traced_package_count(instrumentr_tracer_t tracer);
+SEXP r_instrumentr_tracer_get_traced_package_count(SEXP r_tracer);
+
+int instrumentr_tracer_get_traced_function_count(instrumentr_tracer_t tracer,
+                                                 const char* package_name);
+SEXP r_instrumentr_tracer_get_traced_function_count(SEXP r_tracer,
+                                                    SEXP r_package_name);
+
+int instrumentr_tracer_is_package_traced(instrumentr_tracer_t tracer,
+                                         const char* name);
+SEXP r_instrumentr_tracer_is_package_traced(SEXP r_tracer, SEXP r_package_name);
+
+int instrumentr_tracer_is_function_traced(instrumentr_tracer_t tracer,
+                                          const char* package_name,
+                                          const char* function_name);
+SEXP r_instrumentr_tracer_is_function_traced(SEXP r_tracer,
+                                             SEXP r_package_name,
+                                             SEXP r_function_name);
+
+SEXP r_instrumentr_tracer_get_traced_packages(SEXP r_tracer);
+SEXP r_instrumentr_tracer_get_traced_functions(SEXP r_tracer,
+                                               SEXP r_package_name);
+
+void instrumentr_tracer_trace_package(instrumentr_tracer_t tracer,
+                                      const char* package_name);
+SEXP r_instrumentr_tracer_trace_package(SEXP r_tracer, SEXP r_package_name);
+
+void instrumentr_tracer_trace_function(instrumentr_tracer_t tracer,
+                                       const char* package_name,
+                                       const char* function_name);
+SEXP r_instrumentr_tracer_trace_function(SEXP r_tracer,
+                                         SEXP r_package_name,
+                                         SEXP r_function_name);
 
 /********************************************************************************
  * callbacks
  *******************************************************************************/
 
-#define TRACER_CALLBACK_API(TYPE, NAME)                                       \
-                                                                              \
-    /* accessor */                                                            \
-    int instrumentr_tracer_has_##NAME##_callback(instrumentr_trace_t tracer); \
-    SEXP r_instrumentr_tracer_has_##NAME##_callback(SEXP r_tracer);           \
-                                                                              \
-    /* accessor */                                                            \
-    instrumentr_callback_t instrumentr_tracer_get_##NAME##_callback(          \
-        instrumentr_trace_t tracer);                                          \
-    SEXP r_instrumentr_tracer_get_##NAME##_callback(SEXP r_tracer);           \
-                                                                              \
-    /* accessor */                                                            \
-    void instrumentr_tracer_set_##NAME##_callback(                            \
-        instrumentr_trace_t tracer, instrumentr_callback_t callback);         \
-    SEXP r_instrumentr_tracer_set_##NAME##_callback(SEXP r_tracer,            \
-                                                    SEXP r_callback);         \
-                                                                              \
-    /* mutator */                                                             \
-    void instrumentr_tracer_remove_##NAME##_callback(                         \
-        instrumentr_trace_t tracer);                                          \
-    SEXP r_instrumentr_tracer_remove_##NAME##_callback(SEXP r_tracer);
+#define TRACER_CALLBACK_API(TYPE, NAME)                                      \
+                                                                             \
+    /* accessor */                                                           \
+    int instrumentr_tracer_has_callback_##NAME(instrumentr_tracer_t tracer); \
+    SEXP r_instrumentr_tracer_has_callback_##NAME(SEXP r_tracer);            \
+                                                                             \
+    /* accessor */                                                           \
+    instrumentr_callback_t instrumentr_tracer_get_callback_##NAME(           \
+        instrumentr_tracer_t tracer);                                        \
+    SEXP r_instrumentr_tracer_get_callback_##NAME(SEXP r_tracer);            \
+                                                                             \
+    /* accessor */                                                           \
+    void instrumentr_tracer_set_callback_##NAME(                             \
+        instrumentr_tracer_t tracer, instrumentr_callback_t callback);       \
+    SEXP r_instrumentr_tracer_set_callback_##NAME(SEXP r_tracer,             \
+                                                  SEXP r_callback);          \
+                                                                             \
+    /* mutator */                                                            \
+    void instrumentr_tracer_remove_callback_##NAME(                          \
+        instrumentr_tracer_t tracer);                                        \
+    SEXP r_instrumentr_tracer_remove_callback_##NAME(SEXP r_tracer);
 
 INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_API)
 
 #undef TRACER_CALLBACK_API
-#undef INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO
+
+#endif /* INSTRUMENTR_TRACER_H */

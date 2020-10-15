@@ -56,7 +56,7 @@ SEXP r_instrumentr_function_get_definition(SEXP r_function);
  *******************************************************************************/
 
 /* accessor  */
-SEXP instrumentr_function_get_parameter_count(instrumentr_function_t function);
+int instrumentr_function_get_parameter_count(instrumentr_function_t function);
 SEXP r_instrumentr_function_get_parameter_count(SEXP r_function);
 
 /********************************************************************************

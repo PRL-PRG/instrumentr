@@ -5,8 +5,8 @@ is_package_traced <- function(object, package_name, ...) {
 }
 
 #' @export
-is_package_traced.instrumentr_context <- function(object, package_name, ...) { # nolint
+is_package_traced.instrumentr_tracer <- function(object, package_name, ...) { # nolint
     stopifnot(is_scalar_character(package_name))
 
-    .Call(C_context_is_package_traced, object, package_name)
+    .Call(C_instrumentr_tracer_is_package_traced, object, package_name)
 }

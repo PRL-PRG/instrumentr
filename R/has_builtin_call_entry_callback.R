@@ -5,6 +5,6 @@ has_builtin_call_entry_callback <- function(object, ...) { # nolint
 }
 
 #' @export
-has_builtin_call_entry_callback.instrumentr_context <- function(object, ...) { # nolint
-    .Call(C_context_has_builtin_call_entry_callback, object)
+has_builtin_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_builtin_call_entry, object)
 }

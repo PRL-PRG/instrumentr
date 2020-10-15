@@ -1,5 +1,6 @@
 #include "dyntracer.h"
 #include "dyntrace.h"
+#include "interop.h"
 
 #ifdef USING_DYNTRACE
 
@@ -27,7 +28,7 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_environment_variable_lookup_callback(
         dyntracer, dyntrace_variable_lookup);
 
-    dyntracer_set_data((void*) (tracer));
+    dyntracer_set_data(dyntracer, (void*) (tracer));
 
     return dyntracer;
 }
@@ -41,7 +42,7 @@ instrumentr_tracer_t instrumentr_dyntracer_get_tracer(dyntracer_t* dyntracer) {
         (instrumentr_tracer_t)(dyntracer_get_data(dyntracer));
 
     if (tracer == NULL) {
-        instrumentr_raise_error(
+        instrumentr_log_error(
             "dyntracer has a NULL reference to instrumentr tracer");
     }
 

@@ -3,6 +3,7 @@
 #include "object_internals.h"
 #include <instrumentr/object.h>
 #include <instrumentr/tracer.h>
+#include "tracer_internals.h"
 #include <instrumentr/application.h>
 #include "application_internals.h"
 #include <instrumentr/package.h>
@@ -18,7 +19,7 @@
 
 #include <stdio.h>
 
-static const R_CallMethodDef CallEntries[] = {
+const R_CallMethodDef CallEntries[] = {
     /* instrumentr */
     {"instrumentr_get_commit_hash", (DL_FUNC) &r_instrumentr_get_commit_hash, 0},
     {"instrumentr_is_tracing_enabled", (DL_FUNC) &r_instrumentr_is_tracing_enabled, 0},
@@ -27,6 +28,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_reinstate_tracing", (DL_FUNC) &r_instrumentr_reinstate_tracing, 0},
     {"instrumentr_initialize", (DL_FUNC) &r_instrumentr_initialize, 2},
     {"instrumentr_finalize", (DL_FUNC) &r_instrumentr_finalize, 0},
+    {"instrumentr_initialize_tracing", (DL_FUNC) &r_instrumentr_initialize_tracing, 1},
+    {"instrumentr_finalize_tracing", (DL_FUNC) &r_instrumentr_finalize_tracing, 1},
 
     /* trace */
     {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 3},
@@ -55,11 +58,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_object_remove_r_data", (DL_FUNC) &r_instrumentr_object_remove_r_data, 1},
 
     /* tracer */
-    {"instrumentr_tracer_create", (DL_FUNC) &r_instrumentr_tracer_create, 1},
+    {"instrumentr_tracer_create", (DL_FUNC) &r_instrumentr_tracer_create, 0},
     {"instrumentr_tracer_get_application", (DL_FUNC) &r_instrumentr_tracer_get_application, 1},
     {"instrumentr_tracer_get_environment", (DL_FUNC) &r_instrumentr_tracer_get_environment, 1},
     {"instrumentr_tracer_is_active", (DL_FUNC) &r_instrumentr_tracer_is_active, 1},
-    {"instrumentr_tracer_get_active_callback", (DL_FUNC) &r_instrumentr_get_active_callback, 1},
+    {"instrumentr_tracer_get_active_callback", (DL_FUNC) &r_instrumentr_tracer_get_active_callback, 1},
     {"instrumentr_tracer_is_enabled", (DL_FUNC) &r_instrumentr_tracer_is_enabled, 1},
     {"instrumentr_tracer_enable", (DL_FUNC) &r_instrumentr_tracer_enable, 1},
     {"instrumentr_tracer_disable", (DL_FUNC) &r_instrumentr_tracer_disable, 1},
@@ -74,17 +77,17 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_tracer_trace_function", (DL_FUNC) &r_instrumentr_tracer_trace_function, 3},
 
 #define TRACER_CALLBACK_INTERFACE(TYPE, NAME)                                                                     \
-    {"instrumentr_tracer_has_" #NAME "_callback", (DL_FUNC) &r_instrumentr_tracer_has_##NAME##_callback, 1},      \
-    {"instrumentr_tracer_get_" #NAME "_callback", (DL_FUNC) &r_instrumentr_tracer_get_##NAME##_callback, 1},      \
-    {"instrumentr_tracer_set_" #NAME "_callback", (DL_FUNC) &r_instrumentr_tracer_set_##NAME##_callback, 2},      \
-    {"instrumentr_tracer_remove_" #NAME "_callback", (DL_FUNC) &r_instrumentr_tracer_remove_##NAME##_callback, 1},
+    {"instrumentr_tracer_has_callback_" #NAME, (DL_FUNC) &r_instrumentr_tracer_has_callback_##NAME, 1},      \
+    {"instrumentr_tracer_get_callback_" #NAME, (DL_FUNC) &r_instrumentr_tracer_get_callback_##NAME, 1},      \
+    {"instrumentr_tracer_set_callback_" #NAME, (DL_FUNC) &r_instrumentr_tracer_set_callback_##NAME, 2},      \
+    {"instrumentr_tracer_remove_callback_" #NAME, (DL_FUNC) &r_instrumentr_tracer_remove_callback_##NAME, 1},
 
 INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 
 #undef TRACER_CALLBACK_INTERFACE
 
     /* application */
-    {"instrumentr_application_create", (DL_FUNC) &r_instrumentr_application_create_application, 5},
+    {"instrumentr_application_create", (DL_FUNC) &r_instrumentr_application_create, 5},
     {"instrumentr_application_get_name", (DL_FUNC) &r_instrumentr_application_get_name, 1},
     {"instrumentr_application_get_directory", (DL_FUNC) &r_instrumentr_application_get_directory, 1},
     {"instrumentr_application_get_code", (DL_FUNC) &r_instrumentr_application_get_code, 1},
@@ -92,17 +95,17 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
     {"instrumentr_application_get_frame_position", (DL_FUNC) &r_instrumentr_application_get_frame_position, 1},
     {"instrumentr_application_get_packages", (DL_FUNC) &r_instrumentr_application_get_packages, 1},
     {"instrumentr_application_get_call_stack", (DL_FUNC) &r_instrumentr_application_get_call_stack, 1},
-    {"instrumentr_application_add_package", (DL_FUNC) &r_instrumentr_application_add_package, 2},
+    {"instrumentr_application_append_package", (DL_FUNC) &r_instrumentr_application_append_package, 2},
 
     /* package */
-    {"instrumentr_package_create_package", (DL_FUNC) &r_instrumentr_package_create_package, 3},
+    {"instrumentr_package_create", (DL_FUNC) &r_instrumentr_package_create, 3},
     {"instrumentr_package_get_name", (DL_FUNC) &r_instrumentr_package_get_name, 1},
     {"instrumentr_package_get_directory", (DL_FUNC) &r_instrumentr_package_get_directory, 1},
     {"instrumentr_package_get_namespace", (DL_FUNC) &r_instrumentr_package_get_namespace, 1},
     {"instrumentr_package_get_functions", (DL_FUNC) &r_instrumentr_package_get_functions, 1},
 
     /* function */
-    {"instrumentr_function_create_function", (DL_FUNC) &r_instrumentr_function_create_function, 6},
+    {"instrumentr_function_create", (DL_FUNC) &r_instrumentr_function_create, 6},
     {"instrumentr_function_get_name", (DL_FUNC) &r_instrumentr_function_get_name, 1},
     {"instrumentr_function_get_parameter_count", (DL_FUNC) &r_instrumentr_function_get_parameter_count, 1},
     {"instrumentr_function_get_definition", (DL_FUNC) &r_instrumentr_function_get_definition, 1},
@@ -127,9 +130,14 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
     /* parameter */
     {"instrumentr_parameter_get_name", (DL_FUNC) &r_instrumentr_parameter_get_name, 1},
     {"instrumentr_parameter_get_position", (DL_FUNC) &r_instrumentr_parameter_get_position, 1},
-    {"instrumentr_parameter_get_arguments", (DL_FUNC) &r_instrumentr_parameter_get_arguments, 1},
     {"instrumentr_parameter_is_missing", (DL_FUNC) &r_instrumentr_parameter_is_missing, 1},
     {"instrumentr_parameter_is_vararg", (DL_FUNC) &r_instrumentr_parameter_is_vararg, 1},
+    {"instrumentr_parameter_get_argument_count", (DL_FUNC) &r_instrumentr_parameter_get_argument_count, 1},
+    {"instrumentr_parameter_get_argument_by_name", (DL_FUNC) &r_instrumentr_parameter_get_argument_by_name, 2},
+    {"instrumentr_parameter_get_argument_by_position", (DL_FUNC) &r_instrumentr_parameter_get_argument_by_position, 2},
+    {"instrumentr_parameter_get_arguments", (DL_FUNC) &r_instrumentr_parameter_get_arguments, 1},
+    {"instrumentr_parameter_has_default_argument", (DL_FUNC) &r_instrumentr_parameter_has_default_argument, 1},
+    {"instrumentr_parameter_get_default_argument", (DL_FUNC) &r_instrumentr_parameter_get_default_argument, 1},
 
     /* argument */
     {"instrumentr_argument_has_name", (DL_FUNC) &r_instrumentr_argument_has_name, 1},
@@ -141,7 +149,7 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 
     /* call_stack */
     {"instrumentr_call_stack_get_size", (DL_FUNC) &r_instrumentr_call_stack_get_size, 1},
-    {"instrumentr_call_stack_peek_frame", (DL_FUNC) &r_instrumentr_call_stack_peek_frame, 2},
+    {"instrumentr_call_stack_peek", (DL_FUNC) &r_instrumentr_call_stack_peek, 2},
 
     /* callback */
     {"instrumentr_callback_has_r_function", (DL_FUNC) &r_instrumentr_callback_has_r_function, 1},
@@ -155,8 +163,8 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
     {"instrumentr_callback_reinstate", (DL_FUNC) &r_instrumentr_callback_reinstate, 1},
 
 #define CALLBACK_CREATE(TYPE, NAME)                                                                                                  \
-    {"instrumentr_callback_create_" #NAME "_from_r_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_r_function, 1}, \
-    {"instrumentr_callback_create_" #NAME "_from_c_function", (DL_FUNC) &r_instrumentr_callback_create_##NAME##_from_c_function, 1},
+    {"instrumentr_callback_" #NAME "_create_from_r_function", (DL_FUNC) &r_instrumentr_callback_##NAME##_create_from_r_function, 1}, \
+    {"instrumentr_callback_" #NAME "_create_from_c_function", (DL_FUNC) &r_instrumentr_callback_##NAME##_create_from_c_function, 1},
 
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_CREATE)
 
@@ -168,6 +176,4 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 void R_init_instrumentr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
-
-    instrumentr_object_class_initialize();
 }

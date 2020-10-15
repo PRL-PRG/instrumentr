@@ -1,5 +1,5 @@
 
-uninstrument_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
+uninstrument_function <- function(tracer_ptr, application_ptr, package_ptr, function_ptr) {
 
     package_name <- get_name(package_ptr)
     function_name <- get_name(function_ptr)
@@ -19,32 +19,32 @@ uninstrument_function <- function(context_ptr, application_ptr, package_ptr, fun
 
     remove_instrumented_function(package_name, function_name)
 
-    .Call(C_context_trace_function_detach, context_ptr, application_ptr, package_ptr, function_ptr)
+    .Call(C_instrumentr_trace_function_detach, tracer_ptr, application_ptr, package_ptr, function_ptr)
 }
 
-uninstrument_package <- function(context_ptr, application_ptr, package_ptr) {
+uninstrument_package <- function(tracer_ptr, application_ptr, package_ptr) {
 
     package_name <- get_name(package_ptr)
 
-    .Call(C_context_trace_package_detach, context_ptr, application_ptr, package_ptr)
+    .Call(C_instrumentr_trace_package_detach, tracer_ptr, application_ptr, package_ptr)
 
     function_ptrs <- rev(get_functions(package_ptr))
 
     for (function_ptr in function_ptrs) {
-        uninstrument_function(context_ptr, application_ptr, package_ptr, function_ptr)
+        uninstrument_function(tracer_ptr, application_ptr, package_ptr, function_ptr)
     }
 
     message("Uninstrumented ", length(function_ptrs), " functions from ", package_name)
 
-    .Call(C_context_trace_package_unload, context_ptr, application_ptr, package_ptr)
+    .Call(C_instrumentr_trace_package_unload, tracer_ptr, application_ptr, package_ptr)
 
     remove_instrumented_package(package_name)
 }
 
-remove_instrumentation <- function(context_ptr, application_ptr) {
+remove_instrumentation <- function(tracer_ptr, application_ptr) {
     package_ptrs <- rev(get_packages(application_ptr))
 
     for (package_ptr in package_ptrs) {
-        uninstrument_package(context_ptr, application_ptr, package_ptr)
+        uninstrument_package(tracer_ptr, application_ptr, package_ptr)
     }
 }

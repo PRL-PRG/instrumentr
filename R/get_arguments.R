@@ -6,5 +6,5 @@ get_arguments <- function(parameter, ...) {
 
 #' @export
 get_arguments.instrumentr_parameter <- function(parameter, ...) { # nolint
-    .Call(C_parameter_get_arguments, parameter)
+    .Call(C_instrumentr_parameter_get_arguments, parameter)
 }

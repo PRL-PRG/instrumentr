@@ -6,5 +6,5 @@ get_call_stack <- function(object, ...) {
 
 #' @export
 get_call_stack.instrumentr_application <- function(object, ...) { # nolint
-    .Call(C_application_get_call_stack, object)
+    .Call(C_instrumentr_application_get_call_stack, object)
 }

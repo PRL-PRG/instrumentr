@@ -6,10 +6,10 @@ get_expression <- function(object, ...) {
 
 #' @export
 get_expression.instrumentr_call <- function(object, ...) { # nolint
-    .Call(C_call_get_expression, object)
+    .Call(C_instrumentr_call_get_expression, object)
 }
 
 #' @export
 get_expression.instrumentr_argument <- function(object, ...) { # nolint
-    .Call(C_argument_get_expression, object)
+    .Call(C_instrumentr_argument_get_expression, object)
 }

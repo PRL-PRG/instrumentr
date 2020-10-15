@@ -63,4 +63,3 @@ Please report bugs with a minimal reproducible example at [GitHub](https://githu
 Request new features with use cases at [GitHub](https://github.com/PRL-PRG/instrumentr/issues).
 
 For questions please contact [Aviral Goel](http://aviral.io).
-

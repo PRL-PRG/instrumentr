@@ -3,6 +3,8 @@
 #include "application_internals.h"
 #include <instrumentr/package.h>
 #include <instrumentr/call_stack.h>
+#include "interop.h"
+#include "utilities.h"
 #include "vec.h"
 
 /********************************************************************************
@@ -12,7 +14,7 @@
 typedef vec_t(instrumentr_package_t) instrumentr_package_vector_t;
 
 struct instrumentr_application_impl_t {
-    instrumentr_object_impl_t object;
+    struct instrumentr_object_impl_t object;
     const char* name;
     const char* directory;
     SEXP r_code;
@@ -29,27 +31,27 @@ struct instrumentr_application_impl_t {
 void instrumentr_application_finalize(instrumentr_object_t object) {
     instrumentr_application_t application = (instrumentr_application_t)(object);
 
-    free(application -> name);
+    free((char*)(application -> name));
 
-    free(application->directory);
+    free((char*)(application->directory));
 
-    instrumentr_release_sexp(application->r_code);
+    instrumentr_sexp_release(application->r_code);
     application->r_code = NULL;
 
-    instrumentr_release_sexp(application->r_environment);
+    instrumentr_sexp_release(application->r_environment);
     application->r_environment = NULL;
 
     application->frame_position = 0;
 
-    instrumentr_object_decrement_reference(instrumentr->call_stack);
+    instrumentr_object_release(application->call_stack);
     application->call_stack = NULL;
 
     int count = application->packages.length;
-    instrumentr_package_t packages[] = application->packages.data;
+    instrumentr_package_t* packages = application->packages.data;
 
     for (int i = 0; i < count; ++i) {
         instrumentr_package_t package = packages[i];
-        instrumentr_object_decrement_reference(package);
+        instrumentr_object_release(package);
     }
 
     vec_deinit(&application->packages);
@@ -70,7 +72,7 @@ instrumentr_application_create(const char* const name,
     const char* duplicate_directory = instrumentr_duplicate_string(directory);
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(instrumentr_application_impl_t),
+        instrumentr_object_create(sizeof(struct instrumentr_application_impl_t),
                                   INSTRUMENTR_APPLICATION,
                                   instrumentr_application_finalize);
 
@@ -92,6 +94,36 @@ instrumentr_application_create(const char* const name,
     vec_init(&application->packages);
 
     return application;
+}
+
+SEXP r_instrumentr_application_create(SEXP r_name,
+                                      SEXP r_directory,
+                                      SEXP r_code,
+                                      SEXP r_environment,
+                                      SEXP r_frame_position) {
+    const char* const name = instrumentr_r_character_to_c_string(r_name);
+    const char* const directory =
+        instrumentr_r_character_to_c_string(r_directory);
+    int frame_position = instrumentr_r_integer_to_c_int(r_frame_position);
+    instrumentr_application_t application = instrumentr_application_create(
+        name, directory, r_code, r_environment, frame_position);
+    SEXP r_application = instrumentr_application_wrap(application);
+    instrumentr_object_release(application);
+    return r_application;
+}
+
+/********************************************************************************
+ * interop
+ *******************************************************************************/
+
+SEXP instrumentr_application_wrap(instrumentr_application_t application) {
+    return instrumentr_object_wrap((instrumentr_object_t)(application));
+}
+
+instrumentr_application_t instrumentr_application_unwrap(SEXP r_application) {
+    instrumentr_object_t object =
+        instrumentr_object_unwrap(r_application, INSTRUMENTR_APPLICATION);
+    return (instrumentr_application_t)(object);
 }
 
 /*******************************************************************************
@@ -205,8 +237,7 @@ int instrumentr_application_get_package_count(
     return application->packages.length;
 }
 
-SEXP r_instrumentr_application_get_package_count(
-    instrumentr_application_t application) {
+SEXP r_instrumentr_application_get_package_count(SEXP r_application) {
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);
     int count = instrumentr_application_get_package_count(application);
@@ -221,15 +252,17 @@ instrumentr_package_t instrumentr_application_get_package_by_position(
     if (position < count && position >= 0) {
         return application->packages.data[position];
     } else {
-        instrumentr_raise_error(
+        instrumentr_log_error(
             "attempt to access %d package of a application with %d packages",
             position,
             count);
+        /* NOTE: never executed */
+        return NULL;
     }
 }
 
 SEXP r_instrumentr_application_get_package_by_position(SEXP r_application,
-                                                      SEXP r_position) {
+                                                       SEXP r_position) {
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);
     /* NOTE: 1 based indexing in R */
@@ -240,26 +273,28 @@ SEXP r_instrumentr_application_get_package_by_position(SEXP r_application,
 }
 
 /* accessor  */
-instrumentr_package_t
-instrumentr_application_get_package_by_name(instrumentr_application_t application,
-                                           const char* name) {
+instrumentr_package_t instrumentr_application_get_package_by_name(
+    instrumentr_application_t application,
+    const char* name) {
     int count = instrumentr_application_get_package_count(application);
-    instrumentr_package_t packages[] = application->packages.data;
+    instrumentr_package_t* packages = application->packages.data;
 
     for (int i = 0; i < count; ++i) {
         instrumentr_package_t package = packages[i];
         const char* actual_name = instrumentr_package_get_name(package);
         if (actual_name != NULL && strcmp(actual_name, name) == 0) {
-            return instrumentr_package_wrap(package);
+            return package;
         }
     }
 
-    instrumentr_raise_errro(
+    instrumentr_log_error(
         "package with name '%s' does not exist for this application", name);
+    /* NOTE: never executed */
+    return NULL;
 }
 
 SEXP r_instrumentr_application_get_package_by_name(SEXP r_application,
-                                                  SEXP r_name) {
+                                                   SEXP r_name) {
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);
     const char* name = instrumentr_r_character_to_c_string(r_name);
@@ -272,7 +307,7 @@ SEXP r_instrumentr_application_get_package_by_name(SEXP r_application,
 SEXP r_instrumentr_application_get_packages(SEXP r_application) {
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);
-    instrumentr_package_t packages[] = application->packages.data;
+    instrumentr_package_t* packages = application->packages.data;
     int count = instrumentr_application_get_package_count(application);
 
     SEXP r_packages = PROTECT(allocVector(VECSXP, count));
@@ -291,17 +326,19 @@ SEXP r_instrumentr_application_get_packages(SEXP r_application) {
 }
 
 /* mutator */
-void instrumentr_application_append_package(instrumentr_application_t application,
-                                         instrumentr_package_t package) {
+void instrumentr_application_append_package(
+    instrumentr_application_t application,
+    instrumentr_package_t package) {
     vec_push(&application->packages, package);
 }
 
 /* mutator */
-SEXP r_instrumentr_application_append_package(SEXP r_application, SEXP r_package) {
+SEXP r_instrumentr_application_append_package(SEXP r_application,
+                                              SEXP r_package) {
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);
     instrumentr_package_t package = instrumentr_package_unwrap(r_package);
-    instrumentr_application_add_package(application, package);
+    instrumentr_application_append_package(application, package);
     return R_NilValue;
 }
 
@@ -309,7 +346,5 @@ SEXP r_instrumentr_application_append_package(SEXP r_application, SEXP r_package
 void instrumentr_application_remove_package(
     instrumentr_application_t application,
     instrumentr_package_t package) {
-
     vec_remove(&application->packages, package);
 }
-

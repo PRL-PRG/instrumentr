@@ -1,23 +1,28 @@
-insert_instrumentation <- function(context_ptr, application_ptr) {
+insert_instrumentation <- function(tracer_ptr, application_ptr) {
+    .Call(C_instrumentr_tracer_disable, tracer_ptr)
 
     handle_package <- function(package_name, ...) {
+        .Call(C_instrumentr_tracer_disable, tracer_ptr)
+
         package_env <- getNamespace(package_name)
 
         package_dir <- dirname(system.file(package=package_name))
 
         package_ptr <- create_package(package_name, package_dir, package_env)
 
-        .Call(C_context_trace_package_load, context_ptr, application_ptr, package_ptr)
+        .Call(C_instrumentr_trace_package_load, tracer_ptr, application_ptr, package_ptr)
 
-        instrument_package(context_ptr, application_ptr, package_ptr)
+        instrument_package(tracer_ptr, application_ptr, package_ptr)
 
-        .Call(C_context_trace_package_attach, context_ptr, application_ptr, package_ptr)
+        .Call(C_instrumentr_trace_package_attach, tracer_ptr, application_ptr, package_ptr)
 
         ## remove hook after its job is done
         setHook(packageEvent(package_name, "onLoad"), NULL, "replace")
+
+        .Call(C_instrumentr_tracer_reinstate, tracer_ptr)
     }
 
-    traced_packages <- get_traced_packages(context_ptr)
+    traced_packages <- get_traced_packages(tracer_ptr)
 
     remove_packages <- c("tools:callr", "tools:rstudio", "instrumentr")
 
@@ -30,19 +35,21 @@ insert_instrumentation <- function(context_ptr, application_ptr) {
     for (package in setdiff(traced_packages, loaded_packages)) {
         setHook(packageEvent(package, "onLoad"), handle_package)
     }
+
+    .Call(C_instrumentr_tracer_enable, tracer_ptr)
 }
 
-instrument_package <- function(context_ptr, application_ptr, package_ptr) {
+instrument_package <- function(tracer_ptr, application_ptr, package_ptr) {
 
     package_name <- get_name(package_ptr)
 
-    package_env <- get_environment(package_ptr)
+    package_env <- get_namespace(package_ptr)
 
     function_table <- get_function_table(package_env)
 
     all_function_names <- ls(envir=package_env, all.names = TRUE)
 
-    traced_function_names <- get_traced_functions(context_ptr, package_name)
+    traced_function_names <- get_traced_functions(tracer_ptr, package_name)
 
     if (length(traced_function_names) == 0) {
         function_names <- all_function_names
@@ -70,9 +77,9 @@ instrument_package <- function(context_ptr, application_ptr, package_ptr) {
                                         function_entry$s3_generic,
                                         function_entry$s3_method)
 
-        .Call(C_context_trace_function_attach, context_ptr, application_ptr, package_ptr, function_ptr)
+        .Call(C_instrumentr_trace_function_attach, tracer_ptr, application_ptr, package_ptr, function_ptr)
 
-        package <- instrument_function(context_ptr, application_ptr, package_ptr, function_ptr)
+        package <- instrument_function(tracer_ptr, application_ptr, package_ptr, function_ptr)
 
     }
 
@@ -83,10 +90,10 @@ is_instrumented <- function(package_name, function_name) {
     has_instrumented_function(package_name, function_name)
 }
 
-instrument_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
+instrument_function <- function(tracer_ptr, application_ptr, package_ptr, function_ptr) {
 
     package_name <- get_name(package_ptr)
-    package_env <- get_environment(package_ptr)
+    package_env <- get_namespace(package_ptr)
 
     function_name <- get_name(function_ptr)
     function_obj <- get_definition(function_ptr)
@@ -96,7 +103,7 @@ instrument_function <- function(context_ptr, application_ptr, package_ptr, funct
         message(msg)
     }
     else {
-        old_function_obj <- modify_function(context_ptr, application_ptr, package_ptr, function_ptr)
+        old_function_obj <- modify_function(tracer_ptr, application_ptr, package_ptr, function_ptr)
 
         add_instrumented_function(package_name,
                                   function_name,
@@ -109,67 +116,67 @@ instrument_function <- function(context_ptr, application_ptr, package_ptr, funct
 }
 
 #' @importFrom injectr inject_code create_duplicate
-modify_function <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
+modify_function <- function(tracer_ptr, application_ptr, package_ptr, function_ptr) {
 
     function_obj <- get_definition(function_ptr)
 
     old_function_obj <- create_duplicate(function_obj)
 
-    check_params <- create_argval_tracing_code(context_ptr, application_ptr, package_ptr, function_ptr)
+    check_params <- create_argval_tracing_code(tracer_ptr, application_ptr, package_ptr, function_ptr)
     inject_code(check_params, function_obj)
 
-    check_retval <- create_retval_tracing_code(context_ptr, application_ptr, package_ptr, function_ptr)
+    check_retval <- create_retval_tracing_code(tracer_ptr, application_ptr, package_ptr, function_ptr)
     inject_code(check_retval, function_obj, where="onexit")
 
     old_function_obj
 }
 
-create_argval_tracing_code <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
+create_argval_tracing_code <- function(tracer_ptr, application_ptr, package_ptr, function_ptr) {
     substitute({
-        if (.Call(IS_TRACING_ENABLED)) {
+        if (.Call(IS_TRACING_ENABLED, TRACER_PTR)) {
             ## NOTE: disabling is needed to prevent recursion
             ## from calling environment and sys.call closures
-            .Call(DISABLE_TRACING)
+            .Call(DISABLE_TRACING, TRACER_PTR)
             .Call(TRACE_CALL_ENTRY,
-                  CONTEXT_PTR,
+                  TRACER_PTR,
                   APPLICATION_PTR,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
                   .Call(CREATE_CALL, FUNCTION_PTR, sys.call(), environment(), sys.nframe()))
-            .Call(REINSTATE_TRACING)
+            .Call(REINSTATE_TRACING, TRACER_PTR)
         }
-    }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
-            DISABLE_TRACING=C_instrumentr_disable_tracing,
-            TRACE_CALL_ENTRY=C_context_trace_call_entry,
-            CONTEXT_PTR=context_ptr,
+    }, list(IS_TRACING_ENABLED=C_instrumentr_tracer_is_enabled,
+            DISABLE_TRACING=C_instrumentr_tracer_disable,
+            TRACE_CALL_ENTRY=C_instrumentr_trace_call_entry,
+            TRACER_PTR=tracer_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
-            CREATE_CALL=C_call_create_call,
-            REINSTATE_TRACING=C_instrumentr_reinstate_tracing))
+            CREATE_CALL=C_instrumentr_call_create,
+            REINSTATE_TRACING=C_instrumentr_tracer_reinstate))
 }
 
-create_retval_tracing_code <- function(context_ptr, application_ptr, package_ptr, function_ptr) {
+create_retval_tracing_code <- function(tracer_ptr, application_ptr, package_ptr, function_ptr) {
     substitute({
-        if (.Call(IS_TRACING_ENABLED)) {
+        if (.Call(IS_TRACING_ENABLED, TRACER_PTR)) {
             ##NOTE: disabling is needed to prevent recursion
             ##from calling returnValue closure
-            .Call(DISABLE_TRACING)
+            .Call(DISABLE_TRACING, TRACER_PTR)
             .Call(TRACE_CALL_EXIT,
-                  CONTEXT_PTR,
+                  TRACER_PTR,
                   APPLICATION_PTR,
                   PACKAGE_PTR,
                   FUNCTION_PTR,
                   returnValue(UNDEFINED_OBJECT))
-            .Call(REINSTATE_TRACING)
+            .Call(REINSTATE_TRACING, TRACER_PTR)
         }
-    }, list(IS_TRACING_ENABLED=C_instrumentr_is_tracing_enabled,
-            DISABLE_TRACING=C_instrumentr_disable_tracing,
-            TRACE_CALL_EXIT=C_context_trace_call_exit,
-            CONTEXT_PTR=context_ptr,
+    }, list(IS_TRACING_ENABLED=C_instrumentr_tracer_is_enabled,
+            DISABLE_TRACING=C_instrumentr_tracer_disable,
+            TRACE_CALL_EXIT=C_instrumentr_trace_call_exit,
+            TRACER_PTR=tracer_ptr,
             APPLICATION_PTR=application_ptr,
             PACKAGE_PTR=package_ptr,
             FUNCTION_PTR=function_ptr,
             UNDEFINED_OBJECT=undefined_object,
-            REINSTATE_TRACING=C_instrumentr_reinstate_tracing))
+            REINSTATE_TRACING=C_instrumentr_tracer_reinstate))
 }

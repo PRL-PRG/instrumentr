@@ -5,14 +5,14 @@ trace_functions <- function(object, qualified_function_names, ...) {
 }
 
 #' @export
-trace_functions.instrumentr_context <- function(object, qualified_function_names, ...) { # nolint
+trace_functions.instrumentr_tracer <- function(object, qualified_function_names, ...) { # nolint
     is_vector_character(qualified_function_names)
 
     for (qualified_function_name in qualified_function_names) {
         name_components <- split_name_components(qualified_function_name)
         package_name <- name_components[1]
         function_name <- name_components[2]
-        .Call(C_context_trace_function, object, package_name, function_name)
+        .Call(C_instrumentr_tracer_trace_function, object, package_name, function_name)
     }
 }
 

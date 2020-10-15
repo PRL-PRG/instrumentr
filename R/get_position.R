@@ -6,5 +6,5 @@ get_position <- function(object, ...) {
 
 #' @export
 get_position.instrumentr_parameter <- function(object, ...) { # nolint
-    .Call(C_parameter_get_position, object)
+    .Call(C_instrumentr_parameter_get_position, object)
 }

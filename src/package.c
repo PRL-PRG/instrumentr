@@ -1,13 +1,16 @@
 #include <instrumentr/package.h>
-#include <instrumentr/memory.h>
+#include "interop.h"
 #include "object_internals.h"
+#include "vec.h"
+#include "utilities.h"
 
 /********************************************************************************
  * definition
  *******************************************************************************/
+typedef vec_t(instrumentr_function_t) instrumentr_function_vector_t;
 
 struct instrumentr_package_impl_t {
-    instrumentr_object_impl_t object;
+    struct instrumentr_object_impl_t object;
     const char* name;
     const char* directory;
     SEXP r_namespace;
@@ -21,12 +24,20 @@ struct instrumentr_package_impl_t {
 void instrumentr_package_finalize(instrumentr_object_t object) {
     instrumentr_package_t package = (instrumentr_package_t)(object);
 
-    free(package->name);
-    free(package->directory);
+    free((char*)(package->name));
+    free((char*)(package->directory));
 
-    instrumentr_release_sexp(package->r_namespace);
+    instrumentr_sexp_release(package->r_namespace);
 
-    instrumentr_object_decrement_reference(package->functions);
+    int count = package->functions.length;
+    instrumentr_function_t* functions = package->functions.data;
+
+    for (int i = 0; i < count; ++i) {
+        instrumentr_function_t function = functions[i];
+        instrumentr_object_release(function);
+    }
+
+    vec_deinit(&package->functions);
 }
 
 /********************************************************************************
@@ -36,15 +47,12 @@ void instrumentr_package_finalize(instrumentr_object_t object) {
 instrumentr_package_t instrumentr_package_create(const char* name,
                                                  const char* directory,
                                                  SEXP r_namespace) {
-    instrumentr_function_vector_t functions =
-        instrumentr_function_vector_create();
-
-    const char* duplicate_name = instrumentr_duplicate_string(name);
+     const char* duplicate_name = instrumentr_duplicate_string(name);
 
     const char* duplicate_directory = instrumentr_duplicate_string(directory);
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(instrumentr_package_impl_t),
+        instrumentr_object_create(sizeof(struct instrumentr_package_impl_t),
                                   INSTRUMENTR_PACKAGE,
                                   instrumentr_package_finalize);
 
@@ -53,10 +61,10 @@ instrumentr_package_t instrumentr_package_create(const char* name,
     package->name = duplicate_name;
     package->directory = duplicate_directory;
 
-    instrumentr_acquire_sexp(r_namespace);
+    instrumentr_sexp_acquire(r_namespace);
     package->r_namespace = r_namespace;
 
-    package->functions = functions;
+    vec_init(&package->functions);
 
     return package;
 }
@@ -136,16 +144,109 @@ SEXP r_instrumentr_package_get_namespace(SEXP r_package) {
  *******************************************************************************/
 
 /* accessor  */
-function_vector_t
-instrumentr_package_get_functions(instrumentr_package_t package) {
-    return package->functions;
+int instrumentr_package_get_function_count(instrumentr_package_t package) {
+    return package->functions.length;
 }
 
+SEXP r_instrumentr_package_get_function_count(SEXP r_package) {
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    int count = instrumentr_package_get_function_count(package);
+    return instrumentr_c_int_to_r_integer(count);
+}
+
+/* accessor  */
+instrumentr_function_t
+instrumentr_package_get_function_by_position(instrumentr_package_t package,
+                                             int position) {
+    int count = instrumentr_package_get_function_count(package);
+    if (position < count && position >= 0) {
+        return package->functions.data[position];
+    } else {
+        instrumentr_log_error(
+            "attempt to access %d function of a package with %d functions",
+            position,
+            count);
+        /* NOTE: not executed  */
+        return NULL;
+    }
+}
+
+SEXP r_instrumentr_package_get_function_by_position(SEXP r_package,
+                                                    SEXP r_position) {
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    /* NOTE: 1 based indexing in R */
+    int position = instrumentr_r_integer_to_c_int(r_position) - 1;
+    instrumentr_function_t function =
+        instrumentr_package_get_function_by_position(package, position);
+    return instrumentr_function_wrap(function);
+}
+
+/* accessor  */
+instrumentr_function_t
+instrumentr_package_get_function_by_name(instrumentr_package_t package,
+                                         const char* name) {
+    int count = instrumentr_package_get_function_count(package);
+    instrumentr_function_t* functions = package->functions.data;
+
+    for (int i = 0; i < count; ++i) {
+        instrumentr_function_t function = functions[i];
+        if (strcmp(instrumentr_function_get_name(function), name) == 0) {
+            return function;
+        }
+    }
+
+    instrumentr_log_error(
+        "function with name '%s' does not exist for this package", name);
+
+    /* NOTE: not executed  */
+    return NULL;
+}
+
+SEXP r_instrumentr_package_get_function_by_name(SEXP r_package, SEXP r_name) {
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    const char* name = instrumentr_r_character_to_c_string(r_name);
+    instrumentr_function_t function =
+        instrumentr_package_get_function_by_name(package, name);
+    return instrumentr_function_wrap(function);
+}
+
+/* accessor  */
 SEXP r_instrumentr_package_get_functions(SEXP r_package) {
     instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    instrumentr_function_t* functions = package->functions.data;
+    int count = instrumentr_package_get_function_count(package);
 
-    instrumentr_function_vector_t functions =
-        instrumentr_package_get_functions(package);
+    SEXP r_functions = PROTECT(allocVector(VECSXP, count));
+    SEXP r_names = PROTECT(allocVector(STRSXP, count));
 
-    return instrumentr_function_vector_wrap(functions);
+    for (int i = 0; i < count; ++i) {
+        instrumentr_function_t function = functions[i];
+        const char* name = instrumentr_function_get_name(function);
+        SET_VECTOR_ELT(r_functions, i, instrumentr_function_wrap(function));
+        SET_STRING_ELT(r_names, i, mkChar(name));
+    }
+
+    Rf_setAttrib(r_functions, R_NamesSymbol, r_names);
+    UNPROTECT(2);
+    return r_functions;
+}
+
+/*  mutator  */
+void instrumentr_package_append_function(instrumentr_package_t package,
+                                         instrumentr_function_t function) {
+    int index = -1;
+    vec_find(&package->functions, function, index);
+    if (index == -1) {
+        vec_push(&package->functions, function);
+    } else {
+        instrumentr_log_error("function '%s' already added to package %s",
+                              instrumentr_function_get_name(function),
+                              instrumentr_package_get_name(package));
+    }
+}
+
+/*  mutator  */
+void instrumentr_package_remove_function(instrumentr_package_t package,
+                                         instrumentr_function_t function) {
+    vec_remove(&package->functions, function);
 }

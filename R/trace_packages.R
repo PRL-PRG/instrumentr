@@ -5,11 +5,11 @@ trace_packages <- function(object, package_names, ...) {
 }
 
 #' @export
-trace_packages.instrumentr_context <- function(object, package_names, ...) { # nolint
+trace_packages.instrumentr_tracer <- function(object, package_names, ...) { # nolint
 
     is_vector_character(package_names)
 
     for (package_name in package_names) {
-        .Call(C_context_trace_package, object, package_name)
+        .Call(C_instrumentr_tracer_trace_package, object, package_name)
     }
 }
