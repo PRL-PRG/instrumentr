@@ -23,12 +23,12 @@ library(instrumentr)
 functions <- get_package_function_names("dplyr", public = TRUE, private = FALSE)
 
 application_load_callback <- function(tracer, callback, application) {
-    set_r_data(tracer, new.env(parent=emptyenv()))
+    set_data(tracer, new.env(parent=emptyenv()))
 }
 
 application_unload_callback <- function(tracer, callback, application) {
     print("application_unload_callback")
-    data <- get_r_data(tracer)
+    data <- get_data(tracer)
 
     print(ls(data))
 
@@ -85,7 +85,7 @@ call_exit_callback <- function(tracer, callback, application, package, func, cal
 
     parameters <- get_parameters(call)
 
-    data <- get_r_data(tracer)
+    data <- get_data(tracer)
 
     if (exists(fun_name, envir=data)) {
         type_sig <- get(fun_name, envir=data)

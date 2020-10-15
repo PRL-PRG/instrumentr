@@ -15,27 +15,19 @@
  OBJECT API
  *******************************************************************************/
 
-#define INSTRUMENTR_OBJECT_API_MAP(MACRO)                                      \
-    MACRO(instrumentr_object_acquire, int, void* object)                       \
-    MACRO(instrumentr_object_release, int, void* object)                       \
-    MACRO(instrumentr_object_get_id, instrumentr_id_t, void* object)           \
-    MACRO(r_instrumentr_object_get_id, SEXP, SEXP r_object)                    \
-    MACRO(instrumentr_object_has_c_data, int, void* object)                    \
-    MACRO(r_instrumentr_object_has_c_data, SEXP, SEXP r_object)                \
-    MACRO(instrumentr_object_set_c_data, void, void* object, void* c_data)     \
-    MACRO(r_instrumentr_object_set_c_data, SEXP, SEXP r_object, SEXP r_c_data) \
-    MACRO(instrumentr_object_get_c_data, void*, void* object)                  \
-    MACRO(r_instrumentr_object_get_c_data, SEXP, SEXP r_object)                \
-    MACRO(instrumentr_object_remove_c_data, void, void* object)                \
-    MACRO(r_instrumentr_object_remove_c_data, SEXP, SEXP r_object)             \
-    MACRO(instrumentr_object_has_r_data, int, void* object)                    \
-    MACRO(r_instrumentr_object_has_r_data, SEXP, SEXP r_object)                \
-    MACRO(instrumentr_object_set_r_data, void, void* object, SEXP r_data)      \
-    MACRO(r_instrumentr_object_set_r_data, SEXP, SEXP r_object, SEXP r_data)   \
-    MACRO(instrumentr_object_get_r_data, SEXP, void* object)                   \
-    MACRO(r_instrumentr_object_get_r_data, SEXP, SEXP r_object)                \
-    MACRO(instrumentr_object_remove_r_data, void, void* object)                \
-    MACRO(r_instrumentr_object_remove_r_data, SEXP, SEXP r_object)
+#define INSTRUMENTR_OBJECT_API_MAP(MACRO)                                  \
+    MACRO(instrumentr_object_acquire, int, void* object)                   \
+    MACRO(instrumentr_object_release, int, void* object)                   \
+    MACRO(instrumentr_object_get_id, instrumentr_id_t, void* object)       \
+    MACRO(r_instrumentr_object_get_id, SEXP, SEXP r_object)                \
+    MACRO(instrumentr_object_has_data, int, void* object)                  \
+    MACRO(r_instrumentr_object_has_data, SEXP, SEXP r_object)              \
+    MACRO(instrumentr_object_set_data, void, void* object, SEXP r_data)    \
+    MACRO(r_instrumentr_object_set_data, SEXP, SEXP r_object, SEXP r_data) \
+    MACRO(instrumentr_object_get_data, SEXP, void* object)                 \
+    MACRO(r_instrumentr_object_get_data, SEXP, SEXP r_object)              \
+    MACRO(instrumentr_object_remove_data, void, void* object)              \
+    MACRO(r_instrumentr_object_remove_data, SEXP, SEXP r_object)
 
 /********************************************************************************
  APPLICATION API
@@ -475,8 +467,8 @@
     INSTRUMENTR_API_MAP(INSTRUMENTR_API_DECLARATOR)
 
 #define INSTRUMENTR_API_DEFINER(FUNCTION, OUTPUT_TYPE, ...) \
-    FUNCTION =                                              \
-        (OUTPUT_TYPE(*)(__VA_ARGS__))(R_GetCCallable("instrumentr", #FUNCTION));
+    FUNCTION = (OUTPUT_TYPE(*)(__VA_ARGS__))(               \
+        R_GetCCallable("instrumentr", #FUNCTION));
 
 #define INSTRUMENTR_DEFINE_API() INSTRUMENTR_API_MAP(INSTRUMENTR_API_DEFINER)
 

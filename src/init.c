@@ -49,14 +49,10 @@ const R_CallMethodDef CallEntries[] = {
 
     /* object */
     {"instrumentr_object_get_id", (DL_FUNC) &r_instrumentr_object_get_id, 1},
-    {"instrumentr_object_has_c_data", (DL_FUNC) &r_instrumentr_object_has_c_data, 1},
-    {"instrumentr_object_get_c_data", (DL_FUNC) &r_instrumentr_object_get_c_data, 1},
-    {"instrumentr_object_set_c_data", (DL_FUNC) &r_instrumentr_object_set_c_data, 2},
-    {"instrumentr_object_remove_c_data", (DL_FUNC) &r_instrumentr_object_remove_c_data, 1},
-    {"instrumentr_object_has_r_data", (DL_FUNC) &r_instrumentr_object_has_r_data, 1},
-    {"instrumentr_object_get_r_data", (DL_FUNC) &r_instrumentr_object_get_r_data, 1},
-    {"instrumentr_object_set_r_data", (DL_FUNC) &r_instrumentr_object_set_r_data, 2},
-    {"instrumentr_object_remove_r_data", (DL_FUNC) &r_instrumentr_object_remove_r_data, 1},
+    {"instrumentr_object_has_data", (DL_FUNC) &r_instrumentr_object_has_data, 1},
+    {"instrumentr_object_get_data", (DL_FUNC) &r_instrumentr_object_get_data, 1},
+    {"instrumentr_object_set_data", (DL_FUNC) &r_instrumentr_object_set_data, 2},
+    {"instrumentr_object_remove_data", (DL_FUNC) &r_instrumentr_object_remove_data, 1},
 
     /* tracer */
     {"instrumentr_tracer_create", (DL_FUNC) &r_instrumentr_tracer_create, 0},

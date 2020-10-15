@@ -23,7 +23,6 @@ instrumentr_object_create(int size,
     object->type = type;
     object->reference_count = 1;
     object->finalizer = finalizer;
-    object->c_data = NULL;
     object->r_data = NULL;
 
     return object;
@@ -36,8 +35,7 @@ instrumentr_object_create(int size,
 void instrumentr_object_destroy(instrumentr_object_t object) {
     object->finalizer(object);
 
-    instrumentr_object_remove_r_data(object);
-    instrumentr_object_remove_c_data(object);
+    instrumentr_object_remove_data(object);
     object->finalizer = NULL;
     object->id = -1;
 
@@ -123,88 +121,25 @@ SEXP r_instrumentr_object_get_id(SEXP r_object) {
 }
 
 /*******************************************************************************
- * c_data
- *******************************************************************************/
-
-/* accessor */
-int instrumentr_object_has_c_data(void* object) {
-    instrumentr_object_t obj = (instrumentr_object_t)(object);
-    return obj->c_data != NULL;
-}
-
-SEXP r_instrumentr_object_has_c_data(SEXP r_object) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    int result = instrumentr_object_has_c_data(object);
-    return instrumentr_c_int_to_r_logical(result);
-}
-
-/* accessor */
-void* instrumentr_object_get_c_data(void* object) {
-    instrumentr_object_t obj = (instrumentr_object_t)(object);
-    if (instrumentr_object_has_c_data(obj)) {
-        return obj->c_data;
-    } else {
-        instrumentr_log_error("object does not have C data");
-        /* NOTE: not executed  */
-        return NULL;
-    }
-}
-
-SEXP r_instrumentr_object_get_c_data(SEXP r_object) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    void* c_data = instrumentr_object_get_c_data(object);
-    return instrumentr_c_pointer_to_r_externalptr(c_data, NULL);
-}
-
-/* mutator  */
-void instrumentr_object_set_c_data(void* object, void* c_data) {
-    instrumentr_object_t obj = (instrumentr_object_t)(object);
-    obj->c_data = c_data;
-}
-
-SEXP r_instrumentr_object_set_c_data(SEXP r_object, SEXP r_c_data) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    void* c_data = instrumentr_r_externalptr_to_c_pointer(r_c_data);
-    instrumentr_object_set_c_data(object, c_data);
-    return R_NilValue;
-}
-
-/* mutator  */
-void instrumentr_object_remove_c_data(void* object) {
-    instrumentr_object_t obj = (instrumentr_object_t)(object);
-    obj->c_data = NULL;
-}
-
-SEXP r_instrumentr_object_remove_c_data(SEXP r_object) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    instrumentr_object_remove_c_data(object);
-    return R_NilValue;
-}
-
-/*******************************************************************************
  * r_data
  *******************************************************************************/
 
 /* accessor */
-int instrumentr_object_has_r_data(void* object) {
+int instrumentr_object_has_data(void* object) {
     instrumentr_object_t obj = (instrumentr_object_t)(object);
     return obj->r_data != NULL;
 }
 
-SEXP r_instrumentr_object_has_r_data(SEXP r_object) {
+SEXP r_instrumentr_object_has_data(SEXP r_object) {
     void* object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    int result = instrumentr_object_has_r_data(object);
+    int result = instrumentr_object_has_data(object);
     return instrumentr_c_int_to_r_logical(result);
 }
 
 /* accessor */
-SEXP instrumentr_object_get_r_data(void* object) {
+SEXP instrumentr_object_get_data(void* object) {
     instrumentr_object_t obj = (instrumentr_object_t)(object);
-    if (instrumentr_object_has_r_data(obj)) {
+    if (instrumentr_object_has_data(obj)) {
         return obj->r_data;
     } else {
         instrumentr_log_error("object does not have R data");
@@ -213,39 +148,39 @@ SEXP instrumentr_object_get_r_data(void* object) {
     }
 }
 
-SEXP r_instrumentr_object_get_r_data(SEXP r_object) {
+SEXP r_instrumentr_object_get_data(SEXP r_object) {
     instrumentr_object_t object =
         instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    return instrumentr_object_get_r_data(object);
+    return instrumentr_object_get_data(object);
 }
 
 /* mutator  */
-void instrumentr_object_set_r_data(void* object, SEXP r_data) {
+void instrumentr_object_set_data(void* object, SEXP r_data) {
     instrumentr_object_t obj = (instrumentr_object_t)(object);
-    instrumentr_object_remove_r_data(obj);
+    instrumentr_object_remove_data(obj);
     instrumentr_sexp_acquire(r_data);
     obj->r_data = r_data;
 }
 
-SEXP r_instrumentr_object_set_r_data(SEXP r_object, SEXP r_data) {
+SEXP r_instrumentr_object_set_data(SEXP r_object, SEXP r_data) {
     instrumentr_object_t object =
         instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    instrumentr_object_set_r_data(object, r_data);
+    instrumentr_object_set_data(object, r_data);
     return R_NilValue;
 }
 
 /* mutator  */
-void instrumentr_object_remove_r_data(void* object) {
+void instrumentr_object_remove_data(void* object) {
     instrumentr_object_t obj = (instrumentr_object_t)(object);
-    if (instrumentr_object_has_r_data(obj)) {
+    if (instrumentr_object_has_data(obj)) {
         instrumentr_sexp_release(obj->r_data);
         obj->r_data = NULL;
     }
 }
 
-SEXP r_instrumentr_object_remove_r_data(SEXP r_object) {
+SEXP r_instrumentr_object_remove_data(SEXP r_object) {
     instrumentr_object_t object =
         instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
-    instrumentr_object_remove_r_data(object);
+    instrumentr_object_remove_data(object);
     return R_NilValue;
 }
