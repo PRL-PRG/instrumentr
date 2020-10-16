@@ -1,13 +1,7 @@
-#ifndef INSTRUMENTR_FUNCTION_H
-#define INSTRUMENTR_FUNCTION_H
+#ifndef INSTRUMENTR_FUNCTION_INTERNALS_H
+#define INSTRUMENTR_FUNCTION_INTERNALS_H
 
 #include <instrumentr/Rincludes.h>
-
-/********************************************************************************
- * declaration
- *******************************************************************************/
-
-typedef struct instrumentr_function_impl_t* instrumentr_function_t;
 
 /********************************************************************************
  * create
@@ -83,4 +77,4 @@ SEXP r_instrumentr_function_is_s3_generic(SEXP r_function);
 int instrumentr_function_is_s3_method(instrumentr_function_t function);
 SEXP r_instrumentr_function_is_s3_method(SEXP r_function);
 
-#endif /* INSTRUMENTR_FUNCTION_H */
+#endif /* INSTRUMENTR_FUNCTION_INTERNALS_H */

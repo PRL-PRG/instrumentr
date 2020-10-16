@@ -1,15 +1,7 @@
 #ifndef INSTRUMENTR_INSTRUMENTR_H
 #define INSTRUMENTR_INSTRUMENTR_H
 
-#include <instrumentr/tracer.h>
-#include <instrumentr/application.h>
-#include <instrumentr/package.h>
-#include <instrumentr/function.h>
-#include <instrumentr/call.h>
-#include <instrumentr/call_stack.h>
-#include <instrumentr/parameter.h>
-#include <instrumentr/argument.h>
-#include <instrumentr/callback.h>
+#include <instrumentr/types.h>
 
 /********************************************************************************
  OBJECT API
@@ -466,10 +458,14 @@
 #define INSTRUMENTR_DECLARE_API() \
     INSTRUMENTR_API_MAP(INSTRUMENTR_API_DECLARATOR)
 
-#define INSTRUMENTR_API_DEFINER(FUNCTION, OUTPUT_TYPE, ...) \
+#define INSTRUMENTR_API_INITIALIZER(FUNCTION, OUTPUT_TYPE, ...) \
     FUNCTION = (OUTPUT_TYPE(*)(__VA_ARGS__))(               \
         R_GetCCallable("instrumentr", #FUNCTION));
 
-#define INSTRUMENTR_DEFINE_API() INSTRUMENTR_API_MAP(INSTRUMENTR_API_DEFINER)
+#define INSTRUMENTR_INITIALIZE_API() INSTRUMENTR_API_MAP(INSTRUMENTR_API_INITIALIZER)
+
+INSTRUMENTR_DECLARE_API()
+
+#undef INSTRUMENTR_DECLARE_API
 
 #endif /* INSTRUMENTR_INSTRUMENTR_H */
