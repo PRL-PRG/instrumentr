@@ -1,14 +1,11 @@
-#include <instrumentr/call.h>
-#include "call_internals.h"
-#include <instrumentr/parameter.h>
-#include "parameter_internals.h"
-#include <instrumentr/argument.h>
-#include "argument_internals.h"
+#include "call.h"
+#include "parameter.h"
+#include "argument.h"
 #include "vec.h"
 #include "interop.h"
 #include "utilities.h"
-#include <instrumentr/object.h>
-#include "object_internals.h"
+#include "object.h"
+#include "object.h"
 
 /********************************************************************************
  * definition

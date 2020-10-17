@@ -1,9 +1,8 @@
-#include <instrumentr/argument.h>
-#include "argument_internals.h"
-#include <instrumentr/object.h>
+#include "argument.h"
+#include "object.h"
 #include "interop.h"
 #include "utilities.h"
-#include "object_internals.h"
+#include "object.h"
 
 /********************************************************************************
  * definition

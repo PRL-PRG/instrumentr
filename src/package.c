@@ -1,6 +1,6 @@
-#include <instrumentr/package.h>
+#include "package.h"
 #include "interop.h"
-#include "object_internals.h"
+#include "object.h"
 #include "vec.h"
 #include "utilities.h"
 

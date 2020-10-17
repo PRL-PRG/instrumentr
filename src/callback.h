@@ -1,7 +1,9 @@
-#ifndef INSTRUMENTR_CALLBACK_INTERNALS_H
-#define INSTRUMENTR_CALLBACK_INTERNALS_H
+#ifndef INSTRUMENTR_CALLBACK_H
+#define INSTRUMENTR_CALLBACK_H
 
-#include <instrumentr/callback.h>
+#include <instrumentr/types.h>
+#include <instrumentr/Rincludes.h>
+#include "callback_type.h"
 
 /********************************************************************************
  * create
@@ -16,7 +18,7 @@
                                                                                \
     instrumentr_callback_t                                                     \
         instrumentr_callback_##NAME##_create_from_c_function(                  \
-            void* c_function);                                                 \
+            NAME##_function_t c_function);                                     \
                                                                                \
     SEXP r_instrumentr_callback_##NAME##_create_from_c_function(               \
         SEXP r_c_function);
@@ -126,4 +128,4 @@ SEXP r_instrumentr_callback_disable(SEXP r_callback);
 void instrumentr_callback_reinstate(instrumentr_callback_t callback);
 SEXP r_instrumentr_callback_reinstate(SEXP r_callback);
 
-#endif /* INSTRUMENTR_CALLBACK_INTERNALS_H */
+#endif /* INSTRUMENTR_CALLBACK_H */

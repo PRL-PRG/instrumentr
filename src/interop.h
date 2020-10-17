@@ -1,5 +1,5 @@
-#ifndef INSTRUMENTR_SEXP_INTERNALS_H
-#define INSTRUMENTR_SEXP_INTERNALS_H
+#ifndef INSTRUMENTR_SEXP_H
+#define INSTRUMENTR_SEXP_H
 
 #include <instrumentr/Rincludes.h>
 
@@ -24,7 +24,12 @@ double instrumentr_r_double_to_c_int(SEXP r_value);
 SEXP instrumentr_c_string_to_r_character(const char* string);
 const char* instrumentr_r_character_to_c_string(SEXP r_character);
 
-SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer, char* tag);
+SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer,
+                                            SEXP r_tag,
+                                            SEXP r_prot,
+                                            R_CFinalizer_t finalizer);
 void* instrumentr_r_externalptr_to_c_pointer(SEXP r_pointer);
 
-#endif /* INSTRUMENTR_SEXP_INTERNALS_H */
+void instrumentr_r_externalptr_clear(SEXP r_externalptr);
+
+#endif /* INSTRUMENTR_SEXP_H */

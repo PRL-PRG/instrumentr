@@ -1,9 +1,8 @@
 #include <instrumentr/Rincludes.h>
-#include "object_internals.h"
-#include <instrumentr/tracer.h>
-#include "tracer_internals.h"
-#include <instrumentr/callback.h>
-#include <instrumentr/application.h>
+#include "object.h"
+#include "tracer.h"
+#include "callback.h"
+#include "application.h"
 #include "vec.h"
 #include "interop.h"
 #include "utilities.h"

@@ -1,6 +1,5 @@
-#include <instrumentr/callback.h>
-#include "callback_internals.h"
-#include "object_internals.h"
+#include "callback.h"
+#include "object.h"
 #include "vec.h"
 #include "interop.h"
 
@@ -117,8 +116,9 @@ instrumentr_callback_create_from_c_function(instrumentr_callback_type_t type,
                                                                               \
     instrumentr_callback_t                                                    \
         instrumentr_callback_##NAME##_create_from_c_function(                 \
-            void* c_function) {                                               \
-        return instrumentr_callback_create_from_c_function(TYPE, c_function); \
+            NAME##_function_t c_function) {                                   \
+        return instrumentr_callback_create_from_c_function(                   \
+            TYPE, (void*) (c_function));                                      \
     }                                                                         \
                                                                               \
     SEXP r_instrumentr_callback_##NAME##_create_from_c_function(              \
@@ -276,7 +276,7 @@ void* instrumentr_callback_get_c_function(instrumentr_callback_t callback) {
 SEXP r_instrumentr_callback_get_c_function(SEXP r_callback) {
     instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
     void* c_function = instrumentr_callback_get_c_function(callback);
-    return instrumentr_c_pointer_to_r_externalptr(c_function, NULL);
+    return instrumentr_c_pointer_to_r_externalptr(c_function, R_NilValue, R_NilValue, NULL);
 }
 
 /********************************************************************************

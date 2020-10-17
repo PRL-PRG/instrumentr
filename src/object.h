@@ -1,7 +1,8 @@
-#ifndef INSTRUMENTR_OBJECT_INTERNALS_H
-#define INSTRUMENTR_OBJECT_INTERNALS_H
+#ifndef INSTRUMENTR_OBJECT_H
+#define INSTRUMENTR_OBJECT_H
 
-#include <instrumentr/object.h>
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
 
 typedef void (*instrumentr_object_finalizer_t)(instrumentr_object_t object);
 
@@ -104,4 +105,4 @@ SEXP r_instrumentr_object_get_data(SEXP r_object);
 void instrumentr_object_remove_data(void* object);
 SEXP r_instrumentr_object_remove_data(SEXP r_object);
 
-#endif /* INSTRUMENTR_OBJECT_INTERNALS_H */
+#endif /* INSTRUMENTR_OBJECT_H */

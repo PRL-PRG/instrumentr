@@ -2,8 +2,8 @@
 #include "utilities.h"
 #include "vec.h"
 #include "interop.h"
-#include "tracer_internals.h"
-#include "object_internals.h"
+#include "tracer.h"
+#include "object.h"
 
 typedef vec_t(instrumentr_tracer_t) instrumentr_tracer_vector_t;
 

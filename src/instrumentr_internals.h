@@ -1,7 +1,7 @@
 #ifndef INSTRUMENTR_INSTRUMENTR_INTERNALS_H
 #define INSTRUMENTR_INSTRUMENTR_INTERNALS_H
 
-#include <instrumentr/tracer.h>
+#include "tracer.h"
 
 const char* instrumentr_get_commit_hash();
 SEXP r_instrumentr_get_commit_hash();

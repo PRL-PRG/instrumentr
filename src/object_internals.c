@@ -1,4 +1,4 @@
-#include "object_internals.h"
+#include "object.h"
 #include "interop.h"
 
 SEXP object_class_table[INSTRUMENTR_ARGUMENT + 1];

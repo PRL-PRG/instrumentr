@@ -1,7 +1,9 @@
-#ifndef INSTRUMENTR_PARAMETER_INTERNALS_H
-#define INSTRUMENTR_PARAMETER_INTERNALS_H
+#ifndef INSTRUMENTR_PARAMETER_H
+#define INSTRUMENTR_PARAMETER_H
 
-#include <instrumentr/parameter.h>
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
+#include "argument.h"
 
 /********************************************************************************
  * create
@@ -85,4 +87,4 @@ SEXP r_instrumentr_parameter_get_arguments(SEXP r_parameter);
 void instrumentr_parameter_append_argument(instrumentr_parameter_t parameter,
                                            instrumentr_argument_t argument);
 
-#endif /* INSTRUMENTR_PARAMETER_INTERNALS_H */
+#endif /* INSTRUMENTR_PARAMETER_H */

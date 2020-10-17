@@ -1,5 +1,4 @@
-#include "object_internals.h"
-#include <instrumentr/object.h>
+#include "object.h"
 #include "interop.h"
 #include "utilities.h"
 
@@ -57,10 +56,12 @@ void r_instrumentr_object_finalize(SEXP r_object) {
 }
 
 SEXP instrumentr_object_wrap(instrumentr_object_t object) {
-    SEXP r_object = PROTECT(instrumentr_c_pointer_to_r_externalptr(object, NULL));
+    SEXP r_object = instrumentr_c_pointer_to_r_externalptr(
+        object, R_NilValue, R_NilValue, r_instrumentr_object_finalize);
+    PROTECT(r_object);
     instrumentr_object_acquire(object);
-    R_RegisterCFinalizerEx(r_object, r_instrumentr_object_finalize, 1);
-    instrumentr_sexp_set_class(r_object, instrumentr_object_get_class(object->type));
+    instrumentr_sexp_set_class(r_object,
+                               instrumentr_object_get_class(object->type));
     UNPROTECT(1);
     return r_object;
 }

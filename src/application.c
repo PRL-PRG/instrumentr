@@ -1,8 +1,7 @@
-#include "object_internals.h"
-#include <instrumentr/application.h>
-#include "application_internals.h"
-#include <instrumentr/package.h>
-#include <instrumentr/call_stack.h>
+#include "object.h"
+#include "application.h"
+#include "package.h"
+#include "call_stack.h"
 #include "interop.h"
 #include "utilities.h"
 #include "vec.h"

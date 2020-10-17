@@ -1,7 +1,9 @@
-#ifndef INSTRUMENTR_PACKAGE_INTERNALS_H
-#define INSTRUMENTR_PACKAGE_INTERNALS_H
+#ifndef INSTRUMENTR_PACKAGE_H
+#define INSTRUMENTR_PACKAGE_H
 
-#include <instrumentr/package.h>
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
+#include "function.h"
 
 /********************************************************************************
  * create
@@ -78,4 +80,4 @@ void instrumentr_package_append_function(instrumentr_package_t package,
 /*  mutator  */
 void instrumentr_package_remove_function(instrumentr_package_t package,
                                          instrumentr_function_t function);
-#endif /* INSTRUMENTR_PACKAGE_INTERNALS_H */
+#endif /* INSTRUMENTR_PACKAGE_H */

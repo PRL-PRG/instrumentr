@@ -1,5 +1,5 @@
-#ifndef INSTRUMENTR_CALL_STACK_INTERNALS_H
-#define INSTRUMENTR_CALL_STACK_INTERNALS_H
+#ifndef INSTRUMENTR_CALL_STACK_H
+#define INSTRUMENTR_CALL_STACK_H
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
@@ -42,4 +42,4 @@ instrumentr_call_t
 instrumentr_call_stack_peek(instrumentr_call_stack_t call_stack, int index);
 SEXP r_instrumentr_call_stack_peek(SEXP r_call_stack, SEXP r_index);
 
-#endif /* INSTRUMENTR_CALL_STACK_INTERNALS_H */
+#endif /* INSTRUMENTR_CALL_STACK_H */

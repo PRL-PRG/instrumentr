@@ -1,10 +1,10 @@
-#ifndef INSTRUMENTR_CALL_INTERNALS_H
-#define INSTRUMENTR_CALL_INTERNALS_H
+#ifndef INSTRUMENTR_CALL_H
+#define INSTRUMENTR_CALL_H
 
-#include <instrumentr/call.h>
 #include <instrumentr/Rincludes.h>
-#include <instrumentr/parameter.h>
-#include <instrumentr/function.h>
+#include <instrumentr/types.h>
+#include "parameter.h"
+#include "function.h"
 
 /********************************************************************************
  * create
@@ -110,4 +110,4 @@ SEXP r_instrumentr_call_get_parameters(SEXP r_call);
 void instrumentr_call_append_parameter(instrumentr_call_t call,
                                        instrumentr_parameter_t parameter);
 
-#endif /* INSTRUMENTR_CALL_INTERNALS_H */
+#endif /* INSTRUMENTR_CALL_H */

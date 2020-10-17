@@ -1,4 +1,4 @@
-#include <instrumentr/callback_type.h>
+#include "callback_type.h"
 
 typedef struct {
     instrumentr_callback_type_t type;

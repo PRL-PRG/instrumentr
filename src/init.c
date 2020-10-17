@@ -1,20 +1,17 @@
-#include <instrumentr/instrumentr.h>
+#include <instrumentr/api.h>
 #include "instrumentr_internals.h"
 #include "trace.h"
-#include "object_internals.h"
-#include <instrumentr/object.h>
-#include <instrumentr/tracer.h>
-#include "tracer_internals.h"
-#include <instrumentr/application.h>
-#include "application_internals.h"
-#include <instrumentr/package.h>
-#include <instrumentr/function.h>
-#include <instrumentr/call.h>
-#include "call_internals.h"
-#include <instrumentr/parameter.h>
-#include <instrumentr/argument.h>
-#include <instrumentr/call_stack.h>
-#include <instrumentr/callback.h>
+#include "object.h"
+#include "tracer.h"
+#include "application.h"
+#include "package.h"
+#include "function.h"
+#include "call.h"
+#include "parameter.h"
+#include "argument.h"
+#include "call_stack.h"
+#include "callback.h"
+#include "interop.h"
 
 #include <R_ext/Rdynload.h>
 
@@ -174,7 +171,6 @@ void R_init_instrumentr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 
-#define INSTRUMENTR_API_EXPORTER(FUNCTION, OUTPUT_TYPE, ...) R_RegisterCCallable("instrumentr", #FUNCTION, (DL_FUNC)(FUNCTION));
+    INSTRUMENTR_EXPORT_API()
 
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_EXPORTER)
 }

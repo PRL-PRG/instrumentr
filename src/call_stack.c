@@ -1,6 +1,7 @@
-#include <instrumentr/call_stack.h>
+#include "call_stack.h"
+#include "call.h"
 #include "interop.h"
-#include "object_internals.h"
+#include "object.h"
 #include "vec.h"
 
 /********************************************************************************

@@ -1,27 +1,14 @@
 #include <instrumentr/types.h>
 #include "instrumentr_internals.h"
 
-#include <instrumentr/tracer.h>
-#include "tracer_internals.h"
-
-#include <instrumentr/callback.h>
-#include "callback_internals.h"
-
-#include <instrumentr/application.h>
-#include "application_internals.h"
-
-#include <instrumentr/function.h>
-
-#include <instrumentr/package.h>
-#include "package_internals.h"
-
-#include <instrumentr/call.h>
-#include "call_internals.h"
-
-#include <instrumentr/parameter.h>
-
-#include <instrumentr/argument.h>
-
+#include "tracer.h"
+#include "callback.h"
+#include "application.h"
+#include "function.h"
+#include "package.h"
+#include "call.h"
+#include "parameter.h"
+#include "argument.h"
 #include "trace.h"
 #include "dyntrace.h"
 #include "dyntracer.h"

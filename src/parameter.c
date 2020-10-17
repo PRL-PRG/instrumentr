@@ -1,6 +1,5 @@
-#include "object_internals.h"
-#include <instrumentr/parameter.h>
-#include "parameter_internals.h"
+#include "object.h"
+#include "parameter.h"
 #include "interop.h"
 #include "utilities.h"
 #include <string.h>

@@ -111,7 +111,7 @@ char* instrumentr_duplicate_string(const char* original) {
     if (original == NULL) {
         return NULL;
     }
-    int length = strlen(original);
+    int length = strlen(original) + 1;
     char* duplicate = (char*) malloc(length * sizeof(char));
     strcpy(duplicate, original);
     return duplicate;

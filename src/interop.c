@@ -68,9 +68,15 @@ double instrumentr_r_double_to_c_int(SEXP r_value) {
     return (int) (asReal(r_value));
 }
 
-SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer, char* tag) {
-    SEXP r_tag = tag == NULL ? R_NilValue : mkString(tag);
-    return R_MakeExternalPtr(pointer, r_tag, R_NilValue);
+SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer,
+                                            SEXP r_tag,
+                                            SEXP r_prot,
+                                            R_CFinalizer_t finalizer) {
+    SEXP r_value = R_MakeExternalPtr(pointer, r_tag, r_prot);
+    if (finalizer != NULL) {
+        R_RegisterCFinalizerEx(r_value, finalizer, TRUE);
+    }
+    return r_value;
 }
 
 SEXP instrumentr_c_string_to_r_character(const char* string) {
@@ -83,4 +89,8 @@ const char* instrumentr_r_character_to_c_string(SEXP r_character) {
 
 void* instrumentr_r_externalptr_to_c_pointer(SEXP r_pointer) {
     return R_ExternalPtrAddr(r_pointer);
+}
+
+void instrumentr_r_externalptr_clear(SEXP r_externalptr) {
+    return R_ClearExternalPtr(r_externalptr);
 }

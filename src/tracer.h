@@ -1,12 +1,15 @@
-#ifndef INSTRUMENTR_TRACER_INTERNALS_H
-#define INSTRUMENTR_TRACER_INTERNALS_H
+#ifndef INSTRUMENTR_TRACER_H
+#define INSTRUMENTR_TRACER_H
 
-#include <instrumentr/tracer.h>
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
+#include "callback_type.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
+instrumentr_tracer_t instrumentr_tracer_create();
 SEXP r_instrumentr_tracer_create();
 
 /********************************************************************************
@@ -169,4 +172,4 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_API)
 
 #undef TRACER_CALLBACK_API
 
-#endif /* INSTRUMENTR_TRACER_INTERNALS_H */
+#endif /* INSTRUMENTR_TRACER_H */

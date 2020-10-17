@@ -1,8 +1,8 @@
-#ifndef INSTRUMENTR_ARGUMENT_INTERNALS_H
-#define INSTRUMENTR_ARGUMENT_INTERNALS_H
+#ifndef INSTRUMENTR_ARGUMENT_H
+#define INSTRUMENTR_ARGUMENT_H
 
-#include <instrumentr/argument.h>
 #include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
 
 /********************************************************************************
  * create
@@ -51,4 +51,4 @@ SEXP r_instrumentr_argument_get_expression(SEXP r_argument);
 SEXP instrumentr_argument_get_value(instrumentr_argument_t argument);
 SEXP r_instrumentr_argument_get_value(SEXP r_argument);
 
-#endif /* INSTRUMENTR_ARGUMENT_INTERNALS_H */
+#endif /* INSTRUMENTR_ARGUMENT_H */

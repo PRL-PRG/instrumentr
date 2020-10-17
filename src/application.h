@@ -1,10 +1,10 @@
-#ifndef INSTRUMENTR_APPLICATION_INTERNALS_H
-#define INSTRUMENTR_APPLICATION_INTERNALS_H
+#ifndef INSTRUMENTR_APPLICATION_H
+#define INSTRUMENTR_APPLICATION_H
 
-#include <instrumentr/application.h>
 #include <instrumentr/Rincludes.h>
-#include <instrumentr/call_stack.h>
-#include <instrumentr/package.h>
+#include <instrumentr/types.h>
+#include "call_stack.h"
+#include "package.h"
 
 /********************************************************************************
  * create
@@ -115,4 +115,4 @@ void instrumentr_application_remove_package(
     instrumentr_application_t application,
     instrumentr_package_t package);
 
-#endif /* INSTRUMENTR_APPLICATION_INTERNALS_H */
+#endif /* INSTRUMENTR_APPLICATION_H */

@@ -2,7 +2,7 @@
 #define INSTRUMENTR_DYNTRACER_H
 
 #include <instrumentr/Rincludes.h>
-#include <instrumentr/tracer.h>
+#include "tracer.h"
 
 #ifdef USING_DYNTRACE
 
