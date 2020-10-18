@@ -38,6 +38,14 @@ struct instrumentr_tracer_impl_t {
 
 #undef DECLARE_CALLBACK
     } callbacks;
+
+    struct callback_exec_stats_t {
+#define DECLARE_CALLBACK(TYPE, NAME) instrumentr_exec_stats_t NAME;
+
+        INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(DECLARE_CALLBACK)
+
+#undef DECLARE_CALLBACK
+    } exec_stats;
 };
 
 /********************************************************************************
@@ -85,6 +93,21 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
     }
 
     vec_deinit(&tracer->packages);
+
+#define FINALIZE_CALLBACK(TYPE, NAME)   \
+    if (tracer->callbacks.NAME != NULL) \
+        instrumentr_object_release(tracer->callbacks.NAME);
+
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(FINALIZE_CALLBACK)
+
+#undef FINALIZE_CALLBACK
+
+#define FINALIZE_EXEC_STATS(TYPE, NAME) \
+    instrumentr_exec_stats_destroy(tracer->exec_stats.NAME);
+
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(FINALIZE_EXEC_STATS)
+
+#undef FINALIZE_EXEC_STATS
 }
 
 /********************************************************************************
@@ -126,6 +149,12 @@ instrumentr_tracer_t instrumentr_tracer_create() {
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INITIALIZE_CALLBACK)
 
 #undef INITIALIZE_CALLBACK
+
+#define INITIALIZE_EXEC_STATS(TYPE, NAME) tracer->exec_stats.NAME = instrumentr_exec_stats_create();
+
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INITIALIZE_EXEC_STATS)
+
+#undef INITIALIZE_EXEC_STATS
 
     return tracer;
 }
@@ -648,3 +677,103 @@ void unbind_callback(instrumentr_tracer_t tracer,
 INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_API)
 
 #undef TRACER_CALLBACK_API
+
+#define TRACER_EXEC_STATS_API(TYPE, NAME)                                  \
+    /* accessor */                                                         \
+    instrumentr_exec_stats_t                                               \
+        instrumentr_tracer_get_callback_##NAME##_exec_stats(               \
+            instrumentr_tracer_t tracer) {                                 \
+        return tracer->exec_stats.NAME;                                    \
+    }                                                                      \
+                                                                           \
+    /* accessor */                                                         \
+    SEXP r_instrumentr_tracer_get_callback_##NAME##_exec_stats(            \
+        SEXP r_tracer) {                                                   \
+        instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer); \
+        instrumentr_exec_stats_t exec_stats =                              \
+            instrumentr_tracer_get_callback_##NAME##_exec_stats(tracer);   \
+                                                                           \
+        return instrumentr_exec_stats_wrap(exec_stats);                    \
+    }
+
+INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_API)
+
+#undef TRACER_EXEC_STATS_API
+
+SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+
+    int row_count = 0;
+
+#define ROW_COUNT(TYPE, NAME) \
+    row_count += !!instrumentr_tracer_has_callback_##NAME(tracer);
+
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(ROW_COUNT)
+
+#undef ROW_COUNT
+
+    SEXP r_row_names = PROTECT(allocVector(STRSXP, row_count));
+    SEXP r_callback = PROTECT(allocVector(STRSXP, row_count));
+    SEXP r_count = PROTECT(allocVector(INTSXP, row_count));
+    SEXP r_minimum = PROTECT(allocVector(REALSXP, row_count));
+    SEXP r_maximum = PROTECT(allocVector(REALSXP, row_count));
+    SEXP r_average = PROTECT(allocVector(REALSXP, row_count));
+    SEXP r_total = PROTECT(allocVector(REALSXP, row_count));
+
+    int index = 0;
+
+#define ADD_ELEMENT(TYPE, NAME)                                               \
+    if (instrumentr_tracer_has_callback_##NAME(tracer)) {                     \
+        instrumentr_callback_t callback =                                     \
+            instrumentr_tracer_get_callback_##NAME(tracer);                   \
+        instrumentr_exec_stats_t exec_stats =                                 \
+            instrumentr_tracer_get_callback_##NAME##_exec_stats(tracer);      \
+        int count = instrumentr_exec_stats_get_execution_count(exec_stats);   \
+        double minimum = instrumentr_exec_stats_get_minimum_time(exec_stats); \
+        double maximum = instrumentr_exec_stats_get_maximum_time(exec_stats); \
+        double average = instrumentr_exec_stats_get_average_time(exec_stats); \
+        double total = instrumentr_exec_stats_get_total_time(exec_stats);     \
+        const char* name = instrumentr_callback_get_name(callback);           \
+        SET_STRING_ELT(r_row_names, index, mkChar(int_to_string(index + 1))); \
+        SET_STRING_ELT(r_callback, index, mkChar(name));                      \
+        INTEGER(r_count)[index] = count;                                      \
+        REAL(r_minimum)[index] = minimum;                                     \
+        REAL(r_maximum)[index] = maximum;                                     \
+        REAL(r_average)[index] = average;                                     \
+        REAL(r_total)[index] = total;                                         \
+        ++index;                                                              \
+    }
+
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(ADD_ELEMENT)
+
+#undef ADD_ELEMENT
+
+    SEXP r_exec_stats = PROTECT(allocVector(VECSXP, 6));
+
+    SET_VECTOR_ELT(r_exec_stats, 0, r_callback);
+    SET_VECTOR_ELT(r_exec_stats, 1, r_count);
+    SET_VECTOR_ELT(r_exec_stats, 2, r_minimum);
+    SET_VECTOR_ELT(r_exec_stats, 3, r_maximum);
+    SET_VECTOR_ELT(r_exec_stats, 4, r_average);
+    SET_VECTOR_ELT(r_exec_stats, 5, r_total);
+
+    SEXP r_column_names = PROTECT(allocVector(STRSXP, 6));
+    SET_STRING_ELT(r_column_names, 0, mkChar("callback"));
+    SET_STRING_ELT(r_column_names, 1, mkChar("execution_count"));
+    SET_STRING_ELT(r_column_names, 2, mkChar("minimum_time"));
+    SET_STRING_ELT(r_column_names, 3, mkChar("maximum_time"));
+    SET_STRING_ELT(r_column_names, 4, mkChar("average_time"));
+    SET_STRING_ELT(r_column_names, 5, mkChar("total_time"));
+
+    setAttrib(r_exec_stats, R_NamesSymbol, r_column_names);
+
+    setAttrib(r_exec_stats, R_RowNamesSymbol, r_row_names);
+
+    instrumentr_sexp_set_class(r_exec_stats, mkString("data.frame"));
+
+    UNPROTECT(9);
+
+    return r_exec_stats;
+}
+
+

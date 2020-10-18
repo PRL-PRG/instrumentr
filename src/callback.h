@@ -4,6 +4,7 @@
 #include <instrumentr/types.h>
 #include <instrumentr/Rincludes.h>
 #include "callback_type.h"
+#include "exec_stats.h"
 
 /********************************************************************************
  * create
@@ -127,5 +128,16 @@ SEXP r_instrumentr_callback_disable(SEXP r_callback);
 /* mutator  */
 void instrumentr_callback_reinstate(instrumentr_callback_t callback);
 SEXP r_instrumentr_callback_reinstate(SEXP r_callback);
+
+/********************************************************************************
+ * exec_stats
+ *******************************************************************************/
+
+/* accessor  */
+instrumentr_exec_stats_t
+instrumentr_callback_get_exec_stats(instrumentr_callback_t callback);
+
+/* accessor  */
+SEXP r_instrumentr_callback_get_exec_stats(SEXP r_callback);
 
 #endif /* INSTRUMENTR_CALLBACK_H */

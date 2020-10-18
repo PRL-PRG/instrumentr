@@ -31,7 +31,10 @@
     if (instrumentr_tracer_has_callback_##NAME(tracer)) {                    \
         instrumentr_callback_t callback =                                    \
             instrumentr_tracer_get_callback_##NAME(tracer);                  \
+                                                                             \
         initialize_callback_invocation(tracer, callback);                    \
+                                                                             \
+        clock_t begin = clock();                                             \
                                                                              \
         if (instrumentr_callback_has_c_function(callback)) {                 \
             NAME##_function_t cfun = (NAME##_function_t)(                    \
@@ -44,10 +47,22 @@
             RCALL;                                                           \
         }                                                                    \
                                                                              \
+        clock_t end = clock();                                               \
+                                                                             \
+        clock_t diff = end - begin;                                          \
+                                                                             \
+        UPDATE_EXEC_STATS(NAME, tracer, callback, diff);                     \
         finalize_callback_invocation(tracer);                                \
     }                                                                        \
     FIN;
 
+#define UPDATE_EXEC_STATS(NAME, tracer, callback, time)              \
+    instrumentr_exec_stats_t tracer_exec_stats =                     \
+        instrumentr_tracer_get_callback_##NAME##_exec_stats(tracer); \
+    instrumentr_exec_stats_update(tracer_exec_stats, time);          \
+    instrumentr_exec_stats_t callback_exec_stats =                   \
+        instrumentr_callback_get_exec_stats(callback);               \
+    instrumentr_exec_stats_update(callback_exec_stats, time);
 
 void initialize_callback_invocation(instrumentr_tracer_t tracer,
                                     instrumentr_callback_t callback) {

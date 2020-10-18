@@ -4,12 +4,14 @@
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 #include "callback_type.h"
+#include "exec_stats.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
 instrumentr_tracer_t instrumentr_tracer_create();
+
 SEXP r_instrumentr_tracer_create();
 
 /********************************************************************************
@@ -171,5 +173,20 @@ SEXP r_instrumentr_tracer_trace_function(SEXP r_tracer,
 INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_API)
 
 #undef TRACER_CALLBACK_API
+
+#define TRACER_EXEC_STATS_API(TYPE, NAME)                    \
+    /* accessor */                                           \
+    instrumentr_exec_stats_t                                 \
+        instrumentr_tracer_get_callback_##NAME##_exec_stats( \
+            instrumentr_tracer_t tracer);                    \
+                                                             \
+    /* accessor */                                           \
+    SEXP r_instrumentr_tracer_get_callback_##NAME##_exec_stats(SEXP r_tracer);
+
+INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_API)
+
+#undef TRACER_EXEC_STATS_API
+
+SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer);
 
 #endif /* INSTRUMENTR_TRACER_H */

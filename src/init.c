@@ -80,6 +80,15 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 
 #undef TRACER_CALLBACK_INTERFACE
 
+#define TRACER_EXEC_STATS_INTERFACE(TYPE, NAME)                                                                                    \
+    {"instrumentr_tracer_get_callback_" #NAME "_exec_stats", (DL_FUNC) &r_instrumentr_tracer_get_callback_##NAME##_exec_stats, 1}, \
+
+INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
+
+#undef TRACER_EXEC_STATS_INTERFACE
+
+    {"instrumentr_tracer_get_exec_stats", (DL_FUNC) &r_instrumentr_tracer_get_exec_stats, 1},
+
     /* application */
     {"instrumentr_application_create", (DL_FUNC) &r_instrumentr_application_create, 5},
     {"instrumentr_application_get_name", (DL_FUNC) &r_instrumentr_application_get_name, 1},
@@ -155,6 +164,7 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
     {"instrumentr_callback_enable", (DL_FUNC) &r_instrumentr_callback_enable, 1},
     {"instrumentr_callback_disable", (DL_FUNC) &r_instrumentr_callback_disable, 1},
     {"instrumentr_callback_reinstate", (DL_FUNC) &r_instrumentr_callback_reinstate, 1},
+    {"instrumentr_callback_get_exec_stats", (DL_FUNC) &r_instrumentr_callback_get_exec_stats, 1},
 
 #define CALLBACK_CREATE(TYPE, NAME)                                                                                                  \
     {"instrumentr_callback_" #NAME "_create_from_r_function", (DL_FUNC) &r_instrumentr_callback_##NAME##_create_from_r_function, 1}, \
