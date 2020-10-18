@@ -37,7 +37,6 @@ void instrumentr_exec_stats_destroy(instrumentr_exec_stats_t exec_stats) {
  *******************************************************************************/
 
 SEXP instrumentr_exec_stats_wrap(instrumentr_exec_stats_t exec_stats) {
-    SEXP r_exec_stats = PROTECT(allocVector(VECSXP, 5));
     SEXP r_count = PROTECT(instrumentr_c_int_to_r_integer(
         instrumentr_exec_stats_get_execution_count(exec_stats)));
     SEXP r_minimum = PROTECT(instrumentr_c_double_to_r_double(
@@ -49,32 +48,21 @@ SEXP instrumentr_exec_stats_wrap(instrumentr_exec_stats_t exec_stats) {
     SEXP r_total = PROTECT(instrumentr_c_double_to_r_double(
         instrumentr_exec_stats_get_total_time(exec_stats)));
 
-    SET_VECTOR_ELT(r_exec_stats, 0, r_count);
-    SET_VECTOR_ELT(r_exec_stats, 1, r_minimum);
-    SET_VECTOR_ELT(r_exec_stats, 2, r_maximum);
-    SET_VECTOR_ELT(r_exec_stats, 3, r_average);
-    SET_VECTOR_ELT(r_exec_stats, 4, r_total);
+    SEXP r_data_frame = PROTECT(instrumentr_create_data_frame(5,
+                                                              "execution_count",
+                                                              r_count,
+                                                              "minimum_time",
+                                                              r_minimum,
+                                                              "maximum_time",
+                                                              r_maximum,
+                                                              "average_time",
+                                                              r_average,
+                                                              "total_time",
+                                                              r_total));
 
-    SEXP r_column_names = PROTECT(allocVector(STRSXP, 5));
-    SET_STRING_ELT(r_column_names, 0, mkChar("execution_count"));
-    SET_STRING_ELT(r_column_names, 1, mkChar("minimum_time"));
-    SET_STRING_ELT(r_column_names, 2, mkChar("maximum_time"));
-    SET_STRING_ELT(r_column_names, 3, mkChar("average_time"));
-    SET_STRING_ELT(r_column_names, 4, mkChar("total_time"));
+    UNPROTECT(6);
 
-    setAttrib(r_exec_stats, R_NamesSymbol, r_column_names);
-
-    SEXP r_row_names = PROTECT(allocVector(STRSXP, 1));
-
-    SET_STRING_ELT(r_row_names, 0, mkChar("1"));
-
-    setAttrib(r_exec_stats, R_RowNamesSymbol, r_row_names);
-
-    instrumentr_sexp_set_class(r_exec_stats, mkString("data.frame"));
-
-    UNPROTECT(8);
-
-    return r_exec_stats;
+    return r_data_frame;
 }
 
 /********************************************************************************
@@ -104,8 +92,9 @@ instrumentr_exec_stats_get_maximum_time(instrumentr_exec_stats_t exec_stats) {
 /* accessor */
 double
 instrumentr_exec_stats_get_average_time(instrumentr_exec_stats_t exec_stats) {
-    return instrumentr_exec_stats_get_total_time(exec_stats) /
-           instrumentr_exec_stats_get_execution_count(exec_stats);
+    int count = instrumentr_exec_stats_get_execution_count(exec_stats);
+    int total = instrumentr_exec_stats_get_total_time(exec_stats);
+    return count == 0 ? 0 : (total / count);
 }
 
 /********************************************************************************

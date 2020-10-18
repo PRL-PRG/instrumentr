@@ -1,5 +1,7 @@
 #include "interop.h"
 #include <stdio.h>
+#include "utilities.h"
+#include <stdarg.h>
 
 const int MESSAGE_BUFFER_SIZE = 4096;
 
@@ -41,6 +43,16 @@ void instrumentr_sexp_release(SEXP r_object) {
 
 SEXP instrumentr_sexp_set_class(SEXP r_object, SEXP r_class) {
     Rf_setAttrib(r_object, R_ClassSymbol, r_class);
+    return r_object;
+}
+
+SEXP instrumentr_sexp_set_names(SEXP r_object, SEXP r_names) {
+    Rf_setAttrib(r_object, R_NamesSymbol, r_names);
+    return r_object;
+}
+
+SEXP instrumentr_sexp_set_row_names(SEXP r_object, SEXP r_row_names) {
+    Rf_setAttrib(r_object, R_RowNamesSymbol, r_row_names);
     return r_object;
 }
 
@@ -95,3 +107,85 @@ void instrumentr_r_externalptr_clear(SEXP r_externalptr) {
     return R_ClearExternalPtr(r_externalptr);
 }
 
+SEXP create_list(int column_count, va_list columns) {
+
+    va_list protection;
+
+    va_copy(protection, columns);
+
+    /* NOTE: protect all arguments before allocating memory */
+    for (int i = 0; i < column_count; ++i) {
+        const char* name = va_arg(protection, const char*);
+        SEXP column = va_arg(protection, SEXP);
+        PROTECT(column);
+    }
+
+    va_end(protection);
+
+    SEXP r_list = PROTECT(allocVector(VECSXP, column_count));
+
+    SEXP r_column_names = PROTECT(allocVector(STRSXP, column_count));
+
+    for (int i = 0; i < column_count; ++i) {
+        const char* name = va_arg(columns, const char*);
+        SEXP column = va_arg(columns, SEXP);
+        SET_STRING_ELT(r_column_names, i, mkChar(name));
+        SET_VECTOR_ELT(r_list, i, column);
+    }
+
+    instrumentr_sexp_set_names(r_list, r_column_names);
+
+    UNPROTECT(2 + column_count);
+
+    return r_list;
+}
+
+SEXP set_row_names(SEXP r_data_frame) {
+    int row_count = 0;
+
+    if (LENGTH(r_data_frame) > 0) {
+        row_count = LENGTH(VECTOR_ELT(r_data_frame, 0));
+    }
+
+    SEXP r_row_names = PROTECT(allocVector(STRSXP, row_count));
+
+    for (int i = 0; i < row_count; ++i) {
+        SET_STRING_ELT(r_row_names, i, mkChar(int_to_string(i + 1)));
+    }
+
+    instrumentr_sexp_set_row_names(r_data_frame, r_row_names);
+
+    UNPROTECT(1);
+
+    return r_data_frame;
+}
+
+SEXP instrumentr_create_list(int column_count, ...) {
+    va_list columns;
+    va_start(columns, column_count);
+
+    SEXP r_list = PROTECT(create_list(column_count, columns));
+
+    va_end(columns);
+
+    UNPROTECT(1);
+
+    return r_list;
+}
+
+SEXP instrumentr_create_data_frame(int column_count, ...) {
+    va_list columns;
+    va_start(columns, column_count);
+
+    SEXP r_data_frame = PROTECT(create_list(column_count, columns));
+
+    va_end(columns);
+
+    set_row_names(r_data_frame);
+
+    instrumentr_sexp_set_class(r_data_frame, mkString("data.frame"));
+
+    UNPROTECT(1);
+
+    return r_data_frame;
+}

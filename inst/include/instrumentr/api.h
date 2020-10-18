@@ -28,7 +28,9 @@
           SEXP r_prot,                                                        \
           R_CFinalizer_t finalizer)                                           \
     MACRO(instrumentr_r_externalptr_to_c_pointer, void*, SEXP r_pointer)      \
-    MACRO(instrumentr_r_externalptr_clear, void, SEXP r_externalptr)
+    MACRO(instrumentr_r_externalptr_clear, void, SEXP r_externalptr)          \
+    MACRO(instrumentr_create_list, SEXP, int column_count, ...)               \
+    MACRO(instrumentr_create_data_frame, SEXP, int column_count, ...)
 
 /********************************************************************************
  OBJECT API

@@ -32,4 +32,8 @@ void* instrumentr_r_externalptr_to_c_pointer(SEXP r_pointer);
 
 void instrumentr_r_externalptr_clear(SEXP r_externalptr);
 
+SEXP instrumentr_create_list(int column_count, ...);
+
+SEXP instrumentr_create_data_frame(int column_count, ...);
+
 #endif /* INSTRUMENTR_SEXP_H */
