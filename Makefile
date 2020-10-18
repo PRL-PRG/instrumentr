@@ -1,3 +1,4 @@
+R := R
 SOURCEDIR := src
 INCLUDEDIR := inst/include
 
@@ -9,13 +10,13 @@ SCAN_BUILD := scan-build
 
 .PHONY: all build check document test
 
-all: clean document build check
+all: clean document build check install
 
 build: document
-	R CMD build .
+	$(R) CMD build .
 
 check: build
-	R CMD check instrumentr*tar.gz
+	$(R) CMD check instrumentr*tar.gz
 
 clean:
 	-rm -f instrumentr*tar.gz
@@ -23,25 +24,25 @@ clean:
 	-rm -rf src/*.o src/*.so
 
 install: clean
-	R CMD INSTALL .
+	$(R) CMD INSTALL .
 
 uninstall:
-	R --slave -e "remove.packages('instrumentr')"
+	$(R) --slave -e "remove.packages('instrumentr')"
 
 document: install-devtools
-	R --slave -e "devtools::document()"
+	$(R) --slave -e "devtools::document()"
 
 test: install-devtools
-	R --slave -e "devtools::test()"
+	$(R) --slave -e "devtools::test()"
 
 lintr: install-lintr
-	R --slave -e "quit(status = length(print(lintr::lint_package())) != 0)"
+	$(R) --slave -e "quit(status = length(print(lintr::lint_package())) != 0)"
 
 install-devtools:
-	R --slave -e "if (!require('devtools')) install.packages('devtools')"
+	$(R) --slave -e "if (!require('devtools')) install.packages('devtools')"
 
 install-lintr:
-	R --slave -e "if (!require('lintr')) install.packages('lintr')"
+	$(R) --slave -e "if (!require('lintr')) install.packages('lintr')"
 
 clang-tidy: clean
 	$(SCAN_BUILD) make build
