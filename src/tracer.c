@@ -40,6 +40,7 @@ struct instrumentr_tracer_impl_t {
     } callbacks;
 
     struct callback_exec_stats_t {
+        instrumentr_exec_stats_t tracing;
 #define DECLARE_CALLBACK(TYPE, NAME) instrumentr_exec_stats_t NAME;
 
         INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(DECLARE_CALLBACK)
@@ -102,6 +103,8 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
 
 #undef FINALIZE_CALLBACK
 
+    instrumentr_exec_stats_destroy(tracer->exec_stats.tracing);
+
 #define FINALIZE_EXEC_STATS(TYPE, NAME) \
     instrumentr_exec_stats_destroy(tracer->exec_stats.NAME);
 
@@ -149,6 +152,8 @@ instrumentr_tracer_t instrumentr_tracer_create() {
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INITIALIZE_CALLBACK)
 
 #undef INITIALIZE_CALLBACK
+
+    tracer->exec_stats.tracing = instrumentr_exec_stats_create();
 
 #define INITIALIZE_EXEC_STATS(TYPE, NAME) tracer->exec_stats.NAME = instrumentr_exec_stats_create();
 
@@ -678,6 +683,25 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_API)
 
 #undef TRACER_CALLBACK_API
 
+/********************************************************************************
+ * exec_stats
+ *******************************************************************************/
+
+/* accessor */
+instrumentr_exec_stats_t
+instrumentr_tracer_get_tracing_exec_stats(instrumentr_tracer_t tracer) {
+    return tracer->exec_stats.tracing;
+}
+
+/* accessor */
+SEXP r_instrumentr_tracer_get_tracing_exec_stats(SEXP r_tracer) {
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_tracer_get_tracing_exec_stats(tracer);
+
+    return instrumentr_exec_stats_wrap(exec_stats);
+}
+
 #define TRACER_EXEC_STATS_API(TYPE, NAME)                                  \
     /* accessor */                                                         \
     instrumentr_exec_stats_t                                               \
@@ -703,7 +727,8 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_API)
 SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
     instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
 
-    int row_count = 0;
+    /* for tracing */
+    int row_count = 1;
 
 #define ROW_COUNT(TYPE, NAME) \
     row_count += !!instrumentr_tracer_has_callback_##NAME(tracer);
@@ -747,6 +772,21 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(ADD_ELEMENT)
 
 #undef ADD_ELEMENT
+
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_tracer_get_tracing_exec_stats(tracer);
+    int count = instrumentr_exec_stats_get_execution_count(exec_stats);
+    double minimum = instrumentr_exec_stats_get_minimum_time(exec_stats);
+    double maximum = instrumentr_exec_stats_get_maximum_time(exec_stats);
+    double average = instrumentr_exec_stats_get_average_time(exec_stats);
+    double total = instrumentr_exec_stats_get_total_time(exec_stats);
+    SET_STRING_ELT(r_row_names, index, mkChar(int_to_string(index + 1)));
+    SET_STRING_ELT(r_callback, index, mkChar("tracing"));
+    INTEGER(r_count)[index] = count;
+    REAL(r_minimum)[index] = minimum;
+    REAL(r_maximum)[index] = maximum;
+    REAL(r_average)[index] = average;
+    REAL(r_total)[index] = total;
 
     SEXP r_exec_stats = PROTECT(allocVector(VECSXP, 6));
 

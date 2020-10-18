@@ -80,6 +80,8 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 
 #undef TRACER_CALLBACK_INTERFACE
 
+    {"instrumentr_tracer_get_tracing_exec_stats", (DL_FUNC) &r_instrumentr_tracer_get_tracing_exec_stats, 1}, \
+
 #define TRACER_EXEC_STATS_INTERFACE(TYPE, NAME)                                                                                    \
     {"instrumentr_tracer_get_callback_" #NAME "_exec_stats", (DL_FUNC) &r_instrumentr_tracer_get_callback_##NAME##_exec_stats, 1}, \
 

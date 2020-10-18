@@ -174,6 +174,17 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_API)
 
 #undef TRACER_CALLBACK_API
 
+/********************************************************************************
+ * exec_stats
+ *******************************************************************************/
+
+/* accessor */
+instrumentr_exec_stats_t
+instrumentr_tracer_get_tracing_exec_stats(instrumentr_tracer_t tracer);
+
+/* accessor */
+SEXP r_instrumentr_tracer_get_tracing_exec_stats(SEXP r_tracer);
+
 #define TRACER_EXEC_STATS_API(TYPE, NAME)                    \
     /* accessor */                                           \
     instrumentr_exec_stats_t                                 \

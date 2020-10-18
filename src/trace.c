@@ -32,9 +32,9 @@
         instrumentr_callback_t callback =                                    \
             instrumentr_tracer_get_callback_##NAME(tracer);                  \
                                                                              \
-        initialize_callback_invocation(tracer, callback);                    \
-                                                                             \
         clock_t begin = clock();                                             \
+                                                                             \
+        initialize_callback_invocation(tracer, callback);                    \
                                                                              \
         if (instrumentr_callback_has_c_function(callback)) {                 \
             NAME##_function_t cfun = (NAME##_function_t)(                    \
@@ -47,12 +47,13 @@
             RCALL;                                                           \
         }                                                                    \
                                                                              \
+        finalize_callback_invocation(tracer);                                \
+                                                                             \
         clock_t end = clock();                                               \
                                                                              \
         clock_t diff = end - begin;                                          \
                                                                              \
         UPDATE_EXEC_STATS(NAME, tracer, callback, diff);                     \
-        finalize_callback_invocation(tracer);                                \
     }                                                                        \
     FIN;
 
@@ -82,12 +83,22 @@ void finalize_callback_invocation(instrumentr_tracer_t tracer) {
 SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
     instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
 
+    clock_t start = clock();
+
 #ifdef USING_DYNTRACE
     SEXP r_result = dyntrace_trace_code(
         instrumentr_tracer_get_dyntracer(tracer), r_code, r_environment);
 #else
     SEXP r_result = Rf_eval(r_code, r_environment);
 #endif /* USING_DYNTRACE */
+
+    clock_t end = clock();
+
+    clock_t diff = end - start;
+
+    instrumentr_exec_stats_t tracing_exec_stats =
+        instrumentr_tracer_get_tracing_exec_stats(tracer);
+    instrumentr_exec_stats_update(tracing_exec_stats, diff);
 
     return r_result;
 }
