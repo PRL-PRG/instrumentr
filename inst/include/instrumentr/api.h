@@ -17,8 +17,8 @@
     MACRO(instrumentr_r_logical_to_c_int, int, SEXP r_value)                  \
     MACRO(instrumentr_c_int_to_r_integer, SEXP, int value)                    \
     MACRO(instrumentr_r_integer_to_c_int, int, SEXP r_value)                  \
-    MACRO(instrumentr_c_int_to_r_double, SEXP, int value)                     \
-    MACRO(instrumentr_r_double_to_c_int, double, SEXP r_value)                \
+    MACRO(instrumentr_c_double_to_r_double, SEXP, double value)               \
+    MACRO(instrumentr_r_double_to_c_double, double, SEXP r_value)             \
     MACRO(instrumentr_c_string_to_r_character, SEXP, const char* string)      \
     MACRO(instrumentr_r_character_to_c_string, const char*, SEXP r_character) \
     MACRO(instrumentr_c_pointer_to_r_externalptr,                             \

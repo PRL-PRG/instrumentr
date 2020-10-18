@@ -60,12 +60,12 @@ int instrumentr_r_integer_to_c_int(SEXP r_value) {
     return asInteger(r_value);
 }
 
-SEXP instrumentr_c_int_to_r_double(int value) {
+SEXP instrumentr_c_double_to_r_double(double value) {
     return ScalarReal(value);
 }
 
-double instrumentr_r_double_to_c_int(SEXP r_value) {
-    return (int) (asReal(r_value));
+double instrumentr_r_double_to_c_double(SEXP r_value) {
+    return asReal(r_value);
 }
 
 SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer,
@@ -94,3 +94,4 @@ void* instrumentr_r_externalptr_to_c_pointer(SEXP r_pointer) {
 void instrumentr_r_externalptr_clear(SEXP r_externalptr) {
     return R_ClearExternalPtr(r_externalptr);
 }
+

@@ -18,8 +18,8 @@ int instrumentr_r_logical_to_c_int(SEXP r_value);
 SEXP instrumentr_c_int_to_r_integer(int value);
 int instrumentr_r_integer_to_c_int(SEXP r_value);
 
-SEXP instrumentr_c_int_to_r_double(int value);
-double instrumentr_r_double_to_c_int(SEXP r_value);
+SEXP instrumentr_c_double_to_r_double(double value);
+double instrumentr_r_double_to_c_double(SEXP r_value);
 
 SEXP instrumentr_c_string_to_r_character(const char* string);
 const char* instrumentr_r_character_to_c_string(SEXP r_character);
