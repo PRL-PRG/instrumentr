@@ -93,8 +93,8 @@ instrumentr_exec_stats_get_maximum_time(instrumentr_exec_stats_t exec_stats) {
 double
 instrumentr_exec_stats_get_average_time(instrumentr_exec_stats_t exec_stats) {
     int count = instrumentr_exec_stats_get_execution_count(exec_stats);
-    int total = instrumentr_exec_stats_get_total_time(exec_stats);
-    return count == 0 ? 0 : (total / count);
+    double total = instrumentr_exec_stats_get_total_time(exec_stats);
+    return (count == 0) ? 0 : (total / count);
 }
 
 /********************************************************************************
