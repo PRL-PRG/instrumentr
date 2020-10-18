@@ -110,26 +110,6 @@ void instrumentr_callback_activate(instrumentr_callback_t callback);
 void instrumentr_callback_deactivate(instrumentr_callback_t callback);
 
 /********************************************************************************
- * status
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_callback_is_enabled(instrumentr_callback_t callback);
-SEXP r_instrumentr_callback_is_enabled(SEXP r_callback);
-
-/* mutator  */
-void instrumentr_callback_enable(instrumentr_callback_t callback);
-SEXP r_instrumentr_callback_enable(SEXP r_callback);
-
-/* mutator  */
-void instrumentr_callback_disable(instrumentr_callback_t callback);
-SEXP r_instrumentr_callback_disable(SEXP r_callback);
-
-/* mutator  */
-void instrumentr_callback_reinstate(instrumentr_callback_t callback);
-SEXP r_instrumentr_callback_reinstate(SEXP r_callback);
-
-/********************************************************************************
  * exec_stats
  *******************************************************************************/
 

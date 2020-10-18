@@ -160,10 +160,6 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     {"instrumentr_callback_get_r_function", (DL_FUNC) &r_instrumentr_callback_get_r_function, 1},
     {"instrumentr_callback_get_c_function", (DL_FUNC) &r_instrumentr_callback_get_c_function, 1},
     {"instrumentr_callback_is_active", (DL_FUNC) &r_instrumentr_callback_is_active, 1},
-    {"instrumentr_callback_is_enabled", (DL_FUNC) &r_instrumentr_callback_is_enabled, 1},
-    {"instrumentr_callback_enable", (DL_FUNC) &r_instrumentr_callback_enable, 1},
-    {"instrumentr_callback_disable", (DL_FUNC) &r_instrumentr_callback_disable, 1},
-    {"instrumentr_callback_reinstate", (DL_FUNC) &r_instrumentr_callback_reinstate, 1},
     {"instrumentr_callback_get_exec_stats", (DL_FUNC) &r_instrumentr_callback_get_exec_stats, 1},
 
 #define CALLBACK_CREATE(TYPE, NAME)                                                                                                  \
