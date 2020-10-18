@@ -1,6 +1,5 @@
 #include "exec_stats.h"
 #include "interop.h"
-#include <limits.h>
 
 /********************************************************************************
  * definition
@@ -22,7 +21,6 @@ double CLOCKS = CLOCKS_PER_SEC;
 instrumentr_exec_stats_t instrumentr_exec_stats_create() {
     instrumentr_exec_stats_t exec_stats =
         calloc(1, sizeof(struct instrumentr_exec_stats_impl_t));
-    exec_stats->minimum = LONG_MAX;
     return exec_stats;
 }
 
@@ -142,7 +140,8 @@ void instrumentr_exec_stats_update(instrumentr_exec_stats_t exec_stats,
     if (time > exec_stats->maximum) {
         exec_stats->maximum = time;
     }
-    if (time < exec_stats->minimum) {
+    /* set the first time to the minimum value */
+    if (exec_stats->count == 1 || time < exec_stats->minimum) {
         exec_stats->minimum = time;
     }
 }
