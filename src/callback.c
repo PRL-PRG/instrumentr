@@ -44,6 +44,20 @@ void instrumentr_callback_finalize(instrumentr_object_t object) {
  *******************************************************************************/
 
 instrumentr_callback_t
+instrumentr_callback_create(instrumentr_callback_t callback,
+                            instrumentr_callback_type_t type) {
+    callback->type = type;
+
+    callback->active = 0;
+
+    vec_init(&callback->status);
+
+    callback->exec_stats = instrumentr_exec_stats_create();
+
+    return callback;
+}
+
+instrumentr_callback_t
 instrumentr_callback_create_from_r_function(instrumentr_callback_type_t type,
                                             SEXP r_function) {
     const char* name = instrumentr_callback_type_get_name(type);
@@ -68,20 +82,12 @@ instrumentr_callback_create_from_r_function(instrumentr_callback_type_t type,
 
     instrumentr_callback_t callback = (instrumentr_callback_t)(object);
 
-    callback->type = type;
-
     instrumentr_sexp_acquire(r_function);
     callback->function.r = r_function;
 
     callback->has_r_function = 1;
 
-    callback->active = 0;
-
-    vec_init(&callback->status);
-
-    callback->exec_stats = instrumentr_exec_stats_create();
-
-    return callback;
+    return instrumentr_callback_create(callback, type);
 }
 
 instrumentr_callback_t
@@ -94,15 +100,11 @@ instrumentr_callback_create_from_c_function(instrumentr_callback_type_t type,
 
     instrumentr_callback_t callback = (instrumentr_callback_t)(object);
 
-    callback->type = type;
-
     callback->function.c = c_function;
 
     callback->has_r_function = 0;
 
-    vec_init(&callback->active);
-
-    return callback;
+    return instrumentr_callback_create(callback, type);
 }
 
 #define CALLBACK_CREATE(TYPE, NAME)                                           \
@@ -281,7 +283,8 @@ void* instrumentr_callback_get_c_function(instrumentr_callback_t callback) {
 SEXP r_instrumentr_callback_get_c_function(SEXP r_callback) {
     instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
     void* c_function = instrumentr_callback_get_c_function(callback);
-    return instrumentr_c_pointer_to_r_externalptr(c_function, R_NilValue, R_NilValue, NULL);
+    return instrumentr_c_pointer_to_r_externalptr(
+        c_function, R_NilValue, R_NilValue, NULL);
 }
 
 /********************************************************************************
@@ -376,4 +379,3 @@ SEXP r_instrumentr_callback_get_exec_stats(SEXP r_callback) {
         instrumentr_callback_get_exec_stats(callback);
     return instrumentr_exec_stats_wrap(exec_stats);
 }
-
