@@ -11,6 +11,10 @@ SEXP TemporarySymbolString = NULL;
 SEXP StateEnvironment = NULL;
 SEXP PackageEnvironment = NULL;
 
+#define BUFFER_SIZE 1024
+
+char buffer[BUFFER_SIZE];
+
 void instrumentr_initialize_utilities(SEXP r_package_environment,
                                       SEXP r_state_environment) {
     DelayedAssignSymbol = Rf_install("delayedAssign");
@@ -115,4 +119,9 @@ char* instrumentr_duplicate_string(const char* original) {
     char* duplicate = (char*) malloc(length * sizeof(char));
     strcpy(duplicate, original);
     return duplicate;
+}
+
+char* int_to_string(int value) {
+    snprintf(buffer, BUFFER_SIZE, "%d", value);
+    return buffer;
 }

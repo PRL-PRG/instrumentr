@@ -39,4 +39,6 @@ SEXP Rf_list8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x);
 
 char* instrumentr_duplicate_string(const char* original);
 
+char* int_to_string(int value);
+
 #endif /* INSTRUMENTR_UTILITIES_H */
