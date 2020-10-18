@@ -588,8 +588,9 @@ SEXP r_instrumentr_tracer_trace_function(SEXP r_tracer,
 void bind_callback(instrumentr_tracer_t tracer,
                    instrumentr_callback_t callback) {
     if (instrumentr_callback_has_r_function(callback)) {
-        const char* callback_name = instrumentr_callback_get_name(callback);
-        Rf_defineVar(Rf_install(callback_name),
+        const char* name = instrumentr_callback_get_name(callback);
+        SEXP r_name = Rf_install(name);
+        Rf_defineVar(r_name,
                      instrumentr_callback_get_r_function(callback),
                      instrumentr_tracer_get_environment(tracer));
     }
@@ -598,8 +599,9 @@ void bind_callback(instrumentr_tracer_t tracer,
 void unbind_callback(instrumentr_tracer_t tracer,
                      instrumentr_callback_t callback) {
     if (instrumentr_callback_has_r_function(callback)) {
-        const char* callback_name = instrumentr_callback_get_name(callback);
-        R_removeVarFromFrame(Rf_install(callback_name),
+        const char* name = instrumentr_callback_get_name(callback);
+        SEXP r_name = Rf_install(name);
+        R_removeVarFromFrame(r_name,
                              instrumentr_tracer_get_environment(tracer));
     }
 }

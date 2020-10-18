@@ -42,7 +42,8 @@
             CCALL;                                                           \
         } else {                                                             \
             SEXP r_callback = instrumentr_callback_wrap(callback);           \
-            SEXP r_name = r_instrumentr_callback_get_name(r_callback);       \
+            const char* name = instrumentr_callback_get_name(callback);      \
+            SEXP r_name = Rf_install(name);                                  \
             SEXP r_environment = instrumentr_tracer_get_environment(tracer); \
             RCALL;                                                           \
         }                                                                    \
@@ -108,7 +109,7 @@ SEXP r_instrumentr_trace_application_load(SEXP r_tracer, SEXP r_application) {
                     application_load,
                     /* TRACER  */
                     UNWRAP(tracer),
-                    //instrumentr_tracer_enable(tracer),
+                    // instrumentr_tracer_enable(tracer),
                     /* INIT */
                     NOTRACE(UNWRAP(application));
                     instrumentr_tracer_set_application(tracer, application),
@@ -423,8 +424,7 @@ SEXP r_instrumentr_trace_call_exit(SEXP r_tracer,
         /* FIN */
         NOTRACE(instrumentr_call_stack_pop(call_stack);
                 instrumentr_call_deactivate(call);
-                UNPROTECT(1);
-                ))
+                UNPROTECT(1);))
 
     return R_NilValue;
 }

@@ -195,7 +195,7 @@ const char* instrumentr_callback_get_name(instrumentr_callback_t callback) {
 SEXP r_instrumentr_callback_get_name(SEXP r_callback) {
     instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
     const char* name = instrumentr_callback_get_name(callback);
-    return Rf_install(name);
+    return instrumentr_c_string_to_r_character(name);
 }
 
 /********************************************************************************
