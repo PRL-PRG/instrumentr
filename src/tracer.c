@@ -32,7 +32,7 @@ struct instrumentr_tracer_impl_t {
     vec_t(package_t) packages;
 
     struct callbacks_t {
-#define DECLARE_CALLBACK(TYPE, NAME) instrumentr_callback_t NAME;
+#define DECLARE_CALLBACK(TYPE, NAME, ...) instrumentr_callback_t NAME;
 
         INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(DECLARE_CALLBACK)
 
@@ -41,7 +41,7 @@ struct instrumentr_tracer_impl_t {
 
     struct callback_exec_stats_t {
         instrumentr_exec_stats_t tracing;
-#define DECLARE_CALLBACK(TYPE, NAME) instrumentr_exec_stats_t NAME;
+#define DECLARE_CALLBACK(TYPE, NAME, ...) instrumentr_exec_stats_t NAME;
 
         INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(DECLARE_CALLBACK)
 
@@ -95,8 +95,8 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
 
     vec_deinit(&tracer->packages);
 
-#define FINALIZE_CALLBACK(TYPE, NAME)   \
-    if (tracer->callbacks.NAME != NULL) \
+#define FINALIZE_CALLBACK(TYPE, NAME, ...)  \
+    if (tracer->callbacks.NAME != NULL)     \
         instrumentr_object_release(tracer->callbacks.NAME);
 
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(FINALIZE_CALLBACK)
@@ -105,7 +105,7 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
 
     instrumentr_exec_stats_destroy(tracer->exec_stats.tracing);
 
-#define FINALIZE_EXEC_STATS(TYPE, NAME) \
+#define FINALIZE_EXEC_STATS(TYPE, NAME, ...)  \
     instrumentr_exec_stats_destroy(tracer->exec_stats.NAME);
 
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(FINALIZE_EXEC_STATS)
@@ -147,7 +147,7 @@ instrumentr_tracer_t instrumentr_tracer_create() {
 
     vec_init(&tracer->packages);
 
-#define INITIALIZE_CALLBACK(TYPE, NAME) tracer->callbacks.NAME = NULL;
+#define INITIALIZE_CALLBACK(TYPE, NAME, ...) tracer->callbacks.NAME = NULL;
 
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INITIALIZE_CALLBACK)
 
@@ -155,7 +155,7 @@ instrumentr_tracer_t instrumentr_tracer_create() {
 
     tracer->exec_stats.tracing = instrumentr_exec_stats_create();
 
-#define INITIALIZE_EXEC_STATS(TYPE, NAME) tracer->exec_stats.NAME = instrumentr_exec_stats_create();
+#define INITIALIZE_EXEC_STATS(TYPE, NAME, ...) tracer->exec_stats.NAME = instrumentr_exec_stats_create();
 
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INITIALIZE_EXEC_STATS)
 
@@ -606,7 +606,7 @@ void unbind_callback(instrumentr_tracer_t tracer,
     }
 }
 
-#define TRACER_CALLBACK_API(TYPE, NAME)                                       \
+#define TRACER_CALLBACK_API(TYPE, NAME, ...)                                  \
                                                                               \
     /* accessor */                                                            \
     int instrumentr_tracer_has_callback_##NAME(instrumentr_tracer_t tracer) { \
@@ -704,7 +704,7 @@ SEXP r_instrumentr_tracer_get_tracing_exec_stats(SEXP r_tracer) {
     return instrumentr_exec_stats_wrap(exec_stats);
 }
 
-#define TRACER_EXEC_STATS_API(TYPE, NAME)                                  \
+#define TRACER_EXEC_STATS_API(TYPE, NAME, ...)                             \
     /* accessor */                                                         \
     instrumentr_exec_stats_t                                               \
         instrumentr_tracer_get_callback_##NAME##_exec_stats(               \
@@ -732,7 +732,7 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
     /* for tracing */
     int row_count = 1;
 
-#define ROW_COUNT(TYPE, NAME) \
+#define ROW_COUNT(TYPE, NAME, ...) \
     row_count += !!instrumentr_tracer_has_callback_##NAME(tracer);
 
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(ROW_COUNT)
@@ -748,7 +748,7 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
 
     int index = 0;
 
-#define ADD_ELEMENT(TYPE, NAME)                                               \
+#define ADD_ELEMENT(TYPE, NAME, ...)                                          \
     if (instrumentr_tracer_has_callback_##NAME(tracer)) {                     \
         instrumentr_callback_t callback =                                     \
             instrumentr_tracer_get_callback_##NAME(tracer);                   \

@@ -380,185 +380,42 @@
  TRACER API
  *******************************************************************************/
 
-#define INSTRUMENTR_TRACER_CALLBACK_API_DEFINER(TYPE, NAME)                   \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        instrumentr_callback_##NAME##_create_from_r_function,                 \
-        instrumentr_callback_t,                                               \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        r_instrumentr_callback_##NAME##_create_from_r_function,               \
-        SEXP,                                                                 \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        instrumentr_callback_##NAME##_create_from_c_function,                 \
-        instrumentr_callback_t,                                               \
-        NAME##_function_t c_function)                                         \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        r_instrumentr_callback_##NAME##_create_from_c_function,               \
-        SEXP,                                                                 \
-        SEXP r_c_function)                                                    \
-    INSTRUMENTR_API_DEFINER(                                                  \
+#define INSTRUMENTR_TRACER_CALLBACK_API(TYPE, NAME, MACRO)                    \
+    MACRO(instrumentr_callback_##NAME##_create_from_r_function,               \
+          instrumentr_callback_t,                                             \
+          SEXP r_function)                                                    \
+    MACRO(r_instrumentr_callback_##NAME##_create_from_r_function,             \
+          SEXP,                                                               \
+          SEXP r_function)                                                    \
+    MACRO(instrumentr_callback_##NAME##_create_from_c_function,               \
+          instrumentr_callback_t,                                             \
+          NAME##_function_t c_function)                                       \
+    MACRO(r_instrumentr_callback_##NAME##_create_from_c_function,             \
+          SEXP,                                                               \
+          SEXP r_c_function)                                                  \
+    MACRO(                                                                    \
         instrumentr_callback_is_##NAME, int, instrumentr_callback_t callback) \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        r_instrumentr_callback_is_##NAME, SEXP, SEXP r_callback)              \
-    INSTRUMENTR_API_DEFINER(instrumentr_tracer_has_callback_##NAME,           \
-                            int,                                              \
-                            instrumentr_tracer_t tracer)                      \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        r_instrumentr_tracer_has_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_DEFINER(instrumentr_tracer_get_callback_##NAME,           \
-                            instrumentr_callback_t,                           \
-                            instrumentr_tracer_t tracer)                      \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        r_instrumentr_tracer_get_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_DEFINER(instrumentr_tracer_set_callback_##NAME,           \
-                            void,                                             \
-                            instrumentr_tracer_t tracer,                      \
-                            instrumentr_callback_t callback)                  \
-    INSTRUMENTR_API_DEFINER(r_instrumentr_tracer_set_callback_##NAME,         \
-                            SEXP,                                             \
-                            SEXP r_tracer,                                    \
-                            SEXP r_callback)                                  \
-    INSTRUMENTR_API_DEFINER(instrumentr_tracer_remove_callback_##NAME,        \
-                            void,                                             \
-                            instrumentr_tracer_t tracer)                      \
-    INSTRUMENTR_API_DEFINER(                                                  \
-        r_instrumentr_tracer_remove_callback_##NAME, SEXP, SEXP r_tracer)
-
-#define INSTRUMENTR_TRACER_CALLBACK_API_INITIALIZER(TYPE, NAME)               \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        instrumentr_callback_##NAME##_create_from_r_function,                 \
-        instrumentr_callback_t,                                               \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        r_instrumentr_callback_##NAME##_create_from_r_function,               \
-        SEXP,                                                                 \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        instrumentr_callback_##NAME##_create_from_c_function,                 \
-        instrumentr_callback_t,                                               \
-        NAME##_function_t c_function)                                         \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        r_instrumentr_callback_##NAME##_create_from_c_function,               \
-        SEXP,                                                                 \
-        SEXP r_c_function)                                                    \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        instrumentr_callback_is_##NAME, int, instrumentr_callback_t callback) \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        r_instrumentr_callback_is_##NAME, SEXP, SEXP r_callback)              \
-    INSTRUMENTR_API_INITIALIZER(instrumentr_tracer_has_callback_##NAME,       \
-                                int,                                          \
-                                instrumentr_tracer_t tracer)                  \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        r_instrumentr_tracer_has_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_INITIALIZER(instrumentr_tracer_get_callback_##NAME,       \
-                                instrumentr_callback_t,                       \
-                                instrumentr_tracer_t tracer)                  \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        r_instrumentr_tracer_get_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_INITIALIZER(instrumentr_tracer_set_callback_##NAME,       \
-                                void,                                         \
-                                instrumentr_tracer_t tracer,                  \
-                                instrumentr_callback_t callback)              \
-    INSTRUMENTR_API_INITIALIZER(r_instrumentr_tracer_set_callback_##NAME,     \
-                                SEXP,                                         \
-                                SEXP r_tracer,                                \
-                                SEXP r_callback)                              \
-    INSTRUMENTR_API_INITIALIZER(instrumentr_tracer_remove_callback_##NAME,    \
-                                void,                                         \
-                                instrumentr_tracer_t tracer)                  \
-    INSTRUMENTR_API_INITIALIZER(                                              \
-        r_instrumentr_tracer_remove_callback_##NAME, SEXP, SEXP r_tracer)
-
-#define INSTRUMENTR_TRACER_CALLBACK_API_DECLARATOR(TYPE, NAME)                \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        instrumentr_callback_##NAME##_create_from_r_function,                 \
-        instrumentr_callback_t,                                               \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        r_instrumentr_callback_##NAME##_create_from_r_function,               \
-        SEXP,                                                                 \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        instrumentr_callback_##NAME##_create_from_c_function,                 \
-        instrumentr_callback_t,                                               \
-        NAME##_function_t c_function)                                         \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        r_instrumentr_callback_##NAME##_create_from_c_function,               \
-        SEXP,                                                                 \
-        SEXP r_c_function)                                                    \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        instrumentr_callback_is_##NAME, int, instrumentr_callback_t callback) \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        r_instrumentr_callback_is_##NAME, SEXP, SEXP r_callback)              \
-    INSTRUMENTR_API_DECLARATOR(instrumentr_tracer_has_callback_##NAME,        \
-                               int,                                           \
-                               instrumentr_tracer_t tracer)                   \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        r_instrumentr_tracer_has_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_DECLARATOR(instrumentr_tracer_get_callback_##NAME,        \
-                               instrumentr_callback_t,                        \
-                               instrumentr_tracer_t tracer)                   \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        r_instrumentr_tracer_get_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_DECLARATOR(instrumentr_tracer_set_callback_##NAME,        \
-                               void,                                          \
-                               instrumentr_tracer_t tracer,                   \
-                               instrumentr_callback_t callback)               \
-    INSTRUMENTR_API_DECLARATOR(r_instrumentr_tracer_set_callback_##NAME,      \
-                               SEXP,                                          \
-                               SEXP r_tracer,                                 \
-                               SEXP r_callback)                               \
-    INSTRUMENTR_API_DECLARATOR(instrumentr_tracer_remove_callback_##NAME,     \
-                               void,                                          \
-                               instrumentr_tracer_t tracer)                   \
-    INSTRUMENTR_API_DECLARATOR(                                               \
-        r_instrumentr_tracer_remove_callback_##NAME, SEXP, SEXP r_tracer)
-
-#define INSTRUMENTR_TRACER_CALLBACK_API_EXPORTER(TYPE, NAME)                  \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        instrumentr_callback_##NAME##_create_from_r_function,                 \
-        instrumentr_callback_t,                                               \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        r_instrumentr_callback_##NAME##_create_from_r_function,               \
-        SEXP,                                                                 \
-        SEXP r_function)                                                      \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        instrumentr_callback_##NAME##_create_from_c_function,                 \
-        instrumentr_callback_t,                                               \
-        NAME##_function_t c_function)                                         \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        r_instrumentr_callback_##NAME##_create_from_c_function,               \
-        SEXP,                                                                 \
-        SEXP r_c_function)                                                    \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        instrumentr_callback_is_##NAME, int, instrumentr_callback_t callback) \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        r_instrumentr_callback_is_##NAME, SEXP, SEXP r_callback)              \
-    INSTRUMENTR_API_EXPORTER(instrumentr_tracer_has_callback_##NAME,          \
-                             int,                                             \
-                             instrumentr_tracer_t tracer)                     \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        r_instrumentr_tracer_has_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_EXPORTER(instrumentr_tracer_get_callback_##NAME,          \
-                             instrumentr_callback_t,                          \
-                             instrumentr_tracer_t tracer)                     \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        r_instrumentr_tracer_get_callback_##NAME, SEXP, SEXP r_tracer)        \
-    INSTRUMENTR_API_EXPORTER(instrumentr_tracer_set_callback_##NAME,          \
-                             void,                                            \
-                             instrumentr_tracer_t tracer,                     \
-                             instrumentr_callback_t callback)                 \
-    INSTRUMENTR_API_EXPORTER(r_instrumentr_tracer_set_callback_##NAME,        \
-                             SEXP,                                            \
-                             SEXP r_tracer,                                   \
-                             SEXP r_callback)                                 \
-    INSTRUMENTR_API_EXPORTER(instrumentr_tracer_remove_callback_##NAME,       \
-                             void,                                            \
-                             instrumentr_tracer_t tracer)                     \
-    INSTRUMENTR_API_EXPORTER(                                                 \
-        r_instrumentr_tracer_remove_callback_##NAME, SEXP, SEXP r_tracer)
+    MACRO(r_instrumentr_callback_is_##NAME, SEXP, SEXP r_callback)            \
+    MACRO(instrumentr_tracer_has_callback_##NAME,                             \
+          int,                                                                \
+          instrumentr_tracer_t tracer)                                        \
+    MACRO(r_instrumentr_tracer_has_callback_##NAME, SEXP, SEXP r_tracer)      \
+    MACRO(instrumentr_tracer_get_callback_##NAME,                             \
+          instrumentr_callback_t,                                             \
+          instrumentr_tracer_t tracer)                                        \
+    MACRO(r_instrumentr_tracer_get_callback_##NAME, SEXP, SEXP r_tracer)      \
+    MACRO(instrumentr_tracer_set_callback_##NAME,                             \
+          void,                                                               \
+          instrumentr_tracer_t tracer,                                        \
+          instrumentr_callback_t callback)                                    \
+    MACRO(r_instrumentr_tracer_set_callback_##NAME,                           \
+          SEXP,                                                               \
+          SEXP r_tracer,                                                      \
+          SEXP r_callback)                                                    \
+    MACRO(instrumentr_tracer_remove_callback_##NAME,                          \
+          void,                                                               \
+          instrumentr_tracer_t tracer)                                        \
+    MACRO(r_instrumentr_tracer_remove_callback_##NAME, SEXP, SEXP r_tracer)
 
 #define INSTRUMENTR_TRACER_API_MAP(MACRO)                                      \
     MACRO(instrumentr_tracer_create, instrumentr_tracer_t, )                   \
@@ -663,33 +520,34 @@
 #define INSTRUMENTR_API_DEFINER(FUNCTION, OUTPUT_TYPE, ...) \
     OUTPUT_TYPE (*FUNCTION)(__VA_ARGS__);
 
-#define INSTRUMENTR_DEFINE_API()                 \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_DEFINER) \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(INSTRUMENTR_TRACER_CALLBACK_API_DEFINER)
+#define INSTRUMENTR_DEFINE_API()                                           \
+    INSTRUMENTR_API_MAP(INSTRUMENTR_API_DEFINER)                           \
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
+                                          INSTRUMENTR_API_DEFINER)
 
 #define INSTRUMENTR_API_DECLARATOR(FUNCTION, OUTPUT_TYPE, ...) \
     extern OUTPUT_TYPE (*FUNCTION)(__VA_ARGS__);
 
-#define INSTRUMENTR_DECLARE_API()                   \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_DECLARATOR) \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(            \
-        INSTRUMENTR_TRACER_CALLBACK_API_DECLARATOR)
+#define INSTRUMENTR_DECLARE_API()                                          \
+    INSTRUMENTR_API_MAP(INSTRUMENTR_API_DECLARATOR)                        \
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
+                                          INSTRUMENTR_API_DECLARATOR)
 
 #define INSTRUMENTR_API_INITIALIZER(FUNCTION, OUTPUT_TYPE, ...) \
     FUNCTION = (OUTPUT_TYPE(*)(__VA_ARGS__))(                   \
         R_GetCCallable("instrumentr", #FUNCTION));
 
-#define INSTRUMENTR_INITIALIZE_API()                 \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_INITIALIZER) \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(             \
-        INSTRUMENTR_TRACER_CALLBACK_API_INITIALIZER)
+#define INSTRUMENTR_INITIALIZE_API()                                       \
+    INSTRUMENTR_API_MAP(INSTRUMENTR_API_INITIALIZER)                       \
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
+                                          INSTRUMENTR_API_INITIALIZER)
 
 #define INSTRUMENTR_API_EXPORTER(FUNCTION, OUTPUT_TYPE, ...) \
     R_RegisterCCallable("instrumentr", #FUNCTION, (DL_FUNC)(FUNCTION));
 
-#define INSTRUMENTR_EXPORT_API()                  \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_EXPORTER) \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(          \
-        INSTRUMENTR_TRACER_CALLBACK_API_EXPORTER)
+#define INSTRUMENTR_EXPORT_API()                                           \
+    INSTRUMENTR_API_MAP(INSTRUMENTR_API_EXPORTER)                          \
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
+                                          INSTRUMENTR_API_EXPORTER)
 
 #endif /* INSTRUMENTR_API_H */

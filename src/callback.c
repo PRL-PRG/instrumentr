@@ -102,7 +102,7 @@ instrumentr_callback_create_from_c_function(instrumentr_callback_type_t type,
     return instrumentr_callback_create(callback, type);
 }
 
-#define CALLBACK_CREATE(TYPE, NAME)                                           \
+#define CALLBACK_CREATE(TYPE, NAME, ...)                                      \
     instrumentr_callback_t                                                    \
         instrumentr_callback_##NAME##_create_from_r_function(                 \
             SEXP r_function) {                                                \
@@ -164,7 +164,7 @@ SEXP r_instrumentr_callback_get_type(SEXP r_callback) {
     return r_instrumentr_callback_get_name(r_callback);
 }
 
-#define INSTRUMENTR_GENERATE_DEFINITION_CALLBACK_IS_TYPE(TYPE, NAME)      \
+#define INSTRUMENTR_GENERATE_DEFINITION_CALLBACK_IS_TYPE(TYPE, NAME, ...) \
     /* accessor  */                                                       \
     int instrumentr_callback_is_##NAME(instrumentr_callback_t callback) { \
         return instrumentr_callback_get_type(callback) == TYPE;           \

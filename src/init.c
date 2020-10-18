@@ -70,7 +70,7 @@ const R_CallMethodDef CallEntries[] = {
     {"instrumentr_tracer_trace_package", (DL_FUNC) &r_instrumentr_tracer_trace_package, 2},
     {"instrumentr_tracer_trace_function", (DL_FUNC) &r_instrumentr_tracer_trace_function, 3},
 
-#define TRACER_CALLBACK_INTERFACE(TYPE, NAME)                                                                     \
+#define TRACER_CALLBACK_INTERFACE(TYPE, NAME, ...)                                                           \
     {"instrumentr_tracer_has_callback_" #NAME, (DL_FUNC) &r_instrumentr_tracer_has_callback_##NAME, 1},      \
     {"instrumentr_tracer_get_callback_" #NAME, (DL_FUNC) &r_instrumentr_tracer_get_callback_##NAME, 1},      \
     {"instrumentr_tracer_set_callback_" #NAME, (DL_FUNC) &r_instrumentr_tracer_set_callback_##NAME, 2},      \
@@ -82,8 +82,8 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 
     {"instrumentr_tracer_get_tracing_exec_stats", (DL_FUNC) &r_instrumentr_tracer_get_tracing_exec_stats, 1}, \
 
-#define TRACER_EXEC_STATS_INTERFACE(TYPE, NAME)                                                                                    \
-    {"instrumentr_tracer_get_callback_" #NAME "_exec_stats", (DL_FUNC) &r_instrumentr_tracer_get_callback_##NAME##_exec_stats, 1}, \
+#define TRACER_EXEC_STATS_INTERFACE(TYPE, NAME, ...) \
+    {"instrumentr_tracer_get_callback_" #NAME "_exec_stats", (DL_FUNC) &r_instrumentr_tracer_get_callback_##NAME##_exec_stats, 1},
 
 INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
 
@@ -164,7 +164,7 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     {"instrumentr_callback_is_active", (DL_FUNC) &r_instrumentr_callback_is_active, 1},
     {"instrumentr_callback_get_exec_stats", (DL_FUNC) &r_instrumentr_callback_get_exec_stats, 1},
 
-#define CALLBACK_CREATE(TYPE, NAME)                                                                                                  \
+#define CALLBACK_CREATE(TYPE, NAME, ...)                                                                                             \
     {"instrumentr_callback_" #NAME "_create_from_r_function", (DL_FUNC) &r_instrumentr_callback_##NAME##_create_from_r_function, 1}, \
     {"instrumentr_callback_" #NAME "_create_from_c_function", (DL_FUNC) &r_instrumentr_callback_##NAME##_create_from_c_function, 1},
 

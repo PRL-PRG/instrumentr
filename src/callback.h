@@ -10,7 +10,7 @@
  * create
  *******************************************************************************/
 
-#define CALLBACK_CREATE(TYPE, NAME)                                            \
+#define CALLBACK_CREATE(TYPE, NAME, ...)                                       \
     instrumentr_callback_t                                                     \
         instrumentr_callback_##NAME##_create_from_r_function(SEXP r_function); \
                                                                                \
@@ -46,7 +46,7 @@ instrumentr_callback_get_type(instrumentr_callback_t callback);
 SEXP r_instrumentr_callback_get_type(SEXP r_callback);
 
 /* accessor  */
-#define CALLBACK_IS_TYPE(TYPE, NAME)                                     \
+#define CALLBACK_IS_TYPE(TYPE, NAME, ...)                                \
     int instrumentr_callback_is_##NAME(instrumentr_callback_t callback); \
                                                                          \
     SEXP r_instrumentr_callback_is_##NAME(SEXP r_callback);

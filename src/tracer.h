@@ -148,7 +148,7 @@ SEXP r_instrumentr_tracer_trace_function(SEXP r_tracer,
  * callbacks
  *******************************************************************************/
 
-#define TRACER_CALLBACK_API(TYPE, NAME)                                      \
+#define TRACER_CALLBACK_API(TYPE, NAME, ...)                                 \
                                                                              \
     /* accessor */                                                           \
     int instrumentr_tracer_has_callback_##NAME(instrumentr_tracer_t tracer); \
@@ -185,7 +185,7 @@ instrumentr_tracer_get_tracing_exec_stats(instrumentr_tracer_t tracer);
 /* accessor */
 SEXP r_instrumentr_tracer_get_tracing_exec_stats(SEXP r_tracer);
 
-#define TRACER_EXEC_STATS_API(TYPE, NAME)                    \
+#define TRACER_EXEC_STATS_API(TYPE, NAME, ...)               \
     /* accessor */                                           \
     instrumentr_exec_stats_t                                 \
         instrumentr_tracer_get_callback_##NAME##_exec_stats( \
