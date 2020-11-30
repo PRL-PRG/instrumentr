@@ -455,15 +455,24 @@ class Context: public Object {
 
     void enable_tracing() {
         set_tracing_status(true);
+        dyntrace_enable();
     }
 
     void disable_tracing() {
         set_tracing_status(false);
+        dyntrace_disable();
     }
 
     void reinstate_tracing() {
         if (!tracing_status_stack_.empty()) {
             tracing_status_stack_.pop_back();
+            bool current_status =
+                !tracing_status_stack_.empty() && tracing_status_stack_.back();
+            if (current_status) {
+                dyntrace_enable();
+            } else {
+                dyntrace_disable();
+            }
         }
     }
 
@@ -551,7 +560,7 @@ class Context: public Object {
         : Object(), r_environment_(r_environment), dyntracer_(dyntracer) {
         R_PreserveObject(r_environment_);
     }
-#else  /* USING_DYNTRACE  */
+#else /* USING_DYNTRACE  */
     explicit Context(SEXP r_environment)
         : Object(), r_environment_(r_environment) {
         R_PreserveObject(r_environment_);

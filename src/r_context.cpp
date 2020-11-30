@@ -694,7 +694,7 @@ SEXP r_context_finalize_tracing(SEXP r_context) {
 SEXP r_context_trace_code(SEXP r_context, SEXP r_code, SEXP r_environment) {
     ContextSPtr context = from_sexp<Context>(r_context);
 
-    context->set_tracing_status(true);
+    context->enable_tracing();
     context->push_callback_type(instrumentr::Callback::Type::Application);
 
 #ifdef USING_DYNTRACE
