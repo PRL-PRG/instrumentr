@@ -16,7 +16,13 @@ get_caller.instrumentr_call <- function(object, ...) { # nolint
 
 
     if (caller_frame_position == 0) {
-        stop("caller of topmost call is undefined")
+        return(list(package_name = "global",
+                    function_name = NA_character_,
+                    definition = NULL,
+                    environment = NULL,
+                    definition_depth = NA_integer_,
+                    frame_position = NA_integer_,
+                    call_expression = NULL))
     }
 
     caller_env <- frames[[caller_frame_position]]
