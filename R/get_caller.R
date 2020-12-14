@@ -66,6 +66,9 @@ get_caller.instrumentr_call <- function(object, ...) { # nolint
         }
     }
 
+    package_name <- if(package_name == "R_GlobalEnv")
+                        "global"
+                    else package_name
     list(package_name = package_name,
          function_name = function_name,
          definition = definition,
