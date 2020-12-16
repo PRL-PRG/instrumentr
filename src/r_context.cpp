@@ -698,8 +698,9 @@ SEXP r_context_trace_code(SEXP r_context, SEXP r_code, SEXP r_environment) {
     context->push_callback_type(instrumentr::Callback::Type::Application);
 
 #ifdef USING_DYNTRACE
-    SEXP r_result =
+    dyntrace_result_t result =
         dyntrace_trace_code(context->get_dyntracer(), r_code, r_environment);
+    SEXP r_result = result.value;
 #else
     SEXP r_result = Rf_eval(r_code, r_environment);
 #endif /* USING_DYNTRACE */

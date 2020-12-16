@@ -11,6 +11,8 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
         code <- substitute(code)
     }
 
+    code <- substitute(tryCatch(list(value = CODE), function(e) list(error = e)), CODE = code)
+
     result <- NULL
 
     .Call(C_context_initialize_tracing, context)
@@ -38,9 +40,15 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
 
         value <- .Call(C_context_trace_code, context, code, environment)
 
-        .Call(C_context_trace_application_detach, context, application)
+        if(is.null(value$error)) {
+            .Call(C_context_trace_application_detach, context, application)
 
-        result <- create_result(value)
+            result <- create_result(value$value)
+        } else {
+            callback_type <- .Call(C_context_get_current_callback_type, context)
+
+            result <- create_result(value$error, callback_type)
+        }
     },
     error = function(e) {
         print(e)
