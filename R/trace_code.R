@@ -11,7 +11,7 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
         code <- substitute(code)
     }
 
-    code <- substitute(tryCatch(list(value = CODE), function(e) list(error = e)), CODE = code)
+    code <- substitute(tryCatch(list(value = CODE), error = function(e) list(error = e)), list(CODE = code))
 
     result <- NULL
 
@@ -69,9 +69,9 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
         ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
-        if (is_value(result) || get_source(get_error(result)) == "application") {
-            .Call(C_context_trace_application_unload, context, application)
-        }
+        ## if (is_value(result) || get_source(get_error(result)) == "application") {
+        .Call(C_context_trace_application_unload, context, application)
+        ## }
     },
     error = function(e) {
         print(e)
