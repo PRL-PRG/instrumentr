@@ -45,6 +45,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
     error = function(e) {
         print(e)
 
+        # TODO
         callback_type <- "don't know"#.Call(C_instrumentr_tracer_get_callback_current_type, tracer)
         result <<- create_result(e, callback_type)
     })

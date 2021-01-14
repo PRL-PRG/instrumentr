@@ -51,4 +51,28 @@ SEXP r_instrumentr_trace_call_exit(SEXP r_tracer,
                                    SEXP r_function,
                                    SEXP r_result);
 
+void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
+                                          instrumentr_application_t application,
+                                          instrumentr_package_t package,
+                                          instrumentr_function_t function,
+                                          instrumentr_call_t call);
+
+void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
+                                          instrumentr_application_t application,
+                                          instrumentr_package_t package,
+                                          instrumentr_function_t function,
+                                          instrumentr_call_t call);
+
+void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
+                                          instrumentr_application_t application,
+                                          instrumentr_package_t package,
+                                          instrumentr_function_t function,
+                                          instrumentr_call_t call);
+
+void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
+                                         instrumentr_application_t application,
+                                         instrumentr_package_t package,
+                                         instrumentr_function_t function,
+                                         instrumentr_call_t call);
+
 #endif /* INSTRUMENTR_TRACE_H */

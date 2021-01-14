@@ -805,5 +805,3 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
 
     return r_data_frame;
 }
-
-

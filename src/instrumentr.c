@@ -25,6 +25,19 @@ void instrumentr_remove_tracer(instrumentr_tracer_t tracer) {
     vec_remove(&tracers, tracer);
 }
 
+instrumentr_tracer_t instrumentr_get_tracer(int index) {
+    if (index >= tracers.length) {
+        instrumentr_log_error("attempt to access tracer out of bounds");
+        return NULL;
+    } else {
+        return tracers.data[index];
+    }
+}
+
+int instrumentr_get_tracer_count() {
+    return tracers.length;
+}
+
 void instrumentr_initialize_tracing(instrumentr_tracer_t tracer) {
     instrumentr_add_tracer(tracer);
 }

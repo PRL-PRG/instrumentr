@@ -110,7 +110,7 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     {"instrumentr_package_get_functions", (DL_FUNC) &r_instrumentr_package_get_functions, 1},
 
     /* function */
-    {"instrumentr_function_create", (DL_FUNC) &r_instrumentr_function_create, 6},
+    {"instrumentr_function_create_closure", (DL_FUNC) &r_instrumentr_function_create_closure, 6},
     {"instrumentr_function_get_name", (DL_FUNC) &r_instrumentr_function_get_name, 1},
     {"instrumentr_function_get_parameter_count", (DL_FUNC) &r_instrumentr_function_get_parameter_count, 1},
     {"instrumentr_function_get_definition", (DL_FUNC) &r_instrumentr_function_get_definition, 1},
@@ -181,4 +181,7 @@ void R_init_instrumentr(DllInfo* dll) {
 
     INSTRUMENTR_EXPORT_API()
 
+}
+
+void R_unload_instrumentr(DllInfo* info) {
 }

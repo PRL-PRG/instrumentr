@@ -7,8 +7,9 @@ const char* instrumentr_get_commit_hash();
 SEXP r_instrumentr_get_commit_hash();
 
 void instrumentr_add_tracer(instrumentr_tracer_t tracer);
-
 void instrumentr_remove_tracer(instrumentr_tracer_t tracer);
+instrumentr_tracer_t instrumentr_get_tracer(int index);
+int instrumentr_get_tracer_count();
 
 void instrumentr_initialize_tracing(instrumentr_tracer_t tracer);
 SEXP r_instrumentr_initialize_tracing(SEXP r_tracer);

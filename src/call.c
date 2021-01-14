@@ -76,8 +76,11 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
 
     vec_init(&call->parameters);
 
-    SEXP r_parameter_list =
-        FORMALS(instrumentr_function_get_definition(function));
+    /* TODO - handle calls to special and builtin */
+    instrumentr_function_definition_t function_definition =
+        instrumentr_function_get_definition(function);
+
+    SEXP r_parameter_list = FORMALS(function_definition.sexp);
 
     for (int parameter_position = 0; r_parameter_list != R_NilValue;
          ++parameter_position, r_parameter_list = CDR(r_parameter_list)) {
@@ -207,7 +210,11 @@ SEXP r_instrumentr_call_create(SEXP r_function,
                                SEXP r_frame_position) {
     instrumentr_function_t function = instrumentr_function_unwrap(r_function);
     int frame_position = instrumentr_r_integer_to_c_int(r_frame_position);
-    SEXP r_definition = instrumentr_function_get_definition(function);
+
+    /* TODO - handle calls to special and builtin */
+    instrumentr_function_definition_t definition =
+        instrumentr_function_get_definition(function);
+    SEXP r_definition = definition.sexp;
 
     instrumentr_call_t call = instrumentr_call_create(
         function, r_expression, r_environment, frame_position);

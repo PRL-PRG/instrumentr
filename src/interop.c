@@ -3,7 +3,7 @@
 #include "utilities.h"
 #include <stdarg.h>
 
-const int MESSAGE_BUFFER_SIZE = 4096;
+#define MESSAGE_BUFFER_SIZE 4096
 
 char message_buffer[MESSAGE_BUFFER_SIZE];
 
