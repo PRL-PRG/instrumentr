@@ -29,7 +29,10 @@ install: clean
 uninstall:
 	$(R) --slave -e "remove.packages('instrumentr')"
 
-document: install-devtools
+generate-callback-api:
+	$(R) --slave --file=inst/meta/generate-callback-api.R --args R/callbacks.R
+
+document: generate-callback-api install-devtools
 	$(R) --slave -e "devtools::document()"
 
 test: install-devtools
