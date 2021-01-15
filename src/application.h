@@ -115,4 +115,6 @@ void instrumentr_application_remove_package(
     instrumentr_application_t application,
     instrumentr_package_t package);
 
+SEXP r_instrumentr_application_remove_package(SEXP r_application, SEXP r_package);
+
 #endif /* INSTRUMENTR_APPLICATION_H */

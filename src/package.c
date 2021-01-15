@@ -232,8 +232,8 @@ SEXP r_instrumentr_package_get_functions(SEXP r_package) {
 }
 
 /*  mutator  */
-void instrumentr_package_append_function(instrumentr_package_t package,
-                                         instrumentr_function_t function) {
+void instrumentr_package_add_function(instrumentr_package_t package,
+                                      instrumentr_function_t function) {
     int index = -1;
     vec_find(&package->functions, function, index);
     if (index == -1) {
@@ -244,6 +244,14 @@ void instrumentr_package_append_function(instrumentr_package_t package,
                               instrumentr_package_get_name(package));
     }
 }
+
+SEXP r_instrumentr_package_add_function(SEXP r_package, SEXP r_function) {
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    instrumentr_function_t function = instrumentr_function_unwrap(r_function);
+    instrumentr_package_add_function(package, function);
+    return R_NilValue;
+}
+
 
 /*  mutator  */
 void instrumentr_package_remove_function(instrumentr_package_t package,

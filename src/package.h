@@ -74,8 +74,9 @@ SEXP r_instrumentr_package_get_function_by_name(SEXP r_package, SEXP r_name);
 SEXP r_instrumentr_package_get_functions(SEXP r_package);
 
 /*  mutator  */
-void instrumentr_package_append_function(instrumentr_package_t package,
-                                         instrumentr_function_t function);
+void instrumentr_package_add_function(instrumentr_package_t package,
+                                      instrumentr_function_t function);
+SEXP r_instrumentr_package_add_function(SEXP r_package, SEXP r_function);
 
 /*  mutator  */
 void instrumentr_package_remove_function(instrumentr_package_t package,

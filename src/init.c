@@ -98,9 +98,13 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     {"instrumentr_application_get_code", (DL_FUNC) &r_instrumentr_application_get_code, 1},
     {"instrumentr_application_get_environment", (DL_FUNC) &r_instrumentr_application_get_environment, 1},
     {"instrumentr_application_get_frame_position", (DL_FUNC) &r_instrumentr_application_get_frame_position, 1},
+    {"instrumentr_application_get_package_count", (DL_FUNC) &r_instrumentr_application_get_package_count, 1},
+    {"instrumentr_application_get_package_by_position", (DL_FUNC) &r_instrumentr_application_get_package_by_position, 2},
+    {"instrumentr_application_get_package_by_name", (DL_FUNC) &r_instrumentr_application_get_package_by_name, 2},
     {"instrumentr_application_get_packages", (DL_FUNC) &r_instrumentr_application_get_packages, 1},
-    {"instrumentr_application_get_call_stack", (DL_FUNC) &r_instrumentr_application_get_call_stack, 1},
     {"instrumentr_application_append_package", (DL_FUNC) &r_instrumentr_application_append_package, 2},
+    {"instrumentr_application_remove_package", (DL_FUNC) &r_instrumentr_application_remove_package, 2},
+    {"instrumentr_application_get_call_stack", (DL_FUNC) &r_instrumentr_application_get_call_stack, 1},
 
     /* package */
     {"instrumentr_package_create", (DL_FUNC) &r_instrumentr_package_create, 3},
@@ -108,6 +112,7 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     {"instrumentr_package_get_directory", (DL_FUNC) &r_instrumentr_package_get_directory, 1},
     {"instrumentr_package_get_namespace", (DL_FUNC) &r_instrumentr_package_get_namespace, 1},
     {"instrumentr_package_get_functions", (DL_FUNC) &r_instrumentr_package_get_functions, 1},
+    {"instrumentr_package_add_function, (DL_FUNC) &r_instrumentr_package_add_function, 2},
 
     /* function */
     {"instrumentr_function_create_closure", (DL_FUNC) &r_instrumentr_function_create_closure, 6},

@@ -347,3 +347,16 @@ void instrumentr_application_remove_package(
     instrumentr_package_t package) {
     vec_remove(&application->packages, package);
 }
+
+SEXP r_instrumentr_application_remove_package(
+    SEXP r_application,
+    SEXP r_package) {
+
+    instrumentr_application_t application =
+        instrumentr_application_unwrap(r_application);
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+
+    instrumentr_application_remove_package(application, package);
+
+    return R_NilValue;
+}
