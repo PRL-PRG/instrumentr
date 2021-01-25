@@ -126,6 +126,19 @@ generate_create_api <- function(callback_spec) {
 }
 
 
+
+generate_is_api <- function(callback_spec) {
+
+    str_glue(
+        "is_instrumentr_{NAME}_callback <- function(object) {{ # nolint",
+        "    inherits(object, 'instrumentr_{NAME}_callback')",
+        "}}",
+        .sep = "\n",
+        NAME = callback_spec$name
+    )
+}
+
+
 generate_api <- function(callback_spec) {
 
     str_glue(
@@ -148,12 +161,18 @@ generate_api <- function(callback_spec) {
         "## CREATE ######################################################################",
         "",
         "{CREATE_API}",
+        "",
+        "## IS ##########################################################################",
+        "",
+        "{IS_API}",
         .sep = "\n",
         NAME = callback_spec$name,
         GET_API = generate_get_api(callback_spec),
         SET_API = generate_set_api(callback_spec),
         HAS_API = generate_has_api(callback_spec),
-        CREATE_API = generate_create_api(callback_spec))
+        CREATE_API = generate_create_api(callback_spec),
+        IS_API = generate_is_api(callback_spec)
+    )
 }
 
 main <- function() {
