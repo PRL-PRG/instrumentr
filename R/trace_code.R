@@ -11,7 +11,7 @@ trace_code.instrumentr_context <- function(context, code, environment = .GlobalE
         code <- substitute(code)
     }
 
-    code <- substitute(tryCatch(list(value = CODE), function(e) list(error = e)), CODE = code)
+    code <- substitute(tryCatch(list(value = CODE), error = function(e) list(error = e)), list(CODE = code))
 
     result <- NULL
 

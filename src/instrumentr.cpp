@@ -93,6 +93,10 @@ void initialize_instrumentr(SEXP r_package_environment,
         FunctionDetachCallback::initialize();
         CallEntryCallback::initialize();
         CallExitCallback::initialize();
+        ObjectCoerceCallback::initialize();
+        ObjectDuplicateCallback::initialize();
+        VectorCopyCallback::initialize();
+        MatrixCopyCallback::initialize();
         BuiltinCallEntryCallback::initialize();
         BuiltinCallExitCallback::initialize();
         SpecialCallEntryCallback::initialize();
@@ -102,6 +106,7 @@ void initialize_instrumentr(SEXP r_package_environment,
         EvalEntryCallback::initialize();
         EvalExitCallback::initialize();
         GcAllocationCallback::initialize();
+        GcUnmarkCallback::initialize();
         VariableDefinitionCallback::initialize();
         VariableAssignmentCallback::initialize();
         VariableRemovalCallback::initialize();
@@ -133,6 +138,10 @@ void finalize_instrumentr() {
         FunctionDetachCallback::finalize();
         CallEntryCallback::finalize();
         CallExitCallback::finalize();
+        ObjectCoerceCallback::finalize();
+        ObjectDuplicateCallback::finalize();
+        VectorCopyCallback::finalize();
+        MatrixCopyCallback::finalize();
         BuiltinCallEntryCallback::finalize();
         BuiltinCallExitCallback::finalize();
         SpecialCallEntryCallback::finalize();
@@ -142,6 +151,7 @@ void finalize_instrumentr() {
         EvalEntryCallback::finalize();
         EvalExitCallback::finalize();
         GcAllocationCallback::finalize();
+        GcUnmarkCallback::finalize();
         VariableDefinitionCallback::finalize();
         VariableAssignmentCallback::finalize();
         VariableRemovalCallback::finalize();

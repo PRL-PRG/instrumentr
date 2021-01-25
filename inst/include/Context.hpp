@@ -16,6 +16,7 @@
 #include "CallEntryCallback.hpp"
 #include "CallExitCallback.hpp"
 #include "GcAllocationCallback.hpp"
+#include "GcUnmarkCallback.hpp"
 #include "VariableDefinitionCallback.hpp"
 #include "VariableAssignmentCallback.hpp"
 #include "VariableRemovalCallback.hpp"
@@ -28,6 +29,10 @@
 #include "ClosureCallExitCallback.hpp"
 #include "EvalEntryCallback.hpp"
 #include "EvalExitCallback.hpp"
+#include "ObjectCoerceCallback.hpp"
+#include "ObjectDuplicateCallback.hpp"
+#include "VectorCopyCallback.hpp"
+#include "MatrixCopyCallback.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -47,313 +52,83 @@ class Context: public Object {
 #endif /* USING_DYNTRACE */
     }
 
-    void set_application_load_callback(ApplicationLoadCallbackSPtr callback) {
-        set_callback_(application_load_callback_, callback);
-    }
-
-    ApplicationLoadCallbackSPtr get_application_load_callback() {
-        return application_load_callback_;
-    }
-
-    bool has_application_load_callback() const {
-        return (bool) (application_load_callback_);
-    }
-
-    void
-    set_application_unload_callback(ApplicationUnloadCallbackSPtr callback) {
-        set_callback_(application_unload_callback_, callback);
-    }
-
-    ApplicationUnloadCallbackSPtr get_application_unload_callback() {
-        return application_unload_callback_;
-    }
-
-    bool has_application_unload_callback() const {
-        return (bool) (application_unload_callback_);
-    }
-
-    void
-    set_application_attach_callback(ApplicationAttachCallbackSPtr callback) {
-        set_callback_(application_attach_callback_, callback);
-    }
-
-    ApplicationAttachCallbackSPtr get_application_attach_callback() {
-        return application_attach_callback_;
-    }
-
-    bool has_application_attach_callback() const {
-        return (bool) (application_attach_callback_);
-    }
-
-    void
-    set_application_detach_callback(ApplicationDetachCallbackSPtr callback) {
-        set_callback_(application_detach_callback_, callback);
-    }
-
-    ApplicationDetachCallbackSPtr get_application_detach_callback() {
-        return application_detach_callback_;
-    }
-
-    bool has_application_detach_callback() const {
-        return (bool) (application_detach_callback_);
-    }
-
-    void set_package_load_callback(PackageLoadCallbackSPtr callback) {
-        set_callback_(package_load_callback_, callback);
-    }
-
-    PackageLoadCallbackSPtr get_package_load_callback() {
-        return package_load_callback_;
-    }
-
-    bool has_package_load_callback() const {
-        return (bool) (package_load_callback_);
-    }
-
-    void set_package_unload_callback(PackageUnloadCallbackSPtr callback) {
-        set_callback_(package_unload_callback_, callback);
-    }
-
-    PackageUnloadCallbackSPtr get_package_unload_callback() {
-        return package_unload_callback_;
-    }
-
-    bool has_package_unload_callback() const {
-        return (bool) (package_unload_callback_);
-    }
-
-    void set_package_attach_callback(PackageAttachCallbackSPtr callback) {
-        set_callback_(package_attach_callback_, callback);
-    }
-
-    PackageAttachCallbackSPtr get_package_attach_callback() {
-        return package_attach_callback_;
-    }
-
-    bool has_package_attach_callback() const {
-        return (bool) (package_attach_callback_);
-    }
-
-    void set_package_detach_callback(PackageDetachCallbackSPtr callback) {
-        set_callback_(package_detach_callback_, callback);
-    }
-
-    PackageDetachCallbackSPtr get_package_detach_callback() {
-        return package_detach_callback_;
-    }
-
-    bool has_package_detach_callback() const {
-        return (bool) (package_detach_callback_);
-    }
-
-    void set_function_attach_callback(FunctionAttachCallbackSPtr callback) {
-        set_callback_(function_attach_callback_, callback);
-    }
-
-    FunctionAttachCallbackSPtr get_function_attach_callback() {
-        return function_attach_callback_;
-    }
-
-    bool has_function_attach_callback() const {
-        return (bool) (function_attach_callback_);
-    }
-
-    void set_function_detach_callback(FunctionDetachCallbackSPtr callback) {
-        set_callback_(function_detach_callback_, callback);
-    }
-
-    FunctionDetachCallbackSPtr get_function_detach_callback() {
-        return function_detach_callback_;
-    }
-
-    bool has_function_detach_callback() const {
-        return (bool) (function_detach_callback_);
-    }
-
-    void set_call_entry_callback(CallEntryCallbackSPtr callback) {
-        set_callback_(call_entry_callback_, callback);
-    }
-
-    CallEntryCallbackSPtr get_call_entry_callback() {
-        return call_entry_callback_;
-    }
-
-    bool has_call_entry_callback() const {
-        return (bool) (call_entry_callback_);
-    }
-
-    void set_call_exit_callback(CallExitCallbackSPtr callback) {
-        set_callback_(call_exit_callback_, callback);
-    }
-
-    CallExitCallbackSPtr get_call_exit_callback() {
-        return call_exit_callback_;
-    }
-
-    bool has_call_exit_callback() const {
-        return (bool) (call_exit_callback_);
-    }
-
-    void
-    set_builtin_call_entry_callback(BuiltinCallEntryCallbackSPtr callback) {
-        set_callback_(builtin_call_entry_callback_, callback);
-    }
-
-    BuiltinCallEntryCallbackSPtr get_builtin_call_entry_callback() {
-        return builtin_call_entry_callback_;
-    }
-
-    bool has_builtin_call_entry_callback() const {
-        return (bool) (builtin_call_entry_callback_);
-    }
-
-    void set_builtin_call_exit_callback(BuiltinCallExitCallbackSPtr callback) {
-        set_callback_(builtin_call_exit_callback_, callback);
-    }
-
-    BuiltinCallExitCallbackSPtr get_builtin_call_exit_callback() {
-        return builtin_call_exit_callback_;
-    }
-
-    bool has_builtin_call_exit_callback() const {
-        return (bool) (builtin_call_exit_callback_);
-    }
-
-    void
-    set_special_call_entry_callback(SpecialCallEntryCallbackSPtr callback) {
-        set_callback_(special_call_entry_callback_, callback);
-    }
-
-    SpecialCallEntryCallbackSPtr get_special_call_entry_callback() {
-        return special_call_entry_callback_;
-    }
-
-    bool has_special_call_entry_callback() const {
-        return (bool) (special_call_entry_callback_);
-    }
-
-    void set_special_call_exit_callback(SpecialCallExitCallbackSPtr callback) {
-        set_callback_(special_call_exit_callback_, callback);
-    }
-
-    SpecialCallExitCallbackSPtr get_special_call_exit_callback() {
-        return special_call_exit_callback_;
-    }
-
-    bool has_special_call_exit_callback() const {
-        return (bool) (special_call_exit_callback_);
-    }
-
-    void
-    set_closure_call_entry_callback(ClosureCallEntryCallbackSPtr callback) {
-        set_callback_(closure_call_entry_callback_, callback);
-    }
-
-    ClosureCallEntryCallbackSPtr get_closure_call_entry_callback() {
-        return closure_call_entry_callback_;
-    }
-
-    bool has_closure_call_entry_callback() const {
-        return (bool) (closure_call_entry_callback_);
-    }
-
-    void set_closure_call_exit_callback(ClosureCallExitCallbackSPtr callback) {
-        set_callback_(closure_call_exit_callback_, callback);
-    }
-
-    ClosureCallExitCallbackSPtr get_closure_call_exit_callback() {
-        return closure_call_exit_callback_;
-    }
-
-    bool has_closure_call_exit_callback() const {
-        return (bool) (closure_call_exit_callback_);
-    }
-
-    void set_eval_entry_callback(EvalEntryCallbackSPtr callback) {
-        set_callback_(eval_entry_callback_, callback);
-    }
-
-    EvalEntryCallbackSPtr get_eval_entry_callback() {
-        return eval_entry_callback_;
-    }
-
-    bool has_eval_entry_callback() const {
-        return (bool) (eval_entry_callback_);
-    }
-
-    void set_eval_exit_callback(EvalExitCallbackSPtr callback) {
-        set_callback_(eval_exit_callback_, callback);
-    }
-
-    EvalExitCallbackSPtr get_eval_exit_callback() {
-        return eval_exit_callback_;
-    }
-
-    bool has_eval_exit_callback() const {
-        return (bool) (eval_exit_callback_);
-    }
-
-    void set_gc_allocation_callback(GcAllocationCallbackSPtr callback) {
-        set_callback_(gc_allocation_callback_, callback);
-    }
-
-    GcAllocationCallbackSPtr get_gc_allocation_callback() {
-        return gc_allocation_callback_;
-    }
-
-    bool has_gc_allocation_callback() const {
-        return (bool) (gc_allocation_callback_);
-    }
-
-    void
-    set_variable_definition_callback(VariableDefinitionCallbackSPtr callback) {
-        set_callback_(variable_definition_callback_, callback);
-    }
-
-    VariableDefinitionCallbackSPtr get_variable_definition_callback() {
-        return variable_definition_callback_;
-    }
-
-    bool has_variable_definition_callback() const {
-        return (bool) (variable_definition_callback_);
-    }
-
-    void
-    set_variable_assignment_callback(VariableAssignmentCallbackSPtr callback) {
-        set_callback_(variable_assignment_callback_, callback);
-    }
-
-    VariableAssignmentCallbackSPtr get_variable_assignment_callback() {
-        return variable_assignment_callback_;
-    }
-
-    bool has_variable_assignment_callback() const {
-        return (bool) (variable_assignment_callback_);
-    }
-
-    void set_variable_removal_callback(VariableRemovalCallbackSPtr callback) {
-        set_callback_(variable_removal_callback_, callback);
-    }
-
-    VariableRemovalCallbackSPtr get_variable_removal_callback() {
-        return variable_removal_callback_;
-    }
-
-    bool has_variable_removal_callback() const {
-        return (bool) (variable_removal_callback_);
-    }
-
-    void set_variable_lookup_callback(VariableLookupCallbackSPtr callback) {
-        set_callback_(variable_lookup_callback_, callback);
-    }
-
-    VariableLookupCallbackSPtr get_variable_lookup_callback() {
-        return variable_lookup_callback_;
-    }
-
-    bool has_variable_lookup_callback() const {
-        return (bool) (variable_lookup_callback_);
-    }
+#define INSTRUMENTR_GENERATE_CALLBACK_GETTER(CALLBACK_CLASS,    \
+                                             CALLBACK_VARIABLE) \
+    CALLBACK_CLASS##SPtr get_##CALLBACK_VARIABLE() {            \
+        return CALLBACK_VARIABLE##_;                            \
+    }
+
+#define INSTRUMENTR_GENERATE_CALLBACK_SETTER(CALLBACK_CLASS,      \
+                                             CALLBACK_VARIABLE)   \
+    void set_##CALLBACK_VARIABLE(CALLBACK_CLASS##SPtr callback) { \
+        set_callback_(CALLBACK_VARIABLE##_, callback);            \
+    }
+
+#define INSTRUMENTR_GENERATE_CALLBACK_PREDICATE(CALLBACK_CLASS,    \
+                                                CALLBACK_VARIABLE) \
+    bool has_##CALLBACK_VARIABLE() const {                         \
+        return (bool) ( CALLBACK_VARIABLE##_ );                    \
+    }
+
+#define INSTRUMENTR_GENERATE_CALLBACK_API(CALLBACK_CLASS, CALLBACK_VARIABLE) \
+    INSTRUMENTR_GENERATE_CALLBACK_GETTER(CALLBACK_CLASS, CALLBACK_VARIABLE)  \
+    INSTRUMENTR_GENERATE_CALLBACK_SETTER(CALLBACK_CLASS, CALLBACK_VARIABLE)  \
+    INSTRUMENTR_GENERATE_CALLBACK_PREDICATE(CALLBACK_CLASS, CALLBACK_VARIABLE)
+
+
+    INSTRUMENTR_GENERATE_CALLBACK_API(ApplicationLoadCallback,
+                                      application_load_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ApplicationUnloadCallback,
+                                      application_unload_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ApplicationAttachCallback,
+                                      application_attach_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ApplicationDetachCallback,
+                                      application_detach_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(PackageLoadCallback,
+                                      package_load_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(PackageUnloadCallback,
+                                      package_unload_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(PackageAttachCallback,
+                                      package_attach_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(PackageDetachCallback,
+                                      package_detach_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(FunctionAttachCallback,
+                                      function_attach_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(FunctionDetachCallback,
+                                      function_detach_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(CallEntryCallback, call_entry_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(CallExitCallback, call_exit_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ObjectCoerceCallback,
+                                      object_coerce_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ObjectDuplicateCallback,
+                                      object_duplicate_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(VectorCopyCallback, vector_copy_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(MatrixCopyCallback, matrix_copy_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(BuiltinCallEntryCallback,
+                                      builtin_call_entry_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(BuiltinCallExitCallback,
+                                      builtin_call_exit_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(SpecialCallEntryCallback,
+                                      special_call_entry_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(SpecialCallExitCallback,
+                                      special_call_exit_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ClosureCallEntryCallback,
+                                      closure_call_entry_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ClosureCallExitCallback,
+                                      closure_call_exit_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(EvalEntryCallback, eval_entry_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(EvalExitCallback, eval_exit_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(GcAllocationCallback,
+                                      gc_allocation_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(GcUnmarkCallback, gc_unmark_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(VariableDefinitionCallback,
+                                      variable_definition_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(VariableAssignmentCallback,
+                                      variable_assignment_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(VariableRemovalCallback,
+                                      variable_removal_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(VariableLookupCallback,
+                                      variable_lookup_callback)
 
     void set_environment(SEXP r_environment) {
         R_ReleaseObject(r_environment_);
@@ -521,6 +296,10 @@ class Context: public Object {
     FunctionDetachCallbackSPtr function_detach_callback_;
     CallEntryCallbackSPtr call_entry_callback_;
     CallExitCallbackSPtr call_exit_callback_;
+    ObjectCoerceCallbackSPtr object_coerce_callback_;
+    ObjectDuplicateCallbackSPtr object_duplicate_callback_;
+    VectorCopyCallbackSPtr vector_copy_callback_;
+    MatrixCopyCallbackSPtr matrix_copy_callback_;
     BuiltinCallEntryCallbackSPtr builtin_call_entry_callback_;
     BuiltinCallExitCallbackSPtr builtin_call_exit_callback_;
     SpecialCallEntryCallbackSPtr special_call_entry_callback_;
@@ -530,6 +309,7 @@ class Context: public Object {
     EvalEntryCallbackSPtr eval_entry_callback_;
     EvalExitCallbackSPtr eval_exit_callback_;
     GcAllocationCallbackSPtr gc_allocation_callback_;
+    GcUnmarkCallbackSPtr gc_unmark_callback_;
     VariableDefinitionCallbackSPtr variable_definition_callback_;
     VariableAssignmentCallbackSPtr variable_assignment_callback_;
     VariableRemovalCallbackSPtr variable_removal_callback_;
@@ -560,13 +340,13 @@ class Context: public Object {
         : Object(), r_environment_(r_environment), dyntracer_(dyntracer) {
         R_PreserveObject(r_environment_);
     }
-#else /* USING_DYNTRACE  */
+#else  /* USING_DYNTRACE  */
     explicit Context(SEXP r_environment)
         : Object(), r_environment_(r_environment) {
         R_PreserveObject(r_environment_);
     }
 #endif /* USING_DYNTRACE  */
-};
+};     // namespace instrumentr
 
 using ContextSPtr = std::shared_ptr<Context>;
 

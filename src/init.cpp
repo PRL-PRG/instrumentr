@@ -21,6 +21,10 @@
 #include "r_function_detach_callback.h"
 #include "r_call_entry_callback.h"
 #include "r_call_exit_callback.h"
+#include "r_object_coerce_callback.h"
+#include "r_object_duplicate_callback.h"
+#include "r_vector_copy_callback.h"
+#include "r_matrix_copy_callback.h"
 #include "r_builtin_call_entry_callback.h"
 #include "r_builtin_call_exit_callback.h"
 #include "r_special_call_entry_callback.h"
@@ -30,6 +34,7 @@
 #include "r_eval_entry_callback.h"
 #include "r_eval_exit_callback.h"
 #include "r_gc_allocation_callback.h"
+#include "r_gc_unmark_callback.h"
 #include "r_variable_definition_callback.h"
 #include "r_variable_assignment_callback.h"
 #include "r_variable_removal_callback.h"
@@ -97,6 +102,18 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_set_call_exit_callback", (DL_FUNC) &r_context_set_call_exit_callback, 2},
     {"context_get_call_exit_callback", (DL_FUNC) &r_context_get_call_exit_callback, 1},
     {"context_has_call_exit_callback", (DL_FUNC) &r_context_has_call_exit_callback, 1},
+    {"context_set_object_coerce_callback", (DL_FUNC) &r_context_set_object_coerce_callback, 2},
+    {"context_get_object_coerce_callback", (DL_FUNC) &r_context_get_object_coerce_callback, 1},
+    {"context_has_object_coerce_callback", (DL_FUNC) &r_context_has_object_coerce_callback, 1},
+    {"context_set_object_duplicate_callback", (DL_FUNC) &r_context_set_object_duplicate_callback, 2},
+    {"context_get_object_duplicate_callback", (DL_FUNC) &r_context_get_object_duplicate_callback, 1},
+    {"context_has_object_duplicate_callback", (DL_FUNC) &r_context_has_object_duplicate_callback, 1},
+    {"context_set_vector_copy_callback", (DL_FUNC) &r_context_set_vector_copy_callback, 2},
+    {"context_get_vector_copy_callback", (DL_FUNC) &r_context_get_vector_copy_callback, 1},
+    {"context_has_vector_copy_callback", (DL_FUNC) &r_context_has_vector_copy_callback, 1},
+    {"context_set_matrix_copy_callback", (DL_FUNC) &r_context_set_matrix_copy_callback, 2},
+    {"context_get_matrix_copy_callback", (DL_FUNC) &r_context_get_matrix_copy_callback, 1},
+    {"context_has_matrix_copy_callback", (DL_FUNC) &r_context_has_matrix_copy_callback, 1},
     {"context_set_builtin_call_entry_callback", (DL_FUNC) &r_context_set_builtin_call_entry_callback, 2},
     {"context_get_builtin_call_entry_callback", (DL_FUNC) &r_context_get_builtin_call_entry_callback, 1},
     {"context_has_builtin_call_entry_callback", (DL_FUNC) &r_context_has_builtin_call_entry_callback, 1},
@@ -124,6 +141,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_set_gc_allocation_callback", (DL_FUNC) &r_context_set_gc_allocation_callback, 2},
     {"context_get_gc_allocation_callback", (DL_FUNC) &r_context_get_gc_allocation_callback, 1},
     {"context_has_gc_allocation_callback", (DL_FUNC) &r_context_has_gc_allocation_callback, 1},
+    {"context_set_gc_unmark_callback", (DL_FUNC) &r_context_set_gc_unmark_callback, 2},
+    {"context_get_gc_unmark_callback", (DL_FUNC) &r_context_get_gc_unmark_callback, 1},
+    {"context_has_gc_unmark_callback", (DL_FUNC) &r_context_has_gc_unmark_callback, 1},
     {"context_set_variable_definition_callback", (DL_FUNC) &r_context_set_variable_definition_callback, 2},
     {"context_get_variable_definition_callback", (DL_FUNC) &r_context_get_variable_definition_callback, 1},
     {"context_has_variable_definition_callback", (DL_FUNC) &r_context_has_variable_definition_callback, 1},
@@ -284,6 +304,22 @@ static const R_CallMethodDef CallEntries[] = {
     {"call_exit_callback_create_from_r_function", (DL_FUNC) &r_call_exit_callback_create_from_r_function, 1},
     {"call_exit_callback_create_from_c_function", (DL_FUNC) &r_call_exit_callback_create_from_c_function, 1},
 
+    /* ObjectCoerceCallback */
+    {"object_coerce_callback_create_from_r_function", (DL_FUNC) &r_object_coerce_callback_create_from_r_function, 1},
+    {"object_coerce_callback_create_from_c_function", (DL_FUNC) &r_object_coerce_callback_create_from_c_function, 1},
+
+    /* ObjectDuplicateCallback */
+    {"object_duplicate_callback_create_from_r_function", (DL_FUNC) &r_object_duplicate_callback_create_from_r_function, 1},
+    {"object_duplicate_callback_create_from_c_function", (DL_FUNC) &r_object_duplicate_callback_create_from_c_function, 1},
+
+    /* VectorCopyCallback */
+    {"vector_copy_callback_create_from_r_function", (DL_FUNC) &r_vector_copy_callback_create_from_r_function, 1},
+    {"vector_copy_callback_create_from_c_function", (DL_FUNC) &r_vector_copy_callback_create_from_c_function, 1},
+
+    /* MatrixCopyCallback */
+    {"matrix_copy_callback_create_from_r_function", (DL_FUNC) &r_matrix_copy_callback_create_from_r_function, 1},
+    {"matrix_copy_callback_create_from_c_function", (DL_FUNC) &r_matrix_copy_callback_create_from_c_function, 1},
+
     /* BuiltinCallEntryCallback */
     {"builtin_call_entry_callback_create_from_r_function", (DL_FUNC) &r_builtin_call_entry_callback_create_from_r_function, 1},
     {"builtin_call_entry_callback_create_from_c_function", (DL_FUNC) &r_builtin_call_entry_callback_create_from_c_function, 1},
@@ -319,6 +355,10 @@ static const R_CallMethodDef CallEntries[] = {
     /* GcAllocationCallback */
     {"gc_allocation_callback_create_from_r_function", (DL_FUNC) &r_gc_allocation_callback_create_from_r_function, 1},
     {"gc_allocation_callback_create_from_c_function", (DL_FUNC) &r_gc_allocation_callback_create_from_c_function, 1},
+
+    /* GcUnmarkCallback */
+    {"gc_unmark_callback_create_from_r_function", (DL_FUNC) &r_gc_unmark_callback_create_from_r_function, 1},
+    {"gc_unmark_callback_create_from_c_function", (DL_FUNC) &r_gc_unmark_callback_create_from_c_function, 1},
 
     /* VariableDefinitionCallback */
     {"variable_definition_callback_create_from_r_function", (DL_FUNC) &r_variable_definition_callback_create_from_r_function, 1},

@@ -9,17 +9,23 @@ callback_specs <- list(
     list(name = "call_entry", parameter_count = 5),
     list(name = "call_exit", parameter_count = 5),
 
+    list(name = "object_coerce", parameter_count = 4),
+    list(name = "object_duplicate", parameter_count = 5),
+    list(name = "vector_copy", parameter_count = 4),
+    list(name = "matrix_copy", parameter_count = 4),
+
     list(name = "closure_call_entry", parameter_count = 6),
-    list(name = "closure_call_exit", parameter_count = 6),
+    list(name = "closure_call_exit", parameter_count = 7),
     list(name = "builtin_call_entry", parameter_count = 6),
-    list(name = "builtin_call_exit", parameter_count = 6),
+    list(name = "builtin_call_exit", parameter_count = 7),
     list(name = "special_call_entry", parameter_count = 6),
-    list(name = "special_call_exit", parameter_count = 6),
+    list(name = "special_call_exit", parameter_count = 7),
 
-    list(name = "eval_entry", parameter_count = 2),
-    list(name = "eval_exit", parameter_count = 3),
+    list(name = "eval_entry", parameter_count = 4),
+    list(name = "eval_exit", parameter_count = 5),
 
-    list(name = "gc_allocation", parameter_count = 1),
+    list(name = "gc_allocation", parameter_count = 3),
+    list(name = "gc_unmark", parameter_count = 3),
 
     list(name = "function_attach", parameter_count = 4),
     list(name = "function_detach", parameter_count = 4),
@@ -29,10 +35,10 @@ callback_specs <- list(
     list(name = "package_load", parameter_count = 3),
     list(name = "package_unload", parameter_count = 3),
 
-    list(name = "variable_assignment", parameter_count = 3),
-    list(name = "variable_definition", parameter_count = 3),
-    list(name = "variable_lookup", parameter_count = 3),
-    list(name = "variable_removal", parameter_count = 2)
+    list(name = "variable_assignment", parameter_count = 5),
+    list(name = "variable_definition", parameter_count = 5),
+    list(name = "variable_lookup", parameter_count = 5),
+    list(name = "variable_removal", parameter_count = 4)
 )
 
 generate_get_api <- function(callback_spec) {
