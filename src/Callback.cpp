@@ -49,6 +49,14 @@ std::string callback_type_to_string(Callback::Type callback_type) {
         return "instrumentr_call_entry_callback";
     case Callback::Type::CallExit:
         return "instrumentr_call_exit_callback";
+    case Callback::Type::ObjectCoerce:
+        return "instrumentr_object_coerce_callback";
+    case Callback::Type::ObjectDuplicate:
+        return "instrumentr_object_duplicate_callback";
+    case Callback::Type::VectorCopy:
+        return "instrumentr_vector_copy_callback";
+    case Callback::Type::MatrixCopy:
+        return "instrumentr_matrix_copy_callback";
     case Callback::Type::BuiltinCallEntry:
         return "instrumentr_builtin_call_entry_callback";
     case Callback::Type::BuiltinCallExit:
@@ -67,6 +75,8 @@ std::string callback_type_to_string(Callback::Type callback_type) {
         return "instrumentr_eval_exit_callback";
     case Callback::Type::GcAllocation:
         return "instrumentr_gc_allocation_callback";
+    case Callback::Type::GcUnmark:
+        return "instrumentr_gc_unmark_callback";
     case Callback::Type::VariableDefinition:
         return "instrumentr_variable_definition_callback";
     case Callback::Type::VariableAssignment:

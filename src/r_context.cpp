@@ -16,6 +16,14 @@ using instrumentr::ApplicationLoadCallbackSPtr;
 using instrumentr::ApplicationSPtr;
 using instrumentr::ApplicationUnloadCallback;
 using instrumentr::ApplicationUnloadCallbackSPtr;
+using instrumentr::ObjectCoerceCallback;
+using instrumentr::ObjectCoerceCallbackSPtr;
+using instrumentr::ObjectDuplicateCallback;
+using instrumentr::ObjectDuplicateCallbackSPtr;
+using instrumentr::VectorCopyCallback;
+using instrumentr::VectorCopyCallbackSPtr;
+using instrumentr::MatrixCopyCallback;
+using instrumentr::MatrixCopyCallbackSPtr;
 using instrumentr::BuiltinCallEntryCallback;
 using instrumentr::BuiltinCallEntryCallbackSPtr;
 using instrumentr::BuiltinCallExitCallback;
@@ -47,6 +55,8 @@ using instrumentr::FunctionDetachCallbackSPtr;
 using instrumentr::FunctionSPtr;
 using instrumentr::GcAllocationCallback;
 using instrumentr::GcAllocationCallbackSPtr;
+using instrumentr::GcUnmarkCallback;
+using instrumentr::GcUnmarkCallbackSPtr;
 using instrumentr::Package;
 using instrumentr::PackageAttachCallback;
 using instrumentr::PackageAttachCallbackSPtr;
@@ -311,6 +321,78 @@ SEXP r_context_has_call_exit_callback(SEXP r_context) {
     return ScalarLogical(context->has_call_exit_callback());
 }
 
+SEXP r_context_set_object_coerce_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ObjectCoerceCallbackSPtr callback = from_sexp<ObjectCoerceCallback>(r_callback);
+    context->set_object_coerce_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_object_coerce_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ObjectCoerceCallbackSPtr callback = context->get_object_coerce_callback();
+    return to_sexp<ObjectCoerceCallback>(callback);
+}
+
+SEXP r_context_has_object_coerce_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_object_coerce_callback());
+}
+
+SEXP r_context_set_object_duplicate_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ObjectDuplicateCallbackSPtr callback = from_sexp<ObjectDuplicateCallback>(r_callback);
+    context->set_object_duplicate_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_object_duplicate_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ObjectDuplicateCallbackSPtr callback = context->get_object_duplicate_callback();
+    return to_sexp<ObjectDuplicateCallback>(callback);
+}
+
+SEXP r_context_has_object_duplicate_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_object_duplicate_callback());
+}
+
+SEXP r_context_set_vector_copy_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VectorCopyCallbackSPtr callback = from_sexp<VectorCopyCallback>(r_callback);
+    context->set_vector_copy_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_vector_copy_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    VectorCopyCallbackSPtr callback = context->get_vector_copy_callback();
+    return to_sexp<VectorCopyCallback>(callback);
+}
+
+SEXP r_context_has_vector_copy_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_vector_copy_callback());
+}
+
+SEXP r_context_set_matrix_copy_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    MatrixCopyCallbackSPtr callback = from_sexp<MatrixCopyCallback>(r_callback);
+    context->set_matrix_copy_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_matrix_copy_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    MatrixCopyCallbackSPtr callback = context->get_matrix_copy_callback();
+    return to_sexp<MatrixCopyCallback>(callback);
+}
+
+SEXP r_context_has_matrix_copy_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_matrix_copy_callback());
+}
+
 SEXP r_context_set_builtin_call_entry_callback(SEXP r_context,
                                                SEXP r_callback) {
     ContextSPtr context = from_sexp<Context>(r_context);
@@ -487,6 +569,24 @@ SEXP r_context_get_gc_allocation_callback(SEXP r_context) {
 SEXP r_context_has_gc_allocation_callback(SEXP r_context) {
     ContextSPtr context = from_sexp<Context>(r_context);
     return ScalarLogical(context->has_gc_allocation_callback());
+}
+
+SEXP r_context_set_gc_unmark_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    GcUnmarkCallbackSPtr callback = from_sexp<GcUnmarkCallback>(r_callback);
+    context->set_gc_unmark_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_gc_unmark_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    GcUnmarkCallbackSPtr callback = context->get_gc_unmark_callback();
+    return to_sexp<GcUnmarkCallback>(callback);
+}
+
+SEXP r_context_has_gc_unmark_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_gc_unmark_callback());
 }
 
 SEXP r_context_set_variable_definition_callback(SEXP r_context,

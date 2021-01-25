@@ -12,6 +12,10 @@ create_context <- function(application_load_callback,  # nolint
                            function_detach_callback,
                            call_entry_callback,
                            call_exit_callback,
+                           object_coerce_callback,
+                           object_duplicate_callback,
+                           vector_copy_callback,
+                           matrix_copy_callback,
                            builtin_call_entry_callback,
                            builtin_call_exit_callback,
                            special_call_entry_callback,
@@ -21,6 +25,7 @@ create_context <- function(application_load_callback,  # nolint
                            eval_entry_callback,
                            eval_exit_callback,
                            gc_allocation_callback,
+                           gc_unmark_callback,
                            variable_definition_callback,
                            variable_assignment_callback,
                            variable_removal_callback,
@@ -88,6 +93,22 @@ create_context <- function(application_load_callback,  # nolint
         set_call_exit_callback(context, call_exit_callback)
     }
 
+    if (!missing(object_coerce_callback)) {
+        set_object_coerce_callback(context, object_coerce_callback)
+    }
+
+    if (!missing(object_duplicate_callback)) {
+        set_object_duplicate_callback(context, object_duplicate_callback)
+    }
+
+    if (!missing(vector_copy_callback)) {
+        set_vector_copy_callback(context, vector_copy_callback)
+    }
+
+    if (!missing(matrix_copy_callback)) {
+        set_matrix_copy_callback(context, matrix_copy_callback)
+    }
+
     if (!missing(builtin_call_entry_callback)) {
         set_builtin_call_entry_callback(context, builtin_call_entry_callback)
     }
@@ -122,6 +143,10 @@ create_context <- function(application_load_callback,  # nolint
 
     if (!missing(gc_allocation_callback)) {
         set_gc_allocation_callback(context, gc_allocation_callback)
+    }
+
+    if (!missing(gc_unmark_callback)) {
+        set_gc_unmark_callback(context, gc_unmark_callback)
     }
 
     if (!missing(variable_definition_callback)) {

@@ -21,6 +21,10 @@ using instrumentr::EvalExitCallback;
 using instrumentr::EvalExitCallbackSPtr;
 using instrumentr::GcAllocationCallback;
 using instrumentr::GcAllocationCallbackSPtr;
+using instrumentr::GcUnmarkCallbackSPtr;
+using instrumentr::MatrixCopyCallbackSPtr;
+using instrumentr::ObjectCoerceCallbackSPtr;
+using instrumentr::ObjectDuplicateCallbackSPtr;
 using instrumentr::SpecialCallEntryCallbackSPtr;
 using instrumentr::SpecialCallExitCallbackSPtr;
 using instrumentr::VariableAssignmentCallback;
@@ -31,6 +35,7 @@ using instrumentr::VariableLookupCallback;
 using instrumentr::VariableLookupCallbackSPtr;
 using instrumentr::VariableRemovalCallback;
 using instrumentr::VariableRemovalCallbackSPtr;
+using instrumentr::VectorCopyCallbackSPtr;
 
 inline ContextSPtr extract_context_from_dyntracer(dyntracer_t* dyntracer) {
     void* object_sptr_ptr = dyntracer_get_data(dyntracer);
@@ -41,6 +46,99 @@ inline ContextSPtr extract_context_from_dyntracer(dyntracer_t* dyntracer) {
 
     ContextSPtr context = *static_cast<ContextSPtr*>(object_sptr_ptr);
     return context;
+}
+
+void dyntrace_object_coerce(dyntracer_t* dyntracer,
+                            SEXP r_input,
+                            SEXP r_output) {
+    ContextSPtr context = extract_context_from_dyntracer(dyntracer);
+
+    if (context->is_tracing_enabled() &&
+        context->has_object_coerce_callback()) {
+        ObjectCoerceCallbackSPtr callback =
+            context->get_object_coerce_callback();
+
+        if (callback->is_active()) {
+            context->initialize_callback_invocation(callback);
+
+            ApplicationSPtr application = context->get_application();
+            SEXP r_context = to_sexp(context);
+            SEXP r_application = to_sexp(application);
+
+            callback->invoke(r_context, r_application, r_input, r_output);
+
+            context->finalize_callback_invocation();
+        }
+    }
+}
+
+void dyntrace_object_duplicate(dyntracer_t* dyntracer,
+                               SEXP r_input,
+                               SEXP r_output,
+                               int deep) {
+    ContextSPtr context = extract_context_from_dyntracer(dyntracer);
+
+    if (context->is_tracing_enabled() &&
+        context->has_object_duplicate_callback()) {
+        ObjectDuplicateCallbackSPtr callback =
+            context->get_object_duplicate_callback();
+
+        if (callback->is_active()) {
+            context->initialize_callback_invocation(callback);
+
+            ApplicationSPtr application = context->get_application();
+            SEXP r_context = to_sexp(context);
+            SEXP r_application = to_sexp(application);
+            SEXP r_deep = PROTECT(ScalarLogical(deep));
+
+            callback->invoke(
+                r_context, r_application, r_input, r_output, r_deep);
+
+            UNPROTECT(1);
+
+            context->finalize_callback_invocation();
+        }
+    }
+}
+
+void dyntrace_vector_copy(dyntracer_t* dyntracer, SEXP r_input, SEXP r_output) {
+    ContextSPtr context = extract_context_from_dyntracer(dyntracer);
+
+    if (context->is_tracing_enabled() && context->has_vector_copy_callback()) {
+        VectorCopyCallbackSPtr callback = context->get_vector_copy_callback();
+
+        if (callback->is_active()) {
+            context->initialize_callback_invocation(callback);
+
+            ApplicationSPtr application = context->get_application();
+            SEXP r_context = to_sexp(context);
+            SEXP r_application = to_sexp(application);
+
+            callback->invoke(r_context, r_application, r_input, r_output);
+
+            context->finalize_callback_invocation();
+        }
+    }
+}
+
+void dyntrace_matrix_copy(dyntracer_t* dyntracer, SEXP r_input, SEXP r_output) {
+    ContextSPtr context = extract_context_from_dyntracer(dyntracer);
+
+    if (context->is_tracing_enabled() && context->has_matrix_copy_callback()) {
+        MatrixCopyCallbackSPtr callback = context->get_matrix_copy_callback();
+
+        if (callback->is_active()) {
+            context->initialize_callback_invocation(callback);
+
+            ApplicationSPtr application = context->get_application();
+            SEXP r_context = to_sexp(context);
+            SEXP r_application = to_sexp(application);
+
+            callback->invoke(r_context, r_application, r_input, r_output);
+
+            context->finalize_callback_invocation();
+        }
+    }
 }
 
 void dyntrace_builtin_call_entry(dyntracer_t* dyntracer,
@@ -297,6 +395,26 @@ void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
     }
 }
 
+void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object) {
+    ContextSPtr context = extract_context_from_dyntracer(dyntracer);
+
+    if (context->is_tracing_enabled() && context->has_gc_unmark_callback()) {
+        GcUnmarkCallbackSPtr callback = context->get_gc_unmark_callback();
+
+        if (callback->is_active()) {
+            context->initialize_callback_invocation(callback);
+
+            ApplicationSPtr application = context->get_application();
+            SEXP r_context = to_sexp(context);
+            SEXP r_application = to_sexp(application);
+
+            callback->invoke(r_context, r_application, r_object);
+
+            context->finalize_callback_invocation();
+        }
+    }
+}
+
 void dyntrace_variable_definition(dyntracer_t* dyntracer,
                                   const SEXP r_symbol,
                                   const SEXP r_value,
@@ -418,6 +536,11 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
 dyntracer_t* rdyntrace_create_dyntracer() {
     dyntracer_t* dyntracer = dyntracer_create(NULL);
 
+    dyntracer_set_object_coerce_callback(dyntracer, dyntrace_object_coerce);
+    dyntracer_set_object_duplicate_callback(dyntracer,
+                                            dyntrace_object_duplicate);
+    dyntracer_set_vector_copy_callback(dyntracer, dyntrace_vector_copy);
+    dyntracer_set_matrix_copy_callback(dyntracer, dyntrace_matrix_copy);
     dyntracer_set_builtin_entry_callback(dyntracer,
                                          dyntrace_builtin_call_entry);
     dyntracer_set_builtin_exit_callback(dyntracer, dyntrace_builtin_call_exit);
@@ -430,6 +553,7 @@ dyntracer_t* rdyntrace_create_dyntracer() {
     dyntracer_set_eval_entry_callback(dyntracer, dyntrace_eval_entry);
     dyntracer_set_eval_exit_callback(dyntracer, dyntrace_eval_exit);
     dyntracer_set_gc_allocate_callback(dyntracer, dyntrace_gc_allocation);
+    dyntracer_set_gc_unmark_callback(dyntracer, dyntrace_gc_unmark);
     dyntracer_set_environment_variable_define_callback(
         dyntracer, dyntrace_variable_definition);
     dyntracer_set_environment_variable_assign_callback(

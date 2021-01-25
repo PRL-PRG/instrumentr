@@ -401,6 +401,274 @@ create_call_exit_callback.externalptr <- function(object) { # nolint
 
 
 ################################################################################
+## object_coerce
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_object_coerce_callback <- function(context, ...) {
+    UseMethod("get_object_coerce_callback")
+}
+
+#' @export
+get_object_coerce_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_object_coerce_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_object_coerce_callback <- function(context, callback, ...) {
+    UseMethod("set_object_coerce_callback")
+}
+
+#' @export
+set_object_coerce_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_object_coerce_callback(callback)) {
+        callback <- create_object_coerce_callback(callback)
+    }
+
+    .Call(C_context_set_object_coerce_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_object_coerce_callback <- function(object, ...) { # nolint
+    UseMethod("has_object_coerce_callback")
+}
+
+#' @export
+has_object_coerce_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_object_coerce_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_object_coerce_callback <- function(object) { # nolint
+    UseMethod("create_object_coerce_callback")
+}
+
+#' @export
+create_object_coerce_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 4))
+
+    .Call(C_object_coerce_callback_create_from_r_function, object)
+}
+
+#' @export
+create_object_coerce_callback.externalptr <- function(object) { # nolint
+    .Call(C_object_coerce_callback_create_from_c_function, object)
+}
+
+
+################################################################################
+## object_duplicate
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_object_duplicate_callback <- function(context, ...) {
+    UseMethod("get_object_duplicate_callback")
+}
+
+#' @export
+get_object_duplicate_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_object_duplicate_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_object_duplicate_callback <- function(context, callback, ...) {
+    UseMethod("set_object_duplicate_callback")
+}
+
+#' @export
+set_object_duplicate_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_object_duplicate_callback(callback)) {
+        callback <- create_object_duplicate_callback(callback)
+    }
+
+    .Call(C_context_set_object_duplicate_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_object_duplicate_callback <- function(object, ...) { # nolint
+    UseMethod("has_object_duplicate_callback")
+}
+
+#' @export
+has_object_duplicate_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_object_duplicate_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_object_duplicate_callback <- function(object) { # nolint
+    UseMethod("create_object_duplicate_callback")
+}
+
+#' @export
+create_object_duplicate_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 5))
+
+    .Call(C_object_duplicate_callback_create_from_r_function, object)
+}
+
+#' @export
+create_object_duplicate_callback.externalptr <- function(object) { # nolint
+    .Call(C_object_duplicate_callback_create_from_c_function, object)
+}
+
+
+################################################################################
+## vector_copy
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_vector_copy_callback <- function(context, ...) {
+    UseMethod("get_vector_copy_callback")
+}
+
+#' @export
+get_vector_copy_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_vector_copy_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_vector_copy_callback <- function(context, callback, ...) {
+    UseMethod("set_vector_copy_callback")
+}
+
+#' @export
+set_vector_copy_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_vector_copy_callback(callback)) {
+        callback <- create_vector_copy_callback(callback)
+    }
+
+    .Call(C_context_set_vector_copy_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_vector_copy_callback <- function(object, ...) { # nolint
+    UseMethod("has_vector_copy_callback")
+}
+
+#' @export
+has_vector_copy_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_vector_copy_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_vector_copy_callback <- function(object) { # nolint
+    UseMethod("create_vector_copy_callback")
+}
+
+#' @export
+create_vector_copy_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 4))
+
+    .Call(C_vector_copy_callback_create_from_r_function, object)
+}
+
+#' @export
+create_vector_copy_callback.externalptr <- function(object) { # nolint
+    .Call(C_vector_copy_callback_create_from_c_function, object)
+}
+
+
+################################################################################
+## matrix_copy
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_matrix_copy_callback <- function(context, ...) {
+    UseMethod("get_matrix_copy_callback")
+}
+
+#' @export
+get_matrix_copy_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_matrix_copy_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_matrix_copy_callback <- function(context, callback, ...) {
+    UseMethod("set_matrix_copy_callback")
+}
+
+#' @export
+set_matrix_copy_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_matrix_copy_callback(callback)) {
+        callback <- create_matrix_copy_callback(callback)
+    }
+
+    .Call(C_context_set_matrix_copy_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_matrix_copy_callback <- function(object, ...) { # nolint
+    UseMethod("has_matrix_copy_callback")
+}
+
+#' @export
+has_matrix_copy_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_matrix_copy_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_matrix_copy_callback <- function(object) { # nolint
+    UseMethod("create_matrix_copy_callback")
+}
+
+#' @export
+create_matrix_copy_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 4))
+
+    .Call(C_matrix_copy_callback_create_from_r_function, object)
+}
+
+#' @export
+create_matrix_copy_callback.externalptr <- function(object) { # nolint
+    .Call(C_matrix_copy_callback_create_from_c_function, object)
+}
+
+
+################################################################################
 ## closure_call_entry
 ################################################################################
 
@@ -523,7 +791,7 @@ create_closure_call_exit_callback <- function(object) { # nolint
 
 #' @export
 create_closure_call_exit_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 6))
+    stopifnot(is_closure(object) && has_parameters(object, 7))
 
     .Call(C_closure_call_exit_callback_create_from_r_function, object)
 }
@@ -657,7 +925,7 @@ create_builtin_call_exit_callback <- function(object) { # nolint
 
 #' @export
 create_builtin_call_exit_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 6))
+    stopifnot(is_closure(object) && has_parameters(object, 7))
 
     .Call(C_builtin_call_exit_callback_create_from_r_function, object)
 }
@@ -791,7 +1059,7 @@ create_special_call_exit_callback <- function(object) { # nolint
 
 #' @export
 create_special_call_exit_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 6))
+    stopifnot(is_closure(object) && has_parameters(object, 7))
 
     .Call(C_special_call_exit_callback_create_from_r_function, object)
 }
@@ -858,7 +1126,7 @@ create_eval_entry_callback <- function(object) { # nolint
 
 #' @export
 create_eval_entry_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 2))
+    stopifnot(is_closure(object) && has_parameters(object, 4))
 
     .Call(C_eval_entry_callback_create_from_r_function, object)
 }
@@ -925,7 +1193,7 @@ create_eval_exit_callback <- function(object) { # nolint
 
 #' @export
 create_eval_exit_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 3))
+    stopifnot(is_closure(object) && has_parameters(object, 5))
 
     .Call(C_eval_exit_callback_create_from_r_function, object)
 }
@@ -992,7 +1260,7 @@ create_gc_allocation_callback <- function(object) { # nolint
 
 #' @export
 create_gc_allocation_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 1))
+    stopifnot(is_closure(object) && has_parameters(object, 3))
 
     .Call(C_gc_allocation_callback_create_from_r_function, object)
 }
@@ -1000,6 +1268,73 @@ create_gc_allocation_callback.function <- function(object) { # nolint
 #' @export
 create_gc_allocation_callback.externalptr <- function(object) { # nolint
     .Call(C_gc_allocation_callback_create_from_c_function, object)
+}
+
+
+################################################################################
+## gc_unmark
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_gc_unmark_callback <- function(context, ...) {
+    UseMethod("get_gc_unmark_callback")
+}
+
+#' @export
+get_gc_unmark_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_gc_unmark_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_gc_unmark_callback <- function(context, callback, ...) {
+    UseMethod("set_gc_unmark_callback")
+}
+
+#' @export
+set_gc_unmark_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_gc_unmark_callback(callback)) {
+        callback <- create_gc_unmark_callback(callback)
+    }
+
+    .Call(C_context_set_gc_unmark_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_gc_unmark_callback <- function(object, ...) { # nolint
+    UseMethod("has_gc_unmark_callback")
+}
+
+#' @export
+has_gc_unmark_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_gc_unmark_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_gc_unmark_callback <- function(object) { # nolint
+    UseMethod("create_gc_unmark_callback")
+}
+
+#' @export
+create_gc_unmark_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 3))
+
+    .Call(C_gc_unmark_callback_create_from_r_function, object)
+}
+
+#' @export
+create_gc_unmark_callback.externalptr <- function(object) { # nolint
+    .Call(C_gc_unmark_callback_create_from_c_function, object)
 }
 
 
@@ -1461,7 +1796,7 @@ create_variable_assignment_callback <- function(object) { # nolint
 
 #' @export
 create_variable_assignment_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 3))
+    stopifnot(is_closure(object) && has_parameters(object, 5))
 
     .Call(C_variable_assignment_callback_create_from_r_function, object)
 }
@@ -1528,7 +1863,7 @@ create_variable_definition_callback <- function(object) { # nolint
 
 #' @export
 create_variable_definition_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 3))
+    stopifnot(is_closure(object) && has_parameters(object, 5))
 
     .Call(C_variable_definition_callback_create_from_r_function, object)
 }
@@ -1595,7 +1930,7 @@ create_variable_lookup_callback <- function(object) { # nolint
 
 #' @export
 create_variable_lookup_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 3))
+    stopifnot(is_closure(object) && has_parameters(object, 5))
 
     .Call(C_variable_lookup_callback_create_from_r_function, object)
 }
@@ -1662,7 +1997,7 @@ create_variable_removal_callback <- function(object) { # nolint
 
 #' @export
 create_variable_removal_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 2))
+    stopifnot(is_closure(object) && has_parameters(object, 4))
 
     .Call(C_variable_removal_callback_create_from_r_function, object)
 }
