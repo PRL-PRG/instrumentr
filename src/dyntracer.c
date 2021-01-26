@@ -7,12 +7,14 @@
 dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_t* dyntracer = dyntracer_create(NULL);
 
-    dyntracer_set_builtin_entry_callback(dyntracer,
-                                         dyntrace_builtin_call_entry);
+    /* TODO: implement and uncomment these
+    dyntracer_set_builtin_entry_callback(
+        dyntracer, dyntrace_builtin_call_entry);
     dyntracer_set_builtin_exit_callback(dyntracer, dyntrace_builtin_call_exit);
     dyntracer_set_special_entry_callback(dyntracer,
                                          dyntrace_special_call_entry);
     dyntracer_set_special_exit_callback(dyntracer, dyntrace_special_call_exit);
+    */
     dyntracer_set_closure_entry_callback(dyntracer,
                                          dyntrace_closure_call_entry);
     dyntracer_set_closure_exit_callback(dyntracer, dyntrace_closure_call_exit);

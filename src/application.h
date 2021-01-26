@@ -104,10 +104,10 @@ SEXP r_instrumentr_application_get_package_by_name(SEXP r_application,
 SEXP r_instrumentr_application_get_packages(SEXP r_application);
 
 /* mutator  */
-void instrumentr_application_append_package(
+void instrumentr_application_add_package(
     instrumentr_application_t application,
     instrumentr_package_t package);
-SEXP r_instrumentr_application_append_package(SEXP r_application,
+SEXP r_instrumentr_application_add_package(SEXP r_application,
                                               SEXP r_package);
 
 /* mutator  */

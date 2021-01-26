@@ -1,32 +1,31 @@
 
 #' @export
-create_tracer <- function(application_load_callback,  # nolint
-                           application_unload_callback,
-                           application_attach_callback,
-                           application_detach_callback,
-                           package_load_callback,
-                           package_unload_callback,
-                           package_attach_callback,
-                           package_detach_callback,
-                           function_attach_callback,
-                           function_detach_callback,
-                           call_entry_callback,
-                           call_exit_callback,
-                           builtin_call_entry_callback,
-                           builtin_call_exit_callback,
-                           special_call_entry_callback,
-                           special_call_exit_callback,
-                           closure_call_entry_callback,
-                           closure_call_exit_callback,
-                           eval_entry_callback,
-                           eval_exit_callback,
-                           gc_allocation_callback,
-                           variable_definition_callback,
-                           variable_assignment_callback,
-                           variable_removal_callback,
-                           variable_lookup_callback,
-                           packages = character(0),
-                           functions = character(0)) {
+create_tracer <- function(tracing_initialization_callback,
+                          tracing_finalization_callback,
+
+                          package_load_callback,
+                          package_unload_callback,
+                          package_attach_callback,
+                          package_detach_callback,
+
+                          closure_call_entry_callback,
+                          closure_call_exit_callback,
+                          builtin_call_entry_callback,
+                          builtin_call_exit_callback,
+                          special_call_entry_callback,
+                          special_call_exit_callback,
+
+                          eval_entry_callback,
+                          eval_exit_callback,
+
+                          gc_allocation_callback,
+
+                          variable_definition_callback,
+                          variable_assignment_callback,
+                          variable_removal_callback,
+                          variable_lookup_callback,
+                          packages = character(0),
+                          functions = character(0)) {
 
     stopifnot(is_vector_character(packages))
 
@@ -36,24 +35,17 @@ create_tracer <- function(application_load_callback,  # nolint
 
     tracer <- .Call(C_instrumentr_tracer_create)#, environment)
 
-    trace_packages(tracer, packages)
+    #trace_packages(tracer, packages)
+    #
+    #trace_functions(tracer, functions)
 
-    trace_functions(tracer, functions)
 
-    if (!missing(application_load_callback)) {
-        set_application_load_callback(tracer, application_load_callback)
+    if (!missing(tracing_initialization_callback)) {
+        set_tracing_initialization_callback(tracer, tracing_initialization_callback)
     }
 
-    if (!missing(application_unload_callback)) {
-        set_application_unload_callback(tracer, application_unload_callback)
-    }
-
-    if (!missing(application_attach_callback)) {
-        set_application_attach_callback(tracer, application_attach_callback)
-    }
-
-    if (!missing(application_detach_callback)) {
-        set_application_detach_callback(tracer, application_detach_callback)
+    if (!missing(tracing_finalization_callback)) {
+        set_tracing_finalization_callback(tracer, tracing_finalization_callback)
     }
 
     if (!missing(package_load_callback)) {
@@ -70,22 +62,6 @@ create_tracer <- function(application_load_callback,  # nolint
 
     if (!missing(package_detach_callback)) {
         set_package_detach_callback(tracer, package_detach_callback)
-    }
-
-    if (!missing(function_attach_callback)) {
-        set_function_attach_callback(tracer, function_attach_callback)
-    }
-
-    if (!missing(function_detach_callback)) {
-        set_function_detach_callback(tracer, function_detach_callback)
-    }
-
-    if (!missing(call_entry_callback)) {
-        set_call_entry_callback(tracer, call_entry_callback)
-    }
-
-    if (!missing(call_exit_callback)) {
-        set_call_exit_callback(tracer, call_exit_callback)
     }
 
     if (!missing(builtin_call_entry_callback)) {

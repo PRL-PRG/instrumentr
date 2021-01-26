@@ -27,7 +27,7 @@ handle_current_packages <- function(tracer_ptr, application_ptr) {
     ##       function lookup happens in that order
     package_ptrs <- Map(create_package, c(attached_packages, loaded_packages))
 
-    Map(function(package_ptr) add_package(application_ptr, package_ptr, TRUE), package_ptrs)
+    Map(function(package_ptr) add_package(application_ptr, package_ptr), package_ptrs)
 
     invisible(NULL)
 }
@@ -46,7 +46,7 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
     handle_package_attach <- function(package_name, ...) {
         .Call(C_instrumentr_tracer_disable, tracer_ptr)
 
-        package_ptr <- get_package(application, package_name)
+        package_ptr <- get_package(application_ptr, package_name)
         .Call(C_instrumentr_trace_package_attach, tracer_ptr, application_ptr, package_ptr)
 
         .Call(C_instrumentr_tracer_enable, tracer_ptr)
@@ -71,7 +71,7 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
         .Call(C_instrumentr_tracer_enable, tracer_ptr)
     }
 
-    future_packages <- setdiff(unname(installed.packages[,1]), loadedNamespaces())
+    future_packages <- setdiff(unname(installed.packages()[,1]), loadedNamespaces())
 
     ## attach event hooks for packages not loaded
     for (package in future_packages) {

@@ -30,15 +30,11 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
                                           environment,
                                           frame_position)
 
-        .Call(C_instrumentr_trace_application_load, tracer, application)
-
         insert_instrumentation(tracer, application)
 
-        .Call(C_instrumentr_trace_application_attach, tracer, application)
+        .Call(C_instrumentr_trace_tracing_initialization, tracer, application)
 
         value <- .Call(C_instrumentr_trace_code, tracer, code, environment)
-
-        .Call(C_instrumentr_trace_application_detach, tracer, application)
 
         result <- create_result(value)
     },
@@ -57,13 +53,11 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
     ##      with the error object
     tryCatch({
 
-        remove_instrumentation(tracer, application)
-
         ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
         if (is_value(result) || get_source(get_error(result)) == "application") {
-            .Call(C_instrumentr_trace_application_unload, tracer, application)
+            .Call(C_instrumentr_trace_tracing_finalization, tracer, application)
         }
     },
     error = function(e) {

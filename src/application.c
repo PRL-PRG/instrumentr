@@ -325,19 +325,19 @@ SEXP r_instrumentr_application_get_packages(SEXP r_application) {
 }
 
 /* mutator */
-void instrumentr_application_append_package(
+void instrumentr_application_add_package(
     instrumentr_application_t application,
     instrumentr_package_t package) {
     vec_push(&application->packages, package);
 }
 
 /* mutator */
-SEXP r_instrumentr_application_append_package(SEXP r_application,
-                                              SEXP r_package) {
+SEXP r_instrumentr_application_add_package(SEXP r_application,
+                                           SEXP r_package) {
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);
     instrumentr_package_t package = instrumentr_package_unwrap(r_package);
-    instrumentr_application_append_package(application, package);
+    instrumentr_application_add_package(application, package);
     return R_NilValue;
 }
 

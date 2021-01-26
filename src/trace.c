@@ -59,7 +59,6 @@
     }                                                                        \
     FIN;
 
-
 #define UPDATE_EXEC_STATS(NAME, tracer, callback, time)              \
     instrumentr_exec_stats_t tracer_exec_stats =                     \
         instrumentr_tracer_get_callback_##NAME##_exec_stats(tracer); \
@@ -88,11 +87,13 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
 
     clock_t start = clock();
 
+    SEXP r_result = R_NilValue;
+
 #ifdef USING_DYNTRACE
-    SEXP r_result = dyntrace_trace_code(
-        instrumentr_tracer_get_dyntracer(tracer), r_code, r_environment);
+    r_result = dyntrace_trace_code(
+        instrumentr_tracer_get_dyntracer(tracer), r_code, r_environment).value;
 #else
-    SEXP r_result = Rf_eval(r_code, r_environment);
+    r_result = Rf_eval(r_code, r_environment);
 #endif /* USING_DYNTRACE */
 
     clock_t end = clock();
@@ -106,9 +107,9 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
     return r_result;
 }
 
-SEXP r_instrumentr_trace_application_load(SEXP r_tracer, SEXP r_application) {
+SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer, SEXP r_application) {
     INVOKE_CALLBACK(/* NAME */
-                    application_load,
+                    tracing_initialization,
                     /* TRACER  */
                     UNWRAP(tracer),
                     // instrumentr_tracer_enable(tracer),
@@ -127,9 +128,9 @@ SEXP r_instrumentr_trace_application_load(SEXP r_tracer, SEXP r_application) {
     return R_NilValue;
 }
 
-SEXP r_instrumentr_trace_application_unload(SEXP r_tracer, SEXP r_application) {
+SEXP r_instrumentr_trace_tracing_finalization(SEXP r_tracer, SEXP r_application) {
     INVOKE_CALLBACK(/* NAME */
-                    application_unload,
+                    tracing_finalization,
                     /* TRACER  */
                     UNWRAP(tracer),
                     /* INIT */
@@ -147,46 +148,6 @@ SEXP r_instrumentr_trace_application_unload(SEXP r_tracer, SEXP r_application) {
     return R_NilValue;
 }
 
-SEXP r_instrumentr_trace_application_attach(SEXP r_tracer, SEXP r_application) {
-    INVOKE_CALLBACK(/* NAME */
-                    application_attach,
-                    /* TRACER  */
-                    UNWRAP(tracer),
-                    /* INIT */
-                    ,
-                    /* CCALL */
-                    NOTRACE(UNWRAP(application);
-                            cfun(tracer, callback, application)),
-                    /* RCALL */
-                    Rf_eval(
-                        Rf_lang4(r_name, r_tracer, r_callback, r_application),
-                        r_environment),
-                    /* FIN */
-    );
-
-    return R_NilValue;
-}
-
-SEXP r_instrumentr_trace_application_detach(SEXP r_tracer, SEXP r_application) {
-    INVOKE_CALLBACK(/* NAME */
-                    application_detach,
-                    /* TRACER  */
-                    UNWRAP(tracer),
-                    /* INIT */
-                    ,
-                    /* CCALL */
-                    NOTRACE(UNWRAP(application);
-                            cfun(tracer, callback, application)),
-                    /* RCALL */
-                    Rf_eval(
-                        Rf_lang4(r_name, r_tracer, r_callback, r_application),
-                        r_environment),
-                    /* FIN */
-    );
-
-    return R_NilValue;
-}
-
 SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
                                       SEXP r_application,
                                       SEXP r_package) {
@@ -197,7 +158,7 @@ SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
         UNWRAP(tracer),
         /* INIT */
         NOTRACE(UNWRAP(application); UNWRAP(package);
-                instrumentr_application_append_package(application, package)),
+                instrumentr_application_add_package(application, package)),
         /* CCALL */
         cfun(tracer, callback, application, package),
         /* RCALL */
@@ -278,160 +239,6 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
     return R_NilValue;
 }
 
-SEXP r_instrumentr_trace_function_attach(SEXP r_tracer,
-                                         SEXP r_application,
-                                         SEXP r_package,
-                                         SEXP r_function) {
-    INVOKE_CALLBACK(
-        /* NAME */
-        function_attach,
-        /* TRACER */
-        UNWRAP(tracer),
-        /* INIT */
-        NOTRACE(UNWRAP(package); UNWRAP(function);
-                instrumentr_package_append_function(package, function)),
-        /* CCALL */
-        NOTRACE(UNWRAP(application));
-        cfun(tracer, callback, application, package, function),
-        /* RCALL */
-        Rf_eval(Rf_lang6(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_package,
-                         r_function),
-                r_environment),
-        /* FIN */
-    );
-
-    return R_NilValue;
-}
-
-SEXP r_instrumentr_trace_function_detach(SEXP r_tracer,
-                                         SEXP r_application,
-                                         SEXP r_package,
-                                         SEXP r_function) {
-    INVOKE_CALLBACK(
-        /* NAME */
-        function_detach,
-        /* TRACER */
-        UNWRAP(tracer),
-        /* INIT */
-        UNWRAP(package);
-        UNWRAP(function),
-        /* CCALL */
-        NOTRACE(UNWRAP(application));
-        cfun(tracer, callback, application, package, function),
-        /* RCALL */
-        Rf_eval(Rf_lang6(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_package,
-                         r_function),
-                r_environment),
-        /* FIN */
-        NOTRACE(instrumentr_package_remove_function(package, function)));
-
-    return R_NilValue;
-}
-
-SEXP r_instrumentr_trace_call_entry(SEXP r_tracer,
-                                    SEXP r_application,
-                                    SEXP r_package,
-                                    SEXP r_function,
-                                    SEXP r_call) {
-    INVOKE_CALLBACK(
-        /* NAME  */
-        call_entry,
-        /* TRACER */
-        UNWRAP(tracer),
-        /* INIT  */
-        NOTRACE(UNWRAP(application); UNWRAP(package); UNWRAP(function);
-                UNWRAP(call);
-                instrumentr_call_stack_t call_stack =
-                    instrumentr_application_get_call_stack(application);
-                instrumentr_call_activate(call);
-                instrumentr_call_stack_push(call_stack, call)),
-        /* CCALL */
-        cfun(tracer, callback, application, package, function, call),
-        /* RCALL */
-        Rf_eval(Rf_lang7(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_package,
-                         r_function,
-                         r_call),
-                r_environment),
-        /* FIN */
-    );
-
-    return R_NilValue;
-}
-
-SEXP r_instrumentr_trace_call_exit(SEXP r_tracer,
-                                   SEXP r_application,
-                                   SEXP r_package,
-                                   SEXP r_function,
-                                   SEXP r_result) {
-    INVOKE_CALLBACK(
-        /* NAME */
-        call_exit,
-        /* TRACER */
-        UNWRAP(tracer),
-        /* INIT */
-        NOTRACE(UNWRAP(application); UNWRAP(package); UNWRAP(function);
-
-                instrumentr_call_stack_t call_stack =
-                    instrumentr_application_get_call_stack(application);
-
-                instrumentr_call_t call =
-                    instrumentr_call_stack_peek(call_stack, 0);
-
-                WRAP(call);
-
-                const char* expected_function_name =
-                    instrumentr_function_get_name(
-                        instrumentr_call_get_function(call));
-
-                const char* actual_function_name =
-                    instrumentr_function_get_name(function);
-
-                if (strcmp(actual_function_name, expected_function_name) != 0) {
-                    UNPROTECT(1);
-
-                    finalize_callback_invocation(tracer);
-
-                    instrumentr_log_error(
-                        "Error: unmatched call entry and exit, " //
-                        "exiting '%s::%s' but expected to exit '%s'.",
-                        instrumentr_package_get_name(package),
-                        actual_function_name,
-                        expected_function_name);
-                    /* NOTE: not executed */
-                    return R_NilValue;
-                } instrumentr_call_set_result(call, r_result)),
-        /* CCALL */
-        cfun(tracer, callback, application, package, function, call),
-        /* RCALL */
-        Rf_eval(Rf_lang7(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_package,
-                         r_function,
-                         r_call),
-                r_environment),
-        /* FIN */
-        NOTRACE(instrumentr_call_stack_pop(call_stack);
-                instrumentr_call_deactivate(call);
-                UNPROTECT(1);))
-
-    return R_NilValue;
-}
-
-
 #ifdef USING_DYNTRACE
 
 #    define INVOKE_CALL_ENTRY_CALLBACK(NAME)                            \
@@ -502,7 +309,8 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                     /* TRACER */,
                     /* INIT  */,
                     /* CCALL */
-                    cfun(tracer, callback, application, package, function, call),
+                    cfun(
+                        tracer, callback, application, package, function, call),
                     /* RCALL */
                     NOTRACE(WRAP(tracer); WRAP(application); WRAP(package);
                             WRAP(function);
@@ -618,72 +426,72 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
     INVOKE_CALL_EXIT_CALLBACK(closure_call_exit);
 }
 
-SEXP instrumentr_trace_non_closure_call(SEXP r_call,
-                                        SEXP r_op,
-                                        SEXP r_args,
-                                        SEXP r_rho) {
-    instrumentr_function_t function = instrumentr_funtab_get_function(r_op);
-    int builtin = instrumentr_function_is_builtin(function);
-    CCODE ccode = instrumentr_function_get_definition(function).ccode;
-
-    instrumentr_package_t package = NULL;
-    instrumentr_call_t call = NULL;
-    int tracer_count = instrumentr_get_tracer_count();
-
-    if (tracer_count != 0) {
-        package =
-            instrumentr_application_get_package_by_name(application, "base");
-        /* TODO  */
-        call = instrumentr_call_create_non_closure(function);
-    }
-
-    for (int i = 0; i < tracer_count; ++i) {
-        instrumentr_tracer_t tracer = instrumentr_get_tracer(i);
-        instrumentr_application_t application =
-            instrumentr_tracer_get_application(tracer);
-        instrumentr_call_stack_t call_stack =
-            instrumentr_application_get_call_stack(application);
-        instrumentr_call_activate(call);
-        instrumentr_call_stack_push(call_stack, call);
-
-        if (builtin) {
-            instrumentr_trace_builtin_call_entry(
-                tracer, application, package, function, call);
-        } else {
-            instrumentr_trace_special_call_entry(
-                tracer, application, package, function, call);
-        }
-    }
-
-    SEXP r_result = ccode(r_call, r_op, r_args, r_rho);
-
-    if(tracer_count != 0) {
-        instrumentr_call_set_result(call, r_result);
-    }
-
-
-    for (int i = 0; i < instrumentr_get_tracer_count(); ++i) {
-        instrumentr_tracer_t tracer = instrumentr_get_tracer(i);
-        instrumentr_application_t application =
-            instrumentr_tracer_get_application(tracer);
-        instrumentr_call_stack_t call_stack =
-            instrumentr_application_get_call_stack(application);
-        instrumentr_call_stack_pop(call_stack);
-        if (builtin) {
-            instrumentr_trace_builtin_call_exit(
-                tracer, application, package, function, call);
-        } else {
-            instrumentr_trace_special_call_exit(
-                tracer, application, package, function, call);
-        }
-    }
-
-    if (tracer_count != 0) {
-        instrumentr_call_deactivate(call);
-    }
-
-    return r_result;
-}
+//SEXP instrumentr_trace_non_closure_call(dyntracer_t* dyntracer,
+//                                        SEXP r_call,
+//                                        SEXP r_op,
+//                                        SEXP r_args,
+//                                        SEXP r_rho) {
+//    instrumentr_function_t function = instrumentr_funtab_get_function(r_op);
+//    int builtin = instrumentr_function_is_builtin(function);
+//    CCODE ccode = instrumentr_function_get_definition(function).ccode;
+//
+//    instrumentr_package_t package = NULL;
+//    instrumentr_call_t call = NULL;
+//    int tracer_count = instrumentr_get_tracer_count();
+//
+//    if (tracer_count != 0) {
+//        package =
+//            instrumentr_application_get_package_by_name(application, "base");
+//        /* TODO  */
+//        call = instrumentr_call_create_non_closure(function);
+//    }
+//
+//    for (int i = 0; i < tracer_count; ++i) {
+//        instrumentr_tracer_t tracer = instrumentr_get_tracer(i);
+//        instrumentr_application_t application =
+//            instrumentr_tracer_get_application(tracer);
+//        instrumentr_call_stack_t call_stack =
+//            instrumentr_application_get_call_stack(application);
+//        instrumentr_call_activate(call);
+//        instrumentr_call_stack_push(call_stack, call);
+//
+//        if (builtin) {
+//            instrumentr_trace_builtin_call_entry(
+//                tracer, application, package, function, call);
+//        } else {
+//            instrumentr_trace_special_call_entry(
+//                tracer, application, package, function, call);
+//        }
+//    }
+//
+//    SEXP r_result = ccode(r_call, r_op, r_args, r_rho);
+//
+//    if (tracer_count != 0) {
+//        instrumentr_call_set_result(call, r_result);
+//    }
+//
+//    for (int i = 0; i < instrumentr_get_tracer_count(); ++i) {
+//        instrumentr_tracer_t tracer = instrumentr_get_tracer(i);
+//        instrumentr_application_t application =
+//            instrumentr_tracer_get_application(tracer);
+//        instrumentr_call_stack_t call_stack =
+//            instrumentr_application_get_call_stack(application);
+//        instrumentr_call_stack_pop(call_stack);
+//        if (builtin) {
+//            instrumentr_trace_builtin_call_exit(
+//                tracer, application, package, function, call);
+//        } else {
+//            instrumentr_trace_special_call_exit(
+//                tracer, application, package, function, call);
+//        }
+//    }
+//
+//    if (tracer_count != 0) {
+//        instrumentr_call_deactivate(call);
+//    }
+//
+//    return r_result;
+//}
 
 void dyntrace_eval_entry(dyntracer_t* dyntracer,
                          SEXP r_expression,

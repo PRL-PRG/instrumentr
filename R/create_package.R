@@ -26,6 +26,7 @@ create_package <- function(package_name,
 
     message("Added ", length(get_functions(package_ptr)), " functions from ", package_name)
 
+    package_ptr
 }
 
 get_function_table <- function(package_env) {

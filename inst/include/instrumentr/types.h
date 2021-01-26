@@ -80,22 +80,12 @@ typedef struct instrumentr_callback_impl_t* instrumentr_callback_t;
 
 typedef struct instrumentr_tracer_impl_t* instrumentr_tracer_t;
 
-typedef void (*application_load_function_t)(
+typedef void (*tracing_initialization_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_application_t application);
 
-typedef void (*application_unload_function_t)(
-    instrumentr_tracer_t tracer,
-    instrumentr_callback_t callback,
-    instrumentr_application_t application);
-
-typedef void (*application_attach_function_t)(
-    instrumentr_tracer_t tracer,
-    instrumentr_callback_t callback,
-    instrumentr_application_t application);
-
-typedef void (*application_detach_function_t)(
+typedef void (*tracing_finalization_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_application_t application);
@@ -119,34 +109,6 @@ typedef void (*package_detach_function_t)(instrumentr_tracer_t tracer,
                                           instrumentr_callback_t callback,
                                           instrumentr_application_t application,
                                           instrumentr_package_t package);
-
-typedef void (*function_attach_function_t)(
-    instrumentr_tracer_t tracer,
-    instrumentr_callback_t callback,
-    instrumentr_application_t application,
-    instrumentr_package_t package,
-    instrumentr_function_t function);
-
-typedef void (*function_detach_function_t)(
-    instrumentr_tracer_t tracer,
-    instrumentr_callback_t callback,
-    instrumentr_application_t application,
-    instrumentr_package_t package,
-    instrumentr_function_t function);
-
-typedef void (*call_entry_function_t)(instrumentr_tracer_t tracer,
-                                      instrumentr_callback_t callback,
-                                      instrumentr_application_t application,
-                                      instrumentr_package_t package,
-                                      instrumentr_function_t function,
-                                      instrumentr_call_t call);
-
-typedef void (*call_exit_function_t)(instrumentr_tracer_t tracer,
-                                     instrumentr_callback_t callback,
-                                     instrumentr_application_t application,
-                                     instrumentr_package_t package,
-                                     instrumentr_function_t function,
-                                     instrumentr_call_t call);
 
 typedef void (*builtin_call_entry_function_t)(
     instrumentr_tracer_t tracer,
@@ -249,21 +211,12 @@ typedef void (*variable_lookup_function_t)(
     SEXP r_rho);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
-    MACRO(INSTRUMENTR_CALLBACK_APPLICATION_LOAD, application_load, ARGUMENT)   \
-    MACRO(                                                                     \
-        INSTRUMENTR_CALLBACK_APPLICATION_UNLOAD, application_unload, ARGUMENT) \
-    MACRO(                                                                     \
-        INSTRUMENTR_CALLBACK_APPLICATION_ATTACH, application_attach, ARGUMENT) \
-    MACRO(                                                                     \
-        INSTRUMENTR_CALLBACK_APPLICATION_DETACH, application_detach, ARGUMENT) \
+    MACRO(INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_initialization, ARGUMENT)         \
+    MACRO(INSTRUMENTR_CALLBACK_TRACING_EXIT, tracing_finalization, ARGUMENT)           \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_LOAD, package_load, ARGUMENT)           \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_UNLOAD, package_unload, ARGUMENT)       \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_ATTACH, package_attach, ARGUMENT)       \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_DETACH, package_detach, ARGUMENT)       \
-    MACRO(INSTRUMENTR_CALLBACK_FUNCTION_ATTACH, function_attach, ARGUMENT)     \
-    MACRO(INSTRUMENTR_CALLBACK_FUNCTION_DETACH, function_detach, ARGUMENT)     \
-    MACRO(INSTRUMENTR_CALLBACK_CALL_ENTRY, call_entry, ARGUMENT)               \
-    MACRO(INSTRUMENTR_CALLBACK_CALL_EXIT, call_exit, ARGUMENT)                 \
     MACRO(                                                                     \
         INSTRUMENTR_CALLBACK_BUILTIN_CALL_ENTRY, builtin_call_entry, ARGUMENT) \
     MACRO(INSTRUMENTR_CALLBACK_BUILTIN_CALL_EXIT, builtin_call_exit, ARGUMENT) \

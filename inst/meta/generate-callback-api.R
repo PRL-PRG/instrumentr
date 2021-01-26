@@ -1,27 +1,26 @@
 library(stringr)
 
 callback_specs <- list(
-    list(name = "application_attach", parameter_count = 2),
-    list(name = "application_detach", parameter_count = 2),
-    list(name = "application_load", parameter_count = 2),
-    list(name = "application_unload", parameter_count = 2),
-    list(name = "builtin_call_entry", parameter_count = 6),
-    list(name = "builtin_call_exit", parameter_count = 6),
-    list(name = "call_entry", parameter_count = 5),
-    list(name = "call_exit", parameter_count = 5),
+    list(name = "tracing_initialization", parameter_count = 2),
+    list(name = "tracing_finalization", parameter_count = 2),
+
     list(name = "closure_call_entry", parameter_count = 6),
     list(name = "closure_call_exit", parameter_count = 6),
+    list(name = "builtin_call_entry", parameter_count = 6),
+    list(name = "builtin_call_exit", parameter_count = 6),
+    list(name = "special_call_entry", parameter_count = 6),
+    list(name = "special_call_exit", parameter_count = 6),
+
     list(name = "eval_entry", parameter_count = 2),
     list(name = "eval_exit", parameter_count = 2),
-    list(name = "function_attach", parameter_count = 4),
-    list(name = "function_detach", parameter_count = 4),
+
     list(name = "gc_allocation", parameter_count = 1),
+
     list(name = "package_attach", parameter_count = 3),
     list(name = "package_detach", parameter_count = 3),
     list(name = "package_load", parameter_count = 3),
     list(name = "package_unload", parameter_count = 3),
-    list(name = "special_call_entry", parameter_count = 6),
-    list(name = "special_call_exit", parameter_count = 6),
+
     list(name = "variable_assignment", parameter_count = 3),
     list(name = "variable_definition", parameter_count = 3),
     list(name = "variable_lookup", parameter_count = 3),

@@ -31,18 +31,12 @@ const R_CallMethodDef CallEntries[] = {
 
     /* trace */
     {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 3},
-    {"instrumentr_trace_application_load", (DL_FUNC) &r_instrumentr_trace_application_load, 2},
-    {"instrumentr_trace_application_unload", (DL_FUNC) &r_instrumentr_trace_application_unload, 2},
-    {"instrumentr_trace_application_attach", (DL_FUNC) &r_instrumentr_trace_application_attach, 2},
-    {"instrumentr_trace_application_detach", (DL_FUNC) &r_instrumentr_trace_application_detach, 2},
+    {"instrumentr_trace_tracing_initialization", (DL_FUNC) &r_instrumentr_trace_tracing_initialization, 2},
+    {"instrumentr_trace_tracing_finalization", (DL_FUNC) &r_instrumentr_trace_tracing_finalization, 2},
     {"instrumentr_trace_package_load", (DL_FUNC) &r_instrumentr_trace_package_load, 3},
     {"instrumentr_trace_package_unload", (DL_FUNC) &r_instrumentr_trace_package_unload, 3},
     {"instrumentr_trace_package_attach", (DL_FUNC) &r_instrumentr_trace_package_attach, 3},
     {"instrumentr_trace_package_detach", (DL_FUNC) &r_instrumentr_trace_package_detach, 3},
-    {"instrumentr_trace_function_attach", (DL_FUNC) &r_instrumentr_trace_function_attach, 4},
-    {"instrumentr_trace_function_detach", (DL_FUNC) &r_instrumentr_trace_function_detach, 4},
-    {"instrumentr_trace_call_entry", (DL_FUNC) &r_instrumentr_trace_call_entry, 5},
-    {"instrumentr_trace_call_exit", (DL_FUNC) &r_instrumentr_trace_call_exit, 5},
 
     /* object */
     {"instrumentr_object_get_id", (DL_FUNC) &r_instrumentr_object_get_id, 1},
@@ -102,7 +96,7 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     {"instrumentr_application_get_package_by_position", (DL_FUNC) &r_instrumentr_application_get_package_by_position, 2},
     {"instrumentr_application_get_package_by_name", (DL_FUNC) &r_instrumentr_application_get_package_by_name, 2},
     {"instrumentr_application_get_packages", (DL_FUNC) &r_instrumentr_application_get_packages, 1},
-    {"instrumentr_application_append_package", (DL_FUNC) &r_instrumentr_application_append_package, 2},
+    {"instrumentr_application_add_package", (DL_FUNC) &r_instrumentr_application_add_package, 2},
     {"instrumentr_application_remove_package", (DL_FUNC) &r_instrumentr_application_remove_package, 2},
     {"instrumentr_application_get_call_stack", (DL_FUNC) &r_instrumentr_application_get_call_stack, 1},
 
@@ -112,7 +106,7 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     {"instrumentr_package_get_directory", (DL_FUNC) &r_instrumentr_package_get_directory, 1},
     {"instrumentr_package_get_namespace", (DL_FUNC) &r_instrumentr_package_get_namespace, 1},
     {"instrumentr_package_get_functions", (DL_FUNC) &r_instrumentr_package_get_functions, 1},
-    {"instrumentr_package_add_function, (DL_FUNC) &r_instrumentr_package_add_function, 2},
+    {"instrumentr_package_add_function", (DL_FUNC) &r_instrumentr_package_add_function, 2},
 
     /* function */
     {"instrumentr_function_create_closure", (DL_FUNC) &r_instrumentr_function_create_closure, 6},

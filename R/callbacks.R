@@ -1,34 +1,34 @@
 ################################################################################
-## application_attach
+## tracing_initialization
 ################################################################################
 
 ## GET #########################################################################
 
 #' @export
-get_application_attach_callback <- function(tracer, ...) {
-    UseMethod("get_application_attach_callback")
+get_tracing_initialization_callback <- function(tracer, ...) {
+    UseMethod("get_tracing_initialization_callback")
 }
 
 #' @export
-get_application_attach_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_application_attach, tracer)
+get_tracing_initialization_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
+    .Call(C_instrumentr_tracer_get_callback_tracing_initialization, tracer)
 }
 
 ## SET #########################################################################
 
 #' @export
-set_application_attach_callback <- function(tracer, callback, ...) {
-    UseMethod("set_application_attach_callback")
+set_tracing_initialization_callback <- function(tracer, callback, ...) {
+    UseMethod("set_tracing_initialization_callback")
 }
 
 #' @export
-set_application_attach_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
+set_tracing_initialization_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
-    if (!is_instrumentr_application_attach_callback(callback)) {
-        callback <- create_application_attach_callback(callback)
+    if (!is_instrumentr_tracing_initialization_callback(callback)) {
+        callback <- create_tracing_initialization_callback(callback)
     }
 
-    .Call(C_instrumentr_tracer_set_callback_application_attach, tracer, callback)
+    .Call(C_instrumentr_tracer_set_callback_tracing_initialization, tracer, callback)
 
     invisible(NULL)
 }
@@ -36,66 +36,66 @@ set_application_attach_callback.instrumentr_tracer <- function(tracer, callback,
 ## HAS #########################################################################
 
 #' @export
-has_application_attach_callback <- function(object, ...) { # nolint
-    UseMethod("has_application_attach_callback")
+has_tracing_initialization_callback <- function(object, ...) { # nolint
+    UseMethod("has_tracing_initialization_callback")
 }
 
 #' @export
-has_application_attach_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_application_attach, object)
+has_tracing_initialization_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_tracing_initialization, object)
 }
 
 ## CREATE ######################################################################
 
 #' @export
-create_application_attach_callback <- function(object) { # nolint
-    UseMethod("create_application_attach_callback")
+create_tracing_initialization_callback <- function(object) { # nolint
+    UseMethod("create_tracing_initialization_callback")
 }
 
 #' @export
-create_application_attach_callback.function <- function(object) { # nolint
+create_tracing_initialization_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 2))
 
-    .Call(C_instrumentr_callback_application_attach_create_from_r_function, object)
+    .Call(C_instrumentr_callback_tracing_initialization_create_from_r_function, object)
 }
 
 #' @export
-create_application_attach_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_application_attach_create_from_c_function, object)
+create_tracing_initialization_callback.externalptr <- function(object) { # nolint
+    .Call(C_instrumentr_callback_tracing_initialization_create_from_c_function, object)
 }
 
 
 ################################################################################
-## application_detach
+## tracing_finalization
 ################################################################################
 
 ## GET #########################################################################
 
 #' @export
-get_application_detach_callback <- function(tracer, ...) {
-    UseMethod("get_application_detach_callback")
+get_tracing_finalization_callback <- function(tracer, ...) {
+    UseMethod("get_tracing_finalization_callback")
 }
 
 #' @export
-get_application_detach_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_application_detach, tracer)
+get_tracing_finalization_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
+    .Call(C_instrumentr_tracer_get_callback_tracing_finalization, tracer)
 }
 
 ## SET #########################################################################
 
 #' @export
-set_application_detach_callback <- function(tracer, callback, ...) {
-    UseMethod("set_application_detach_callback")
+set_tracing_finalization_callback <- function(tracer, callback, ...) {
+    UseMethod("set_tracing_finalization_callback")
 }
 
 #' @export
-set_application_detach_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
+set_tracing_finalization_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
-    if (!is_instrumentr_application_detach_callback(callback)) {
-        callback <- create_application_detach_callback(callback)
+    if (!is_instrumentr_tracing_finalization_callback(callback)) {
+        callback <- create_tracing_finalization_callback(callback)
     }
 
-    .Call(C_instrumentr_tracer_set_callback_application_detach, tracer, callback)
+    .Call(C_instrumentr_tracer_set_callback_tracing_finalization, tracer, callback)
 
     invisible(NULL)
 }
@@ -103,434 +103,32 @@ set_application_detach_callback.instrumentr_tracer <- function(tracer, callback,
 ## HAS #########################################################################
 
 #' @export
-has_application_detach_callback <- function(object, ...) { # nolint
-    UseMethod("has_application_detach_callback")
+has_tracing_finalization_callback <- function(object, ...) { # nolint
+    UseMethod("has_tracing_finalization_callback")
 }
 
 #' @export
-has_application_detach_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_application_detach, object)
+has_tracing_finalization_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_tracing_finalization, object)
 }
 
 ## CREATE ######################################################################
 
 #' @export
-create_application_detach_callback <- function(object) { # nolint
-    UseMethod("create_application_detach_callback")
+create_tracing_finalization_callback <- function(object) { # nolint
+    UseMethod("create_tracing_finalization_callback")
 }
 
 #' @export
-create_application_detach_callback.function <- function(object) { # nolint
+create_tracing_finalization_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 2))
 
-    .Call(C_instrumentr_callback_application_detach_create_from_r_function, object)
+    .Call(C_instrumentr_callback_tracing_finalization_create_from_r_function, object)
 }
 
 #' @export
-create_application_detach_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_application_detach_create_from_c_function, object)
-}
-
-
-################################################################################
-## application_load
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_application_load_callback <- function(tracer, ...) {
-    UseMethod("get_application_load_callback")
-}
-
-#' @export
-get_application_load_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_application_load, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_application_load_callback <- function(tracer, callback, ...) {
-    UseMethod("set_application_load_callback")
-}
-
-#' @export
-set_application_load_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_application_load_callback(callback)) {
-        callback <- create_application_load_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_application_load, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_application_load_callback <- function(object, ...) { # nolint
-    UseMethod("has_application_load_callback")
-}
-
-#' @export
-has_application_load_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_application_load, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_application_load_callback <- function(object) { # nolint
-    UseMethod("create_application_load_callback")
-}
-
-#' @export
-create_application_load_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 2))
-
-    .Call(C_instrumentr_callback_application_load_create_from_r_function, object)
-}
-
-#' @export
-create_application_load_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_application_load_create_from_c_function, object)
-}
-
-
-################################################################################
-## application_unload
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_application_unload_callback <- function(tracer, ...) {
-    UseMethod("get_application_unload_callback")
-}
-
-#' @export
-get_application_unload_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_application_unload, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_application_unload_callback <- function(tracer, callback, ...) {
-    UseMethod("set_application_unload_callback")
-}
-
-#' @export
-set_application_unload_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_application_unload_callback(callback)) {
-        callback <- create_application_unload_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_application_unload, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_application_unload_callback <- function(object, ...) { # nolint
-    UseMethod("has_application_unload_callback")
-}
-
-#' @export
-has_application_unload_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_application_unload, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_application_unload_callback <- function(object) { # nolint
-    UseMethod("create_application_unload_callback")
-}
-
-#' @export
-create_application_unload_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 2))
-
-    .Call(C_instrumentr_callback_application_unload_create_from_r_function, object)
-}
-
-#' @export
-create_application_unload_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_application_unload_create_from_c_function, object)
-}
-
-
-################################################################################
-## builtin_call_entry
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_builtin_call_entry_callback <- function(tracer, ...) {
-    UseMethod("get_builtin_call_entry_callback")
-}
-
-#' @export
-get_builtin_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_builtin_call_entry, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_builtin_call_entry_callback <- function(tracer, callback, ...) {
-    UseMethod("set_builtin_call_entry_callback")
-}
-
-#' @export
-set_builtin_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_builtin_call_entry_callback(callback)) {
-        callback <- create_builtin_call_entry_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_builtin_call_entry, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_builtin_call_entry_callback <- function(object, ...) { # nolint
-    UseMethod("has_builtin_call_entry_callback")
-}
-
-#' @export
-has_builtin_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_builtin_call_entry, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_builtin_call_entry_callback <- function(object) { # nolint
-    UseMethod("create_builtin_call_entry_callback")
-}
-
-#' @export
-create_builtin_call_entry_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 6))
-
-    .Call(C_instrumentr_callback_builtin_call_entry_create_from_r_function, object)
-}
-
-#' @export
-create_builtin_call_entry_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_builtin_call_entry_create_from_c_function, object)
-}
-
-
-################################################################################
-## builtin_call_exit
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_builtin_call_exit_callback <- function(tracer, ...) {
-    UseMethod("get_builtin_call_exit_callback")
-}
-
-#' @export
-get_builtin_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_builtin_call_exit, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_builtin_call_exit_callback <- function(tracer, callback, ...) {
-    UseMethod("set_builtin_call_exit_callback")
-}
-
-#' @export
-set_builtin_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_builtin_call_exit_callback(callback)) {
-        callback <- create_builtin_call_exit_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_builtin_call_exit, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_builtin_call_exit_callback <- function(object, ...) { # nolint
-    UseMethod("has_builtin_call_exit_callback")
-}
-
-#' @export
-has_builtin_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_builtin_call_exit, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_builtin_call_exit_callback <- function(object) { # nolint
-    UseMethod("create_builtin_call_exit_callback")
-}
-
-#' @export
-create_builtin_call_exit_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 6))
-
-    .Call(C_instrumentr_callback_builtin_call_exit_create_from_r_function, object)
-}
-
-#' @export
-create_builtin_call_exit_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_builtin_call_exit_create_from_c_function, object)
-}
-
-
-################################################################################
-## call_entry
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_call_entry_callback <- function(tracer, ...) {
-    UseMethod("get_call_entry_callback")
-}
-
-#' @export
-get_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_call_entry, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_call_entry_callback <- function(tracer, callback, ...) {
-    UseMethod("set_call_entry_callback")
-}
-
-#' @export
-set_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_call_entry_callback(callback)) {
-        callback <- create_call_entry_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_call_entry, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_call_entry_callback <- function(object, ...) { # nolint
-    UseMethod("has_call_entry_callback")
-}
-
-#' @export
-has_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_call_entry, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_call_entry_callback <- function(object) { # nolint
-    UseMethod("create_call_entry_callback")
-}
-
-#' @export
-create_call_entry_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 5))
-
-    .Call(C_instrumentr_callback_call_entry_create_from_r_function, object)
-}
-
-#' @export
-create_call_entry_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_call_entry_create_from_c_function, object)
-}
-
-
-################################################################################
-## call_exit
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_call_exit_callback <- function(tracer, ...) {
-    UseMethod("get_call_exit_callback")
-}
-
-#' @export
-get_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_call_exit, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_call_exit_callback <- function(tracer, callback, ...) {
-    UseMethod("set_call_exit_callback")
-}
-
-#' @export
-set_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_call_exit_callback(callback)) {
-        callback <- create_call_exit_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_call_exit, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_call_exit_callback <- function(object, ...) { # nolint
-    UseMethod("has_call_exit_callback")
-}
-
-#' @export
-has_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_call_exit, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_call_exit_callback <- function(object) { # nolint
-    UseMethod("create_call_exit_callback")
-}
-
-#' @export
-create_call_exit_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 5))
-
-    .Call(C_instrumentr_callback_call_exit_create_from_r_function, object)
-}
-
-#' @export
-create_call_exit_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_call_exit_create_from_c_function, object)
+create_tracing_finalization_callback.externalptr <- function(object) { # nolint
+    .Call(C_instrumentr_callback_tracing_finalization_create_from_c_function, object)
 }
 
 
@@ -669,6 +267,274 @@ create_closure_call_exit_callback.externalptr <- function(object) { # nolint
 
 
 ################################################################################
+## builtin_call_entry
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_builtin_call_entry_callback <- function(tracer, ...) {
+    UseMethod("get_builtin_call_entry_callback")
+}
+
+#' @export
+get_builtin_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
+    .Call(C_instrumentr_tracer_get_callback_builtin_call_entry, tracer)
+}
+
+## SET #########################################################################
+
+#' @export
+set_builtin_call_entry_callback <- function(tracer, callback, ...) {
+    UseMethod("set_builtin_call_entry_callback")
+}
+
+#' @export
+set_builtin_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
+
+    if (!is_instrumentr_builtin_call_entry_callback(callback)) {
+        callback <- create_builtin_call_entry_callback(callback)
+    }
+
+    .Call(C_instrumentr_tracer_set_callback_builtin_call_entry, tracer, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_builtin_call_entry_callback <- function(object, ...) { # nolint
+    UseMethod("has_builtin_call_entry_callback")
+}
+
+#' @export
+has_builtin_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_builtin_call_entry, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_builtin_call_entry_callback <- function(object) { # nolint
+    UseMethod("create_builtin_call_entry_callback")
+}
+
+#' @export
+create_builtin_call_entry_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 6))
+
+    .Call(C_instrumentr_callback_builtin_call_entry_create_from_r_function, object)
+}
+
+#' @export
+create_builtin_call_entry_callback.externalptr <- function(object) { # nolint
+    .Call(C_instrumentr_callback_builtin_call_entry_create_from_c_function, object)
+}
+
+
+################################################################################
+## builtin_call_exit
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_builtin_call_exit_callback <- function(tracer, ...) {
+    UseMethod("get_builtin_call_exit_callback")
+}
+
+#' @export
+get_builtin_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
+    .Call(C_instrumentr_tracer_get_callback_builtin_call_exit, tracer)
+}
+
+## SET #########################################################################
+
+#' @export
+set_builtin_call_exit_callback <- function(tracer, callback, ...) {
+    UseMethod("set_builtin_call_exit_callback")
+}
+
+#' @export
+set_builtin_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
+
+    if (!is_instrumentr_builtin_call_exit_callback(callback)) {
+        callback <- create_builtin_call_exit_callback(callback)
+    }
+
+    .Call(C_instrumentr_tracer_set_callback_builtin_call_exit, tracer, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_builtin_call_exit_callback <- function(object, ...) { # nolint
+    UseMethod("has_builtin_call_exit_callback")
+}
+
+#' @export
+has_builtin_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_builtin_call_exit, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_builtin_call_exit_callback <- function(object) { # nolint
+    UseMethod("create_builtin_call_exit_callback")
+}
+
+#' @export
+create_builtin_call_exit_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 6))
+
+    .Call(C_instrumentr_callback_builtin_call_exit_create_from_r_function, object)
+}
+
+#' @export
+create_builtin_call_exit_callback.externalptr <- function(object) { # nolint
+    .Call(C_instrumentr_callback_builtin_call_exit_create_from_c_function, object)
+}
+
+
+################################################################################
+## special_call_entry
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_special_call_entry_callback <- function(tracer, ...) {
+    UseMethod("get_special_call_entry_callback")
+}
+
+#' @export
+get_special_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
+    .Call(C_instrumentr_tracer_get_callback_special_call_entry, tracer)
+}
+
+## SET #########################################################################
+
+#' @export
+set_special_call_entry_callback <- function(tracer, callback, ...) {
+    UseMethod("set_special_call_entry_callback")
+}
+
+#' @export
+set_special_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
+
+    if (!is_instrumentr_special_call_entry_callback(callback)) {
+        callback <- create_special_call_entry_callback(callback)
+    }
+
+    .Call(C_instrumentr_tracer_set_callback_special_call_entry, tracer, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_special_call_entry_callback <- function(object, ...) { # nolint
+    UseMethod("has_special_call_entry_callback")
+}
+
+#' @export
+has_special_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_special_call_entry, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_special_call_entry_callback <- function(object) { # nolint
+    UseMethod("create_special_call_entry_callback")
+}
+
+#' @export
+create_special_call_entry_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 6))
+
+    .Call(C_instrumentr_callback_special_call_entry_create_from_r_function, object)
+}
+
+#' @export
+create_special_call_entry_callback.externalptr <- function(object) { # nolint
+    .Call(C_instrumentr_callback_special_call_entry_create_from_c_function, object)
+}
+
+
+################################################################################
+## special_call_exit
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_special_call_exit_callback <- function(tracer, ...) {
+    UseMethod("get_special_call_exit_callback")
+}
+
+#' @export
+get_special_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
+    .Call(C_instrumentr_tracer_get_callback_special_call_exit, tracer)
+}
+
+## SET #########################################################################
+
+#' @export
+set_special_call_exit_callback <- function(tracer, callback, ...) {
+    UseMethod("set_special_call_exit_callback")
+}
+
+#' @export
+set_special_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
+
+    if (!is_instrumentr_special_call_exit_callback(callback)) {
+        callback <- create_special_call_exit_callback(callback)
+    }
+
+    .Call(C_instrumentr_tracer_set_callback_special_call_exit, tracer, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_special_call_exit_callback <- function(object, ...) { # nolint
+    UseMethod("has_special_call_exit_callback")
+}
+
+#' @export
+has_special_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
+    .Call(C_instrumentr_tracer_has_callback_special_call_exit, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_special_call_exit_callback <- function(object) { # nolint
+    UseMethod("create_special_call_exit_callback")
+}
+
+#' @export
+create_special_call_exit_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 6))
+
+    .Call(C_instrumentr_callback_special_call_exit_create_from_r_function, object)
+}
+
+#' @export
+create_special_call_exit_callback.externalptr <- function(object) { # nolint
+    .Call(C_instrumentr_callback_special_call_exit_create_from_c_function, object)
+}
+
+
+################################################################################
 ## eval_entry
 ################################################################################
 
@@ -799,140 +665,6 @@ create_eval_exit_callback.function <- function(object) { # nolint
 #' @export
 create_eval_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_eval_exit_create_from_c_function, object)
-}
-
-
-################################################################################
-## function_attach
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_function_attach_callback <- function(tracer, ...) {
-    UseMethod("get_function_attach_callback")
-}
-
-#' @export
-get_function_attach_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_function_attach, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_function_attach_callback <- function(tracer, callback, ...) {
-    UseMethod("set_function_attach_callback")
-}
-
-#' @export
-set_function_attach_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_function_attach_callback(callback)) {
-        callback <- create_function_attach_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_function_attach, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_function_attach_callback <- function(object, ...) { # nolint
-    UseMethod("has_function_attach_callback")
-}
-
-#' @export
-has_function_attach_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_function_attach, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_function_attach_callback <- function(object) { # nolint
-    UseMethod("create_function_attach_callback")
-}
-
-#' @export
-create_function_attach_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 4))
-
-    .Call(C_instrumentr_callback_function_attach_create_from_r_function, object)
-}
-
-#' @export
-create_function_attach_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_function_attach_create_from_c_function, object)
-}
-
-
-################################################################################
-## function_detach
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_function_detach_callback <- function(tracer, ...) {
-    UseMethod("get_function_detach_callback")
-}
-
-#' @export
-get_function_detach_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_function_detach, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_function_detach_callback <- function(tracer, callback, ...) {
-    UseMethod("set_function_detach_callback")
-}
-
-#' @export
-set_function_detach_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_function_detach_callback(callback)) {
-        callback <- create_function_detach_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_function_detach, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_function_detach_callback <- function(object, ...) { # nolint
-    UseMethod("has_function_detach_callback")
-}
-
-#' @export
-has_function_detach_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_function_detach, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_function_detach_callback <- function(object) { # nolint
-    UseMethod("create_function_detach_callback")
-}
-
-#' @export
-create_function_detach_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 4))
-
-    .Call(C_instrumentr_callback_function_detach_create_from_r_function, object)
-}
-
-#' @export
-create_function_detach_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_function_detach_create_from_c_function, object)
 }
 
 
@@ -1268,140 +1000,6 @@ create_package_unload_callback.function <- function(object) { # nolint
 #' @export
 create_package_unload_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_unload_create_from_c_function, object)
-}
-
-
-################################################################################
-## special_call_entry
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_special_call_entry_callback <- function(tracer, ...) {
-    UseMethod("get_special_call_entry_callback")
-}
-
-#' @export
-get_special_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_special_call_entry, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_special_call_entry_callback <- function(tracer, callback, ...) {
-    UseMethod("set_special_call_entry_callback")
-}
-
-#' @export
-set_special_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_special_call_entry_callback(callback)) {
-        callback <- create_special_call_entry_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_special_call_entry, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_special_call_entry_callback <- function(object, ...) { # nolint
-    UseMethod("has_special_call_entry_callback")
-}
-
-#' @export
-has_special_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_special_call_entry, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_special_call_entry_callback <- function(object) { # nolint
-    UseMethod("create_special_call_entry_callback")
-}
-
-#' @export
-create_special_call_entry_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 6))
-
-    .Call(C_instrumentr_callback_special_call_entry_create_from_r_function, object)
-}
-
-#' @export
-create_special_call_entry_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_special_call_entry_create_from_c_function, object)
-}
-
-
-################################################################################
-## special_call_exit
-################################################################################
-
-## GET #########################################################################
-
-#' @export
-get_special_call_exit_callback <- function(tracer, ...) {
-    UseMethod("get_special_call_exit_callback")
-}
-
-#' @export
-get_special_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
-    .Call(C_instrumentr_tracer_get_callback_special_call_exit, tracer)
-}
-
-## SET #########################################################################
-
-#' @export
-set_special_call_exit_callback <- function(tracer, callback, ...) {
-    UseMethod("set_special_call_exit_callback")
-}
-
-#' @export
-set_special_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
-
-    if (!is_instrumentr_special_call_exit_callback(callback)) {
-        callback <- create_special_call_exit_callback(callback)
-    }
-
-    .Call(C_instrumentr_tracer_set_callback_special_call_exit, tracer, callback)
-
-    invisible(NULL)
-}
-
-## HAS #########################################################################
-
-#' @export
-has_special_call_exit_callback <- function(object, ...) { # nolint
-    UseMethod("has_special_call_exit_callback")
-}
-
-#' @export
-has_special_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
-    .Call(C_instrumentr_tracer_has_callback_special_call_exit, object)
-}
-
-## CREATE ######################################################################
-
-#' @export
-create_special_call_exit_callback <- function(object) { # nolint
-    UseMethod("create_special_call_exit_callback")
-}
-
-#' @export
-create_special_call_exit_callback.function <- function(object) { # nolint
-    stopifnot(is_closure(object) && has_parameters(object, 6))
-
-    .Call(C_instrumentr_callback_special_call_exit_create_from_r_function, object)
-}
-
-#' @export
-create_special_call_exit_callback.externalptr <- function(object) { # nolint
-    .Call(C_instrumentr_callback_special_call_exit_create_from_c_function, object)
 }
 
 

@@ -5,6 +5,7 @@
 
 #ifdef USING_DYNTRACE
 
+/* TODO: implement and uncomment
 void dyntrace_builtin_call_entry(dyntracer_t* dyntracer,
                                  SEXP r_call,
                                  SEXP r_op,
@@ -34,6 +35,7 @@ void dyntrace_special_call_exit(dyntracer_t* dyntracer,
                                 SEXP r_rho,
                                 dyntrace_dispatch_t dispatch,
                                 SEXP r_result);
+*/
 
 void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
                                  SEXP r_call,
