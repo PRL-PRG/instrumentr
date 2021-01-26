@@ -64,6 +64,12 @@ create_tracing_initialization_callback.externalptr <- function(object) { # nolin
     .Call(C_instrumentr_callback_tracing_initialization_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_tracing_initialization_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_tracing_initialization_callback')
+}
+
 
 ################################################################################
 ## tracing_finalization
@@ -129,6 +135,12 @@ create_tracing_finalization_callback.function <- function(object) { # nolint
 #' @export
 create_tracing_finalization_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_tracing_finalization_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_tracing_finalization_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_tracing_finalization_callback')
 }
 
 
@@ -198,6 +210,12 @@ create_closure_call_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_closure_call_entry_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_closure_call_entry_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_closure_call_entry_callback')
+}
+
 
 ################################################################################
 ## closure_call_exit
@@ -263,6 +281,12 @@ create_closure_call_exit_callback.function <- function(object) { # nolint
 #' @export
 create_closure_call_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_closure_call_exit_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_closure_call_exit_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_closure_call_exit_callback')
 }
 
 
@@ -332,6 +356,12 @@ create_builtin_call_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_builtin_call_entry_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_builtin_call_entry_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_builtin_call_entry_callback')
+}
+
 
 ################################################################################
 ## builtin_call_exit
@@ -397,6 +427,12 @@ create_builtin_call_exit_callback.function <- function(object) { # nolint
 #' @export
 create_builtin_call_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_builtin_call_exit_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_builtin_call_exit_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_builtin_call_exit_callback')
 }
 
 
@@ -466,6 +502,12 @@ create_special_call_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_special_call_entry_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_special_call_entry_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_special_call_entry_callback')
+}
+
 
 ################################################################################
 ## special_call_exit
@@ -531,6 +573,12 @@ create_special_call_exit_callback.function <- function(object) { # nolint
 #' @export
 create_special_call_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_special_call_exit_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_special_call_exit_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_special_call_exit_callback')
 }
 
 
@@ -600,6 +648,12 @@ create_eval_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_eval_entry_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_eval_entry_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_eval_entry_callback')
+}
+
 
 ################################################################################
 ## eval_exit
@@ -665,6 +719,12 @@ create_eval_exit_callback.function <- function(object) { # nolint
 #' @export
 create_eval_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_eval_exit_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_eval_exit_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_eval_exit_callback')
 }
 
 
@@ -734,6 +794,12 @@ create_gc_allocation_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_gc_allocation_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_gc_allocation_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_gc_allocation_callback')
+}
+
 
 ################################################################################
 ## package_attach
@@ -799,6 +865,12 @@ create_package_attach_callback.function <- function(object) { # nolint
 #' @export
 create_package_attach_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_attach_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_package_attach_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_package_attach_callback')
 }
 
 
@@ -868,6 +940,12 @@ create_package_detach_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_detach_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_package_detach_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_package_detach_callback')
+}
+
 
 ################################################################################
 ## package_load
@@ -933,6 +1011,12 @@ create_package_load_callback.function <- function(object) { # nolint
 #' @export
 create_package_load_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_load_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_package_load_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_package_load_callback')
 }
 
 
@@ -1002,6 +1086,12 @@ create_package_unload_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_unload_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_package_unload_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_package_unload_callback')
+}
+
 
 ################################################################################
 ## variable_assignment
@@ -1067,6 +1157,12 @@ create_variable_assignment_callback.function <- function(object) { # nolint
 #' @export
 create_variable_assignment_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_assignment_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_variable_assignment_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_variable_assignment_callback')
 }
 
 
@@ -1136,6 +1232,12 @@ create_variable_definition_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_definition_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_variable_definition_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_variable_definition_callback')
+}
+
 
 ################################################################################
 ## variable_lookup
@@ -1203,6 +1305,12 @@ create_variable_lookup_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_lookup_create_from_c_function, object)
 }
 
+## IS ##########################################################################
+
+is_instrumentr_variable_lookup_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_variable_lookup_callback')
+}
+
 
 ################################################################################
 ## variable_removal
@@ -1268,4 +1376,10 @@ create_variable_removal_callback.function <- function(object) { # nolint
 #' @export
 create_variable_removal_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_removal_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_variable_removal_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_variable_removal_callback')
 }

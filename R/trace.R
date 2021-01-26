@@ -72,3 +72,48 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
 
     result
 }
+
+#' @export
+trace_file <- function(tracer, file, environment = .GlobalEnv, ...) {
+    UseMethod("trace_file")
+}
+
+#' @export
+trace_file.instrumentr_tracer <- function(tracer, file, environment = .GlobalEnv, ...) {
+    code <- parse(file = file, keep.source = TRUE)
+
+    trace_code(tracer, code, environment = environment, quote = FALSE)
+}
+
+#' @export
+trace_text <- function(tracer, text, environment = .GlobalEnv, ...) {
+    UseMethod("trace_text")
+}
+
+#' @export
+trace_text.instrumentr_tracer <- function(tracer, text, environment = .GlobalEnv, ...) {
+    code <- parse(text = text, keep.source = TRUE)
+
+    trace_code(tracer, code, environment = environment, quote = FALSE)
+}
+
+#' @export
+with_tracing_disabled <- function(tracer, code) {
+
+    .Call(C_instrumentr_tracer_disable, tracer)
+
+    on.exit(.Call(C_instrumentr_tracer_reinstate, tracer))
+
+    code
+}
+
+#' @export
+with_tracing_enabled <- function(tracer, code) {
+
+    on.exit(.Call(C_instrumentr_tracer_reinstate, tracer))
+
+    .Call(C_instrumentr_tracer_enable, tracer)
+
+    code
+}
+

@@ -81,3 +81,44 @@ get_function_table <- function(package_env) {
 
     function_table
 }
+
+
+#' @export
+get_directory.instrumentr_package <- function(object, ...) { # nolint
+    .Call(C_instrumentr_package_get_directory, object)
+}
+
+#' @export
+get_name.instrumentr_package <- function(object, ...) {
+    .Call(C_instrumentr_package_get_name, object)
+}
+
+#' @export
+print.instrumentr_package <- function(x, ...) {
+    cat(to_string(x), "\n")
+}
+
+#' @export
+get_functions.instrumentr_package <- function(object, ...) { # nolint
+    .Call(C_instrumentr_package_get_functions, object)
+}
+
+#' @export
+get_namespace.instrumentr_package <- function(object, ...) { # nolint
+    .Call(C_instrumentr_package_get_namespace, object)
+}
+
+#' @export
+get_parameter_count.instrumentr_function <- function(object, ...) { # nolint
+    .Call(C_instrumentr_function_get_parameter_count, object)
+}
+
+#' @export
+to_string.instrumentr_package <- function(object, ...) {
+    representation <- sprintf("Package(name='%s', directory='%s', environment=%s)",
+                              get_name(object),
+                              get_directory(object),
+                              to_string(get_environment(object)))
+
+    representation
+}

@@ -36,4 +36,8 @@ SEXP instrumentr_create_list(int column_count, ...);
 
 SEXP instrumentr_create_data_frame(int column_count, ...);
 
+SEXP r_instrumentr_get_object_details(SEXP r_value,
+                                      SEXP r_variable,
+                                      SEXP r_environment,
+                                      SEXP r_peek);
 #endif /* INSTRUMENTR_SEXP_H */

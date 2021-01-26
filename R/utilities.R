@@ -73,102 +73,155 @@ get_package_name <- function(fun) {
     else name
 }
 
-is_instrumentr_application_load_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_application_load_callback")
+#' @export
+get_installed_package_names <- function(exclude = "instrumentr") {
+
+    stopifnot(is_vector_character(exclude))
+
+    ## NOTE: directly calling installed.packages results in
+    ## warnings on R CMD check
+    local_installed_packages <- get("installed.packages", envir=getNamespace("utils"))
+    installed_package_names <- local_installed_packages()[, 1]
+    setdiff(installed_package_names, exclude)
 }
 
-is_instrumentr_application_unload_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_application_unload_callback")
+#' @export
+get_package_function_names <- function(package_name,
+                                       public = TRUE,
+                                       private = TRUE) {
+
+    stopifnot(is_scalar_character(package_name))
+    stopifnot(is_scalar_logical(public))
+    stopifnot(is_scalar_logical(private))
+
+    function_names <- character(0)
+
+    if (public) {
+
+        function_names <- get_public_package_function_names(package_name)
+
+        function_names <- paste(package_name, "::", function_names, sep = "")
+
+    }
+
+    if (private) {
+
+        private_function_names <- get_private_package_function_names(package_name)
+
+        private_function_names <- paste(package_name, ":::", private_function_names, sep= "")
+
+        function_names <- c(function_names, private_function_names)
+
+    }
+
+    function_names
 }
 
-is_instrumentr_application_attach_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_application_attach_callback")
+filter_closure_bindings <- function(binding_names, environment) {
+
+    closure_bindings <- c()
+
+    for (binding_name in binding_names) {
+
+        binding_value <- get(binding_name, envir=environment)
+
+        if (is_closure(binding_value)) {
+            closure_bindings <- c(closure_bindings, binding_name)
+        }
+    }
+
+    closure_bindings
 }
 
-is_instrumentr_application_detach_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_application_detach_callback")
+with_package_namespace <- function(package_name, fun) {
+    package_names <- loadedNamespaces()
+    package_is_loaded <- package_name %in% package_names
+
+    ns <- NULL
+
+    if (!package_is_loaded) {
+        ns <- loadNamespace(package_name)
+    }
+    else {
+        ns <- getNamespace(package_name)
+    }
+
+    result <- fun(ns)
+
+    if (!package_is_loaded) {
+        unloadNamespace(package_name)
+    }
+
+    result
 }
 
-is_instrumentr_package_load_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_package_load_callback")
+get_all_package_function_names <- function(package_name) {
+    with_package_namespace(
+        package_name,
+        function(package_namespace) {
+
+            all_function_names <- ls(package_namespace, all.names = TRUE)
+
+            all_function_names <- filter_closure_bindings(all_function_names, package_namespace)
+
+            all_function_names
+        }
+    )
 }
 
-is_instrumentr_package_unload_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_package_unload_callback")
+get_public_package_function_names <- function(package_name) {  # nolint
+    with_package_namespace(
+        package_name,
+        function(package_namespace) {
+
+            all_function_names <- get_all_package_function_names(package_name)
+
+            inner_package_namespace <- package_namespace$.__NAMESPACE__.
+
+            public_function_names <- ls(inner_package_namespace$exports, all.names = TRUE)
+
+            public_function_names <- filter_closure_bindings(public_function_names,
+                                                             package_namespace)
+
+            public_function_names <- intersect(public_function_names, all_function_names)
+
+            public_function_names
+        }
+    )
 }
 
-is_instrumentr_package_attach_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_package_attach_callback")
+get_private_package_function_names <- function(package_name) { # nolint
+    with_package_namespace(
+        package_name,
+        function(package_namespace) {
+            all_function_names <- get_all_package_function_names(package_name)
+
+            public_function_names <- get_public_package_function_names(package_name)
+
+            private_function_names <- setdiff(all_function_names, public_function_names)
+
+            private_function_names
+        }
+    )
 }
 
-is_instrumentr_package_detach_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_package_detach_callback")
-}
+#' @export
+get_object_details <- function(value, variable, envir = parent.frame(), peek = TRUE) {
 
-is_instrumentr_function_attach_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_function_attach_callback")
-}
+    if(missing(variable)) {
+        variable <- NULL
+    }
+    else {
+        stopifnot(is_scalar_character(variable))
 
-is_instrumentr_function_detach_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_function_detach_callback")
-}
+        if(!exists(variable, envir)) {
+            stop(cat("variable", variable, "does not exist in environment"))
+        }
+    }
 
-is_instrumentr_call_entry_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_call_entry_callback")
-}
+    if(missing(value)) {
+        value <- NULL
+    }
 
-is_instrumentr_call_exit_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_call_exit_callback")
-}
-
-is_instrumentr_builtin_call_entry_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_builtin_call_entry_callback")
-}
-
-is_instrumentr_builtin_call_exit_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_builtin_call_exit_callback")
-}
-
-is_instrumentr_special_call_entry_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_special_call_entry_callback")
-}
-
-is_instrumentr_special_call_exit_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_special_call_exit_callback")
-}
-
-is_instrumentr_closure_call_entry_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_closure_call_entry_callback")
-}
-
-is_instrumentr_closure_call_exit_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_closure_call_exit_callback")
-}
-
-is_instrumentr_eval_entry_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_eval_entry_callback")
-}
-
-is_instrumentr_eval_exit_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_eval_exit_callback")
-}
-
-is_instrumentr_gc_allocation_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_gc_allocation_callback")
-}
-
-is_instrumentr_variable_definition_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_variable_definition_callback")
-}
-
-is_instrumentr_variable_assignment_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_variable_assignment_callback")
-}
-
-is_instrumentr_variable_removal_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_variable_removal_callback")
-}
-
-is_instrumentr_variable_lookup_callback <- function(object) { # nolint
-    inherits(object, "instrumentr_variable_lookup_callback")
+    .Call(C_instrumentr_get_object_details, value, variable, envir, peek)
 }

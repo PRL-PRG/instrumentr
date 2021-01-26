@@ -28,6 +28,7 @@ const R_CallMethodDef CallEntries[] = {
     {"instrumentr_finalize", (DL_FUNC) &r_instrumentr_finalize, 0},
     {"instrumentr_initialize_tracing", (DL_FUNC) &r_instrumentr_initialize_tracing, 1},
     {"instrumentr_finalize_tracing", (DL_FUNC) &r_instrumentr_finalize_tracing, 1},
+    {"instrumentr_get_object_details", (DL_FUNC) &r_instrumentr_get_object_details, 4},
 
     /* trace */
     {"instrumentr_trace_code", (DL_FUNC) &r_instrumentr_trace_code, 3},

@@ -10,3 +10,13 @@ is_undefined <- function(obj) {
 is_defined <- function(obj) {
     !is_undefined(obj)
 }
+
+#' @export
+print.instrumentr_undefined <- function(x, ...) {
+    cat(to_string(x), "\n")
+}
+
+#' @export
+to_string.instrumentr_undefined <- function(object, ...) { # nolint
+    "<undefined>"
+}
