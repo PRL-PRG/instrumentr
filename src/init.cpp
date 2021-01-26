@@ -56,6 +56,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"instrumentr_finalize_instrumentr", (DL_FUNC) &r_instrumentr_finalize_instrumentr, 0},
     {"instrumentr_is_undefined_object", (DL_FUNC)&r_instrumentr_is_undefined_object, 1},
     {"instrumentr_is_defined_object", (DL_FUNC)&r_instrumentr_is_defined_object, 1},
+    {"instrumentr_get_object_details", (DL_FUNC)&r_instrumentr_get_object_details, 4},
 
     /* Object */
     {"object_get_id", (DL_FUNC) &r_object_get_id, 1},

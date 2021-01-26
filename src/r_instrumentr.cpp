@@ -64,3 +64,43 @@ SEXP r_instrumentr_finalize_instrumentr() {
     instrumentr::finalize_instrumentr();
     return R_NilValue;
 }
+
+SEXP r_instrumentr_get_object_details(SEXP r_value,
+                                      SEXP r_variable,
+                                      SEXP r_environment,
+                                      SEXP r_peek) {
+    SEXP r_actual_value = r_value;
+
+    if (r_variable != R_NilValue) {
+        const char* variable = CHAR(STRING_ELT(r_variable, 0));
+
+        r_actual_value = Rf_findVarInFrame(r_environment, Rf_install(variable));
+
+        bool peek = LOGICAL(r_peek)[0];
+
+        if (peek && TYPEOF(r_actual_value) == PROMSXP) {
+            r_actual_value = PREXPR(r_actual_value);
+        }
+    }
+
+    char* address;
+
+    if (asprintf(&address, "%p", (void*) r_actual_value) == -1) {
+        Rf_error("Getting address of SEXP failed");
+    }
+
+    SEXP r_result = PROTECT(Rf_allocVector(VECSXP, 2));
+    SET_VECTOR_ELT(r_result, 0, Rf_mkString(address));
+    SET_VECTOR_ELT(
+        r_result, 1, Rf_mkString(Rf_type2char(TYPEOF(r_actual_value))));
+
+    SEXP r_names = PROTECT(Rf_allocVector(STRSXP, 2));
+    SET_STRING_ELT(r_names, 0, mkChar("address"));
+    SET_STRING_ELT(r_names, 1, mkChar("type"));
+
+    Rf_setAttrib(r_result, R_NamesSymbol, r_names);
+
+    UNPROTECT(2);
+
+    return r_result;
+}
