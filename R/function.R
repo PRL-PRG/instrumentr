@@ -62,3 +62,7 @@ to_string.instrumentr_function <- function(object, ...) {
     representation
 }
 
+#' @export
+get_parameter_count.instrumentr_function <- function(object, ...) { # nolint
+    .Call(C_instrumentr_function_get_parameter_count, object)
+}
