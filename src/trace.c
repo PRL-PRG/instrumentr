@@ -202,9 +202,9 @@ SEXP r_instrumentr_trace_package_attach(SEXP r_tracer,
         /* TRACER */
         UNWRAP(tracer),
         /* INIT */
-        ,
+        NOTRACE(UNWRAP(package); instrumentr_package_attach(package)),
         /* CCALL */
-        NOTRACE(UNWRAP(application); UNWRAP(package);
+        NOTRACE(UNWRAP(application);
                 cfun(tracer, callback, application, package)),
         /* RCALL */
         Rf_eval(
@@ -225,15 +225,16 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
         /* TRACER */
         UNWRAP(tracer),
         /* INIT */
-        ,
+        NOTRACE(UNWRAP(package)),
         /* CCALL  */
-        NOTRACE(UNWRAP(application); UNWRAP(package);
+        NOTRACE(UNWRAP(application);
                 cfun(tracer, callback, application, package)),
         /* RCALL */
         Rf_eval(
             Rf_lang5(r_name, r_tracer, r_callback, r_application, r_package),
             r_environment),
         /* FIN */
+        NOTRACE(instrumentr_package_detach(package))
     );
 
     return R_NilValue;

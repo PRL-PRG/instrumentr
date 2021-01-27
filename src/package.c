@@ -14,6 +14,7 @@ struct instrumentr_package_impl_t {
     const char* name;
     const char* directory;
     SEXP r_namespace;
+    int attached;
     instrumentr_function_vector_t functions;
 };
 
@@ -46,7 +47,8 @@ void instrumentr_package_finalize(instrumentr_object_t object) {
 
 instrumentr_package_t instrumentr_package_create(const char* name,
                                                  const char* directory,
-                                                 SEXP r_namespace) {
+                                                 SEXP r_namespace,
+                                                 int attached) {
      const char* duplicate_name = instrumentr_duplicate_string(name);
 
     const char* duplicate_directory = instrumentr_duplicate_string(directory);
@@ -64,6 +66,8 @@ instrumentr_package_t instrumentr_package_create(const char* name,
     instrumentr_sexp_acquire(r_namespace);
     package->r_namespace = r_namespace;
 
+    package->attached = 0;
+
     vec_init(&package->functions);
 
     return package;
@@ -71,12 +75,14 @@ instrumentr_package_t instrumentr_package_create(const char* name,
 
 SEXP r_instrumentr_package_create(SEXP r_name,
                                   SEXP r_directory,
-                                  SEXP r_namespace) {
+                                  SEXP r_namespace,
+                                  SEXP r_attached) {
     const char* name = instrumentr_r_character_to_c_string(r_name);
     const char* directory = instrumentr_r_character_to_c_string(r_directory);
+    int attached = instrumentr_r_logical_to_c_int(r_attached);
 
     instrumentr_package_t package =
-        instrumentr_package_create(name, directory, r_namespace);
+        instrumentr_package_create(name, directory, r_namespace, attached);
 
     return instrumentr_package_wrap(package);
 }
@@ -137,6 +143,30 @@ SEXP instrumentr_package_get_namespace(instrumentr_package_t package) {
 SEXP r_instrumentr_package_get_namespace(SEXP r_package) {
     instrumentr_package_t package = instrumentr_package_unwrap(r_package);
     return instrumentr_package_get_namespace(package);
+}
+
+/********************************************************************************
+ * state
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_package_is_attached(instrumentr_package_t package) {
+    return package->attached;
+}
+
+SEXP r_instrumentr_package_is_attached(SEXP r_package) {
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    int attached = instrumentr_package_is_attached(package);
+    return instrumentr_c_int_to_r_logical(attached);
+}
+
+/* setter */
+void instrumentr_package_attach(instrumentr_package_t package) {
+    package->attached = 1;
+}
+
+void instrumentr_package_detach(instrumentr_package_t package) {
+    package->attached = 0;
 }
 
 /********************************************************************************

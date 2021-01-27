@@ -11,11 +11,13 @@
 
 instrumentr_package_t instrumentr_package_create(const char* name,
                                                  const char* directory,
-                                                 SEXP r_namespace);
+                                                 SEXP r_namespace,
+                                                 int attached);
 
 SEXP r_instrumentr_package_create(SEXP r_name,
                                   SEXP r_directory,
-                                  SEXP r_namespace);
+                                  SEXP r_namespace,
+                                  SEXP r_attached);
 
 /********************************************************************************
  * interop
@@ -48,6 +50,18 @@ SEXP r_instrumentr_package_get_directory(SEXP r_package);
 /* accessor  */
 SEXP instrumentr_package_get_namespace(instrumentr_package_t package);
 SEXP r_instrumentr_package_get_namespace(SEXP r_package);
+
+/********************************************************************************
+ * state
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_package_is_attached(instrumentr_package_t package);
+SEXP r_instrumentr_package_is_attached(SEXP r_package);
+
+/* setter */
+void instrumentr_package_attach(instrumentr_package_t package);
+void instrumentr_package_detach(instrumentr_package_t package);
 
 /********************************************************************************
  * functions

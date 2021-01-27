@@ -1,42 +1,42 @@
 
 
 #' @export
-get_code <- function(object, ...) {
+get_code <- function(object) {
     UseMethod("get_code")
 }
 
 #' @export
-get_environment <- function(object, ...) {
+get_environment <- function(object) {
     UseMethod("get_environment")
 }
 
 #' @export
-get_directory <- function(object, ...) {
+get_directory <- function(object) {
     UseMethod("get_directory")
 }
 
 #' @export
-get_frame_position <- function(object, ...) {
+get_frame_position <- function(object) {
     UseMethod("get_frame_position")
 }
 
 #' @export
-get_name <- function(object, ...) {
+get_name <- function(object) {
     UseMethod("get_name")
 }
 
 #' @export
-get_package <- function(application, package_name_or_position, ...) {
+get_package <- function(application, name_or_position) {
     UseMethod("get_package")
 }
 
 #' @export
-get_packages <- function(application, ...) {
+get_packages <- function(application) {
     UseMethod("get_packages")
 }
 
 #' @export
-get_call_stack <- function(object, ...) {
+get_call_stack <- function(object) {
     UseMethod("get_call_stack")
 }
 
@@ -90,13 +90,8 @@ get_function <- function(object, ...) {
 }
 
 #' @export
-get_functions <- function(object, ...) {
+get_functions <- function(object) {
     UseMethod("get_functions")
-}
-
-#' @export
-get_id <- function(object, ...) {
-    UseMethod("get_id")
 }
 
 #' @export
@@ -105,7 +100,7 @@ get_message <- function(object, ...) {
 }
 
 #' @export
-get_namespace <- function(object, ...) {
+get_namespace <- function(object) {
     UseMethod("get_namespace")
 }
 
@@ -237,4 +232,9 @@ has_default_argument <- function(parameter, ...) {
 #' @export
 to_string <- function(object, ...) {
     UseMethod("to_string")
+}
+
+#' @export
+is_attached <- function(object) {
+    UseMethod("is_attached")
 }

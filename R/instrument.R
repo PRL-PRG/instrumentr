@@ -1,4 +1,4 @@
-insert_instrumentation <- function(tracer_ptr, application_ptr) {
+insert_package_hooks <- function(tracer_ptr, application_ptr) {
     .Call(C_instrumentr_tracer_disable, tracer_ptr)
 
     handle_current_packages(tracer_ptr, application_ptr)
@@ -20,15 +20,17 @@ handle_current_packages <- function(tracer_ptr, application_ptr) {
         )
     )
 
+    create_and_add <- function(package_name, attached) {
+        package_ptr <- create_package(package_name, attached = attached)
+        add_package(application_ptr, package_ptr)
+    }
+
+    Map(create_and_add, attached_packages, TRUE)
+
     ## get names of packages that are loaded but not attached
     loaded_packages <- setdiff(loadedNamespaces(), attached_packages)
 
-
-    ## NOTE: processing attached_packages in order is important since
-    ##       function lookup happens in that order
-    package_ptrs <- Map(create_package, c(attached_packages, loaded_packages))
-
-    Map(function(package_ptr) add_package(application_ptr, package_ptr), package_ptrs)
+    Map(create_and_add, loaded_packages, FALSE)
 
     invisible(NULL)
 }
@@ -38,7 +40,7 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
     handle_package_on_load <- function(package_name, ...) {
         .Call(C_instrumentr_tracer_disable, tracer_ptr)
 
-        package_ptr <- create_package(package_name)
+        package_ptr <- create_package(package_name, attached = FALSE)
         .Call(C_instrumentr_trace_package_load, tracer_ptr, application_ptr, package_ptr)
 
         .Call(C_instrumentr_tracer_enable, tracer_ptr)
@@ -83,4 +85,16 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
     }
 
     invisible(NULL)
+}
+
+remove_package_hooks <- function(tracer_ptr, application_ptr) {
+    packages <- unname(installed.packages()[,1])
+
+    ## attach event hooks for packages not loaded
+    for (package in packages) {
+        setHook(packageEvent(package, "onLoad"), NULL, action = "replace")
+        setHook(packageEvent(package, "attach"), NULL, action = "replace")
+        setHook(packageEvent(package, "detach"), NULL, action = "replace")
+        setHook(packageEvent(package, "onUnload"), NULL, action = "replace")
+    }
 }

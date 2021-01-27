@@ -30,7 +30,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
                                           environment,
                                           frame_position)
 
-        insert_instrumentation(tracer, application)
+        insert_package_hooks(tracer, application)
 
         .Call(C_instrumentr_trace_tracing_initialization, tracer, application)
 
@@ -52,7 +52,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
     ##      If user callback errors, we override the result
     ##      with the error object
     tryCatch({
-
+        remove_package_hooks(tracer, application)
         ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code

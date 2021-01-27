@@ -23,7 +23,8 @@ Suggests:
     covr,
     knitr,
     rmarkdown,
-    dplyr
+    dplyr,
+    testthat
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

@@ -19,14 +19,38 @@ navbar:
      href: https://github.com/PRL-PRG/instrumentr
 
 reference:
+- title: "Object"
+- contents:
+    - get_id
+    - get_data
+    - set_data
+    - has_data
+    - remove_data
+
+- title: "Application"
+- contents:
+    - get_name.instrumentr_application
+    - get_directory.instrumentr_application
+    - get_code.instrumentr_application
+    - get_environment.instrumentr_application
+    - get_frame_position.instrumentr_application
+    - get_package.instrumentr_application
+    - get_packages.instrumentr_application
+    - get_call_stack.instrumentr_application
+
 - title: "Package"
-  desc: >
-    API for accessing properties of loaded or attached packages
 - contents:
     - get_name.instrumentr_package
     - get_directory.instrumentr_package
     - get_namespace.instrumentr_package
+    - is_attached.instrumentr_package
     - get_functions.instrumentr_package
+
+- title: "Utilities"
+  desc: >
+    Utility methods for Instrumentr objects
+- contents:
+    - to_string
 
 authors:
   Aviral Goel:
