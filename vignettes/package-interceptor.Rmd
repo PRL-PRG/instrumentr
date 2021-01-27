@@ -41,10 +41,14 @@ tracing_initialization_callback <- function(tracer, callback, application) {
 }
 
 tracing_finalization_callback <- function(tracer, callback, application) {
-    print("Trace Exit")
+    cat("Trace Exit")
+    print(search())
+    print(names(get_packages(application)))
 }
 
-tracer <- create_tracer(package_load_callback = package_load_callback,
+tracer <- create_tracer(tracing_initialization_callback = tracing_initialization_callback,
+                        tracing_finalization_callback = tracing_finalization_callback,
+                        package_load_callback = package_load_callback,
                         package_unload_callback = package_unload_callback,
                         package_attach_callback = package_attach_callback,
                         package_detach_callback = package_detach_callback)
@@ -74,6 +78,8 @@ result <- trace_code(tracer, {
           mass = mean(mass, na.rm = TRUE)
       ) %>%
       filter(n > 1)
+
+      unloadNamespace("dplyr")
 })
 
 print(get_value(result))

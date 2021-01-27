@@ -10,7 +10,8 @@ insert_instrumentation <- function(tracer_ptr, application_ptr) {
 
 handle_current_packages <- function(tracer_ptr, application_ptr) {
     ## get all names which start with "package:"
-    attached_packages <- Filter(function(x) startsWith(x, "package:"), search())
+    ## reverse the list to store it in correct order in the application model
+    attached_packages <- Filter(function(x) startsWith(x, "package:"), rev(search()))
 
     ## remove "package:" prefix from names to get the actual package/namespace name
     attached_packages <- unlist(
@@ -65,7 +66,7 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
         .Call(C_instrumentr_tracer_disable, tracer_ptr)
 
         package_ptr <- get_package(application_ptr, package_name)
-        .Call(C_instrumentr_trace_package_on_unload, tracer_ptr, application_ptr, package_ptr)
+        .Call(C_instrumentr_trace_package_unload, tracer_ptr, application_ptr, package_ptr)
         .Call(C_instrumentr_application_remove_package, application_ptr, package_ptr)
 
         .Call(C_instrumentr_tracer_enable, tracer_ptr)

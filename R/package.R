@@ -115,10 +115,10 @@ get_parameter_count.instrumentr_function <- function(object, ...) { # nolint
 
 #' @export
 to_string.instrumentr_package <- function(object, ...) {
-    representation <- sprintf("Package(name='%s', directory='%s', environment=%s)",
+    representation <- sprintf("Package(name='%s', directory='%s', namespace=%s)",
                               get_name(object),
                               get_directory(object),
-                              to_string(get_environment(object)))
+                              to_string(get_namespace(object)))
 
     representation
 }
