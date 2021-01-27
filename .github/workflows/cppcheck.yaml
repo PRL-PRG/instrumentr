@@ -2,9 +2,11 @@ on:
   push:
     branches:
       - master
+      - c-api
   pull_request:
     branches:
       - master
+      - c-api
 
 name: cppcheck
 
