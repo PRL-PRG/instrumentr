@@ -18,6 +18,16 @@ navbar:
    - icon: fa-github
      href: https://github.com/PRL-PRG/instrumentr
 
+reference:
+- title: "Package"
+  desc: >
+    API for accessing properties of loaded or attached packages
+- contents:
+    - get_name.instrumentr_package
+    - get_directory.instrumentr_package
+    - get_namespace.instrumentr_package
+    - get_functions.instrumentr_package
+
 authors:
   Aviral Goel:
     href: http://aviral.io

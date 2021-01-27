@@ -8,6 +8,9 @@ INCLUDES := $(shell find $(INCLUDEDIR) -name '*.hpp') $(shell find $(SOURCEDIR) 
 CPPCHECK := cppcheck
 SCAN_BUILD := scan-build
 
+export R_ENABLE_JIT=0
+export R_DISABLE_BYTECODE=1
+
 .PHONY: all build check document test
 
 all: clean document build check install
@@ -34,6 +37,9 @@ generate-callback-api:
 
 document: generate-callback-api install-devtools
 	$(R) --slave -e "devtools::document()"
+
+website: document
+	$(R) --slave -e "pkgdown::build_site()"
 
 test: install-devtools
 	$(R) --slave -e "devtools::test()"
