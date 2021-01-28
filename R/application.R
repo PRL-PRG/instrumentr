@@ -103,7 +103,7 @@ get_package.instrumentr_application <- function(application, name_or_position) {
     if(is.character(name_or_position)) {
         .Call(C_instrumentr_application_get_package_by_name, application, name_or_position[1])
     }
-    else if(is.numeric(package_name_or_position)) {
+    else if(is.numeric(name_or_position)) {
         .Call(C_instrumentr_application_get_package_by_position, application, as.integer(name_or_position)[1])
     }
     else {
@@ -139,16 +139,6 @@ create_application <- function(name, directory, code, environment, frame_positio
 #' @export
 print.instrumentr_application <- function(x, ...) {
     cat(to_string(x), "\n")
-}
-
-#' @export
-to_string.instrumentr_application <- function(object, ...) { # nolint
-    representation <- sprintf("Application(name='%s', directory='%s', environment=%s)",
-                              get_name(object),
-                              get_directory(object),
-                              to_string(get_environment(object)))
-
-    representation
 }
 
 add_package <- function(object, package, ...) {

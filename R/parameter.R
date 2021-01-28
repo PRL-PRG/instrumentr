@@ -59,14 +59,3 @@ is_vararg.instrumentr_parameter <- function(object, ...) { # nolint
 has_default_argument.instrumentr_parameter <- function(parameter, ...) { # nolint
     .Call(C_instrumentr_parameter_has_default_argument, parameter)
 }
-
-#' @export
-to_string.instrumentr_parameter <- function(object, ...) { # nolint
-    representation <- sprintf("Parameter(name='%s', position=%d, missing=%s, vararg=%s)",
-                              get_name(object),
-                              get_position(object),
-                              logical_to_string(is_missing(object)),
-                              logical_to_string(is_vararg(object)))
-
-    representation
-}

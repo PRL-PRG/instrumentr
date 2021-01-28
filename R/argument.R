@@ -23,27 +23,3 @@ get_value.instrumentr_argument <- function(object, ...) { # nolint
 is_evaluated.instrumentr_argument <- function(argument, ...) { # nolint
     .Call(C_instrumentr_argument_is_evaluated, argument)
 }
-
-#' @export
-to_string.instrumentr_argument <- function(object, ...) {
-    name <- get_name(object)
-
-    name_str <- ""
-    if (name != "") {
-        name_str <- sprintf("name='%s', ", name)
-    }
-
-    result <- get_result(object)
-    result_str <- ""
-    if (is_defined(result)) {
-        result_str <- sprintf("result=%s, ", to_string(result))
-    }
-
-    representation <- sprintf("Argument(%sexpression=%s, %sevaluated=%s)",
-                              name_str,
-                              to_string(get_expression(object)),
-                              result_str,
-                              c("FALSE", "TRUE")[is_evaluated(object) + 1])
-
-    representation
-}

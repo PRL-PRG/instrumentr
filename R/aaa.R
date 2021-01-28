@@ -85,14 +85,25 @@ get_expression <- function(object, ...) {
 }
 
 #' @export
-get_function <- function(object, ...) {
+get_functions <- function(object) {
+    UseMethod("get_functions")
+}
+
+#' @export
+get_function_count <- function(object) {
+    UseMethod("get_function_count")
+}
+
+#' @export
+get_function <- function(object, name_or_position) {
     UseMethod("get_function")
 }
 
 #' @export
-get_functions <- function(object) {
-    UseMethod("get_functions")
+has_function <- function(object, name) {
+    UseMethod("has_function")
 }
+
 
 #' @export
 get_message <- function(object, ...) {
@@ -227,11 +238,6 @@ peek <- function(call_stack, position, ...) {
 #' @export
 has_default_argument <- function(parameter, ...) {
     UseMethod("has_default_argument")
-}
-
-#' @export
-to_string <- function(object, ...) {
-    UseMethod("to_string")
 }
 
 #' @export

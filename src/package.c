@@ -241,6 +241,29 @@ SEXP r_instrumentr_package_get_function_by_name(SEXP r_package, SEXP r_name) {
 }
 
 /* accessor  */
+int instrumentr_package_has_function(instrumentr_package_t package,
+                                     const char* name) {
+    int count = instrumentr_package_get_function_count(package);
+    instrumentr_function_t* functions = package->functions.data;
+
+    for (int i = 0; i < count; ++i) {
+        instrumentr_function_t function = functions[i];
+        if (strcmp(instrumentr_function_get_name(function), name) == 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+SEXP r_instrumentr_package_has_function(SEXP r_package, SEXP r_name) {
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    const char* name = instrumentr_r_character_to_c_string(r_name);
+    int result = instrumentr_package_has_function(package, name);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+/* accessor  */
 SEXP r_instrumentr_package_get_functions(SEXP r_package) {
     instrumentr_package_t package = instrumentr_package_unwrap(r_package);
     instrumentr_function_t* functions = package->functions.data;

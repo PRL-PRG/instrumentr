@@ -79,18 +79,35 @@ is_attached.instrumentr_package <- function(object) { # nolint
 
 #' @export
 #' @rdname package
-get_functions.instrumentr_package <- function(object) { # nolint
-    .Call(C_instrumentr_package_get_functions, object)
+get_function_count.instrumentr_package <- function(object) {
+    .Call(C_instrumentr_package_get_function_count, object)
 }
 
 #' @export
-to_string.instrumentr_package <- function(object) {
-    representation <- sprintf("Package(name='%s', directory='%s', namespace=%s)",
-                              get_name(object),
-                              get_directory(object),
-                              to_string(get_namespace(object)))
+#' @rdname package
+get_function.instrumentr_package <- function(object, name_or_position) { # nolint
+    if(is.character(name_or_position)) {
+        .Call(C_instrumentr_package_get_function_by_name, object, name_or_position[1])
+    }
+    else if(is.numeric(name_or_position)) {
+        .Call(C_instrumentr_package_get_function_by_position, object, as.integer(name_or_position)[1])
+    }
+    else {
+        stop("Expecting character or numeric value for `name_or_position` argument to get_function")
+    }
+}
 
-    representation
+#' @export
+#' @rdname package
+has_function.instrumentr_package <- function(object, name) { # nolint
+    stopifnot(is_scalar_character(name))
+    .Call(C_instrumentr_package_has_function, object, name)
+}
+
+#' @export
+#' @rdname package
+get_functions.instrumentr_package <- function(object) { # nolint
+    .Call(C_instrumentr_package_get_functions, object)
 }
 
 #' @export

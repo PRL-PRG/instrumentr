@@ -129,12 +129,3 @@ has_result.instrumentr_call <- function(object, ...) {
 is_active.instrumentr_call <- function(object, ...) {
     .Call(C_instrumentr_call_is_active, object)
 }
-
-#' @export
-to_string.instrumentr_call <- function(object, ...) {
-    representation <- sprintf("Call(expression=%s, environment=%s)",
-                              to_string(get_expression(object)),
-                              to_string(get_environment(object)))
-
-    representation
-}

@@ -26,7 +26,6 @@ reference:
     - set_data
     - has_data
     - remove_data
-
 - title: "Application"
 - contents:
     - get_name.instrumentr_application
@@ -37,7 +36,6 @@ reference:
     - get_package.instrumentr_application
     - get_packages.instrumentr_application
     - get_call_stack.instrumentr_application
-
 - title: "Package"
 - contents:
     - get_name.instrumentr_package
@@ -45,7 +43,9 @@ reference:
     - get_namespace.instrumentr_package
     - is_attached.instrumentr_package
     - get_functions.instrumentr_package
-
+- title: "Helpers"
+- contents:
+    - to_string
 - title: "Utilities"
   desc: >
     Utility methods for Instrumentr objects

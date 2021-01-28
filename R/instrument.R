@@ -35,6 +35,7 @@ handle_current_packages <- function(tracer_ptr, application_ptr) {
     invisible(NULL)
 }
 
+#' @importFrom utils installed.packages
 handle_future_packages <- function(tracer_ptr, application_ptr) {
 
     handle_package_on_load <- function(package_name, ...) {
@@ -87,6 +88,7 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
     invisible(NULL)
 }
 
+#' @importFrom utils installed.packages
 remove_package_hooks <- function(tracer_ptr, application_ptr) {
     packages <- unname(installed.packages()[,1])
 

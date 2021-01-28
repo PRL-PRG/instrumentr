@@ -172,3 +172,55 @@ test_that("get_functions correctly returns all package functions", {
     unloadNamespace("Matrix")
 })
 
+test_that("get_function_count correctly returns package function count", {
+
+    tracer <- create_tracer(
+        tracing_initialization_callback = function(tracer, callback, application) {
+            set_data(tracer, new.env(parent = emptyenv()))
+        },
+        package_load_callback = function(tracer, callback, application, package) {
+            package_name <- get_name(package)
+            function_count <- get_function_count(package)
+            data <- get_data(tracer)
+            data[[package_name]] <- function_count
+        },
+        package_attach_callback = function(tracer, callback, application, package) {
+            package_name <- get_name(package)
+            function_count <- get_function_count(package)
+            data <- get_data(tracer)
+            data[[package_name]] <- function_count
+        }
+    )
+
+    trace_code(tracer, {
+        library(MASS)
+        ## accessing symbol from Matrix will load it but not attach it.
+        Matrix::tril
+
+        unloadNamespace("MASS")
+        unloadNamespace("Matrix")
+    })
+
+    data <- get_data(tracer)
+    received_mass_count <- data[["MASS"]]
+    received_matrix_count <- data[["Matrix"]]
+
+    get_function_bindings <- function(ns) {
+        fun_names <- ls(envir = ns, all.names = TRUE, sorted = TRUE)
+        fun_names <- Filter(function(name) is_closure(get(name, envir = ns)), fun_names)
+    }
+
+    library("MASS")
+    ns <- getNamespace("MASS")
+    expected_mass_count <- length(get_function_bindings(ns))
+
+    library("Matrix")
+    ns <- getNamespace("Matrix")
+    expected_matrix_count <- length(get_function_bindings(ns))
+
+    expect_equal(received_mass_count, expected_mass_count)
+    expect_equal(received_matrix_count, expected_matrix_count)
+
+    unloadNamespace("MASS")
+    unloadNamespace("Matrix")
+})

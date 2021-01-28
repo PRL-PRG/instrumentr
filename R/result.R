@@ -32,17 +32,3 @@ is_error.instrumentr_result <- function(object, ...) {
 is_value.instrumentr_result <- function(object, ...) {
     is_defined(get_value(object))
 }
-
-#' @export
-to_string.instrumentr_result <- function(object, ...) {
-
-    representation <-
-        if (is_value(object)) {
-            sprintf("Result(value=%s)", to_string(get_value(object)))
-        }
-        else {
-            sprintf("Result(error=%s)", to_string(get_error(object)))
-        }
-
-    representation
-}

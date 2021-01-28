@@ -16,7 +16,3 @@ print.instrumentr_undefined <- function(x, ...) {
     cat(to_string(x), "\n")
 }
 
-#' @export
-to_string.instrumentr_undefined <- function(object, ...) { # nolint
-    "<undefined>"
-}

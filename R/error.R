@@ -18,13 +18,3 @@ get_message.instrumentr_error <- function(object, ...) {
 get_source.instrumentr_error <- function(object, ...) {
     object$source
 }
-
-#' @export
-to_string.instrumentr_error <- function(object, ...) {
-    representation <- sprintf("Error(source='%s', message='%s', call=%s)",
-                              get_source(object),
-                              get_message(object),
-                              to_string(get_call(object)))
-
-    representation
-}

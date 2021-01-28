@@ -71,6 +71,10 @@ void instrumentr_package_detach(instrumentr_package_t package);
 int instrumentr_package_get_function_count(instrumentr_package_t package);
 SEXP r_instrumentr_package_get_function_count(SEXP r_package);
 
+/* accessor */
+int instrumentr_package_has_function(instrumentr_package_t package, const char* name);
+SEXP r_instrumentr_package_has_function(SEXP r_package, SEXP r_name);
+
 /* accessor  */
 instrumentr_function_t
 instrumentr_package_get_function_by_position(instrumentr_package_t package,
