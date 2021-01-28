@@ -71,7 +71,6 @@ get_namespace.instrumentr_package <- function(object) { # nolint
     .Call(C_instrumentr_package_get_namespace, object)
 }
 
-## TODO: document
 #' @export
 #' @rdname package
 is_attached.instrumentr_package <- function(object) { # nolint
@@ -112,7 +111,7 @@ create_package <- function(package_name,
 
     function_table <- get_function_table(package_environment)
 
-    for (function_name in ls(function_table)) {
+    for (function_name in ls(envir = function_table, all.names = TRUE)) {
 
         function_info <- get(function_name, envir=function_table)
 
