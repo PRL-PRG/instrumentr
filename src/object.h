@@ -20,7 +20,9 @@ typedef enum {
     INSTRUMENTR_CALL,
     INSTRUMENTR_CALL_STACK,
     INSTRUMENTR_PARAMETER,
-    INSTRUMENTR_ARGUMENT
+    INSTRUMENTR_ARGUMENT,
+    INSTRUMENTR_PROMISE,
+    INSTRUMENTR_VALUE
 } instrumentr_object_type_t;
 
 struct instrumentr_object_impl_t {

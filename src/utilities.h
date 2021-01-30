@@ -19,6 +19,8 @@ SEXP create_promise(SEXP value, SEXP eval_env);
 
 SEXP create_environment(SEXP hash, SEXP parent);
 
+SEXP instrumentr_sexp_quote(SEXP r_sexp);
+
 SEXP Rf_lang7(SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x);
 
 SEXP Rf_lang8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x);
@@ -40,5 +42,7 @@ SEXP Rf_list8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x);
 char* instrumentr_duplicate_string(const char* original);
 
 char* int_to_string(int value);
+
+char* address_to_string(void* ptr);
 
 #endif /* INSTRUMENTR_UTILITIES_H */

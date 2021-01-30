@@ -74,20 +74,20 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_tracer_set_callback_##NAME, 2),      \
     DECLARE_BINDING(instrumentr_tracer_remove_callback_##NAME, 1),
 
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
 
 #undef TRACER_CALLBACK_INTERFACE
 
-    DECLARE_BINDING(instrumentr_tracer_get_tracing_exec_stats, 1), \
+        DECLARE_BINDING(instrumentr_tracer_get_tracing_exec_stats, 1), \
 
 #define TRACER_EXEC_STATS_INTERFACE(TYPE, NAME, ...) \
     DECLARE_BINDING(instrumentr_tracer_get_callback_##NAME##_exec_stats, 1),
 
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
+    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
 
 #undef TRACER_EXEC_STATS_INTERFACE
 
-    DECLARE_BINDING(instrumentr_tracer_get_exec_stats, 1),
+        DECLARE_BINDING(instrumentr_tracer_get_exec_stats, 1),
 
     /* application */
     DECLARE_BINDING(instrumentr_application_create, 5),
@@ -155,10 +155,20 @@ INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
     /* argument */
     DECLARE_BINDING(instrumentr_argument_has_name, 1),
     DECLARE_BINDING(instrumentr_argument_get_name, 1),
-    DECLARE_BINDING(instrumentr_argument_is_evaluated, 1),
-    DECLARE_BINDING(instrumentr_argument_get_promise, 1),
-    DECLARE_BINDING(instrumentr_argument_get_expression, 1),
-    DECLARE_BINDING(instrumentr_argument_get_value, 1),
+    DECLARE_BINDING(instrumentr_argument_is_value, 1),
+    DECLARE_BINDING(instrumentr_argument_as_value, 1),
+    DECLARE_BINDING(instrumentr_argument_is_promise, 1),
+    DECLARE_BINDING(instrumentr_argument_as_promise, 1),
+
+    /* promise */
+    DECLARE_BINDING(instrumentr_promise_is_forced, 1),
+    DECLARE_BINDING(instrumentr_promise_get_expression, 1),
+    DECLARE_BINDING(instrumentr_promise_get_value, 1),
+
+    /* value */
+    DECLARE_BINDING(instrumentr_value_get_sexp, 1),
+    DECLARE_BINDING(instrumentr_value_get_sexp_address, 1),
+    DECLARE_BINDING(instrumentr_value_get_sexp_type, 1),
 
     /* call_stack */
     DECLARE_BINDING(instrumentr_call_stack_get_size, 1),

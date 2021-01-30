@@ -1,5 +1,5 @@
-#ifndef INSTRUMENTR_SEXP_H
-#define INSTRUMENTR_SEXP_H
+#ifndef INSTRUMENTR_INTEROP_H
+#define INSTRUMENTR_INTEROP_H
 
 #include <instrumentr/Rincludes.h>
 
@@ -40,4 +40,4 @@ SEXP r_instrumentr_get_object_details(SEXP r_value,
                                       SEXP r_variable,
                                       SEXP r_environment,
                                       SEXP r_peek);
-#endif /* INSTRUMENTR_SEXP_H */
+#endif /* INSTRUMENTR_INTEROP_H */

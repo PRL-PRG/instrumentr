@@ -324,21 +324,48 @@
           const char*,                                                         \
           instrumentr_argument_t argument)                                     \
     MACRO(r_instrumentr_argument_get_name, SEXP, SEXP r_argument)              \
-    MACRO(instrumentr_argument_is_evaluated,                                   \
-          int,                                                                 \
+    MACRO(instrumentr_argument_is_value, int, instrumentr_argument_t argument) \
+    MACRO(r_instrumentr_argument_is_value, SEXP, SEXP r_argument);             \
+    MACRO(instrumentr_argument_as_value,                                       \
+          instrumentr_value_t,                                                 \
           instrumentr_argument_t argument)                                     \
-    MACRO(r_instrumentr_argument_is_evaluated, SEXP, SEXP r_argument)          \
-    MACRO(instrumentr_argument_get_promise,                                    \
-          SEXP,                                                                \
-          instrumentr_argument_t argument)                                     \
-    MACRO(r_instrumentr_argument_get_promise, SEXP, SEXP r_argument)           \
-    MACRO(instrumentr_argument_get_expression,                                 \
-          SEXP,                                                                \
-          instrumentr_argument_t argument)                                     \
-    MACRO(r_instrumentr_argument_get_expression, SEXP, SEXP r_argument)        \
+    MACRO(r_instrumentr_argument_as_value, SEXP, SEXP r_argument)              \
     MACRO(                                                                     \
-        instrumentr_argument_get_value, SEXP, instrumentr_argument_t argument) \
-    MACRO(r_instrumentr_argument_get_value, SEXP, SEXP r_argument)
+        instrumentr_argument_is_promise, int, instrumentr_argument_t argument) \
+    MACRO(r_instrumentr_argument_is_promise, SEXP, SEXP r_argument)            \
+    MACRO(instrumentr_argument_as_promise,                                     \
+          instrumentr_promise_t,                                               \
+          instrumentr_argument_t argument)                                     \
+    MACRO(r_instrumentr_argument_as_promise, SEXP, SEXP r_argument)
+
+/********************************************************************************
+ PROMISE API
+ *******************************************************************************/
+
+#define INSTRUMENTR_PROMISE_API_MAP(MACRO)                              \
+    MACRO(instrumentr_promise_is_forced, int, instrumentr_promise_t promise)  \
+    MACRO(r_instrumentr_promise_is_forced, SEXP, SEXP r_promise)              \
+    MACRO(instrumentr_promise_get_expression,                                 \
+          SEXP,                                                               \
+          instrumentr_promise_t promise)                                      \
+    MACRO(r_instrumentr_promise_get_expression, SEXP, SEXP r_promise)         \
+    MACRO(instrumentr_promise_get_value, SEXP, instrumentr_promise_t promise) \
+    MACRO(r_instrumentr_promise_get_value, SEXP, SEXP r_promise)
+
+/********************************************************************************
+ VALUE API
+ *******************************************************************************/
+
+#define INSTRUMENTR_VALUE_API_MAP(MACRO)                                      \
+    MACRO(instrumentr_value_get_sexp, SEXP, instrumentr_value_t value)        \
+    MACRO(r_instrumentr_value_get_sexp, SEXP, SEXP r_value)                   \
+    MACRO(instrumentr_value_get_sexp_address,                                 \
+          const char*,                                                        \
+          instrumentr_value_t value)                                          \
+    MACRO(r_instrumentr_value_get_sexp_address, SEXP, SEXP r_value)           \
+    MACRO(                                                                    \
+        instrumentr_value_get_sexp_type, SEXPTYPE, instrumentr_value_t value) \
+    MACRO(r_instrumentr_value_get_sexp_type, SEXP, SEXP r_value)
 
 /********************************************************************************
  CALLBACK API

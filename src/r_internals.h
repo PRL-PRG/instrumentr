@@ -1,5 +1,5 @@
-#ifndef INSTRUMENTR_SEXP_H
-#define INSTRUMENTR_SEXP_H
+#ifndef INSTRUMENTR_R_INTERNALS_H
+#define INSTRUMENTR_R_INTERNALS_H
 
 #define TYPE_BITS 5
 
@@ -89,4 +89,4 @@ typedef struct SEXPREC {
     } u;
 } SEXPREC;
 
-#endif /* INSTRUMENTR_SEXP_H */
+#endif /* INSTRUMENTR_R_INTERNALS_H */

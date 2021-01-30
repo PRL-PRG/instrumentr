@@ -11,7 +11,7 @@
 struct instrumentr_argument_impl_t {
     struct instrumentr_object_impl_t object;
     const char* name;
-    SEXP r_promise;
+    instrumentr_object_t promise_or_value;
 };
 
 /********************************************************************************
@@ -23,21 +23,17 @@ void instrumentr_argument_finalize(instrumentr_object_t object) {
 
     free((char*)(argument->name));
 
-    instrumentr_sexp_release(argument->r_promise);
-    argument->r_promise = NULL;
+    instrumentr_object_release(argument->promise_or_value);
+    argument->promise_or_value = NULL;
 }
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
-instrumentr_argument_t instrumentr_argument_create(const char* name,
-                                                   SEXP r_promise) {
-    if (TYPEOF(r_promise) != PROMSXP) {
-        instrumentr_log_error(
-            "attempt to create argument object from a non promise");
-    }
-
+instrumentr_argument_t
+instrumentr_argument_create(const char* name,
+                            instrumentr_object_t promise_or_value) {
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
     instrumentr_object_t object =
@@ -49,8 +45,8 @@ instrumentr_argument_t instrumentr_argument_create(const char* name,
 
     argument->name = duplicate_name;
 
-    instrumentr_sexp_acquire(r_promise);
-    argument->r_promise = r_promise;
+    instrumentr_object_acquire(argument->promise_or_value);
+    argument->promise_or_value = promise_or_value;
 
     return argument;
 }
@@ -90,7 +86,7 @@ const char* instrumentr_argument_get_name(instrumentr_argument_t argument) {
         return argument->name;
     } else {
         instrumentr_log_error("argument does not have a name");
-        /* NOTE: not extecuted */
+        /* NOTE: not executed */
         return NULL;
     }
 }
@@ -102,52 +98,66 @@ SEXP r_instrumentr_argument_get_name(SEXP r_argument) {
 }
 
 /********************************************************************************
- * r_promise
+ * promise
  *******************************************************************************/
 
 /* accessor  */
-int instrumentr_argument_is_evaluated(instrumentr_argument_t argument) {
-    return PRVALUE(argument->r_promise) != R_UnboundValue;
+int instrumentr_argument_is_promise(instrumentr_argument_t argument) {
+    return argument->promise_or_value->type == INSTRUMENTR_PROMISE;
 }
 
-SEXP r_instrumentr_argument_is_evaluated(SEXP r_argument) {
+SEXP r_instrumentr_argument_is_promise(SEXP r_argument) {
     instrumentr_argument_t argument = instrumentr_argument_unwrap(r_argument);
-    int result = instrumentr_argument_is_evaluated(argument);
+    int result = instrumentr_argument_is_promise(argument);
     return instrumentr_c_int_to_r_logical(result);
 }
 
-/* accessor  */
-SEXP instrumentr_argument_get_promise(instrumentr_argument_t argument) {
-    return argument->r_promise;
-}
-
-SEXP r_instrumentr_argument_get_promise(SEXP r_argument) {
-    instrumentr_argument_t argument = instrumentr_argument_unwrap(r_argument);
-    return instrumentr_argument_get_promise(argument);
-}
-
-/* accessor  */
-SEXP instrumentr_argument_get_expression(instrumentr_argument_t argument) {
-    return PREXPR(argument->r_promise);
-}
-
-SEXP r_instrumentr_argument_get_expression(SEXP r_argument) {
-    instrumentr_argument_t argument = instrumentr_argument_unwrap(r_argument);
-    return instrumentr_argument_get_expression(argument);
-}
-
-/* accessor  */
-SEXP instrumentr_argument_get_value(instrumentr_argument_t argument) {
-    if (instrumentr_argument_is_evaluated(argument)) {
-        return PRVALUE(argument->r_promise);
+instrumentr_promise_t
+instrumentr_argument_as_promise(instrumentr_argument_t argument) {
+    if (instrumentr_argument_is_promise(argument)) {
+        return (instrumentr_promise_t)(argument->promise_or_value);
     } else {
-        instrumentr_log_error("argument is not evaluated");
-        /* NOTE: not extecuted */
+        instrumentr_log_error("argument is not a promise");
+        /* NOTE: not executed */
         return NULL;
     }
 }
 
-SEXP r_instrumentr_argument_get_value(SEXP r_argument) {
+SEXP r_instrumentr_argument_as_promise(SEXP r_argument) {
     instrumentr_argument_t argument = instrumentr_argument_unwrap(r_argument);
-    return instrumentr_argument_get_value(argument);
+    instrumentr_promise_t promise = instrumentr_argument_as_promise(argument);
+    return instrumentr_promise_wrap(promise);
+}
+
+
+/********************************************************************************
+ * value
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_argument_is_value(instrumentr_argument_t argument) {
+    return argument->promise_or_value->type == INSTRUMENTR_VALUE;
+}
+
+SEXP r_instrumentr_argument_is_value(SEXP r_argument) {
+    instrumentr_argument_t argument = instrumentr_argument_unwrap(r_argument);
+    int result = instrumentr_argument_is_value(argument);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+instrumentr_value_t
+instrumentr_argument_as_value(instrumentr_argument_t argument) {
+    if (instrumentr_argument_is_value(argument)) {
+        return (instrumentr_value_t)(argument->promise_or_value);
+    } else {
+        instrumentr_log_error("argument is not a value");
+        /* NOTE: not executed */
+        return NULL;
+    }
+}
+
+SEXP r_instrumentr_argument_as_value(SEXP r_argument) {
+    instrumentr_argument_t argument = instrumentr_argument_unwrap(r_argument);
+    instrumentr_value_t value = instrumentr_argument_as_value(argument);
+    return instrumentr_value_wrap(value);
 }

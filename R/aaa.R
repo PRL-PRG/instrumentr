@@ -244,3 +244,53 @@ has_default_argument <- function(parameter, ...) {
 is_attached <- function(object) {
     UseMethod("is_attached")
 }
+
+#' @export
+get_sexp <- function(object) {
+    UseMethod("get_sexp")
+}
+
+#' @export
+get_sexp_address <- function(object) {
+    UseMethod("get_sexp_address")
+}
+
+#' @export
+get_sexp_type <- function(object) {
+    UseMethod("get_sexp_type")
+}
+
+#' @export
+is_forced <- function(object) {
+    UseMethod("is_forced")
+}
+
+#' @export
+get_expression <- function(object) {
+    UseMethod("get_expression")
+}
+
+#' @export
+get_value <- function(object) {
+    UseMethod("get_value")
+}
+
+has_name <- function(object) {
+    UseMethod("has_name")
+}
+
+is_value <- function(object) {
+    UseMethod("is_value")
+}
+
+as_value <- function(object) {
+    UseMethod("as_value")
+}
+
+is_promise <- function(object) {
+    UseMethod("is_promise")
+}
+
+as_promise <- function(object) {
+    UseMethod("as_promise")
+}

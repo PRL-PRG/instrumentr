@@ -102,7 +102,7 @@ instrumentr_call_stack_peek(instrumentr_call_stack_t call_stack, int index) {
     if (reverse_index < 0) {
         instrumentr_log_error(
             "attempt to peek beyond the length of call stack");
-        /* NOTE: not extecuted */
+        /* NOTE: not executed */
         return NULL;
     } else {
         return call_stack->calls.data[reverse_index];

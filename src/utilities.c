@@ -8,6 +8,7 @@ SEXP TripleColonSymbol = NULL;
 SEXP DotCallSymbol = NULL;
 SEXP TemporarySymbol = NULL;
 SEXP TemporarySymbolString = NULL;
+SEXP QuoteSymbol = NULL;
 SEXP StateEnvironment = NULL;
 SEXP PackageEnvironment = NULL;
 
@@ -28,6 +29,9 @@ void instrumentr_initialize_utilities(SEXP r_package_environment,
     TemporarySymbol = Rf_install("*instrumentr-tmp*");
 
     TemporarySymbolString = mkString("*instrumentr-tmp*");
+
+    QuoteSymbol = Rf_install("quote");
+
     R_PreserveObject(TemporarySymbolString);
 
     PackageEnvironment = r_package_environment;
@@ -111,6 +115,11 @@ SEXP Rf_list8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
     return q;
 }
 
+SEXP instrumentr_sexp_quote(SEXP r_sexp) {
+    return Rf_lang2(QuoteSymbol, r_sexp);
+}
+
+
 char* instrumentr_duplicate_string(const char* original) {
     if (original == NULL) {
         return NULL;
@@ -125,3 +134,9 @@ char* int_to_string(int value) {
     snprintf(buffer, BUFFER_SIZE, "%d", value);
     return buffer;
 }
+
+char* address_to_string(void* ptr) {
+    snprintf(buffer, BUFFER_SIZE, "%p", ptr);
+    return buffer;
+}
+

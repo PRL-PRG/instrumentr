@@ -1,5 +1,5 @@
 #include "funtab.h"
-#include "sexp.h"
+#include "r_internals.h"
 #include "function.h"
 #include "object.h"
 

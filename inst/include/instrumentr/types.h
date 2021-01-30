@@ -69,6 +69,18 @@ typedef struct instrumentr_parameter_impl_t* instrumentr_parameter_t;
 typedef struct instrumentr_argument_impl_t* instrumentr_argument_t;
 
 /********************************************************************************
+ * promise
+ *******************************************************************************/
+
+typedef struct instrumentr_promise_impl_t* instrumentr_promise_t;
+
+/********************************************************************************
+ * value
+ *******************************************************************************/
+
+typedef struct instrumentr_value_impl_t* instrumentr_value_t;
+
+/********************************************************************************
  * callback
  *******************************************************************************/
 
