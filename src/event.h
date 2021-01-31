@@ -1,0 +1,59 @@
+#ifndef INSTRUMENTR_EVENT_H
+#define INSTRUMENTR_EVENT_H
+
+#include <instrumentr/types.h>
+
+typedef enum {
+    INSTRUMENTR_EVENT_TRACING_INITIALIZATION = 0,
+    INSTRUMENTR_EVENT_TRACING_FINALIZATION,
+    INSTRUMENTR_EVENT_PACKAGE_LOAD,
+    INSTRUMENTR_EVENT_PACKAGE_UNLOAD,
+    INSTRUMENTR_EVENT_PACKAGE_ATTACH,
+    INSTRUMENTR_EVENT_PACKAGE_DETACH,
+    INSTRUMENTR_EVENT_BUILTIN_CALL_ENTRY,
+    INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT,
+    INSTRUMENTR_EVENT_SPECIAL_CALL_ENTRY,
+    INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
+    INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY,
+    INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT,
+    INSTRUMENTR_EVENT_EVAL_ENTRY,
+    INSTRUMENTR_EVENT_EVAL_EXIT,
+    INSTRUMENTR_EVENT_GC_ALLOCATION,
+    INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
+    INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
+    INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
+    INSTRUMENTR_EVENT_VARIABLE_LOOKUP
+} instrumentr_event_t;
+
+#define INSTRUMENTR_EVENT_TRACING_INITIALIZATION_FUNCTION_T tracing_initialization_function_t
+#define INSTRUMENTR_EVENT_TRACING_FINALIZATION_FUNCTION_T tracing_finalization_function_t
+#define INSTRUMENTR_EVENT_PACKAGE_LOAD_FUNCTION_T package_load_function_t
+#define INSTRUMENTR_EVENT_PACKAGE_UNLOAD_FUNCTION_T package_unload_function_t
+#define INSTRUMENTR_EVENT_PACKAGE_ATTACH_FUNCTION_T package_attach_function_t
+#define INSTRUMENTR_EVENT_PACKAGE_DETACH_FUNCTION_T package_detach_function_t
+#define INSTRUMENTR_EVENT_BUILTIN_CALL_ENTRY_FUNCTION_T builtin_call_entry_function_t
+#define INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT_FUNCTION_T builtin_call_exit_function_t
+#define INSTRUMENTR_EVENT_SPECIAL_CALL_ENTRY_FUNCTION_T special_call_entry_function_t
+#define INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT_FUNCTION_T special_call_exit_function_t
+#define INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY_FUNCTION_T closure_call_entry_function_t
+#define INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT_FUNCTION_T closure_call_exit_function_t
+#define INSTRUMENTR_EVENT_EVAL_ENTRY_FUNCTION_T eval_entry_function_t
+#define INSTRUMENTR_EVENT_EVAL_EXIT_FUNCTION_T eval_exit_function_t
+#define INSTRUMENTR_EVENT_GC_ALLOCATION_FUNCTION_T gc_allocation_function_t
+#define INSTRUMENTR_EVENT_VARIABLE_DEFINITION_FUNCTION_T variable_definition_function_t
+#define INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT_FUNCTION_T variable_assignment_function_t
+#define INSTRUMENTR_EVENT_VARIABLE_REMOVAL_FUNCTION_T variable_removal_function_t
+#define INSTRUMENTR_EVENT_VARIABLE_LOOKUP_FUNCTION_T variable_lookup_function_t
+
+#define INSTRUMENTR_EVENT_COUNT 19
+
+int instrumentr_event_get_parameter_count(
+    instrumentr_event_t event);
+
+const char*
+instrumentr_event_to_string(instrumentr_event_t event);
+
+SEXP instrumentr_event_wrap(instrumentr_event_t event);
+instrumentr_event_t instrumentr_event_unwrap(SEXP r_event);
+
+#endif /* INSTRUMENTR_EVENT_H */

@@ -14,7 +14,7 @@ typedef union {
 
 struct instrumentr_callback_impl_t {
     struct instrumentr_object_impl_t object;
-    instrumentr_callback_type_t type;
+    instrumentr_event_t event;
     function_t function;
     int has_r_function;
     int active;
@@ -42,8 +42,8 @@ void instrumentr_callback_finalize(instrumentr_object_t object) {
 
 instrumentr_callback_t
 instrumentr_callback_create(instrumentr_callback_t callback,
-                            instrumentr_callback_type_t type) {
-    callback->type = type;
+                            instrumentr_event_t event) {
+    callback->event = event;
 
     callback->active = 0;
 
@@ -52,13 +52,12 @@ instrumentr_callback_create(instrumentr_callback_t callback,
     return callback;
 }
 
-instrumentr_callback_t
-instrumentr_callback_create_from_r_function(instrumentr_callback_type_t type,
-                                            SEXP r_function) {
-    const char* name = instrumentr_callback_type_get_name(type);
+instrumentr_callback_t instrumentr_callback_create_from_r_function(SEXP r_function,
+                                                                   instrumentr_event_t event) {
+    const char* name = instrumentr_event_to_string(event);
 
     int expected_parameter_count =
-        instrumentr_callback_type_get_parameter_count(type);
+        instrumentr_event_get_parameter_count(event);
 
     int actual_parameter_count = Rf_length(FORMALS(r_function));
 
@@ -82,12 +81,19 @@ instrumentr_callback_create_from_r_function(instrumentr_callback_type_t type,
 
     callback->has_r_function = 1;
 
-    return instrumentr_callback_create(callback, type);
+    return instrumentr_callback_create(callback, event);
 }
 
-instrumentr_callback_t
-instrumentr_callback_create_from_c_function(instrumentr_callback_type_t type,
-                                            void* c_function) {
+SEXP
+r_instrumentr_callback_create_from_r_function(SEXP r_function,
+                                              SEXP r_event) {
+    instrumentr_event_t event = instrumentr_event_unwrap(r_event);
+    instrumentr_callback_t callback = instrumentr_callback_create_from_r_function(r_function, event);
+    return instrumentr_callback_wrap(callback);
+}
+
+instrumentr_callback_t instrumentr_callback_create_from_c_function(void* c_function,
+                                                                   instrumentr_event_t event) {
     instrumentr_object_t object =
         instrumentr_object_create(sizeof(struct instrumentr_callback_impl_t),
                                   INSTRUMENTR_CALLBACK,
@@ -99,46 +105,21 @@ instrumentr_callback_create_from_c_function(instrumentr_callback_type_t type,
 
     callback->has_r_function = 0;
 
-    return instrumentr_callback_create(callback, type);
+    return instrumentr_callback_create(callback, event);
 }
 
-#define CALLBACK_CREATE(TYPE, NAME, ...)                                      \
-    instrumentr_callback_t                                                    \
-        instrumentr_callback_##NAME##_create_from_r_function(                 \
-            SEXP r_function) {                                                \
-        return instrumentr_callback_create_from_r_function(TYPE, r_function); \
-    }                                                                         \
-                                                                              \
-    SEXP r_instrumentr_callback_##NAME##_create_from_r_function(              \
-        SEXP r_function) {                                                    \
-        instrumentr_callback_t callback =                                     \
-            instrumentr_callback_##NAME##_create_from_r_function(r_function); \
-        return instrumentr_callback_wrap(callback);                           \
-    }                                                                         \
-                                                                              \
-    instrumentr_callback_t                                                    \
-        instrumentr_callback_##NAME##_create_from_c_function(                 \
-            NAME##_function_t c_function) {                                   \
-        return instrumentr_callback_create_from_c_function(                   \
-            TYPE, (void*) (c_function));                                      \
-    }                                                                         \
-                                                                              \
-    SEXP r_instrumentr_callback_##NAME##_create_from_c_function(              \
-        SEXP r_c_function) {                                                  \
-        void* c_function =                                                    \
-            instrumentr_r_externalptr_to_c_pointer(r_c_function);             \
-        instrumentr_callback_t callback =                                     \
-            instrumentr_callback_##NAME##_create_from_c_function(c_function); \
-        return instrumentr_callback_wrap(callback);                           \
-    }
+SEXP r_instrumentr_callback_create_from_c_function(SEXP r_c_function, SEXP r_event) {
+    void* c_function = instrumentr_r_externalptr_to_c_pointer(r_c_function);
+    instrumentr_event_t event = instrumentr_event_unwrap(r_event);
+    instrumentr_callback_t callback =
+        instrumentr_callback_create_from_c_function(c_function, event);
+    return instrumentr_callback_wrap(callback);
+}
 
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_CREATE)
-
-#undef CALLBACK_CREATE
 
 /********************************************************************************
- * interop
- *******************************************************************************/
+* interop
+*******************************************************************************/
 
 SEXP instrumentr_callback_wrap(instrumentr_callback_t callback) {
     return instrumentr_object_wrap((instrumentr_object_t)(callback));
@@ -151,51 +132,32 @@ instrumentr_callback_t instrumentr_callback_unwrap(SEXP r_callback) {
 }
 
 /********************************************************************************
- * type
+ * event
  *******************************************************************************/
 
 /* accessor  */
-instrumentr_callback_type_t
-instrumentr_callback_get_type(instrumentr_callback_t callback) {
-    return callback->type;
+instrumentr_event_t
+instrumentr_callback_get_event(instrumentr_callback_t callback) {
+    return callback->event;
 }
 
-SEXP r_instrumentr_callback_get_type(SEXP r_callback) {
-    return r_instrumentr_callback_get_name(r_callback);
-}
-
-#define INSTRUMENTR_GENERATE_DEFINITION_CALLBACK_IS_TYPE(TYPE, NAME, ...) \
-    /* accessor  */                                                       \
-    int instrumentr_callback_is_##NAME(instrumentr_callback_t callback) { \
-        return instrumentr_callback_get_type(callback) == TYPE;           \
-    }                                                                     \
-    SEXP r_instrumentr_callback_is_##NAME(SEXP r_callback) {              \
-        instrumentr_callback_t callback =                                 \
-            instrumentr_callback_unwrap(r_callback);                      \
-        int result = instrumentr_callback_is_##NAME(callback);            \
-        return instrumentr_c_int_to_r_logical(result);                    \
-    }
-
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(
-    INSTRUMENTR_GENERATE_DEFINITION_CALLBACK_IS_TYPE)
-
-#undef INSTRUMENTR_GENERATE_DEFINITION_CALLBACK_IS_TYPE
-
-/********************************************************************************
- * name
- *******************************************************************************/
-
-/* accessor  */
-const char* instrumentr_callback_get_name(instrumentr_callback_t callback) {
-    instrumentr_callback_type_t callback_type =
-        instrumentr_callback_get_type(callback);
-    return instrumentr_callback_type_get_name(callback_type);
-}
-
-SEXP r_instrumentr_callback_get_name(SEXP r_callback) {
+SEXP r_instrumentr_callback_get_event(SEXP r_callback) {
     instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
-    const char* name = instrumentr_callback_get_name(callback);
-    return instrumentr_c_string_to_r_character(name);
+    instrumentr_event_t event = instrumentr_callback_get_event(callback);
+    return instrumentr_event_wrap(event);
+}
+
+instrumentr_event_t
+instrumentr_callback_handles_event(instrumentr_callback_t callback, instrumentr_event_t event) {
+    return instrumentr_callback_get_event(callback) == event;
+}
+
+SEXP
+r_instrumentr_callback_handles_event(SEXP r_callback, SEXP r_event) {
+    instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
+    instrumentr_event_t event = instrumentr_callback_get_event(callback);
+    int result = instrumentr_callback_handles_event(callback, event);
+    return instrumentr_c_int_to_r_logical(result);
 }
 
 /********************************************************************************
@@ -204,9 +166,9 @@ SEXP r_instrumentr_callback_get_name(SEXP r_callback) {
 
 /* accessor  */
 int instrumentr_callback_get_parameter_count(instrumentr_callback_t callback) {
-    instrumentr_callback_type_t callback_type =
-        instrumentr_callback_get_type(callback);
-    return instrumentr_callback_type_get_parameter_count(callback_type);
+    instrumentr_event_t event =
+        instrumentr_callback_get_event(callback);
+    return instrumentr_event_get_parameter_count(event);
 }
 
 SEXP r_instrumentr_callback_get_parameter_count(SEXP r_callback) {
@@ -235,8 +197,9 @@ SEXP instrumentr_callback_get_r_function(instrumentr_callback_t callback) {
     if (instrumentr_callback_has_r_function(callback)) {
         return callback->function.r;
     } else {
-        const char* type_str = instrumentr_callback_get_name(callback);
-        instrumentr_log_error("R function not set for callback %s", type_str);
+        instrumentr_event_t event = instrumentr_callback_get_event(callback);
+        const char* event_str = instrumentr_event_to_string(event);
+        instrumentr_log_error("R function not set for callback %s", event_str);
         /* NOTE: not executed */
         return NULL;
     }
@@ -254,7 +217,7 @@ SEXP r_instrumentr_callback_get_r_function(SEXP r_callback) {
 
 /* accessor  */
 int instrumentr_callback_has_c_function(instrumentr_callback_t callback) {
-    return !callback->has_r_function;
+    return !instrumentr_callback_has_r_function(callback);
 }
 
 SEXP r_instrumentr_callback_has_c_function(SEXP r_callback) {
@@ -266,8 +229,9 @@ SEXP r_instrumentr_callback_has_c_function(SEXP r_callback) {
 /* accessor  */
 void* instrumentr_callback_get_c_function(instrumentr_callback_t callback) {
     if (instrumentr_callback_has_r_function(callback)) {
-        const char* type_str = instrumentr_callback_get_name(callback);
-        instrumentr_log_error("C function not set for callback %s", type_str);
+        instrumentr_event_t event = instrumentr_callback_get_event(callback);
+        const char* event_str = instrumentr_event_to_string(event);
+        instrumentr_log_error("C function not set for callback %s", event_str);
         /* NOTE: not executed */
         return NULL;
     } else {

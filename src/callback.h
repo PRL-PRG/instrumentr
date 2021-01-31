@@ -3,65 +3,47 @@
 
 #include <instrumentr/types.h>
 #include <instrumentr/Rincludes.h>
-#include "callback_type.h"
+#include "event.h"
 #include "exec_stats.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
-#define CALLBACK_CREATE(TYPE, NAME, ...)                                       \
-    instrumentr_callback_t                                                     \
-        instrumentr_callback_##NAME##_create_from_r_function(SEXP r_function); \
-                                                                               \
-    SEXP r_instrumentr_callback_##NAME##_create_from_r_function(               \
-        SEXP r_function);                                                      \
-                                                                               \
-    instrumentr_callback_t                                                     \
-        instrumentr_callback_##NAME##_create_from_c_function(                  \
-            NAME##_function_t c_function);                                     \
-                                                                               \
-    SEXP r_instrumentr_callback_##NAME##_create_from_c_function(               \
-        SEXP r_c_function);
+instrumentr_callback_t
+instrumentr_callback_create_from_r_function(SEXP r_function,
+                                            instrumentr_event_t event);
 
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_CREATE)
+SEXP r_instrumentr_callback_create_from_r_function(SEXP r_event,
+                                                   SEXP r_function);
 
-#undef CALLBACK_CREATE
+instrumentr_callback_t
+instrumentr_callback_create_from_c_function(void* c_function,
+                                            instrumentr_event_t event);
+
+SEXP r_instrumentr_callback_create_from_c_function(SEXP r_c_function,
+                                                   SEXP r_event);
 
 /********************************************************************************
  * interop
  *******************************************************************************/
-
 SEXP instrumentr_callback_wrap(instrumentr_callback_t callback);
 
 instrumentr_callback_t instrumentr_callback_unwrap(SEXP r_callback);
 
 /********************************************************************************
- * type
+ * event
  *******************************************************************************/
 
 /* accessor  */
-instrumentr_callback_type_t
-instrumentr_callback_get_type(instrumentr_callback_t callback);
-SEXP r_instrumentr_callback_get_type(SEXP r_callback);
+instrumentr_event_t
+instrumentr_callback_get_event(instrumentr_callback_t callback);
+SEXP r_instrumentr_callback_get_event(SEXP r_callback);
 
-/* accessor  */
-#define CALLBACK_IS_TYPE(TYPE, NAME, ...)                                \
-    int instrumentr_callback_is_##NAME(instrumentr_callback_t callback); \
-                                                                         \
-    SEXP r_instrumentr_callback_is_##NAME(SEXP r_callback);
-
-INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_IS_TYPE)
-
-#undef CALLBACK_IS_TYPE
-
-/********************************************************************************
- * name
- *******************************************************************************/
-
-/* accessor  */
-const char* instrumentr_callback_get_name(instrumentr_callback_t callback);
-SEXP r_instrumentr_callback_get_name(SEXP r_callback);
+instrumentr_event_t
+instrumentr_callback_handles_event(instrumentr_callback_t callback,
+                                   instrumentr_event_t event);
+SEXP r_instrumentr_callback_handles_event(SEXP r_callback, SEXP r_event);
 
 /********************************************************************************
  * parameter_count

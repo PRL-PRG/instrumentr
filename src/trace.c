@@ -29,21 +29,22 @@
 #define INVOKE_CALLBACK(NAME, TRACER, INIT, CCALL, RCALL, FIN)               \
     TRACER;                                                                  \
     INIT;                                                                    \
-    if (instrumentr_tracer_has_callback_##NAME(tracer)) {                    \
+    if (instrumentr_tracer_has_callback(tracer, NAME)) {                     \
         instrumentr_callback_t callback =                                    \
-            instrumentr_tracer_get_callback_##NAME(tracer);                  \
+            instrumentr_tracer_get_callback(tracer, NAME);                   \
                                                                              \
         clock_t begin = clock();                                             \
                                                                              \
         initialize_callback_invocation(tracer, callback);                    \
                                                                              \
         if (instrumentr_callback_has_c_function(callback)) {                 \
-            NAME##_function_t cfun = (NAME##_function_t)(                    \
+            NAME##_FUNCTION_T cfun = (NAME##_FUNCTION_T)(                    \
                 instrumentr_callback_get_c_function(callback));              \
             CCALL;                                                           \
         } else {                                                             \
             SEXP r_callback = instrumentr_callback_wrap(callback);           \
-            const char* name = instrumentr_callback_get_name(callback);      \
+            instrumentr_event_t event = instrumentr_callback_get_event(callback); \
+            const char* name = instrumentr_event_to_string(event);      \
             SEXP r_name = Rf_install(name);                                  \
             SEXP r_environment = instrumentr_tracer_get_environment(tracer); \
             RCALL;                                                           \
@@ -61,7 +62,7 @@
 
 #define UPDATE_EXEC_STATS(NAME, tracer, callback, time)              \
     instrumentr_exec_stats_t tracer_exec_stats =                     \
-        instrumentr_tracer_get_callback_##NAME##_exec_stats(tracer); \
+        instrumentr_tracer_get_callback_exec_stats(tracer, NAME);    \
     instrumentr_exec_stats_update(tracer_exec_stats, time);          \
     instrumentr_exec_stats_t callback_exec_stats =                   \
         instrumentr_callback_get_exec_stats(callback);               \
@@ -109,7 +110,7 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
 
 SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer, SEXP r_application) {
     INVOKE_CALLBACK(/* NAME */
-                    tracing_initialization,
+                    INSTRUMENTR_EVENT_TRACING_INITIALIZATION,
                     /* TRACER  */
                     UNWRAP(tracer),
                     // instrumentr_tracer_enable(tracer),
@@ -130,7 +131,7 @@ SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer, SEXP r_applicatio
 
 SEXP r_instrumentr_trace_tracing_finalization(SEXP r_tracer, SEXP r_application) {
     INVOKE_CALLBACK(/* NAME */
-                    tracing_finalization,
+                    INSTRUMENTR_EVENT_TRACING_FINALIZATION,
                     /* TRACER  */
                     UNWRAP(tracer),
                     /* INIT */
@@ -153,7 +154,7 @@ SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
                                       SEXP r_package) {
     INVOKE_CALLBACK(
         /* NAME */
-        package_load,
+        INSTRUMENTR_EVENT_PACKAGE_LOAD,
         /* TRACER */
         UNWRAP(tracer),
         /* INIT */
@@ -176,7 +177,7 @@ SEXP r_instrumentr_trace_package_unload(SEXP r_tracer,
                                         SEXP r_package) {
     INVOKE_CALLBACK(
         /* NAME */
-        package_unload,
+        INSTRUMENTR_EVENT_PACKAGE_UNLOAD,
         /* TRACER */
         UNWRAP(tracer),
         /* INIT  */
@@ -198,7 +199,7 @@ SEXP r_instrumentr_trace_package_attach(SEXP r_tracer,
                                         SEXP r_package) {
     INVOKE_CALLBACK(
         /* NAME */
-        package_attach,
+        INSTRUMENTR_EVENT_PACKAGE_ATTACH,
         /* TRACER */
         UNWRAP(tracer),
         /* INIT */
@@ -221,7 +222,7 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
                                         SEXP r_package) {
     INVOKE_CALLBACK(
         /* NAME */
-        package_detach,
+        INSTRUMENTR_EVENT_PACKAGE_DETACH,
         /* TRACER */
         UNWRAP(tracer),
         /* INIT */
@@ -234,8 +235,7 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
             Rf_lang5(r_name, r_tracer, r_callback, r_application, r_package),
             r_environment),
         /* FIN */
-        NOTRACE(instrumentr_package_detach(package))
-    );
+        NOTRACE(instrumentr_package_detach(package)));
 
     return R_NilValue;
 }
@@ -306,7 +306,7 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
-                    builtin_call_entry,
+                    INSTRUMENTR_EVENT_BUILTIN_CALL_ENTRY,
                     /* TRACER */,
                     /* INIT  */,
                     /* CCALL */
@@ -333,7 +333,7 @@ void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
-                    builtin_call_exit,
+                    INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT,
                     /* TRACER */,
                     /* INIT  */,
                     /* CCALL */
@@ -360,7 +360,7 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
-                    special_call_entry,
+                    INSTRUMENTR_EVENT_SPECIAL_CALL_ENTRY,
                     /* TRACER */,
                     /* INIT  */,
                     /* CCALL */
@@ -387,7 +387,7 @@ void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
-                    special_call_exit,
+                    INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
                     /* TRACER */,
                     /* INIT  */,
                     /* CCALL */
@@ -414,7 +414,7 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
                                  SEXP r_args,
                                  SEXP r_rho,
                                  dyntrace_dispatch_t dispatch) {
-    INVOKE_CALL_ENTRY_CALLBACK(closure_call_entry);
+    INVOKE_CALL_ENTRY_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY);
 }
 
 void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
@@ -424,7 +424,7 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
                                 SEXP r_rho,
                                 dyntrace_dispatch_t dispatch,
                                 SEXP r_result) {
-    INVOKE_CALL_EXIT_CALLBACK(closure_call_exit);
+    INVOKE_CALL_EXIT_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT);
 }
 
 //SEXP instrumentr_trace_non_closure_call(dyntracer_t* dyntracer,
@@ -499,7 +499,7 @@ void dyntrace_eval_entry(dyntracer_t* dyntracer,
                          SEXP r_rho) {
     INVOKE_CALLBACK(
         /* NAME  */
-        eval_entry,
+        INSTRUMENTR_EVENT_EVAL_ENTRY,
         /* TRACER */
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer),
@@ -527,7 +527,7 @@ void dyntrace_eval_exit(dyntracer_t* dyntracer,
                         SEXP r_result) {
     INVOKE_CALLBACK(
         /* NAME  */
-        eval_exit,
+        INSTRUMENTR_EVENT_EVAL_EXIT,
         /* TRACER */
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer),
@@ -553,7 +553,7 @@ void dyntrace_eval_exit(dyntracer_t* dyntracer,
 void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
     INVOKE_CALLBACK(
         /* NAME */
-        gc_allocation,
+        INSTRUMENTR_EVENT_GC_ALLOCATION,
         /* TRACER */
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer),
@@ -576,7 +576,7 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
                                   const SEXP r_value,
                                   const SEXP r_rho) {
     INVOKE_CALLBACK(
-        variable_definition,
+        INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer),
         NOTRACE(instrumentr_application_t application =
@@ -600,7 +600,7 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
                                   const SEXP r_value,
                                   const SEXP r_rho) {
     INVOKE_CALLBACK(
-        variable_assignment,
+        INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer),
         NOTRACE(instrumentr_application_t application =
@@ -623,7 +623,7 @@ void dyntrace_variable_removal(dyntracer_t* dyntracer,
                                const SEXP r_symbol,
                                const SEXP r_rho) {
     INVOKE_CALLBACK(
-        variable_removal,
+        INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer),
         NOTRACE(instrumentr_application_t application =
@@ -643,7 +643,7 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
                               const SEXP r_value,
                               const SEXP r_rho) {
     INVOKE_CALLBACK(
-        variable_lookup,
+        INSTRUMENTR_EVENT_VARIABLE_LOOKUP,
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer),
         NOTRACE(instrumentr_application_t application =

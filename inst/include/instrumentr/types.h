@@ -223,8 +223,9 @@ typedef void (*variable_lookup_function_t)(
     SEXP r_rho);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
-    MACRO(INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_initialization, ARGUMENT)         \
-    MACRO(INSTRUMENTR_CALLBACK_TRACING_EXIT, tracing_finalization, ARGUMENT)           \
+    MACRO(                                                                     \
+        INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_initialization, ARGUMENT)  \
+    MACRO(INSTRUMENTR_CALLBACK_TRACING_EXIT, tracing_finalization, ARGUMENT)   \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_LOAD, package_load, ARGUMENT)           \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_UNLOAD, package_unload, ARGUMENT)       \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_ATTACH, package_attach, ARGUMENT)       \

@@ -46,12 +46,12 @@ tracing_finalization_callback <- function(tracer, callback, application) {
     print(names(get_packages(application)))
 }
 
-tracer <- create_tracer(tracing_initialization_callback = tracing_initialization_callback,
-                        tracing_finalization_callback = tracing_finalization_callback,
-                        package_load_callback = package_load_callback,
-                        package_unload_callback = package_unload_callback,
-                        package_attach_callback = package_attach_callback,
-                        package_detach_callback = package_detach_callback)
+tracer <- create_tracer(tracing_initialization = tracing_initialization_callback,
+                        tracing_finalization = tracing_finalization_callback,
+                        package_load = package_load_callback,
+                        package_unload = package_unload_callback,
+                        package_attach = package_attach_callback,
+                        package_detach = package_detach_callback)
 ```
 
 ```{r trace_code}

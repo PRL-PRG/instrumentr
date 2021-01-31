@@ -35,7 +35,7 @@
 #' @family package api
 #'
 #' @examples
-#' tracer <- create_tracer(package_attach_callback =
+#' tracer <- create_tracer(package_attach =
 #'     function(tracer, callback, application, package) {
 #'         cat("Name           : ", get_name(package), "\n")
 #'         cat("Directory      : ", get_directory(package), "\n")

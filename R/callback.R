@@ -8,6 +8,24 @@ NULL
 
 #' @export
 #' @rdname callback
+is_callback <- function(object) {
+    inherits(object, "instrumentr_callback")
+}
+
+#' @export
+#' @rdname callback
+create_callback.function <- function(object, event) { # nolint
+    .Call(C_instrumentr_callback_create_from_r_function, object, event)
+}
+
+#' @export
+#' @rdname callback
+create_callback.externalptr <- function(object, event) { # nolint
+    .Call(C_instrumentr_callback_create_from_c_function, object, event)
+}
+
+#' @export
+#' @rdname callback
 get_c_function.instrumentr_callback <- function(object, ...) { # nolint
     .Call(C_instrumentr_callback_get_c_function, object)
 }

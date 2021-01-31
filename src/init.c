@@ -59,35 +59,26 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_tracer_enable, 1),
     DECLARE_BINDING(instrumentr_tracer_disable, 1),
     DECLARE_BINDING(instrumentr_tracer_reinstate, 1),
-    DECLARE_BINDING(instrumentr_tracer_get_traced_package_count, 1),
-    DECLARE_BINDING(instrumentr_tracer_get_traced_function_count, 2),
-    DECLARE_BINDING(instrumentr_tracer_is_package_traced, 2),
-    DECLARE_BINDING(instrumentr_tracer_is_function_traced, 3),
-    DECLARE_BINDING(instrumentr_tracer_get_traced_packages, 1),
-    DECLARE_BINDING(instrumentr_tracer_get_traced_functions, 2),
-    DECLARE_BINDING(instrumentr_tracer_trace_package, 2),
-    DECLARE_BINDING(instrumentr_tracer_trace_function, 3),
+    DECLARE_BINDING(instrumentr_tracer_has_callback, 2),
+    DECLARE_BINDING(instrumentr_tracer_get_callback, 2),
+    DECLARE_BINDING(instrumentr_tracer_set_callback, 2),
+    DECLARE_BINDING(instrumentr_tracer_remove_callback, 2),
+    DECLARE_BINDING(instrumentr_tracer_get_tracing_exec_stats, 1),
+    DECLARE_BINDING(instrumentr_tracer_get_callback_exec_stats, 2),
+    DECLARE_BINDING(instrumentr_tracer_get_exec_stats, 1),
 
-#define TRACER_CALLBACK_INTERFACE(TYPE, NAME, ...)                                                           \
-    DECLARE_BINDING(instrumentr_tracer_has_callback_##NAME, 1),      \
-    DECLARE_BINDING(instrumentr_tracer_get_callback_##NAME, 1),      \
-    DECLARE_BINDING(instrumentr_tracer_set_callback_##NAME, 2),      \
-    DECLARE_BINDING(instrumentr_tracer_remove_callback_##NAME, 1),
-
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_CALLBACK_INTERFACE)
-
-#undef TRACER_CALLBACK_INTERFACE
-
-        DECLARE_BINDING(instrumentr_tracer_get_tracing_exec_stats, 1), \
-
-#define TRACER_EXEC_STATS_INTERFACE(TYPE, NAME, ...) \
-    DECLARE_BINDING(instrumentr_tracer_get_callback_##NAME##_exec_stats, 1),
-
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(TRACER_EXEC_STATS_INTERFACE)
-
-#undef TRACER_EXEC_STATS_INTERFACE
-
-        DECLARE_BINDING(instrumentr_tracer_get_exec_stats, 1),
+    /* callback */
+    DECLARE_BINDING(instrumentr_callback_create_from_r_function, 2),
+    DECLARE_BINDING(instrumentr_callback_create_from_c_function, 2),
+    DECLARE_BINDING(instrumentr_callback_get_event, 1),
+    DECLARE_BINDING(instrumentr_callback_handles_event, 2),
+    DECLARE_BINDING(instrumentr_callback_get_parameter_count, 1),
+    DECLARE_BINDING(instrumentr_callback_has_r_function, 1),
+    DECLARE_BINDING(instrumentr_callback_get_r_function, 1),
+    DECLARE_BINDING(instrumentr_callback_has_c_function, 1),
+    DECLARE_BINDING(instrumentr_callback_get_c_function, 1),
+    DECLARE_BINDING(instrumentr_callback_is_active, 1),
+    DECLARE_BINDING(instrumentr_callback_get_exec_stats, 1),
 
     /* application */
     DECLARE_BINDING(instrumentr_application_create, 5),
@@ -173,22 +164,6 @@ const R_CallMethodDef CallEntries[] = {
     /* call_stack */
     DECLARE_BINDING(instrumentr_call_stack_get_size, 1),
     DECLARE_BINDING(instrumentr_call_stack_peek, 2),
-
-    /* callback */
-    DECLARE_BINDING(instrumentr_callback_has_r_function, 1),
-    DECLARE_BINDING(instrumentr_callback_has_c_function, 1),
-    DECLARE_BINDING(instrumentr_callback_get_r_function, 1),
-    DECLARE_BINDING(instrumentr_callback_get_c_function, 1),
-    DECLARE_BINDING(instrumentr_callback_is_active, 1),
-    DECLARE_BINDING(instrumentr_callback_get_exec_stats, 1),
-
-#define CALLBACK_CREATE(TYPE, NAME, ...)                                      \
-    DECLARE_BINDING(instrumentr_callback_##NAME##_create_from_r_function, 1), \
-    DECLARE_BINDING(instrumentr_callback_##NAME##_create_from_c_function, 1),
-
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(CALLBACK_CREATE)
-
-#undef CALLBACK_CREATE
 
     {NULL, NULL, 0}
 };

@@ -43,36 +43,28 @@ to_string.call <- function(object, ...) {
 #' @export
 to_string.instrumentr_tracer <- function(object, ...) {
 
-    get_callback_representation <- function(name, fun) {
-        callback <- fun(object)
+    get_callback_representation <- function(event) {
         representation <- ""
-        if (is_defined(callback)) {
-            representation <- sprintf("%s=%s,\n", name, to_string(callback))
+        if(has_callback(object, event)) {
+            callback <- get_callback(object, event)
+            representation <- sprintf("%s=%s,\n", event, to_string(callback))
         }
         representation
     }
 
-    get_field_representation <- function(name, fun, check = is_defined, sep = ", ") {
-        get_value_representation(name, fun(object), check, sep)
-    }
-
-    get_value_representation <- function(name, value, check, sep) {
-        sprintf("%s=%s%s", name, to_string(value), sep)
-    }
-
     representation <-
-      sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s%s%s",
-              get_field_representation("tracing_initialization_callback", get_tracing_initialization_callback),
-              get_field_representation("tracing_finalization_callback", get_tracing_finalization_callback),
-              get_field_representation("package_load_callback", get_package_load_callback),
-              get_field_representation("package_unload_callback", get_package_unload_callback),
-              get_field_representation("package_attach_callback", get_package_attach_callback),
-              get_field_representation("package_detach_callback", get_package_detach_callback),
-              get_field_representation("gc_allocation_callback", get_gc_allocation_callback),
-              get_field_representation("variable_definition_callback", get_variable_definition_callback),
-              get_field_representation("variable_assignment_callback", get_variable_assignment_callback),
-              get_field_representation("variable_removal_callback", get_variable_removal_callback),
-              get_field_representation("variable_lookup_callback", get_variable_lookup_callback))
+      sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s",
+              get_callback_representation(EVENT_TRACING_INITIALIZATION),
+              get_callback_representation(EVENT_TRACING_FINALIZATION),
+              get_callback_representation(EVENT_PACKAGE_LOAD),
+              get_callback_representation(EVENT_PACKAGE_UNLOAD),
+              get_callback_representation(EVENT_PACKAGE_ATTACH),
+              get_callback_representation(EVENT_PACKAGE_DETACH),
+              get_callback_representation(EVENT_GC_ALLOCATION),
+              get_callback_representation(EVENT_VARIABLE_DEFINITION),
+              get_callback_representation(EVENT_VARIABLE_ASSIGNMENT),
+              get_callback_representation(EVENT_VARIABLE_REMOVAL),
+              get_callback_representation(EVENT_VARIABLE_LOOKUP))
 
     representation
 }

@@ -275,22 +275,53 @@ get_value <- function(object) {
     UseMethod("get_value")
 }
 
+#' @export
 has_name <- function(object) {
     UseMethod("has_name")
 }
 
+#' @export
 is_value <- function(object) {
     UseMethod("is_value")
 }
 
+#' @export
 as_value <- function(object) {
     UseMethod("as_value")
 }
 
+#' @export
 is_promise <- function(object) {
     UseMethod("is_promise")
 }
 
+#' @export
 as_promise <- function(object) {
     UseMethod("as_promise")
 }
+
+#' @export
+create_callback <- function(object, event) {
+    UseMethod("create_callback")
+}
+
+#' @export
+get_callback <- function(tracer, event) {
+    UseMethod("get_callback")
+}
+
+#' @export
+set_callback <- function(tracer, callback) {
+    UseMethod("set_callback")
+}
+
+#' @export
+has_callback <- function(tracer, event) { # nolint
+    UseMethod("has_callback")
+}
+
+#' @export
+remove_callback <- function(tracer, event) { # nolint
+    UseMethod("remove_callback")
+}
+

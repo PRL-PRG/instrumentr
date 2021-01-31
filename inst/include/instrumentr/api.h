@@ -342,7 +342,7 @@
  PROMISE API
  *******************************************************************************/
 
-#define INSTRUMENTR_PROMISE_API_MAP(MACRO)                              \
+#define INSTRUMENTR_PROMISE_API_MAP(MACRO)                                    \
     MACRO(instrumentr_promise_is_forced, int, instrumentr_promise_t promise)  \
     MACRO(r_instrumentr_promise_is_forced, SEXP, SEXP r_promise)              \
     MACRO(instrumentr_promise_get_expression,                                 \
@@ -375,10 +375,18 @@
     MACRO(instrumentr_callback_wrap, SEXP, instrumentr_callback_t callback)   \
     MACRO(                                                                    \
         instrumentr_callback_unwrap, instrumentr_callback_t, SEXP r_callback) \
-    MACRO(instrumentr_callback_get_name,                                      \
-          const char*,                                                        \
+    MACRO(instrumentr_callback_get_event,                                     \
+          instrumentr_event_t,                                                \
           instrumentr_callback_t callback)                                    \
-    MACRO(r_instrumentr_callback_get_name, SEXP, SEXP r_callback)             \
+    MACRO(r_instrumentr_callback_get_event, SEXP, SEXP r_callback)            \
+    MACRO(instrumentr_callback_handles_event,                                 \
+          instrumentr_event_t,                                                \
+          instrumentr_callback_t callback,                                    \
+          instrumentr_event_t event)                                          \
+    MACRO(r_instrumentr_callback_handles_event,                               \
+          SEXP,                                                               \
+          SEXP r_callback,                                                    \
+          SEXP r_event)                                                       \
     MACRO(instrumentr_callback_get_parameter_count,                           \
           int,                                                                \
           instrumentr_callback_t callback)                                    \
@@ -401,48 +409,20 @@
     MACRO(r_instrumentr_callback_get_c_function, SEXP, SEXP r_callback)       \
     MACRO(                                                                    \
         instrumentr_callback_is_active, int, instrumentr_callback_t callback) \
-    MACRO(r_instrumentr_callback_is_active, SEXP, SEXP r_callback)
+    MACRO(r_instrumentr_callback_is_active, SEXP, SEXP r_callback)            \
+    MACRO(                                                                    \
+        instrumentr_callback_activate, void, instrumentr_callback_t callback) \
+    MACRO(instrumentr_callback_deactivate,                                    \
+          void,                                                               \
+          instrumentr_callback_t callback)                                    \
+    MACRO(instrumentr_callback_get_exec_stats,                                \
+          instrumentr_exec_stats_t,                                           \
+          instrumentr_callback_t callback)                                    \
+    MACRO(r_instrumentr_callback_get_exec_stats, SEXP, SEXP r_callback)
 
 /********************************************************************************
  TRACER API
  *******************************************************************************/
-
-#define INSTRUMENTR_TRACER_CALLBACK_API(TYPE, NAME, MACRO)                    \
-    MACRO(instrumentr_callback_##NAME##_create_from_r_function,               \
-          instrumentr_callback_t,                                             \
-          SEXP r_function)                                                    \
-    MACRO(r_instrumentr_callback_##NAME##_create_from_r_function,             \
-          SEXP,                                                               \
-          SEXP r_function)                                                    \
-    MACRO(instrumentr_callback_##NAME##_create_from_c_function,               \
-          instrumentr_callback_t,                                             \
-          NAME##_function_t c_function)                                       \
-    MACRO(r_instrumentr_callback_##NAME##_create_from_c_function,             \
-          SEXP,                                                               \
-          SEXP r_c_function)                                                  \
-    MACRO(                                                                    \
-        instrumentr_callback_is_##NAME, int, instrumentr_callback_t callback) \
-    MACRO(r_instrumentr_callback_is_##NAME, SEXP, SEXP r_callback)            \
-    MACRO(instrumentr_tracer_has_callback_##NAME,                             \
-          int,                                                                \
-          instrumentr_tracer_t tracer)                                        \
-    MACRO(r_instrumentr_tracer_has_callback_##NAME, SEXP, SEXP r_tracer)      \
-    MACRO(instrumentr_tracer_get_callback_##NAME,                             \
-          instrumentr_callback_t,                                             \
-          instrumentr_tracer_t tracer)                                        \
-    MACRO(r_instrumentr_tracer_get_callback_##NAME, SEXP, SEXP r_tracer)      \
-    MACRO(instrumentr_tracer_set_callback_##NAME,                             \
-          void,                                                               \
-          instrumentr_tracer_t tracer,                                        \
-          instrumentr_callback_t callback)                                    \
-    MACRO(r_instrumentr_tracer_set_callback_##NAME,                           \
-          SEXP,                                                               \
-          SEXP r_tracer,                                                      \
-          SEXP r_callback)                                                    \
-    MACRO(instrumentr_tracer_remove_callback_##NAME,                          \
-          void,                                                               \
-          instrumentr_tracer_t tracer)                                        \
-    MACRO(r_instrumentr_tracer_remove_callback_##NAME, SEXP, SEXP r_tracer)
 
 #define INSTRUMENTR_TRACER_API_MAP(MACRO)                                      \
     MACRO(instrumentr_tracer_create, instrumentr_tracer_t, )                   \
@@ -477,59 +457,47 @@
     MACRO(r_instrumentr_tracer_disable, SEXP, SEXP r_tracer)                   \
     MACRO(instrumentr_tracer_reinstate, void, instrumentr_tracer_t tracer)     \
     MACRO(r_instrumentr_tracer_reinstate, SEXP, SEXP r_tracer)                 \
-    MACRO(instrumentr_tracer_get_traced_package_count,                         \
+    MACRO(instrumentr_tracer_has_callback,                                     \
           int,                                                                 \
+          instrumentr_tracer_t tracer,                                         \
+          instrumentr_event_t event)                                           \
+    MACRO(                                                                     \
+        r_instrumentr_tracer_has_callback, SEXP, SEXP r_tracer, SEXP r_event)  \
+    MACRO(instrumentr_tracer_get_callback,                                     \
+          instrumentr_callback_t,                                              \
+          instrumentr_tracer_t tracer,                                         \
+          instrumentr_event_t event)                                           \
+    MACRO(                                                                     \
+        r_instrumentr_tracer_get_callback, SEXP, SEXP r_tracer, SEXP r_event)  \
+    MACRO(instrumentr_tracer_set_callback,                                     \
+          void,                                                                \
+          instrumentr_tracer_t tracer,                                         \
+          instrumentr_callback_t callback)                                     \
+    MACRO(r_instrumentr_tracer_set_callback,                                   \
+          SEXP,                                                                \
+          SEXP r_tracer,                                                       \
+          SEXP r_callback)                                                     \
+    MACRO(instrumentr_tracer_remove_callback,                                  \
+          void,                                                                \
+          instrumentr_tracer_t tracer,                                         \
+          instrumentr_event_t event)                                           \
+    MACRO(r_instrumentr_tracer_remove_callback,                                \
+          SEXP,                                                                \
+          SEXP r_tracer,                                                       \
+          SEXP r_event)                                                        \
+    MACRO(instrumentr_tracer_get_tracing_exec_stats,                           \
+          instrumentr_exec_stats_t,                                            \
           instrumentr_tracer_t tracer)                                         \
-    MACRO(r_instrumentr_tracer_get_traced_package_count, SEXP, SEXP r_tracer)  \
-    MACRO(instrumentr_tracer_get_traced_function_count,                        \
-          int,                                                                 \
+    MACRO(r_instrumentr_tracer_get_tracing_exec_stats, SEXP, SEXP r_tracer)    \
+    MACRO(instrumentr_tracer_get_callback_exec_stats,                          \
+          instrumentr_exec_stats_t,                                            \
           instrumentr_tracer_t tracer,                                         \
-          const char* package_name)                                            \
-    MACRO(r_instrumentr_tracer_get_traced_function_count,                      \
+          instrumentr_event_t event)                                           \
+    MACRO(r_instrumentr_tracer_get_callback_exec_stats,                        \
           SEXP,                                                                \
           SEXP r_tracer,                                                       \
-          SEXP r_package_name)                                                 \
-    MACRO(instrumentr_tracer_is_package_traced,                                \
-          int,                                                                 \
-          instrumentr_tracer_t tracer,                                         \
-          const char* name)                                                    \
-    MACRO(r_instrumentr_tracer_is_package_traced,                              \
-          SEXP,                                                                \
-          SEXP r_tracer,                                                       \
-          SEXP r_package_name)                                                 \
-    MACRO(instrumentr_tracer_is_function_traced,                               \
-          int,                                                                 \
-          instrumentr_tracer_t tracer,                                         \
-          const char* package_name,                                            \
-          const char* function_name)                                           \
-    MACRO(r_instrumentr_tracer_is_function_traced,                             \
-          SEXP,                                                                \
-          SEXP r_tracer,                                                       \
-          SEXP r_package_name,                                                 \
-          SEXP r_function_name)                                                \
-    MACRO(r_instrumentr_tracer_get_traced_packages, SEXP, SEXP r_tracer)       \
-    MACRO(r_instrumentr_tracer_get_traced_functions,                           \
-          SEXP,                                                                \
-          SEXP r_tracer,                                                       \
-          SEXP r_package_name)                                                 \
-    MACRO(instrumentr_tracer_trace_package,                                    \
-          void,                                                                \
-          instrumentr_tracer_t tracer,                                         \
-          const char* package_name)                                            \
-    MACRO(r_instrumentr_tracer_trace_package,                                  \
-          SEXP,                                                                \
-          SEXP r_tracer,                                                       \
-          SEXP r_package_name)                                                 \
-    MACRO(instrumentr_tracer_trace_function,                                   \
-          void,                                                                \
-          instrumentr_tracer_t tracer,                                         \
-          const char* package_name,                                            \
-          const char* function_name)                                           \
-    MACRO(r_instrumentr_tracer_trace_function,                                 \
-          SEXP,                                                                \
-          SEXP r_tracer,                                                       \
-          SEXP r_package_name,                                                 \
-          SEXP r_function_name)
+          SEXP r_event)                                                        \
+    MACRO(r_instrumentr_tracer_get_exec_stats, SEXP, SEXP r_tracer)
 
 #define INSTRUMENTR_API_MAP(MACRO)         \
     INSTRUMENTR_INTEROP_API_MAP(MACRO)     \
@@ -547,34 +515,24 @@
 #define INSTRUMENTR_API_DEFINER(FUNCTION, OUTPUT_TYPE, ...) \
     OUTPUT_TYPE (*FUNCTION)(__VA_ARGS__);
 
-#define INSTRUMENTR_DEFINE_API()                                           \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_DEFINER)                           \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
-                                          INSTRUMENTR_API_DEFINER)
+#define INSTRUMENTR_DEFINE_API() INSTRUMENTR_API_MAP(INSTRUMENTR_API_DEFINER)
 
 #define INSTRUMENTR_API_DECLARATOR(FUNCTION, OUTPUT_TYPE, ...) \
     extern OUTPUT_TYPE (*FUNCTION)(__VA_ARGS__);
 
-#define INSTRUMENTR_DECLARE_API()                                          \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_DECLARATOR)                        \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
-                                          INSTRUMENTR_API_DECLARATOR)
+#define INSTRUMENTR_DECLARE_API() \
+    INSTRUMENTR_API_MAP(INSTRUMENTR_API_DECLARATOR)
 
 #define INSTRUMENTR_API_INITIALIZER(FUNCTION, OUTPUT_TYPE, ...) \
     FUNCTION = (OUTPUT_TYPE(*)(__VA_ARGS__))(                   \
         R_GetCCallable("instrumentr", #FUNCTION));
 
-#define INSTRUMENTR_INITIALIZE_API()                                       \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_INITIALIZER)                       \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
-                                          INSTRUMENTR_API_INITIALIZER)
+#define INSTRUMENTR_INITIALIZE_API() \
+    INSTRUMENTR_API_MAP(INSTRUMENTR_API_INITIALIZER)
 
 #define INSTRUMENTR_API_EXPORTER(FUNCTION, OUTPUT_TYPE, ...) \
     R_RegisterCCallable("instrumentr", #FUNCTION, (DL_FUNC)(FUNCTION));
 
-#define INSTRUMENTR_EXPORT_API()                                           \
-    INSTRUMENTR_API_MAP(INSTRUMENTR_API_EXPORTER)                          \
-    INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(INSTRUMENTR_TRACER_CALLBACK_API, \
-                                          INSTRUMENTR_API_EXPORTER)
+#define INSTRUMENTR_EXPORT_API() INSTRUMENTR_API_MAP(INSTRUMENTR_API_EXPORTER)
 
 #endif /* INSTRUMENTR_API_H */

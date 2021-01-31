@@ -40,63 +40,11 @@ reference:
     - create_tracer
     - get_environment.instrumentr_tracer
     - get_exec_stats.instrumentr_tracer
-    - get_tracing_initialization_callback.instrumentr_tracer
-    - get_tracing_finalization_callback.instrumentr_tracer
-    - get_closure_call_entry_callback.instrumentr_tracer
-    - get_closure_call_exit_callback.instrumentr_tracer
-    - get_builtin_call_entry_callback.instrumentr_tracer
-    - get_builtin_call_exit_callback.instrumentr_tracer
-    - get_special_call_entry_callback.instrumentr_tracer
-    - get_special_call_exit_callback.instrumentr_tracer
-    - get_eval_entry_callback.instrumentr_tracer
-    - get_eval_exit_callback.instrumentr_tracer
-    - get_gc_allocation_callback.instrumentr_tracer
-    - get_package_attach_callback.instrumentr_tracer
-    - get_package_detach_callback.instrumentr_tracer
-    - get_package_load_callback.instrumentr_tracer
-    - get_package_unload_callback.instrumentr_tracer
-    - get_variable_assignment_callback.instrumentr_tracer
-    - get_variable_definition_callback.instrumentr_tracer
-    - get_variable_lookup_callback.instrumentr_tracer
-    - get_variable_removal_callback.instrumentr_tracer
-    - set_tracing_initialization_callback.instrumentr_tracer
-    - set_tracing_finalization_callback.instrumentr_tracer
-    - set_closure_call_entry_callback.instrumentr_tracer
-    - set_closure_call_exit_callback.instrumentr_tracer
-    - set_builtin_call_entry_callback.instrumentr_tracer
-    - set_builtin_call_exit_callback.instrumentr_tracer
-    - set_special_call_entry_callback.instrumentr_tracer
-    - set_special_call_exit_callback.instrumentr_tracer
-    - set_eval_entry_callback.instrumentr_tracer
-    - set_eval_exit_callback.instrumentr_tracer
-    - set_gc_allocation_callback.instrumentr_tracer
-    - set_package_attach_callback.instrumentr_tracer
-    - set_package_detach_callback.instrumentr_tracer
-    - set_package_load_callback.instrumentr_tracer
-    - set_package_unload_callback.instrumentr_tracer
-    - set_variable_assignment_callback.instrumentr_tracer
-    - set_variable_definition_callback.instrumentr_tracer
-    - set_variable_lookup_callback.instrumentr_tracer
-    - set_variable_removal_callback.instrumentr_tracer
-    - has_tracing_initialization_callback.instrumentr_tracer
-    - has_tracing_finalization_callback.instrumentr_tracer
-    - has_closure_call_entry_callback.instrumentr_tracer
-    - has_closure_call_exit_callback.instrumentr_tracer
-    - has_builtin_call_entry_callback.instrumentr_tracer
-    - has_builtin_call_exit_callback.instrumentr_tracer
-    - has_special_call_entry_callback.instrumentr_tracer
-    - has_special_call_exit_callback.instrumentr_tracer
-    - has_eval_entry_callback.instrumentr_tracer
-    - has_eval_exit_callback.instrumentr_tracer
-    - has_gc_allocation_callback.instrumentr_tracer
-    - has_package_attach_callback.instrumentr_tracer
-    - has_package_detach_callback.instrumentr_tracer
-    - has_package_load_callback.instrumentr_tracer
-    - has_package_unload_callback.instrumentr_tracer
-    - has_variable_assignment_callback.instrumentr_tracer
-    - has_variable_definition_callback.instrumentr_tracer
-    - has_variable_lookup_callback.instrumentr_tracer
-    - has_variable_removal_callback.instrumentr_tracer
+    - has_callback.instrumentr_tracer
+    - get_callback.instrumentr_tracer
+    - set_callback.instrumentr_tracer
+    - remove_callback.instrumentr_tracer
+    - get_exec_stats.instrumentr_tracer
 
 - title: "Callback"
 - contents:
@@ -163,9 +111,9 @@ reference:
     - has_name.instrumentr_argument
     - get_name.instrumentr_argument
     - is_value.instrumentr_argument
-    - get_value.instrumentr_argument
+    - as_value.instrumentr_argument
     - is_promise.instrumentr_argument
-    - get_promise.instrumentr_argument
+    - as_promise.instrumentr_argument
 
 - title: "Promise"
 - contents:
@@ -182,7 +130,7 @@ reference:
 - title: "Helpers"
 - contents:
     - to_string
-    - print.instrumentr_object
+    - print
 
 authors:
   Aviral Goel:
