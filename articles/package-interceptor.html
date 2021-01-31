@@ -84,29 +84,26 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(instrumentr)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>S3 methods <span class="st">'get_expression.instrumentr_argument'</span>,</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="op">&gt;</span><span class="st"> 'get_value.instrumentr_argument'</span>, <span class="st">'is_evaluated.instrumentr_argument'</span>,</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="op">&gt;</span><span class="st"> 'print.instrumentr_argument'</span> were declared <span class="cf">in</span> NAMESPACE but not found</span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&gt;</span><span class="st"> </span>── Setup ───────────────────────────────────────────────────────────────────────</span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="op">&gt;</span><span class="st"> </span>• R Version                    <span class="dv">4</span>.<span class="fl">0.3</span> (<span class="dv">2020-10-10</span>)</span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="op">&gt;</span><span class="st"> </span>• instrumentr Version          <span class="fl">0.1</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="op">&gt;</span><span class="st"> </span>• Working Directory            <span class="op">/</span>Users<span class="op">/</span>runner<span class="op">/</span>work<span class="op">/</span>instrumentr<span class="op">/</span>instrumentr<span class="op">/</span>vignettes</span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="op">&gt;</span><span class="st"> </span>• Environment Variables</span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>USER                       runner</span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>HOME                       <span class="op">/</span>Users<span class="op">/</span>runner</span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_HOME                     <span class="op">/</span>Library<span class="op">/</span>Frameworks<span class="op">/</span>R.framework<span class="op">/</span>Resources</span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_INCLUDE_DIR              <span class="op">/</span>Library<span class="op">/</span>Frameworks<span class="op">/</span>R.framework<span class="op">/</span>Resources<span class="op">/</span>include</span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_LIBS_USER                <span class="op">/</span>Users<span class="op">/</span>runner<span class="op">/</span>work<span class="op">/</span>_temp<span class="op">/</span>Library</span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_LIBS_SITE                </span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_SESSION_TMPDIR           <span class="op">/</span>var<span class="op">/</span>folders<span class="op">/</span><span class="dv">24</span><span class="op">/</span>8k48jl6d249_n_qfxwsl6xvm0000gn<span class="op">/</span>T<span class="op">/</span><span class="er">/</span>RtmpmnozRu</span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_KEEP_PKG_SOURCE          </span>
-<span id="cb1-20"><a href="#cb1-20"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_KEEP_PKG_PARSE_DATA      </span>
-<span id="cb1-21"><a href="#cb1-21"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_ENABLE_JIT               </span>
-<span id="cb1-22"><a href="#cb1-22"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_DISABLE_BYTECODE         </span>
-<span id="cb1-23"><a href="#cb1-23"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>OMP_NUM_THREADS            </span>
-<span id="cb1-24"><a href="#cb1-24"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;</span><span class="st"> </span>── Setup ───────────────────────────────────────────────────────────────────────</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="op">&gt;</span><span class="st"> </span>• R Version                    <span class="dv">4</span>.<span class="fl">0.3</span> (<span class="dv">2020-10-10</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="op">&gt;</span><span class="st"> </span>• instrumentr Version          <span class="fl">0.1</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="op">&gt;</span><span class="st"> </span>• Working Directory            <span class="op">/</span>Users<span class="op">/</span>runner<span class="op">/</span>work<span class="op">/</span>instrumentr<span class="op">/</span>instrumentr<span class="op">/</span>vignettes</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="op">&gt;</span><span class="st"> </span>• Environment Variables</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>USER                       runner</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>HOME                       <span class="op">/</span>Users<span class="op">/</span>runner</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_HOME                     <span class="op">/</span>Library<span class="op">/</span>Frameworks<span class="op">/</span>R.framework<span class="op">/</span>Resources</span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_INCLUDE_DIR              <span class="op">/</span>Library<span class="op">/</span>Frameworks<span class="op">/</span>R.framework<span class="op">/</span>Resources<span class="op">/</span>include</span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_LIBS_USER                <span class="op">/</span>Users<span class="op">/</span>runner<span class="op">/</span>work<span class="op">/</span>_temp<span class="op">/</span>Library</span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_LIBS_SITE                </span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_SESSION_TMPDIR           <span class="op">/</span>var<span class="op">/</span>folders<span class="op">/</span><span class="dv">24</span><span class="op">/</span>8k48jl6d249_n_qfxwsl6xvm0000gn<span class="op">/</span>T<span class="op">/</span><span class="er">/</span>Rtmpvou3YO</span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_KEEP_PKG_SOURCE          </span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_KEEP_PKG_PARSE_DATA      </span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_ENABLE_JIT               </span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>R_DISABLE_BYTECODE         </span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="op">&gt;</span><span class="st">  </span><span class="op">-</span><span class="st">  </span>OMP_NUM_THREADS            </span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="op">&gt;</span><span class="st"> </span>────────────────────────────────────────────────────────────────────────────────</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">package_load_callback</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tracer</span>, <span class="va">callback</span>, <span class="va">application</span>, <span class="va">package</span><span class="op">)</span> <span class="op">{</span>
@@ -174,7 +171,7 @@
 <span id="cb3-31"><a href="#cb3-31"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">179</span> functions from grDevices</span>
 <span id="cb3-32"><a href="#cb3-32"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">125</span> functions from graphics</span>
 <span id="cb3-33"><a href="#cb3-33"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">903</span> functions from stats</span>
-<span id="cb3-34"><a href="#cb3-34"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">400</span> functions from instrumentr</span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">408</span> functions from instrumentr</span>
 <span id="cb3-35"><a href="#cb3-35"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">39</span> functions from rprojroot</span>
 <span id="cb3-36"><a href="#cb3-36"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">103</span> functions from crayon</span>
 <span id="cb3-37"><a href="#cb3-37"></a><span class="op">&gt;</span><span class="st"> </span>Added <span class="dv">55</span> functions from digest</span>
@@ -246,21 +243,21 @@
 <span id="cb3-103"><a href="#cb3-103"></a></span>
 <span id="cb3-104"><a href="#cb3-104"></a><span class="kw">get_exec_stats</span>(tracer)</span>
 <span id="cb3-105"><a href="#cb3-105"></a><span class="op">&gt;</span><span class="st">                 </span>callback execution_count minimum_time maximum_time average_time</span>
-<span id="cb3-106"><a href="#cb3-106"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span> tracing_initialization               <span class="dv">1</span>     <span class="fl">0.000100</span>     <span class="fl">0.000100</span>  <span class="fl">0.000100000</span></span>
-<span id="cb3-107"><a href="#cb3-107"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>   tracing_finalization               <span class="dv">1</span>     <span class="fl">0.000356</span>     <span class="fl">0.000356</span>  <span class="fl">0.000356000</span></span>
-<span id="cb3-108"><a href="#cb3-108"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">3</span>           package_load              <span class="dv">11</span>     <span class="fl">0.000037</span>     <span class="fl">0.011316</span>  <span class="fl">0.001066182</span></span>
-<span id="cb3-109"><a href="#cb3-109"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span>         package_unload               <span class="dv">1</span>     <span class="fl">0.000028</span>     <span class="fl">0.000028</span>  <span class="fl">0.000028000</span></span>
-<span id="cb3-110"><a href="#cb3-110"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>         package_attach               <span class="dv">1</span>     <span class="fl">0.000045</span>     <span class="fl">0.000045</span>  <span class="fl">0.000045000</span></span>
-<span id="cb3-111"><a href="#cb3-111"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">6</span>         package_detach               <span class="dv">1</span>     <span class="fl">0.000038</span>     <span class="fl">0.000038</span>  <span class="fl">0.000038000</span></span>
-<span id="cb3-112"><a href="#cb3-112"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">7</span>                tracing               <span class="dv">1</span>     <span class="fl">1.002340</span>     <span class="fl">1.002340</span>  <span class="fl">1.002340000</span></span>
+<span id="cb3-106"><a href="#cb3-106"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span> tracing_initialization               <span class="dv">1</span>     <span class="fl">0.000145</span>     <span class="fl">0.000145</span> <span class="fl">0.0001450000</span></span>
+<span id="cb3-107"><a href="#cb3-107"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>   tracing_finalization               <span class="dv">1</span>     <span class="fl">0.000389</span>     <span class="fl">0.000389</span> <span class="fl">0.0003890000</span></span>
+<span id="cb3-108"><a href="#cb3-108"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">3</span>           package_load              <span class="dv">11</span>     <span class="fl">0.000028</span>     <span class="fl">0.002070</span> <span class="fl">0.0002211818</span></span>
+<span id="cb3-109"><a href="#cb3-109"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span>         package_unload               <span class="dv">1</span>     <span class="fl">0.000025</span>     <span class="fl">0.000025</span> <span class="fl">0.0000250000</span></span>
+<span id="cb3-110"><a href="#cb3-110"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>         package_attach               <span class="dv">1</span>     <span class="fl">0.000039</span>     <span class="fl">0.000039</span> <span class="fl">0.0000390000</span></span>
+<span id="cb3-111"><a href="#cb3-111"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">6</span>         package_detach               <span class="dv">1</span>     <span class="fl">0.000037</span>     <span class="fl">0.000037</span> <span class="fl">0.0000370000</span></span>
+<span id="cb3-112"><a href="#cb3-112"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">7</span>                tracing               <span class="dv">1</span>     <span class="fl">0.908949</span>     <span class="fl">0.908949</span> <span class="fl">0.9089490000</span></span>
 <span id="cb3-113"><a href="#cb3-113"></a><span class="op">&gt;</span><span class="st">   </span>total_time</span>
-<span id="cb3-114"><a href="#cb3-114"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>   <span class="fl">0.000100</span></span>
-<span id="cb3-115"><a href="#cb3-115"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>   <span class="fl">0.000356</span></span>
-<span id="cb3-116"><a href="#cb3-116"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">3</span>   <span class="fl">0.011728</span></span>
-<span id="cb3-117"><a href="#cb3-117"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span>   <span class="fl">0.000028</span></span>
-<span id="cb3-118"><a href="#cb3-118"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>   <span class="fl">0.000045</span></span>
-<span id="cb3-119"><a href="#cb3-119"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">6</span>   <span class="fl">0.000038</span></span>
-<span id="cb3-120"><a href="#cb3-120"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">7</span>   <span class="fl">1.002340</span></span>
+<span id="cb3-114"><a href="#cb3-114"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>   <span class="fl">0.000145</span></span>
+<span id="cb3-115"><a href="#cb3-115"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>   <span class="fl">0.000389</span></span>
+<span id="cb3-116"><a href="#cb3-116"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">3</span>   <span class="fl">0.002433</span></span>
+<span id="cb3-117"><a href="#cb3-117"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span>   <span class="fl">0.000025</span></span>
+<span id="cb3-118"><a href="#cb3-118"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>   <span class="fl">0.000039</span></span>
+<span id="cb3-119"><a href="#cb3-119"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">6</span>   <span class="fl">0.000037</span></span>
+<span id="cb3-120"><a href="#cb3-120"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">7</span>   <span class="fl">0.908949</span></span>
 <span id="cb3-121"><a href="#cb3-121"></a></span>
 <span id="cb3-122"><a href="#cb3-122"></a><span class="co">#get_exec_stats(get_application_load_callback(tracer))</span></span>
 <span id="cb3-123"><a href="#cb3-123"></a><span class="co">#get_exec_stats(get_application_unload_callback(tracer))</span></span>
