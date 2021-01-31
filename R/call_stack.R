@@ -1,10 +1,5 @@
 
 #' @export
-print.instrumentr_call_stack <- function(x, ...) {
-    cat(to_string(x), "\n")
-}
-
-#' @export
 get_size.instrumentr_call_stack <- function(call_stack, ...) { # nolint
     .Call(C_instrumentr_call_stack_get_size, call_stack)
 }

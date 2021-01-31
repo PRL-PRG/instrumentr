@@ -1,6 +1,13 @@
-
+#' API for tracer objects
+#'
+#' @description
+#' TODO
+#'
+#' @name tracer
+NULL
 
 #' @export
+#' @rdname create_tracer
 create_tracer <- function(tracing_initialization_callback,
                           tracing_finalization_callback,
 
@@ -121,16 +128,13 @@ create_tracer <- function(tracing_initialization_callback,
 }
 
 #' @export
+#' @rdname tracer
 get_environment.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_get_environment, object)
 }
 
 #' @export
-print.instrumentr_tracer <- function(x, ...) {
-    cat(to_string(x), "\n")
-}
-
-#' @export
+#' @rdname tracer
 get_exec_stats.instrumentr_tracer <- function(object, ...) {
     .Call(C_instrumentr_tracer_get_exec_stats, object)
 }

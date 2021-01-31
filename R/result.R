@@ -9,11 +9,6 @@ create_result.error <- function(object, source, ...) {
 }
 
 #' @export
-print.instrumentr_result <- function(x, ...) {
-    cat(to_string(x), "\n")
-}
-
-#' @export
 get_error.instrumentr_result <- function(object, ...) {
     object$error
 }

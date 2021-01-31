@@ -35,6 +35,7 @@ generate_get_api <- function(callback_spec) {
         "}}",
         "",
         "#' @export",
+        "#' @rdname tracer",
         "get_{NAME}_callback.instrumentr_tracer <- function(tracer, ...) {{ # nolint",
         "    .Call(C_instrumentr_tracer_get_callback_{NAME}, tracer)",
         "}}",
@@ -51,6 +52,7 @@ generate_set_api <- function(callback_spec) {
         "}}",
         "",
         "#' @export",
+        "#' @rdname tracer",
         "set_{NAME}_callback.instrumentr_tracer <- function(tracer, callback, ...) {{ # nolint",
         "",
         "    if (!is_instrumentr_{NAME}_callback(callback)) {{",
@@ -76,6 +78,7 @@ generate_has_api <- function(callback_spec) {
         "}}",
         "",
         "#' @export",
+        "#' @rdname tracer",
         "has_{NAME}_callback.instrumentr_tracer <- function(object, ...) {{ # nolint",
         "    .Call(C_instrumentr_tracer_has_callback_{NAME}, object)",
         "}}",
@@ -95,6 +98,7 @@ generate_create_api <- function(callback_spec) {
         "}}",
         "",
         "#' @export",
+        "#' @rdname tracer",
         "create_{NAME}_callback.function <- function(object) {{ # nolint",
         "    stopifnot(is_closure(object) && has_parameters(object, {PARAMETER_COUNT}))",
         "",
@@ -102,6 +106,7 @@ generate_create_api <- function(callback_spec) {
         "}}",
         "",
         "#' @export",
+        "#' @rdname tracer",
         "create_{NAME}_callback.externalptr <- function(object) {{ # nolint",
         "    .Call(C_instrumentr_callback_{NAME}_create_from_c_function, object)",
         "}}",
@@ -114,6 +119,7 @@ generate_create_api <- function(callback_spec) {
 generate_is_api <- function(callback_spec) {
 
     str_glue(
+        "#' @rdname callback",
         "is_instrumentr_{NAME}_callback <- function(object) {{ # nolint",
         "    inherits(object, 'instrumentr_{NAME}_callback')",
         "}}",

@@ -136,11 +136,6 @@ create_application <- function(name, directory, code, environment, frame_positio
     .Call(C_instrumentr_application_create, name, directory, code, environment, frame_position)
 }
 
-#' @export
-print.instrumentr_application <- function(x, ...) {
-    cat(to_string(x), "\n")
-}
-
 add_package <- function(object, package, ...) {
     UseMethod("add_package")
 }

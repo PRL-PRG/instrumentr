@@ -1,5 +1,13 @@
+#' API for tracing code
+#'
+#' @description
+#' TODO
+#'
+#' @name trace
+NULL
 
 #' @export
+#' @rdname trace
 trace_code <- function(tracer, code, environment = .GlobalEnv, quote = TRUE, ...) {
     UseMethod("trace_code")
 }
@@ -74,6 +82,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
 }
 
 #' @export
+#' @rdname trace
 trace_file <- function(tracer, file, environment = .GlobalEnv, ...) {
     UseMethod("trace_file")
 }
@@ -86,6 +95,7 @@ trace_file.instrumentr_tracer <- function(tracer, file, environment = .GlobalEnv
 }
 
 #' @export
+#' @rdname trace
 trace_text <- function(tracer, text, environment = .GlobalEnv, ...) {
     UseMethod("trace_text")
 }
@@ -98,6 +108,7 @@ trace_text.instrumentr_tracer <- function(tracer, text, environment = .GlobalEnv
 }
 
 #' @export
+#' @rdname trace
 with_tracing_disabled <- function(tracer, code) {
 
     .Call(C_instrumentr_tracer_disable, tracer)
@@ -108,6 +119,7 @@ with_tracing_disabled <- function(tracer, code) {
 }
 
 #' @export
+#' @rdname trace
 with_tracing_enabled <- function(tracer, code) {
 
     on.exit(.Call(C_instrumentr_tracer_reinstate, tracer))

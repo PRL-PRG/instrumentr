@@ -198,7 +198,6 @@ void R_init_instrumentr(DllInfo* dll) {
     R_useDynamicSymbols(dll, FALSE);
 
     INSTRUMENTR_EXPORT_API()
-
 }
 
 void R_unload_instrumentr(DllInfo* info) {

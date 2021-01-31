@@ -61,15 +61,13 @@ to_string.instrumentr_tracer <- function(object, ...) {
     }
 
     representation <-
-      sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+      sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s%s%s",
               get_field_representation("tracing_initialization_callback", get_tracing_initialization_callback),
               get_field_representation("tracing_finalization_callback", get_tracing_finalization_callback),
               get_field_representation("package_load_callback", get_package_load_callback),
               get_field_representation("package_unload_callback", get_package_unload_callback),
               get_field_representation("package_attach_callback", get_package_attach_callback),
               get_field_representation("package_detach_callback", get_package_detach_callback),
-              get_field_representation("function_attach_callback", get_function_attach_callback),
-              get_field_representation("function_detach_callback", get_function_detach_callback),
               get_field_representation("gc_allocation_callback", get_gc_allocation_callback),
               get_field_representation("variable_definition_callback", get_variable_definition_callback),
               get_field_representation("variable_assignment_callback", get_variable_assignment_callback),

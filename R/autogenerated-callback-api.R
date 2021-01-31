@@ -10,6 +10,7 @@ get_tracing_initialization_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_tracing_initialization_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_tracing_initialization, tracer)
 }
@@ -22,6 +23,7 @@ set_tracing_initialization_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_tracing_initialization_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_tracing_initialization_callback(callback)) {
@@ -41,6 +43,7 @@ has_tracing_initialization_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_tracing_initialization_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_tracing_initialization, object)
 }
@@ -53,6 +56,7 @@ create_tracing_initialization_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_tracing_initialization_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 2))
 
@@ -60,12 +64,14 @@ create_tracing_initialization_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_tracing_initialization_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_tracing_initialization_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_tracing_initialization_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_tracing_initialization_callback')
 }
@@ -83,6 +89,7 @@ get_tracing_finalization_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_tracing_finalization_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_tracing_finalization, tracer)
 }
@@ -95,6 +102,7 @@ set_tracing_finalization_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_tracing_finalization_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_tracing_finalization_callback(callback)) {
@@ -114,6 +122,7 @@ has_tracing_finalization_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_tracing_finalization_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_tracing_finalization, object)
 }
@@ -126,6 +135,7 @@ create_tracing_finalization_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_tracing_finalization_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 2))
 
@@ -133,12 +143,14 @@ create_tracing_finalization_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_tracing_finalization_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_tracing_finalization_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_tracing_finalization_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_tracing_finalization_callback')
 }
@@ -156,6 +168,7 @@ get_closure_call_entry_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_closure_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_closure_call_entry, tracer)
 }
@@ -168,6 +181,7 @@ set_closure_call_entry_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_closure_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_closure_call_entry_callback(callback)) {
@@ -187,6 +201,7 @@ has_closure_call_entry_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_closure_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_closure_call_entry, object)
 }
@@ -199,6 +214,7 @@ create_closure_call_entry_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_closure_call_entry_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 6))
 
@@ -206,12 +222,14 @@ create_closure_call_entry_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_closure_call_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_closure_call_entry_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_closure_call_entry_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_closure_call_entry_callback')
 }
@@ -229,6 +247,7 @@ get_closure_call_exit_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_closure_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_closure_call_exit, tracer)
 }
@@ -241,6 +260,7 @@ set_closure_call_exit_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_closure_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_closure_call_exit_callback(callback)) {
@@ -260,6 +280,7 @@ has_closure_call_exit_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_closure_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_closure_call_exit, object)
 }
@@ -272,6 +293,7 @@ create_closure_call_exit_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_closure_call_exit_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 6))
 
@@ -279,12 +301,14 @@ create_closure_call_exit_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_closure_call_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_closure_call_exit_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_closure_call_exit_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_closure_call_exit_callback')
 }
@@ -302,6 +326,7 @@ get_builtin_call_entry_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_builtin_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_builtin_call_entry, tracer)
 }
@@ -314,6 +339,7 @@ set_builtin_call_entry_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_builtin_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_builtin_call_entry_callback(callback)) {
@@ -333,6 +359,7 @@ has_builtin_call_entry_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_builtin_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_builtin_call_entry, object)
 }
@@ -345,6 +372,7 @@ create_builtin_call_entry_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_builtin_call_entry_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 6))
 
@@ -352,12 +380,14 @@ create_builtin_call_entry_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_builtin_call_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_builtin_call_entry_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_builtin_call_entry_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_builtin_call_entry_callback')
 }
@@ -375,6 +405,7 @@ get_builtin_call_exit_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_builtin_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_builtin_call_exit, tracer)
 }
@@ -387,6 +418,7 @@ set_builtin_call_exit_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_builtin_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_builtin_call_exit_callback(callback)) {
@@ -406,6 +438,7 @@ has_builtin_call_exit_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_builtin_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_builtin_call_exit, object)
 }
@@ -418,6 +451,7 @@ create_builtin_call_exit_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_builtin_call_exit_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 6))
 
@@ -425,12 +459,14 @@ create_builtin_call_exit_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_builtin_call_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_builtin_call_exit_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_builtin_call_exit_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_builtin_call_exit_callback')
 }
@@ -448,6 +484,7 @@ get_special_call_entry_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_special_call_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_special_call_entry, tracer)
 }
@@ -460,6 +497,7 @@ set_special_call_entry_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_special_call_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_special_call_entry_callback(callback)) {
@@ -479,6 +517,7 @@ has_special_call_entry_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_special_call_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_special_call_entry, object)
 }
@@ -491,6 +530,7 @@ create_special_call_entry_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_special_call_entry_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 6))
 
@@ -498,12 +538,14 @@ create_special_call_entry_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_special_call_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_special_call_entry_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_special_call_entry_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_special_call_entry_callback')
 }
@@ -521,6 +563,7 @@ get_special_call_exit_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_special_call_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_special_call_exit, tracer)
 }
@@ -533,6 +576,7 @@ set_special_call_exit_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_special_call_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_special_call_exit_callback(callback)) {
@@ -552,6 +596,7 @@ has_special_call_exit_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_special_call_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_special_call_exit, object)
 }
@@ -564,6 +609,7 @@ create_special_call_exit_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_special_call_exit_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 6))
 
@@ -571,12 +617,14 @@ create_special_call_exit_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_special_call_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_special_call_exit_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_special_call_exit_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_special_call_exit_callback')
 }
@@ -594,6 +642,7 @@ get_eval_entry_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_eval_entry_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_eval_entry, tracer)
 }
@@ -606,6 +655,7 @@ set_eval_entry_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_eval_entry_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_eval_entry_callback(callback)) {
@@ -625,6 +675,7 @@ has_eval_entry_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_eval_entry_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_eval_entry, object)
 }
@@ -637,6 +688,7 @@ create_eval_entry_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_eval_entry_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 2))
 
@@ -644,12 +696,14 @@ create_eval_entry_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_eval_entry_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_eval_entry_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_eval_entry_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_eval_entry_callback')
 }
@@ -667,6 +721,7 @@ get_eval_exit_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_eval_exit_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_eval_exit, tracer)
 }
@@ -679,6 +734,7 @@ set_eval_exit_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_eval_exit_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_eval_exit_callback(callback)) {
@@ -698,6 +754,7 @@ has_eval_exit_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_eval_exit_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_eval_exit, object)
 }
@@ -710,6 +767,7 @@ create_eval_exit_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_eval_exit_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 2))
 
@@ -717,12 +775,14 @@ create_eval_exit_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_eval_exit_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_eval_exit_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_eval_exit_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_eval_exit_callback')
 }
@@ -740,6 +800,7 @@ get_gc_allocation_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_gc_allocation_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_gc_allocation, tracer)
 }
@@ -752,6 +813,7 @@ set_gc_allocation_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_gc_allocation_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_gc_allocation_callback(callback)) {
@@ -771,6 +833,7 @@ has_gc_allocation_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_gc_allocation_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_gc_allocation, object)
 }
@@ -783,6 +846,7 @@ create_gc_allocation_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_gc_allocation_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 1))
 
@@ -790,12 +854,14 @@ create_gc_allocation_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_gc_allocation_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_gc_allocation_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_gc_allocation_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_gc_allocation_callback')
 }
@@ -813,6 +879,7 @@ get_package_attach_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_package_attach_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_package_attach, tracer)
 }
@@ -825,6 +892,7 @@ set_package_attach_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_package_attach_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_package_attach_callback(callback)) {
@@ -844,6 +912,7 @@ has_package_attach_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_package_attach_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_package_attach, object)
 }
@@ -856,6 +925,7 @@ create_package_attach_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_attach_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
@@ -863,12 +933,14 @@ create_package_attach_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_attach_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_attach_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_package_attach_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_package_attach_callback')
 }
@@ -886,6 +958,7 @@ get_package_detach_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_package_detach_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_package_detach, tracer)
 }
@@ -898,6 +971,7 @@ set_package_detach_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_package_detach_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_package_detach_callback(callback)) {
@@ -917,6 +991,7 @@ has_package_detach_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_package_detach_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_package_detach, object)
 }
@@ -929,6 +1004,7 @@ create_package_detach_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_detach_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
@@ -936,12 +1012,14 @@ create_package_detach_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_detach_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_detach_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_package_detach_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_package_detach_callback')
 }
@@ -959,6 +1037,7 @@ get_package_load_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_package_load_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_package_load, tracer)
 }
@@ -971,6 +1050,7 @@ set_package_load_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_package_load_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_package_load_callback(callback)) {
@@ -990,6 +1070,7 @@ has_package_load_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_package_load_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_package_load, object)
 }
@@ -1002,6 +1083,7 @@ create_package_load_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_load_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
@@ -1009,12 +1091,14 @@ create_package_load_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_load_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_load_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_package_load_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_package_load_callback')
 }
@@ -1032,6 +1116,7 @@ get_package_unload_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_package_unload_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_package_unload, tracer)
 }
@@ -1044,6 +1129,7 @@ set_package_unload_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_package_unload_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_package_unload_callback(callback)) {
@@ -1063,6 +1149,7 @@ has_package_unload_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_package_unload_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_package_unload, object)
 }
@@ -1075,6 +1162,7 @@ create_package_unload_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_unload_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
@@ -1082,12 +1170,14 @@ create_package_unload_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_package_unload_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_package_unload_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_package_unload_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_package_unload_callback')
 }
@@ -1105,6 +1195,7 @@ get_variable_assignment_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_variable_assignment_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_variable_assignment, tracer)
 }
@@ -1117,6 +1208,7 @@ set_variable_assignment_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_variable_assignment_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_variable_assignment_callback(callback)) {
@@ -1136,6 +1228,7 @@ has_variable_assignment_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_variable_assignment_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_variable_assignment, object)
 }
@@ -1148,6 +1241,7 @@ create_variable_assignment_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_assignment_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
@@ -1155,12 +1249,14 @@ create_variable_assignment_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_assignment_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_assignment_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_variable_assignment_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_variable_assignment_callback')
 }
@@ -1178,6 +1274,7 @@ get_variable_definition_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_variable_definition_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_variable_definition, tracer)
 }
@@ -1190,6 +1287,7 @@ set_variable_definition_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_variable_definition_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_variable_definition_callback(callback)) {
@@ -1209,6 +1307,7 @@ has_variable_definition_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_variable_definition_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_variable_definition, object)
 }
@@ -1221,6 +1320,7 @@ create_variable_definition_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_definition_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
@@ -1228,12 +1328,14 @@ create_variable_definition_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_definition_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_definition_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_variable_definition_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_variable_definition_callback')
 }
@@ -1251,6 +1353,7 @@ get_variable_lookup_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_variable_lookup_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_variable_lookup, tracer)
 }
@@ -1263,6 +1366,7 @@ set_variable_lookup_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_variable_lookup_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_variable_lookup_callback(callback)) {
@@ -1282,6 +1386,7 @@ has_variable_lookup_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_variable_lookup_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_variable_lookup, object)
 }
@@ -1294,6 +1399,7 @@ create_variable_lookup_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_lookup_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 3))
 
@@ -1301,12 +1407,14 @@ create_variable_lookup_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_lookup_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_lookup_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_variable_lookup_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_variable_lookup_callback')
 }
@@ -1324,6 +1432,7 @@ get_variable_removal_callback <- function(tracer, ...) {
 }
 
 #' @export
+#' @rdname tracer
 get_variable_removal_callback.instrumentr_tracer <- function(tracer, ...) { # nolint
     .Call(C_instrumentr_tracer_get_callback_variable_removal, tracer)
 }
@@ -1336,6 +1445,7 @@ set_variable_removal_callback <- function(tracer, callback, ...) {
 }
 
 #' @export
+#' @rdname tracer
 set_variable_removal_callback.instrumentr_tracer <- function(tracer, callback, ...) { # nolint
 
     if (!is_instrumentr_variable_removal_callback(callback)) {
@@ -1355,6 +1465,7 @@ has_variable_removal_callback <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 has_variable_removal_callback.instrumentr_tracer <- function(object, ...) { # nolint
     .Call(C_instrumentr_tracer_has_callback_variable_removal, object)
 }
@@ -1367,6 +1478,7 @@ create_variable_removal_callback <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_removal_callback.function <- function(object) { # nolint
     stopifnot(is_closure(object) && has_parameters(object, 2))
 
@@ -1374,12 +1486,14 @@ create_variable_removal_callback.function <- function(object) { # nolint
 }
 
 #' @export
+#' @rdname tracer
 create_variable_removal_callback.externalptr <- function(object) { # nolint
     .Call(C_instrumentr_callback_variable_removal_create_from_c_function, object)
 }
 
 ## IS ##########################################################################
 
+#' @rdname callback
 is_instrumentr_variable_removal_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_variable_removal_callback')
 }

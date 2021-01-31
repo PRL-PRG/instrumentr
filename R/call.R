@@ -1,15 +1,26 @@
+#' API for call objects
+#'
+#' @description
+#' TODO
+#'
+#' @name call
+NULL
+
 
 #' @export
+#' @rdname call
 get_environment.instrumentr_call <- function(object, ...) { # nolint
     .Call(C_instrumentr_call_get_environment, object)
 }
 
 #' @export
+#' @rdname call
 get_frame_position.instrumentr_call <- function(object, ...) { # nolint
     .Call(C_instrumentr_call_get_frame_position, object)
 }
 
 #' @export
+#' @rdname call
 get_caller.instrumentr_call <- function(object, ...) { # nolint
     frame_position <- get_frame_position(object)
 
@@ -75,21 +86,19 @@ get_caller.instrumentr_call <- function(object, ...) { # nolint
 }
 
 #' @export
+#' @rdname call
 get_expression.instrumentr_call <- function(object, ...) { # nolint
     .Call(C_instrumentr_call_get_expression, object)
 }
 
 #' @export
-print.instrumentr_call <- function(x, ...) {
-    cat(to_string(x), "\n")
-}
-
-#' @export
+#' @rdname call
 get_function.instrumentr_call <- function(object, ...) {
     .Call(C_instrumentr_call_get_function, object)
 }
 
 #' @export
+#' @rdname call
 get_parameter.instrumentr_call <- function(call, position_or_name, ...) { # nolint
     if (is_scalar_character(position_or_name)) {
         .Call(C_instrumentr_call_get_parameter_by_name, call, position_or_name)
@@ -111,21 +120,25 @@ get_parameter.instrumentr_call <- function(call, position_or_name, ...) { # noli
 }
 
 #' @export
+#' @rdname call
 get_parameters.instrumentr_call <- function(call, ...) { # nolint
     .Call(C_instrumentr_call_get_parameters, call)
 }
 
 #' @export
+#' @rdname call
 get_result.instrumentr_call <- function(object, ...) {
     .Call(C_instrumentr_call_get_result, object)
 }
 
 #' @export
+#' @rdname call
 has_result.instrumentr_call <- function(object, ...) {
     .Call(C_instrumentr_call_has_result, object)
 }
 
 #' @export
+#' @rdname call
 is_active.instrumentr_call <- function(object, ...) {
     .Call(C_instrumentr_call_is_active, object)
 }

@@ -19,6 +19,14 @@ navbar:
      href: https://github.com/PRL-PRG/instrumentr
 
 reference:
+- title: "Trace"
+- contents:
+    - trace_code
+    - trace_file
+    - trace_text
+    - with_tracing_enabled
+    - with_tracing_disabled
+
 - title: "Object"
 - contents:
     - get_id
@@ -26,6 +34,79 @@ reference:
     - set_data
     - has_data
     - remove_data
+
+- title: "Tracer"
+- contents:
+    - create_tracer
+    - get_environment.instrumentr_tracer
+    - get_exec_stats.instrumentr_tracer
+    - get_tracing_initialization_callback.instrumentr_tracer
+    - get_tracing_finalization_callback.instrumentr_tracer
+    - get_closure_call_entry_callback.instrumentr_tracer
+    - get_closure_call_exit_callback.instrumentr_tracer
+    - get_builtin_call_entry_callback.instrumentr_tracer
+    - get_builtin_call_exit_callback.instrumentr_tracer
+    - get_special_call_entry_callback.instrumentr_tracer
+    - get_special_call_exit_callback.instrumentr_tracer
+    - get_eval_entry_callback.instrumentr_tracer
+    - get_eval_exit_callback.instrumentr_tracer
+    - get_gc_allocation_callback.instrumentr_tracer
+    - get_package_attach_callback.instrumentr_tracer
+    - get_package_detach_callback.instrumentr_tracer
+    - get_package_load_callback.instrumentr_tracer
+    - get_package_unload_callback.instrumentr_tracer
+    - get_variable_assignment_callback.instrumentr_tracer
+    - get_variable_definition_callback.instrumentr_tracer
+    - get_variable_lookup_callback.instrumentr_tracer
+    - get_variable_removal_callback.instrumentr_tracer
+    - set_tracing_initialization_callback.instrumentr_tracer
+    - set_tracing_finalization_callback.instrumentr_tracer
+    - set_closure_call_entry_callback.instrumentr_tracer
+    - set_closure_call_exit_callback.instrumentr_tracer
+    - set_builtin_call_entry_callback.instrumentr_tracer
+    - set_builtin_call_exit_callback.instrumentr_tracer
+    - set_special_call_entry_callback.instrumentr_tracer
+    - set_special_call_exit_callback.instrumentr_tracer
+    - set_eval_entry_callback.instrumentr_tracer
+    - set_eval_exit_callback.instrumentr_tracer
+    - set_gc_allocation_callback.instrumentr_tracer
+    - set_package_attach_callback.instrumentr_tracer
+    - set_package_detach_callback.instrumentr_tracer
+    - set_package_load_callback.instrumentr_tracer
+    - set_package_unload_callback.instrumentr_tracer
+    - set_variable_assignment_callback.instrumentr_tracer
+    - set_variable_definition_callback.instrumentr_tracer
+    - set_variable_lookup_callback.instrumentr_tracer
+    - set_variable_removal_callback.instrumentr_tracer
+    - has_tracing_initialization_callback.instrumentr_tracer
+    - has_tracing_finalization_callback.instrumentr_tracer
+    - has_closure_call_entry_callback.instrumentr_tracer
+    - has_closure_call_exit_callback.instrumentr_tracer
+    - has_builtin_call_entry_callback.instrumentr_tracer
+    - has_builtin_call_exit_callback.instrumentr_tracer
+    - has_special_call_entry_callback.instrumentr_tracer
+    - has_special_call_exit_callback.instrumentr_tracer
+    - has_eval_entry_callback.instrumentr_tracer
+    - has_eval_exit_callback.instrumentr_tracer
+    - has_gc_allocation_callback.instrumentr_tracer
+    - has_package_attach_callback.instrumentr_tracer
+    - has_package_detach_callback.instrumentr_tracer
+    - has_package_load_callback.instrumentr_tracer
+    - has_package_unload_callback.instrumentr_tracer
+    - has_variable_assignment_callback.instrumentr_tracer
+    - has_variable_definition_callback.instrumentr_tracer
+    - has_variable_lookup_callback.instrumentr_tracer
+    - has_variable_removal_callback.instrumentr_tracer
+
+- title: "Callback"
+- contents:
+    - has_c_function.instrumentr_callback
+    - get_c_function.instrumentr_callback
+    - has_r_function.instrumentr_callback
+    - get_r_function.instrumentr_callback
+    - get_exec_stats.instrumentr_callback
+    - is_active.instrumentr_callback
+
 - title: "Application"
 - contents:
     - get_name.instrumentr_application
@@ -36,6 +117,7 @@ reference:
     - get_package.instrumentr_application
     - get_packages.instrumentr_application
     - get_call_stack.instrumentr_application
+
 - title: "Package"
 - contents:
     - get_name.instrumentr_package
@@ -43,14 +125,64 @@ reference:
     - get_namespace.instrumentr_package
     - is_attached.instrumentr_package
     - get_functions.instrumentr_package
+
+- title: "Function"
+- contents:
+    - get_name.instrumentr_function
+    - get_definition.instrumentr_function
+    - is_public.instrumentr_function
+    - is_s3_method.instrumentr_function
+    - is_s3_generic.instrumentr_function
+    - get_parameter_count.instrumentr_function
+
+- title: "Call"
+- contents:
+    - get_environment.instrumentr_call
+    - get_frame_position.instrumentr_call
+    - get_caller.instrumentr_call
+    - get_function.instrumentr_call
+    - get_parameter.instrumentr_call
+    - get_parameters.instrumentr_call
+    - get_result.instrumentr_call
+    - has_result.instrumentr_call
+    - is_active.instrumentr_call
+
+- title: "Parameter"
+- contents:
+    - get_name.instrumentr_parameter
+    - get_argument.instrumentr_parameter
+    - get_arguments.instrumentr_parameter
+    - get_default_argument.instrumentr_parameter
+    - has_default_argument.instrumentr_parameter
+    - get_position.instrumentr_parameter
+    - is_missing.instrumentr_parameter
+    - is_vararg.instrumentr_parameter
+
+- title: "Argument"
+- contents:
+    - has_name.instrumentr_argument
+    - get_name.instrumentr_argument
+    - is_value.instrumentr_argument
+    - get_value.instrumentr_argument
+    - is_promise.instrumentr_argument
+    - get_promise.instrumentr_argument
+
+- title: "Promise"
+- contents:
+    - is_forced.instrumentr_promise
+    - get_expression.instrumentr_promise
+    - get_value.instrumentr_promise
+
+- title: "Value"
+- contents:
+    - get_sexp.instrumentr_value
+    - get_sexp_address.instrumentr_value
+    - get_sexp_type.instrumentr_value
+
 - title: "Helpers"
 - contents:
     - to_string
-- title: "Utilities"
-  desc: >
-    Utility methods for Instrumentr objects
-- contents:
-    - to_string
+    - print.instrumentr_object
 
 authors:
   Aviral Goel:

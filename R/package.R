@@ -110,11 +110,6 @@ get_functions.instrumentr_package <- function(object) { # nolint
     .Call(C_instrumentr_package_get_functions, object)
 }
 
-#' @export
-print.instrumentr_package <- function(x, ...) {
-    cat(to_string(x), "\n")
-}
-
 create_package <- function(package_name,
                            package_directory = dirname(system.file(package=package_name)),
                            package_environment = getNamespace(package_name),
