@@ -95,6 +95,10 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_application_remove_package, 2),
     DECLARE_BINDING(instrumentr_application_get_call_stack, 1),
 
+    /* call_stack */
+    DECLARE_BINDING(instrumentr_call_stack_get_size, 1),
+    DECLARE_BINDING(instrumentr_call_stack_peek_frame, 2),
+
     /* package */
     DECLARE_BINDING(instrumentr_package_create, 4),
     DECLARE_BINDING(instrumentr_package_add_function, 2),
@@ -161,9 +165,6 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_value_get_sexp_address, 1),
     DECLARE_BINDING(instrumentr_value_get_sexp_type, 1),
 
-    /* call_stack */
-    DECLARE_BINDING(instrumentr_call_stack_get_size, 1),
-    DECLARE_BINDING(instrumentr_call_stack_peek, 2),
     /* exec_stats */
     DECLARE_BINDING(instrumentr_exec_stats_get_minimum_time, 1),
     DECLARE_BINDING(instrumentr_exec_stats_get_maximum_time, 1),

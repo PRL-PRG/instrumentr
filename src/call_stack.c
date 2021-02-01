@@ -97,7 +97,7 @@ void instrumentr_call_stack_pop(instrumentr_call_stack_t call_stack) {
 
 /* accessor  */
 instrumentr_call_t
-instrumentr_call_stack_peek(instrumentr_call_stack_t call_stack, int index) {
+instrumentr_call_stack_peek_frame(instrumentr_call_stack_t call_stack, int index) {
     int reverse_index = instrumentr_call_stack_get_size(call_stack) - 1 - index;
     if (reverse_index < 0) {
         instrumentr_log_error(
@@ -109,11 +109,11 @@ instrumentr_call_stack_peek(instrumentr_call_stack_t call_stack, int index) {
     }
 }
 
-SEXP r_instrumentr_call_stack_peek(SEXP r_call_stack, SEXP r_index) {
+SEXP r_instrumentr_call_stack_peek_frame(SEXP r_call_stack, SEXP r_index) {
     instrumentr_call_stack_t call_stack =
         instrumentr_call_stack_unwrap(r_call_stack);
     int index = instrumentr_r_integer_to_c_int(r_index);
-    instrumentr_call_t call = instrumentr_call_stack_peek(call_stack, index);
+    instrumentr_call_t call = instrumentr_call_stack_peek_frame(call_stack, index);
     return instrumentr_call_wrap(call);
 }
 

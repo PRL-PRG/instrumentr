@@ -247,11 +247,14 @@
           instrumentr_call_t call)                                             \
     MACRO(                                                                     \
         instrumentr_call_stack_pop, void, instrumentr_call_stack_t call_stack) \
-    MACRO(instrumentr_call_stack_peek,                                         \
+    MACRO(instrumentr_call_stack_peek_frame,                                   \
           instrumentr_call_t,                                                  \
           instrumentr_call_stack_t call_stack,                                 \
           int index)                                                           \
-    MACRO(r_instrumentr_call_stack_peek, SEXP, SEXP r_call_stack, SEXP r_index)
+    MACRO(r_instrumentr_call_stack_peek_frame,                                 \
+          SEXP,                                                                \
+          SEXP r_call_stack,                                                   \
+          SEXP r_index)
 
 /********************************************************************************
  PARAMETER API
