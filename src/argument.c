@@ -51,6 +51,18 @@ instrumentr_argument_create(const char* name,
     return argument;
 }
 
+instrumentr_argument_t
+instrumentr_argument_create_from_promise(const char* name,
+                                         instrumentr_promise_t promise) {
+    return instrumentr_argument_create(name, (instrumentr_object_t)promise);
+}
+
+instrumentr_argument_t
+instrumentr_argument_create_from_value(const char* name,
+                                       instrumentr_value_t value) {
+    return instrumentr_argument_create(name, (instrumentr_object_t) value);
+}
+
 /********************************************************************************
  * interop
  *******************************************************************************/
