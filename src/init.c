@@ -164,6 +164,13 @@ const R_CallMethodDef CallEntries[] = {
     /* call_stack */
     DECLARE_BINDING(instrumentr_call_stack_get_size, 1),
     DECLARE_BINDING(instrumentr_call_stack_peek, 2),
+    /* exec_stats */
+    DECLARE_BINDING(instrumentr_exec_stats_get_minimum_time, 1),
+    DECLARE_BINDING(instrumentr_exec_stats_get_maximum_time, 1),
+    DECLARE_BINDING(instrumentr_exec_stats_get_average_time, 1),
+    DECLARE_BINDING(instrumentr_exec_stats_get_total_time, 1),
+    DECLARE_BINDING(instrumentr_exec_stats_get_execution_count, 1),
+    DECLARE_BINDING(instrumentr_exec_stats_as_data_frame, 1),
 
     {NULL, NULL, 0}
 };

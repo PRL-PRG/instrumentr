@@ -325,3 +325,28 @@ remove_callback <- function(tracer, event) { # nolint
     UseMethod("remove_callback")
 }
 
+#' @export
+get_minimum_time <- function(exec_stats) {
+    UseMethod("get_minimum_time")
+}
+
+#' @export
+get_maximum_time <- function(exec_stats) {
+    UseMethod("get_maximum_time")
+}
+
+#' @export
+get_average_time <- function(exec_stats) {
+    UseMethod("get_average_time")
+}
+
+#' @export
+get_total_time <- function(exec_stats) {
+    UseMethod("get_total_time")
+}
+
+#' @export
+get_execution_count <- function(exec_stats) {
+    UseMethod("get_execution_count")
+}
+

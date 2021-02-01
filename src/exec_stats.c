@@ -1,5 +1,6 @@
 #include "exec_stats.h"
 #include "interop.h"
+#include "object.h"
 
 /********************************************************************************
  * definition
@@ -37,6 +38,108 @@ void instrumentr_exec_stats_destroy(instrumentr_exec_stats_t exec_stats) {
  *******************************************************************************/
 
 SEXP instrumentr_exec_stats_wrap(instrumentr_exec_stats_t exec_stats) {
+    return instrumentr_object_wrap((instrumentr_object_t)(exec_stats));
+}
+
+instrumentr_exec_stats_t instrumentr_exec_stats_unwrap(SEXP r_exec_stats) {
+    instrumentr_object_t object =
+        instrumentr_object_unwrap(r_exec_stats, INSTRUMENTR_EXEC_STATS);
+    return (instrumentr_exec_stats_t)(object);
+}
+
+/********************************************************************************
+ * minimum
+ *******************************************************************************/
+
+/* accessor */
+double
+instrumentr_exec_stats_get_minimum_time(instrumentr_exec_stats_t exec_stats) {
+    return exec_stats->minimum / CLOCKS;
+}
+
+SEXP r_instrumentr_exec_stats_get_minimum_time(SEXP r_exec_stats) {
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_exec_stats_unwrap(r_exec_stats);
+    double result = instrumentr_exec_stats_get_minimum_time(exec_stats);
+    return instrumentr_c_double_to_r_double(result);
+}
+
+/********************************************************************************
+ * maximum
+ *******************************************************************************/
+
+/* accessor */
+double
+instrumentr_exec_stats_get_maximum_time(instrumentr_exec_stats_t exec_stats) {
+    return exec_stats->maximum / CLOCKS;
+}
+
+SEXP
+r_instrumentr_exec_stats_get_maximum_time(SEXP r_exec_stats) {
+    instrumentr_exec_stats_t exec_stats = instrumentr_exec_stats_unwrap(r_exec_stats);
+    double result = instrumentr_exec_stats_get_maximum_time(exec_stats);
+    return instrumentr_c_double_to_r_double(result);
+}
+
+/********************************************************************************
+ * average
+ *******************************************************************************/
+
+/* accessor */
+double
+instrumentr_exec_stats_get_average_time(instrumentr_exec_stats_t exec_stats) {
+    int count = instrumentr_exec_stats_get_execution_count(exec_stats);
+    double total = instrumentr_exec_stats_get_total_time(exec_stats);
+    return (count == 0) ? 0 : (total / count);
+}
+
+SEXP r_instrumentr_exec_stats_get_average_time(SEXP r_exec_stats) {
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_exec_stats_unwrap(r_exec_stats);
+    double result = instrumentr_exec_stats_get_average_time(exec_stats);
+    return instrumentr_c_double_to_r_double(result);
+}
+
+/********************************************************************************
+ * total
+ *******************************************************************************/
+
+/* accessor */
+double
+instrumentr_exec_stats_get_total_time(instrumentr_exec_stats_t exec_stats) {
+    return exec_stats->total / CLOCKS;
+}
+
+SEXP r_instrumentr_exec_stats_get_total_time(SEXP r_exec_stats) {
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_exec_stats_unwrap(r_exec_stats);
+    double result = instrumentr_exec_stats_get_total_time(exec_stats);
+    return instrumentr_c_double_to_r_double(result);
+}
+
+/********************************************************************************
+ * count
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_exec_stats_get_execution_count(
+    instrumentr_exec_stats_t exec_stats) {
+    return exec_stats->count;
+}
+
+SEXP r_instrumentr_exec_stats_get_execution_count(SEXP r_exec_stats) {
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_exec_stats_unwrap(r_exec_stats);
+    int result = instrumentr_exec_stats_get_execution_count(exec_stats);
+    return instrumentr_c_int_to_r_integer(result);
+}
+
+/********************************************************************************
+ * data frame
+ *******************************************************************************/
+
+/* accessor */
+SEXP instrumentr_exec_stats_as_data_frame(instrumentr_exec_stats_t exec_stats) {
     SEXP r_count = PROTECT(instrumentr_c_int_to_r_integer(
         instrumentr_exec_stats_get_execution_count(exec_stats)));
     SEXP r_minimum = PROTECT(instrumentr_c_double_to_r_double(
@@ -65,57 +168,13 @@ SEXP instrumentr_exec_stats_wrap(instrumentr_exec_stats_t exec_stats) {
     return r_data_frame;
 }
 
-/********************************************************************************
- * minimum
- *******************************************************************************/
-
-/* accessor */
-double
-instrumentr_exec_stats_get_minimum_time(instrumentr_exec_stats_t exec_stats) {
-    return exec_stats->minimum / CLOCKS;
+SEXP r_instrumentr_exec_stats_as_data_frame(SEXP r_exec_stats) {
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_exec_stats_unwrap(r_exec_stats);
+    SEXP r_data_frame = instrumentr_exec_stats_as_data_frame(exec_stats);
+    return r_data_frame;
 }
 
-/********************************************************************************
- * maximum
- *******************************************************************************/
-
-/* accessor */
-double
-instrumentr_exec_stats_get_maximum_time(instrumentr_exec_stats_t exec_stats) {
-    return exec_stats->maximum / CLOCKS;
-}
-
-/********************************************************************************
- * average
- *******************************************************************************/
-
-/* accessor */
-double
-instrumentr_exec_stats_get_average_time(instrumentr_exec_stats_t exec_stats) {
-    int count = instrumentr_exec_stats_get_execution_count(exec_stats);
-    double total = instrumentr_exec_stats_get_total_time(exec_stats);
-    return (count == 0) ? 0 : (total / count);
-}
-
-/********************************************************************************
- * total
- *******************************************************************************/
-
-/* accessor */
-double
-instrumentr_exec_stats_get_total_time(instrumentr_exec_stats_t exec_stats) {
-    return exec_stats->total / CLOCKS;
-}
-
-/********************************************************************************
- * count
- *******************************************************************************/
-
-/* accessor */
-int instrumentr_exec_stats_get_execution_count(
-    instrumentr_exec_stats_t exec_stats) {
-    return exec_stats->count;
-}
 
 /********************************************************************************
  * minimum + maximum + average + total + count

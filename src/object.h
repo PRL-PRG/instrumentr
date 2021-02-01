@@ -22,7 +22,8 @@ typedef enum {
     INSTRUMENTR_PARAMETER,
     INSTRUMENTR_ARGUMENT,
     INSTRUMENTR_PROMISE,
-    INSTRUMENTR_VALUE
+    INSTRUMENTR_VALUE,
+    INSTRUMENTR_EXEC_STATS
 } instrumentr_object_type_t;
 
 struct instrumentr_object_impl_t {
