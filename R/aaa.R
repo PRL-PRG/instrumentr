@@ -1,4 +1,13 @@
 
+#' @export
+get_application <- function(object) { # nolint
+    UseMethod("get_application")
+}
+
+#' @export
+get_package_count <- function(object) { # nolint
+    UseMethod("get_package_count")
+}
 
 #' @export
 get_code <- function(object) {
@@ -65,12 +74,12 @@ get_call <- function(object, ...) {
 }
 
 #' @export
-get_c_function <- function(object, ...) {
+get_c_function <- function(object) {
     UseMethod("get_c_function")
 }
 
 #' @export
-get_r_function <- function(object, ...) {
+get_r_function <- function(object) {
     UseMethod("get_r_function")
 }
 
@@ -131,7 +140,7 @@ get_parameters <- function(call, ...) {
 }
 
 #' @export
-get_error <- function(object, ...) {
+get_error <- function(object) {
     UseMethod("get_error")
 }
 
@@ -171,12 +180,12 @@ get_value <- function(object, ...) {
 }
 
 #' @export
-has_c_function <- function(object, ...) {
+has_c_function <- function(object) {
     UseMethod("has_c_function")
 }
 
 #' @export
-has_r_function <- function(object, ...) {
+has_r_function <- function(object) {
     UseMethod("has_r_function")
 }
 
@@ -191,7 +200,7 @@ is_active <- function(object, ...) {
 }
 
 #' @export
-is_error <- function(object, ...) {
+is_error <- function(object) {
     UseMethod("is_error")
 }
 
@@ -351,6 +360,16 @@ get_execution_count <- function(exec_stats) {
 }
 
 #' @export
+get_event <- function(object) {
+    UseMethod("get_event")
+}
+
+#' @export
+handles_event <- function(object, event) {
+    UseMethod("handles_event")
+}
+
+#' @export
 get_event_exec_stats <- function(tracer, event) {
     UseMethod("get_event_exec_stats")
 }
@@ -360,3 +379,42 @@ get_tracing_exec_stats <- function(tracer) {
     UseMethod("get_tracing_exec_stats")
 }
 
+#' @export
+is_active <- function(object) {
+    UseMethod("is_active")
+}
+
+#' @export
+is_enabled <- function(tracer) {
+    UseMethod("is_enabled")
+}
+
+#' @export
+enable <- function(tracer) {
+    UseMethod("enable")
+}
+
+#' @export
+disable <- function(tracer) {
+    UseMethod("disable")
+}
+
+#' @export
+reinstate <- function(tracer) {
+    UseMethod("reinstate")
+}
+
+#' @export
+get_active_callback <- function(tracer) {
+    UseMethod("get_active_callback")
+}
+
+#' @export
+get_parameter_count <- function(object) { # nolint
+    UseMethod("get_parameter_count")
+}
+
+#' @export
+get_argument_count <- function(object) { # nolint
+    UseMethod("get_argument_count")
+}

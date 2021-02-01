@@ -15,6 +15,12 @@ get_name.instrumentr_parameter <- function(object, ...) {
 
 #' @export
 #' @rdname parameter
+get_argument_count.instrumentr_parameter <- function(object) { # nolint
+    .Call(C_instrumentr_parameter_get_argument_count, object)
+}
+
+#' @export
+#' @rdname parameter
 get_argument.instrumentr_parameter <- function(parameter, position_or_name, ...) { # nolint
     if (is_scalar_character(position_or_name)) {
         .Call(C_instrumentr_parameter_get_argument_by_name, parameter, position_or_name)

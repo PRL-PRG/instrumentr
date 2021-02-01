@@ -38,6 +38,7 @@ reference:
 - title: "Tracer"
 - contents:
     - create_tracer
+    - get_application.instrumentr_tracer
     - get_environment.instrumentr_tracer
     - get_exec_stats.instrumentr_tracer
     - has_callback.instrumentr_tracer
@@ -45,15 +46,14 @@ reference:
     - set_callback.instrumentr_tracer
     - remove_callback.instrumentr_tracer
     - get_exec_stats.instrumentr_tracer
-
-- title: "Callback"
-- contents:
-    - has_c_function.instrumentr_callback
-    - get_c_function.instrumentr_callback
-    - has_r_function.instrumentr_callback
-    - get_r_function.instrumentr_callback
-    - get_exec_stats.instrumentr_callback
-    - is_active.instrumentr_callback
+    - get_event_exec_stats.instrumentr_tracer
+    - get_tracing_exec_stats.instrumentr_tracer
+    - is_active.instrumentr_tracer
+    - is_enabled.instrumentr_tracer
+    - enable.instrumentr_tracer
+    - disable.instrumentr_tracer
+    - reinstate.instrumentr_tracer
+    - get_active_callback.instrumentr_tracer
 
 - title: "Application"
 - contents:
@@ -62,9 +62,26 @@ reference:
     - get_code.instrumentr_application
     - get_environment.instrumentr_application
     - get_frame_position.instrumentr_application
+    - get_package_count.instrumentr_application
     - get_package.instrumentr_application
     - get_packages.instrumentr_application
     - get_call_stack.instrumentr_application
+
+- title: "Callback"
+- contents:
+    - get_event.instrumentr_callback
+    - handles_event.instrumentr_callback
+    - has_c_function.instrumentr_callback
+    - get_c_function.instrumentr_callback
+    - has_r_function.instrumentr_callback
+    - get_r_function.instrumentr_callback
+    - get_exec_stats.instrumentr_callback
+    - is_active.instrumentr_callback
+
+- title: "Call Stack"
+- contents:
+    - get_size.instrumentr_call_stack
+    - peek_frame.instrumentr_call_stack
 
 - title: "Package"
 - contents:
@@ -72,23 +89,28 @@ reference:
     - get_directory.instrumentr_package
     - get_namespace.instrumentr_package
     - is_attached.instrumentr_package
+    - get_function_count.instrumentr_package
+    - get_function.instrumentr_package
     - get_functions.instrumentr_package
+    - has_function.instrumentr_package
 
 - title: "Function"
 - contents:
     - get_name.instrumentr_function
+    - get_parameter_count.instrumentr_function
     - get_definition.instrumentr_function
     - is_public.instrumentr_function
     - is_s3_method.instrumentr_function
     - is_s3_generic.instrumentr_function
-    - get_parameter_count.instrumentr_function
 
 - title: "Call"
 - contents:
+    - get_function.instrumentr_call
+    - get_expression.instrumentr_call
     - get_environment.instrumentr_call
     - get_frame_position.instrumentr_call
     - get_caller.instrumentr_call
-    - get_function.instrumentr_call
+    - get_parameter_count.instrumentr_call
     - get_parameter.instrumentr_call
     - get_parameters.instrumentr_call
     - get_result.instrumentr_call
@@ -98,13 +120,14 @@ reference:
 - title: "Parameter"
 - contents:
     - get_name.instrumentr_parameter
+    - get_position.instrumentr_parameter
+    - is_missing.instrumentr_parameter
+    - is_vararg.instrumentr_parameter
+    - get_argument_count.instrumentr_parameter
     - get_argument.instrumentr_parameter
     - get_arguments.instrumentr_parameter
     - get_default_argument.instrumentr_parameter
     - has_default_argument.instrumentr_parameter
-    - get_position.instrumentr_parameter
-    - is_missing.instrumentr_parameter
-    - is_vararg.instrumentr_parameter
 
 - title: "Argument"
 - contents:
@@ -126,6 +149,14 @@ reference:
     - get_sexp.instrumentr_value
     - get_sexp_address.instrumentr_value
     - get_sexp_type.instrumentr_value
+
+- title: "Execution Statistics"
+- contents:
+    - get_minimum_time.instrumentr_exec_stats
+    - get_maximum_time.instrumentr_exec_stats
+    - get_average_time.instrumentr_exec_stats
+    - get_total_time.instrumentr_exec_stats
+    - get_execution_count.instrumentr_exec_stats
 
 - title: "Helpers"
 - contents:

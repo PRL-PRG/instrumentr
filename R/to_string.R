@@ -7,7 +7,7 @@
 #' @examples
 #'
 #' to_string(create_tracer())
-#' 
+#'
 #' @export
 to_string <- function(object, ...) {
     UseMethod("to_string")

@@ -99,6 +99,12 @@ get_frame_position.instrumentr_application <- function(object) { # nolint
 
 #' @export
 #' @rdname application
+get_package_count.instrumentr_application <- function(object) { # nolint
+    .Call(C_instrumentr_application_get_package_count, object)
+}
+
+#' @export
+#' @rdname application
 get_package.instrumentr_application <- function(application, name_or_position) { # nolint
     if(is.character(name_or_position)) {
         .Call(C_instrumentr_application_get_package_by_name, application, name_or_position[1])

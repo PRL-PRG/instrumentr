@@ -97,6 +97,13 @@ get_function.instrumentr_call <- function(object, ...) {
     .Call(C_instrumentr_call_get_function, object)
 }
 
+
+#' @export
+#' @rdname call
+get_parameter_count.instrumentr_call <- function(object) { # nolint
+    .Call(C_instrumentr_call_get_parameter_count, object)
+}
+
 #' @export
 #' @rdname call
 get_parameter.instrumentr_call <- function(call, position_or_name, ...) { # nolint
@@ -139,6 +146,6 @@ has_result.instrumentr_call <- function(object, ...) {
 
 #' @export
 #' @rdname call
-is_active.instrumentr_call <- function(object, ...) {
+is_active.instrumentr_call <- function(object) {
     .Call(C_instrumentr_call_is_active, object)
 }

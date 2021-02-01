@@ -46,8 +46,8 @@
 #' )
 #'
 #' trace_code(tracer, {
-#'     library(MASS)
-#'     unloadNamespace("MASS")
+#'     library("Matrix")
+#'     unloadNamespace("Matrix")
 #' })
 #'
 #' @name package

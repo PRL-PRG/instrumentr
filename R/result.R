@@ -9,21 +9,21 @@ create_result.error <- function(object, source, ...) {
 }
 
 #' @export
-get_error.instrumentr_result <- function(object, ...) {
+get_error.instrumentr_result <- function(object) {
     object$error
 }
 
 #' @export
-get_value.instrumentr_result <- function(object, ...) {
+get_value.instrumentr_result <- function(object) {
     object$value
 }
 
 #' @export
-is_error.instrumentr_result <- function(object, ...) {
+is_error.instrumentr_result <- function(object) {
     is_defined(get_error(object))
 }
 
 #' @export
-is_value.instrumentr_result <- function(object, ...) {
+is_value.instrumentr_result <- function(object) {
     is_defined(get_value(object))
 }
