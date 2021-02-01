@@ -143,10 +143,10 @@ instrumentr_tracer_get_tracing_exec_stats(instrumentr_tracer_t tracer);
 SEXP r_instrumentr_tracer_get_tracing_exec_stats(SEXP r_tracer);
 
 instrumentr_exec_stats_t
-instrumentr_tracer_get_callback_exec_stats(instrumentr_tracer_t tracer,
-                                           instrumentr_event_t event);
+instrumentr_tracer_get_event_exec_stats(instrumentr_tracer_t tracer,
+                                        instrumentr_event_t event);
 
-SEXP r_instrumentr_tracer_get_callback_exec_stats(SEXP r_tracer, SEXP r_event);
+SEXP r_instrumentr_tracer_get_event_exec_stats(SEXP r_tracer, SEXP r_event);
 
 SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer);
 

@@ -62,7 +62,7 @@
 
 #define UPDATE_EXEC_STATS(NAME, tracer, callback, time)              \
     instrumentr_exec_stats_t tracer_exec_stats =                     \
-        instrumentr_tracer_get_callback_exec_stats(tracer, NAME);    \
+        instrumentr_tracer_get_event_exec_stats(tracer, NAME);       \
     instrumentr_exec_stats_update(tracer_exec_stats, time);          \
     instrumentr_exec_stats_t callback_exec_stats =                   \
         instrumentr_callback_get_exec_stats(callback);               \

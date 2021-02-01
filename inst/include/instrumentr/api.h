@@ -489,11 +489,11 @@
           instrumentr_exec_stats_t,                                            \
           instrumentr_tracer_t tracer)                                         \
     MACRO(r_instrumentr_tracer_get_tracing_exec_stats, SEXP, SEXP r_tracer)    \
-    MACRO(instrumentr_tracer_get_callback_exec_stats,                          \
+    MACRO(instrumentr_tracer_get_event_exec_stats,                             \
           instrumentr_exec_stats_t,                                            \
           instrumentr_tracer_t tracer,                                         \
           instrumentr_event_t event)                                           \
-    MACRO(r_instrumentr_tracer_get_callback_exec_stats,                        \
+    MACRO(r_instrumentr_tracer_get_event_exec_stats,                           \
           SEXP,                                                                \
           SEXP r_tracer,                                                       \
           SEXP r_event)                                                        \

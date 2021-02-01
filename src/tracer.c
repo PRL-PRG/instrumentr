@@ -428,16 +428,16 @@ SEXP r_instrumentr_tracer_get_tracing_exec_stats(SEXP r_tracer) {
 }
 
 instrumentr_exec_stats_t
-instrumentr_tracer_get_callback_exec_stats(instrumentr_tracer_t tracer,
+instrumentr_tracer_get_event_exec_stats(instrumentr_tracer_t tracer,
                                            instrumentr_event_t event) {
     return tracer->callbacks[event].exec_stats;
 }
 
-SEXP r_instrumentr_tracer_get_callback_exec_stats(SEXP r_tracer, SEXP r_event) {
+SEXP r_instrumentr_tracer_get_event_exec_stats(SEXP r_tracer, SEXP r_event) {
     instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
     instrumentr_event_t event = instrumentr_event_unwrap(r_event);
     instrumentr_exec_stats_t exec_stats =
-        instrumentr_tracer_get_callback_exec_stats(tracer, event);
+        instrumentr_tracer_get_event_exec_stats(tracer, event);
     return instrumentr_exec_stats_wrap(exec_stats);
 }
 
@@ -494,6 +494,12 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
     for (int event = 0; event < INSTRUMENTR_EVENT_COUNT; ++event) {
         instrumentr_exec_stats_t exec_stats =
             tracer->callbacks[event].exec_stats;
+        int count = instrumentr_exec_stats_get_execution_count(exec_stats);
+
+        if(count == 0) {
+            continue;
+        }
+
         assign_exec_stats_fields(exec_stats,
                                  index,
                                  r_callback,
@@ -502,6 +508,8 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
                                  r_maximum,
                                  r_average,
                                  r_total);
+
+        ++index;
     }
 
     instrumentr_exec_stats_t exec_stats =

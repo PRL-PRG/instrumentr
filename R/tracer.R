@@ -17,9 +17,7 @@ create_tracer <- function(...) {
     events <- names(functions)
 
     Map(function(func, event) {
-        print(event)
         callback <- create_callback(func, event)
-        print(callback)
         set_callback(tracer, callback)
     },
     functions,
@@ -38,6 +36,18 @@ get_environment.instrumentr_tracer <- function(object, ...) { # nolint
 #' @rdname tracer
 get_exec_stats.instrumentr_tracer <- function(object, ...) {
     .Call(C_instrumentr_tracer_get_exec_stats, object)
+}
+
+#' @export
+#' @rdname tracer
+get_event_exec_stats.instrumentr_tracer <- function(tracer, event) {
+    .Call(C_instrumentr_tracer_get_event_exec_stats, tracer, event)
+}
+
+#' @export
+#' @rdname tracer
+get_tracing_exec_stats.instrumentr_tracer <- function(tracer) {
+    .Call(C_instrumentr_tracer_get_tracing_exec_stats, tracer)
 }
 
 #' @export

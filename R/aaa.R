@@ -136,7 +136,7 @@ get_error <- function(object, ...) {
 }
 
 #' @export
-get_exec_stats <- function(object, ...) {
+get_exec_stats <- function(object) {
     UseMethod("get_exec_stats")
 }
 
@@ -348,5 +348,15 @@ get_total_time <- function(exec_stats) {
 #' @export
 get_execution_count <- function(exec_stats) {
     UseMethod("get_execution_count")
+}
+
+#' @export
+get_event_exec_stats <- function(tracer, event) {
+    UseMethod("get_event_exec_stats")
+}
+
+#' @export
+get_tracing_exec_stats <- function(tracer) {
+    UseMethod("get_tracing_exec_stats")
 }
 

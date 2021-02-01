@@ -64,7 +64,7 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_tracer_set_callback, 2),
     DECLARE_BINDING(instrumentr_tracer_remove_callback, 2),
     DECLARE_BINDING(instrumentr_tracer_get_tracing_exec_stats, 1),
-    DECLARE_BINDING(instrumentr_tracer_get_callback_exec_stats, 2),
+    DECLARE_BINDING(instrumentr_tracer_get_event_exec_stats, 2),
     DECLARE_BINDING(instrumentr_tracer_get_exec_stats, 1),
 
     /* callback */
