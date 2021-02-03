@@ -3,7 +3,20 @@
 
 #include <instrumentr/Rincludes.h>
 
-#ifdef USING_DYNTRACE
+void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
+                               SEXP r_call,
+                               SEXP r_op,
+                               SEXP r_args,
+                               SEXP r_rho,
+                               dyntrace_dispatch_t dispatch);
+
+void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
+                              SEXP r_call,
+                              SEXP r_op,
+                              SEXP r_args,
+                              SEXP r_rho,
+                              dyntrace_dispatch_t dispatch,
+                              SEXP r_result);
 
 /* TODO: implement and uncomment
 void dyntrace_builtin_call_entry(dyntracer_t* dyntracer,
@@ -79,7 +92,5 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
                               const SEXP r_symbol,
                               const SEXP r_value,
                               const SEXP r_rho);
-
-#endif
 
 #endif /* INSTRUMENTR_DYNTRACE_H */

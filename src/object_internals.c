@@ -1,7 +1,7 @@
 #include "object.h"
 #include "interop.h"
 
-SEXP object_class_table[INSTRUMENTR_ARGUMENT + 1];
+SEXP object_class_table[INSTRUMENTR_EXEC_STATS + 1];
 
 SEXP create_class(const char* type_name) {
     SEXP class = PROTECT(allocVector(STRSXP, 2));
@@ -53,6 +53,16 @@ void instrumentr_object_class_initialize() {
     object_class_table[INSTRUMENTR_ARGUMENT] =
         create_class("instrumentr_argument");
     instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_ARGUMENT]);
+
+    object_class_table[INSTRUMENTR_PROMISE] = create_class("instrumentr_promise");
+    instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_PROMISE]);
+
+    object_class_table[INSTRUMENTR_VALUE] =
+        create_class("instrumentr_value");
+    instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_VALUE]);
+
+    object_class_table[INSTRUMENTR_EXEC_STATS] = create_class("instrumentr_exec_stats");
+    instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_EXEC_STATS]);
 }
 
 /*******************************************************************************
@@ -78,6 +88,12 @@ void instrumentr_object_class_finalize() {
     object_class_table[INSTRUMENTR_PARAMETER] = NULL;
     instrumentr_sexp_release(object_class_table[INSTRUMENTR_ARGUMENT]);
     object_class_table[INSTRUMENTR_ARGUMENT] = NULL;
+    instrumentr_sexp_release(object_class_table[INSTRUMENTR_PROMISE]);
+    object_class_table[INSTRUMENTR_PROMISE] = NULL;
+    instrumentr_sexp_release(object_class_table[INSTRUMENTR_VALUE]);
+    object_class_table[INSTRUMENTR_VALUE] = NULL;
+    instrumentr_sexp_release(object_class_table[INSTRUMENTR_EXEC_STATS]);
+    object_class_table[INSTRUMENTR_EXEC_STATS] = NULL;
 }
 
 /*******************************************************************************

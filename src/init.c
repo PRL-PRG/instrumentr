@@ -122,7 +122,6 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_function_is_s3_method, 1),
 
     /* call */
-    DECLARE_BINDING(instrumentr_call_create, 4),
     DECLARE_BINDING(instrumentr_call_get_function, 1),
     DECLARE_BINDING(instrumentr_call_get_expression, 1),
     DECLARE_BINDING(instrumentr_call_get_environment, 1),

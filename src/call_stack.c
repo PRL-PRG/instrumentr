@@ -116,4 +116,3 @@ SEXP r_instrumentr_call_stack_peek_frame(SEXP r_call_stack, SEXP r_index) {
     instrumentr_call_t call = instrumentr_call_stack_peek_frame(call_stack, index);
     return instrumentr_call_wrap(call);
 }
-

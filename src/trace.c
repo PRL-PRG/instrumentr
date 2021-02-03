@@ -1,6 +1,7 @@
 #include <instrumentr/types.h>
 #include "instrumentr_internals.h"
 
+#include "object.h"
 #include "tracer.h"
 #include "callback.h"
 #include "application.h"
@@ -425,6 +426,74 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
                                 dyntrace_dispatch_t dispatch,
                                 SEXP r_result) {
     INVOKE_CALL_EXIT_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT);
+}
+
+void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
+                               SEXP r_call,
+                               SEXP r_op,
+                               SEXP r_args,
+                               SEXP r_rho,
+                               dyntrace_dispatch_t dispatch) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_application_t application = instrumentr_tracer_get_application(tracer);
+
+    instrumentr_package_t package = instrumentr_application_get_base_package(application);
+
+    int index = instrumentr_funtab_get_index(r_op);
+
+    instrumentr_function_t function =
+        instrumentr_package_get_basic_function_by_position(package, index);
+
+    instrumentr_call_t call = instrumentr_call_create(function,
+                                                      r_call,
+                                                      r_rho,
+                                                      /* TODO: fix frame position */ 0);
+
+    if (instrumentr_function_is_builtin(function)) {
+        instrumentr_trace_builtin_call_entry(
+            tracer, application, package, function, call);
+    } else {
+        instrumentr_trace_special_call_entry(
+            tracer, application, package, function, call);
+    }
+
+    instrumentr_object_release(call);
+}
+
+void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
+                              SEXP r_call,
+                              SEXP r_op,
+                              SEXP r_args,
+                              SEXP r_rho,
+                              dyntrace_dispatch_t dispatch,
+                              SEXP r_result) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_application_t application =
+        instrumentr_tracer_get_application(tracer);
+
+    instrumentr_package_t package =
+        instrumentr_application_get_base_package(application);
+
+    int index = instrumentr_funtab_get_index(r_op);
+
+    instrumentr_function_t function =
+        instrumentr_package_get_basic_function_by_position(package, index);
+
+    instrumentr_call_t call =
+        instrumentr_call_create(function,
+                                r_call,
+                                r_rho,
+                                /* TODO: fix frame position */ 0);
+
+    if (instrumentr_function_is_builtin(function)) {
+        instrumentr_trace_builtin_call_exit(tracer, application, package, function, call);
+    } else {
+        instrumentr_trace_special_call_exit(tracer, application, package, function, call);
+    }
+
+    instrumentr_object_release(call);
 }
 
 //SEXP instrumentr_trace_non_closure_call(dyntracer_t* dyntracer,

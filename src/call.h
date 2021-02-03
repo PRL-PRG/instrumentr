@@ -10,10 +10,10 @@
  * create
  *******************************************************************************/
 
-SEXP r_instrumentr_call_create(SEXP r_function,
-                               SEXP r_expression,
-                               SEXP r_environment,
-                               SEXP r_frame_position);
+instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
+                                           SEXP r_expression,
+                                           SEXP r_environment,
+                                           int frame_position);
 
 /********************************************************************************
  * interop

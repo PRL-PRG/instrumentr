@@ -338,3 +338,25 @@ void instrumentr_package_remove_function(instrumentr_package_t package,
                                          instrumentr_function_t function) {
     vec_remove(&package->functions, function);
 }
+
+/* accessor  */
+int instrumentr_package_get_basic_function_count(instrumentr_package_t package) {
+    return package->basic_functions.length;
+}
+
+/* accessor  */
+instrumentr_function_t
+instrumentr_package_get_basic_function_by_position(instrumentr_package_t package,
+                                                   int position) {
+    int count = instrumentr_package_get_basic_function_count(package);
+    if (position < count && position >= 0) {
+        return package->basic_functions.data[position];
+    } else {
+        instrumentr_log_error(
+            "attempt to access %d basic function of a package with %d basic functions",
+            position,
+            count);
+        /* NOTE: not executed  */
+        return NULL;
+    }
+}

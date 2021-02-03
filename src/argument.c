@@ -45,7 +45,7 @@ instrumentr_argument_create(const char* name,
 
     argument->name = duplicate_name;
 
-    instrumentr_object_acquire(argument->promise_or_value);
+    instrumentr_object_acquire(promise_or_value);
     argument->promise_or_value = promise_or_value;
 
     return argument;

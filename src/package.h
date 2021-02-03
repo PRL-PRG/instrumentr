@@ -72,7 +72,8 @@ int instrumentr_package_get_function_count(instrumentr_package_t package);
 SEXP r_instrumentr_package_get_function_count(SEXP r_package);
 
 /* accessor */
-int instrumentr_package_has_function(instrumentr_package_t package, const char* name);
+int instrumentr_package_has_function(instrumentr_package_t package,
+                                     const char* name);
 SEXP r_instrumentr_package_has_function(SEXP r_package, SEXP r_name);
 
 /* accessor  */
@@ -99,4 +100,10 @@ SEXP r_instrumentr_package_add_function(SEXP r_package, SEXP r_function);
 /*  mutator  */
 void instrumentr_package_remove_function(instrumentr_package_t package,
                                          instrumentr_function_t function);
+
+/* accessor  */
+instrumentr_function_t instrumentr_package_get_basic_function_by_position(
+    instrumentr_package_t package,
+    int position);
+
 #endif /* INSTRUMENTR_PACKAGE_H */

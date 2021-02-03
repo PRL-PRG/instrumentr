@@ -101,20 +101,24 @@ SEXP r_instrumentr_application_get_package_by_name(SEXP r_application,
                                                    SEXP r_name);
 
 /* accessor */
+instrumentr_package_t
+instrumentr_application_get_base_package(instrumentr_application_t application);
+SEXP r_instrumentr_application_get_base_package(SEXP r_application);
+
+/* accessor */
 SEXP r_instrumentr_application_get_packages(SEXP r_application);
 
 /* mutator  */
-void instrumentr_application_add_package(
-    instrumentr_application_t application,
-    instrumentr_package_t package);
-SEXP r_instrumentr_application_add_package(SEXP r_application,
-                                              SEXP r_package);
+void instrumentr_application_add_package(instrumentr_application_t application,
+                                         instrumentr_package_t package);
+SEXP r_instrumentr_application_add_package(SEXP r_application, SEXP r_package);
 
 /* mutator  */
 void instrumentr_application_remove_package(
     instrumentr_application_t application,
     instrumentr_package_t package);
 
-SEXP r_instrumentr_application_remove_package(SEXP r_application, SEXP r_package);
+SEXP r_instrumentr_application_remove_package(SEXP r_application,
+                                              SEXP r_package);
 
 #endif /* INSTRUMENTR_APPLICATION_H */

@@ -303,6 +303,20 @@ SEXP r_instrumentr_application_get_package_by_name(SEXP r_application,
 }
 
 /* accessor */
+instrumentr_package_t
+instrumentr_application_get_base_package(instrumentr_application_t application){
+    return instrumentr_application_get_package_by_name(application, "base");
+}
+
+SEXP r_instrumentr_application_get_base_package(SEXP r_application) {
+    instrumentr_application_t application =
+        instrumentr_application_unwrap(r_application);
+    instrumentr_package_t package =
+        instrumentr_application_get_base_package(application);
+    return instrumentr_package_wrap(package);
+}
+
+/* accessor */
 SEXP r_instrumentr_application_get_packages(SEXP r_application) {
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);

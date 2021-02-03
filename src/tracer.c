@@ -442,6 +442,7 @@ SEXP r_instrumentr_tracer_get_event_exec_stats(SEXP r_tracer, SEXP r_event) {
 }
 
 void assign_exec_stats_fields(instrumentr_exec_stats_t exec_stats,
+                              const char* event_name,
                               int index,
                               SEXP r_callback,
                               SEXP r_count,
@@ -449,8 +450,7 @@ void assign_exec_stats_fields(instrumentr_exec_stats_t exec_stats,
                               SEXP r_maximum,
                               SEXP r_average,
                               SEXP r_total) {
-    const char* name = instrumentr_event_to_string(index);
-    SET_STRING_ELT(r_callback, index, mkChar(name));
+    SET_STRING_ELT(r_callback, index, mkChar(event_name));
 
     int count = instrumentr_exec_stats_get_execution_count(exec_stats);
     INTEGER(r_count)[index] = count;
@@ -500,14 +500,16 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
             continue;
         }
 
-        assign_exec_stats_fields(exec_stats,
-                                 index,
-                                 r_callback,
-                                 r_count,
-                                 r_minimum,
-                                 r_maximum,
-                                 r_average,
-                                 r_total);
+        assign_exec_stats_fields(
+            exec_stats,
+            instrumentr_event_to_string(index),
+            index,
+            r_callback,
+            r_count,
+            r_minimum,
+            r_maximum,
+            r_average,
+            r_total);
 
         ++index;
     }
@@ -515,6 +517,7 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
     instrumentr_exec_stats_t exec_stats =
         instrumentr_tracer_get_tracing_exec_stats(tracer);
     assign_exec_stats_fields(exec_stats,
+                             "tracing",
                              index,
                              r_callback,
                              r_count,

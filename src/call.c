@@ -145,11 +145,11 @@ void process_parameter(instrumentr_call_t call,
     }
     /* promise  */
     else if (TYPEOF(r_argument_value) == PROMSXP) {
-        process_promise_argument(parameter, NULL, r_argument_value);
+        process_promise_argument(parameter, R_NilValue, r_argument_value);
     }
     /* non promise  */
     else {
-        process_value_argument(parameter, NULL, r_argument_value);
+        process_value_argument(parameter, R_NilValue, r_argument_value);
     }
 }
 
