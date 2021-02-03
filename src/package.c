@@ -3,6 +3,7 @@
 #include "object.h"
 #include "vec.h"
 #include "utilities.h"
+#include "funtab.h"
 
 /********************************************************************************
  * definition
@@ -16,6 +17,7 @@ struct instrumentr_package_impl_t {
     SEXP r_namespace;
     int attached;
     instrumentr_function_vector_t functions;
+    instrumentr_function_vector_t basic_functions;
 };
 
 /********************************************************************************
@@ -30,15 +32,29 @@ void instrumentr_package_finalize(instrumentr_object_t object) {
 
     instrumentr_sexp_release(package->r_namespace);
 
-    int count = package->functions.length;
-    instrumentr_function_t* functions = package->functions.data;
+    /* free functions  */{
+        int count = package->functions.length;
+        instrumentr_function_t* functions = package->functions.data;
 
-    for (int i = 0; i < count; ++i) {
-        instrumentr_function_t function = functions[i];
-        instrumentr_object_release(function);
+        for (int i = 0; i < count; ++i) {
+            instrumentr_function_t function = functions[i];
+            instrumentr_object_release(function);
+        }
+
+        vec_deinit(&package->functions);
     }
 
-    vec_deinit(&package->functions);
+    /* free basic functions  */ {
+        int count = package->basic_functions.length;
+        instrumentr_function_t* functions = package->basic_functions.data;
+
+        for (int i = 0; i < count; ++i) {
+            instrumentr_function_t function = functions[i];
+            instrumentr_object_release(function);
+        }
+
+        vec_deinit(&package->basic_functions);
+    }
 }
 
 /********************************************************************************
@@ -69,6 +85,17 @@ instrumentr_package_t instrumentr_package_create(const char* name,
     package->attached = 0;
 
     vec_init(&package->functions);
+
+    vec_init(&package->basic_functions);
+
+    /* if base package, initialize the basic functions */
+    if (strcmp(name, "base") == 0) {
+        int funtab_size = instrumentr_funtab_get_size();
+        for(int i = 0; i < funtab_size; ++i) {
+            //printf("here %d", i);
+            vec_push(&package->basic_functions, instrumentr_funtab_create_function(i));
+        }
+    }
 
     return package;
 }

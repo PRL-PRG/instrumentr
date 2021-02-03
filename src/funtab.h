@@ -5,9 +5,8 @@
 
 #include <instrumentr/Rincludes.h>
 
-
-void funtab_initialize();
-void funtab_finalize();
-instrumentr_function_t instrumentr_funtab_get_function(SEXP op);
+int instrumentr_funtab_get_index(SEXP op);
+int instrumentr_funtab_get_size();
+instrumentr_function_t instrumentr_funtab_create_function(int index);
 
 #endif /* INSTRUMENTR_FUNTAB_H */

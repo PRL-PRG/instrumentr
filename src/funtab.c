@@ -66,89 +66,65 @@ typedef struct {
     PPinfo gram; /* pretty-print info */
 } FUNTAB;
 
-int FUNTAB_SIZE = 0;
-extern FUNTAB* R_FunTab;
-
-instrumentr_function_t* functions;
-
 int instrumentr_funtab_get_index(SEXP op) {
     return op->u.primsxp.offset;
 }
 
-CCODE instrumentr_funtab_get_definition(int index) {
-    return R_FunTab[index].cfun;
+FUNTAB* get_funtab_entry(int index) {
+    FUNTAB* R_FunTab = dyntrace_get_funtab();
+    return R_FunTab + index;
 }
 
-const char* instrumentr_funtab_get_name(int index) {
-    return R_FunTab[index].name;
+CCODE instrumentr_funtab_get_definition(FUNTAB* entry) {
+    return entry -> cfun;
 }
 
-int instrumentr_funtab_get_parameter_count(int index) {
-    return R_FunTab[index].arity;
+const char* instrumentr_funtab_get_name(FUNTAB* entry) {
+    return entry -> name;
 }
 
-int instrumentr_funtab_is_internal(int index) {
-    return ((R_FunTab[index].eval % 100) / 10) == 1;
+int instrumentr_funtab_get_parameter_count(FUNTAB* entry) {
+    return entry -> arity;
 }
 
-int instrumentr_funtab_is_primitive(int index) {
-    return !instrumentr_funtab_is_internal(index);
+int instrumentr_funtab_is_internal(FUNTAB* entry) {
+    return ((entry -> eval % 100) / 10) == 1;
 }
 
-int instrumentr_funtab_is_builtin(int index) {
-    return (R_FunTab[index].eval % 10) == 1;
+int instrumentr_funtab_is_primitive(FUNTAB* entry) {
+    return !instrumentr_funtab_is_internal(entry);
 }
 
-int instrumentr_funtab_is_special(int index) {
-    return !instrumentr_funtab_is_builtin(index);
+int instrumentr_funtab_is_builtin(FUNTAB* entry) {
+    return (entry -> eval % 10) == 1;
 }
 
-instrumentr_function_t instrumentr_funtab_get_function(SEXP op) {
-    int funtab_index = instrumentr_funtab_get_index(op);
-    return functions[funtab_index];
+int instrumentr_funtab_is_special(FUNTAB* entry) {
+    return !instrumentr_funtab_is_builtin(entry);
 }
 
-instrumentr_function_t instrumentr_funtab_create_function(int funtab_index) {
-    int builtin = instrumentr_funtab_is_builtin(funtab_index);
-    const char* name = instrumentr_funtab_get_name(funtab_index);
-    int parameter_count = instrumentr_funtab_get_parameter_count(funtab_index);
-    int internal = instrumentr_funtab_is_internal(funtab_index);
-    CCODE ccode = instrumentr_funtab_get_definition(funtab_index);
+int instrumentr_funtab_get_size() {
+    FUNTAB* R_FunTab = dyntrace_get_funtab();
+    int size = 0;
+    while (R_FunTab[size].name) {
+        size++;
+    }
+    return size;
+}
+
+instrumentr_function_t instrumentr_funtab_create_function(int index) {
+    FUNTAB* entry = get_funtab_entry(index);
+    int builtin = instrumentr_funtab_is_builtin(entry);
+    const char* name = instrumentr_funtab_get_name(entry);
+    int parameter_count = instrumentr_funtab_get_parameter_count(entry);
+    int internal = instrumentr_funtab_is_internal(entry);
+    CCODE ccode = instrumentr_funtab_get_definition(entry);
 
     if (builtin) {
         return instrumentr_function_create_builtin(
-            funtab_index, name, parameter_count, ccode, internal);
+            index, name, parameter_count, ccode, internal);
     } else {
         return instrumentr_function_create_special(
-            funtab_index, name, parameter_count, ccode, internal);
-    }
-}
-
-void funtab_initialize() {
-    for (FUNTAB_SIZE = 0; R_FunTab[FUNTAB_SIZE].name; FUNTAB_SIZE++)
-        ;
-
-    functions = (instrumentr_function_t*) malloc(
-        FUNTAB_SIZE * sizeof(instrumentr_function_t));
-
-    for (int i = 0; i < FUNTAB_SIZE; ++i) {
-        functions[i] = instrumentr_funtab_create_function(i);
-    }
-}
-
-void funtab_finalize() {
-    for (int i = 0; i < FUNTAB_SIZE; ++i) {
-        instrumentr_object_release(functions[i]);
-    }
-
-    free(functions);
-    functions = NULL;
-}
-
-void instrumentr_funtab_instrument(const char* function_name, CCODE trace) {
-    for (int i = 0; i < FUNTAB_SIZE; ++i) {
-        if(!strcmp(R_FunTab[i].name, function_name)) {
-            R_FunTab[i].cfun = trace;
-        }
+            index, name, parameter_count, ccode, internal);
     }
 }
