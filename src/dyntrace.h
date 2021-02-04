@@ -18,38 +18,6 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
                               dyntrace_dispatch_t dispatch,
                               SEXP r_result);
 
-/* TODO: implement and uncomment
-void dyntrace_builtin_call_entry(dyntracer_t* dyntracer,
-                                 SEXP r_call,
-                                 SEXP r_op,
-                                 SEXP r_args,
-                                 SEXP r_rho,
-                                 dyntrace_dispatch_t dispatch);
-
-void dyntrace_builtin_call_exit(dyntracer_t* dyntracer,
-                                SEXP r_call,
-                                SEXP r_op,
-                                SEXP r_args,
-                                SEXP r_rho,
-                                dyntrace_dispatch_t dispatch,
-                                SEXP r_result);
-
-void dyntrace_special_call_entry(dyntracer_t* dyntracer,
-                                 SEXP r_call,
-                                 SEXP r_op,
-                                 SEXP r_args,
-                                 SEXP r_rho,
-                                 dyntrace_dispatch_t dispatch);
-
-void dyntrace_special_call_exit(dyntracer_t* dyntracer,
-                                SEXP r_call,
-                                SEXP r_op,
-                                SEXP r_args,
-                                SEXP r_rho,
-                                dyntrace_dispatch_t dispatch,
-                                SEXP r_result);
-*/
-
 void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
                                  SEXP r_call,
                                  SEXP r_op,
@@ -64,6 +32,15 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
                                 SEXP r_rho,
                                 dyntrace_dispatch_t dispatch,
                                 SEXP r_result);
+
+void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer);
+
+void dyntrace_context_exit(dyntracer_t* dyntracer, void* pointer);
+
+void dyntrace_context_jump(dyntracer_t* dyntracer,
+                           void* context,
+                           const SEXP return_value,
+                           int restart);
 
 void dyntrace_eval_entry(dyntracer_t* dyntracer, SEXP r_expression, SEXP r_rho);
 

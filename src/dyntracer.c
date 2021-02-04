@@ -12,6 +12,9 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_special_exit_callback(dyntracer, dyntrace_basic_call_exit);
     dyntracer_set_closure_entry_callback(dyntracer, dyntrace_closure_call_entry);
     dyntracer_set_closure_exit_callback(dyntracer, dyntrace_closure_call_exit);
+    dyntracer_set_context_entry_callback(dyntracer, dyntrace_context_entry);
+    dyntracer_set_context_exit_callback(dyntracer, dyntrace_context_exit);
+    //dyntracer_set_context_jump_callback(dyntracer, context, return_value, restart);
     dyntracer_set_eval_entry_callback(dyntracer, dyntrace_eval_entry);
     dyntracer_set_eval_exit_callback(dyntracer, dyntrace_eval_exit);
     dyntracer_set_gc_allocate_callback(dyntracer, dyntrace_gc_allocation);
@@ -44,3 +47,4 @@ instrumentr_tracer_t instrumentr_dyntracer_get_tracer(dyntracer_t* dyntracer) {
 
     return tracer;
 }
+

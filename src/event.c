@@ -45,7 +45,12 @@ event_info_t table[] = {
     /* INSTRUMENTR_EVENT_VARIABLE_REMOVAL */
     {INSTRUMENTR_EVENT_VARIABLE_REMOVAL, "variable_removal", 5},
     /* INSTRUMENTR_EVENT_VARIABLE_LOOKUP */
-    {INSTRUMENTR_EVENT_VARIABLE_LOOKUP, "variable_lookup", 6}};
+    {INSTRUMENTR_EVENT_VARIABLE_LOOKUP, "variable_lookup", 6},
+    /* INSTRUMENTR_EVENT_CONTEXT_ENTRY */
+    {INSTRUMENTR_EVENT_CONTEXT_ENTRY, "context_entry", 4},
+    /* INSTRUMENTR_EVENT_CONTEXT_EXIT */
+    {INSTRUMENTR_EVENT_CONTEXT_EXIT, "context_exit", 4}
+};
 
 int instrumentr_event_get_parameter_count(
     instrumentr_event_t event) {

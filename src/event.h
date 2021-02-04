@@ -22,7 +22,9 @@ typedef enum {
     INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
     INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
     INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
-    INSTRUMENTR_EVENT_VARIABLE_LOOKUP
+    INSTRUMENTR_EVENT_VARIABLE_LOOKUP,
+    INSTRUMENTR_EVENT_CONTEXT_ENTRY,
+    INSTRUMENTR_EVENT_CONTEXT_EXIT
 } instrumentr_event_t;
 
 #define INSTRUMENTR_EVENT_TRACING_INITIALIZATION_FUNCTION_T tracing_initialization_function_t
@@ -44,11 +46,12 @@ typedef enum {
 #define INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT_FUNCTION_T variable_assignment_function_t
 #define INSTRUMENTR_EVENT_VARIABLE_REMOVAL_FUNCTION_T variable_removal_function_t
 #define INSTRUMENTR_EVENT_VARIABLE_LOOKUP_FUNCTION_T variable_lookup_function_t
+#define INSTRUMENTR_EVENT_CONTEXT_ENTRY_FUNCTION_T context_entry_function_t
+#define INSTRUMENTR_EVENT_CONTEXT_EXIT_FUNCTION_T context_exit_function_t
 
-#define INSTRUMENTR_EVENT_COUNT 19
+#define INSTRUMENTR_EVENT_COUNT 21
 
-int instrumentr_event_get_parameter_count(
-    instrumentr_event_t event);
+int instrumentr_event_get_parameter_count(instrumentr_event_t event);
 
 const char*
 instrumentr_event_to_string(instrumentr_event_t event);

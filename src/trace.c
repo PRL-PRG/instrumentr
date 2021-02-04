@@ -16,6 +16,7 @@
 #include "utilities.h"
 #include "interop.h"
 #include "funtab.h"
+#include "context.h"
 
 #define WRAP(name) SEXP r_##name = PROTECT(instrumentr_##name##_wrap(name));
 
@@ -563,6 +564,80 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
 //    return r_result;
 //}
 
+void instrumentr_trace_context_entry(instrumentr_tracer_t tracer,
+                                          instrumentr_application_t application,
+                                          instrumentr_context_t context) {
+    INVOKE_CALLBACK(/* NAME  */
+                    INSTRUMENTR_EVENT_CONTEXT_ENTRY,
+                    /* TRACER */,
+                    /* INIT  */,
+                    /* CCALL */
+                    cfun(
+                        tracer, callback, application, context),
+                    /* RCALL */
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(context););
+                    Rf_eval(Rf_lang5(r_name,
+                                     r_tracer,
+                                     r_callback,
+                                     r_application,
+                                     r_context),
+                            r_environment);
+                    UNPROTECT(3), );
+}
+
+void instrumentr_trace_context_exit(instrumentr_tracer_t tracer,
+                                     instrumentr_application_t application,
+                                     instrumentr_context_t context) {
+        INVOKE_CALLBACK(/* NAME  */
+                        INSTRUMENTR_EVENT_CONTEXT_EXIT,
+                        /* TRACER */,
+                        /* INIT  */,
+                        /* CCALL */
+                        cfun(tracer, callback, application, context),
+                        /* RCALL */
+                        NOTRACE(WRAP(tracer); WRAP(application);
+                                WRAP(context););
+                        Rf_eval(Rf_lang5(r_name,
+                                         r_tracer,
+                                         r_callback,
+                                         r_application,
+                                         r_context),
+                                r_environment);
+                        UNPROTECT(3), );
+}
+
+void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_application_t application =
+        instrumentr_tracer_get_application(tracer);
+
+    instrumentr_context_t context = instrumentr_context_create(pointer);
+
+    instrumentr_trace_context_entry(tracer, application, context);
+
+    instrumentr_object_release(context);
+}
+
+void dyntrace_context_exit(dyntracer_t* dyntracer, void* pointer) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_application_t application =
+        instrumentr_tracer_get_application(tracer);
+
+    instrumentr_context_t context = instrumentr_context_create(pointer);
+
+    instrumentr_trace_context_exit(tracer, application, context);
+
+    instrumentr_object_release(context);
+}
+
+void dyntrace_context_jump(dyntracer_t* dyntracer,
+                  void* context,
+                  const SEXP return_value,
+                  int restart) {
+}
+
 void dyntrace_eval_entry(dyntracer_t* dyntracer,
                          SEXP r_expression,
                          SEXP r_rho) {
@@ -590,146 +665,150 @@ void dyntrace_eval_entry(dyntracer_t* dyntracer,
         /* FIN */);
 }
 
-void dyntrace_eval_exit(dyntracer_t* dyntracer,
-                        SEXP r_expression,
-                        SEXP r_rho,
-                        SEXP r_result) {
-    INVOKE_CALLBACK(
-        /* NAME  */
-        INSTRUMENTR_EVENT_EVAL_EXIT,
-        /* TRACER */
-        instrumentr_tracer_t tracer =
-            instrumentr_dyntracer_get_tracer(dyntracer),
-        /* INIT  */
-        NOTRACE(instrumentr_application_t application =
-                    instrumentr_tracer_get_application(tracer)),
-        /* CCALL */
-        cfun(tracer, callback, application, r_expression, r_rho, r_result),
-        /* RCALL */
-        NOTRACE(WRAP(tracer); WRAP(application));
-        Rf_eval(Rf_lang7(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_expression,
-                         r_rho,
-                         r_result),
-                r_environment);
-        UNPROTECT(2),
-        /* FIN */);
-}
+    void dyntrace_eval_exit(
+        dyntracer_t * dyntracer, SEXP r_expression, SEXP r_rho, SEXP r_result) {
+        INVOKE_CALLBACK(
+            /* NAME  */
+            INSTRUMENTR_EVENT_EVAL_EXIT,
+            /* TRACER */
+            instrumentr_tracer_t tracer =
+                instrumentr_dyntracer_get_tracer(dyntracer),
+            /* INIT  */
+            NOTRACE(instrumentr_application_t application =
+                        instrumentr_tracer_get_application(tracer)),
+            /* CCALL */
+            cfun(tracer, callback, application, r_expression, r_rho, r_result),
+            /* RCALL */
+            NOTRACE(WRAP(tracer); WRAP(application));
+            Rf_eval(Rf_lang7(r_name,
+                             r_tracer,
+                             r_callback,
+                             r_application,
+                             r_expression,
+                             r_rho,
+                             r_result),
+                    r_environment);
+            UNPROTECT(2),
+            /* FIN */);
+    }
 
-void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
-    INVOKE_CALLBACK(
-        /* NAME */
-        INSTRUMENTR_EVENT_GC_ALLOCATION,
-        /* TRACER */
-        instrumentr_tracer_t tracer =
-            instrumentr_dyntracer_get_tracer(dyntracer),
-        /* INIT  */
-        NOTRACE(instrumentr_application_t application =
-                    instrumentr_tracer_get_application(tracer)),
-        /* CCALL */
-        cfun(tracer, callback, application, r_object),
-        /* RCALL */
-        NOTRACE(WRAP(tracer); WRAP(application));
-        Rf_eval(Rf_lang5(r_name, r_tracer, r_callback, r_application, r_object),
+    void dyntrace_gc_allocation(dyntracer_t * dyntracer, SEXP r_object) {
+        INVOKE_CALLBACK(
+            /* NAME */
+            INSTRUMENTR_EVENT_GC_ALLOCATION,
+            /* TRACER */
+            instrumentr_tracer_t tracer =
+                instrumentr_dyntracer_get_tracer(dyntracer),
+            /* INIT  */
+            NOTRACE(instrumentr_application_t application =
+                        instrumentr_tracer_get_application(tracer)),
+            /* CCALL */
+            cfun(tracer, callback, application, r_object),
+            /* RCALL */
+            NOTRACE(WRAP(tracer); WRAP(application));
+            Rf_eval(
+                Rf_lang5(r_name, r_tracer, r_callback, r_application, r_object),
                 r_environment);
-        UNPROTECT(2),
-        /* FIN */
-    );
-}
+            UNPROTECT(2),
+            /* FIN */
+        );
+    }
 
-void dyntrace_variable_definition(dyntracer_t* dyntracer,
+    void dyntrace_variable_definition(dyntracer_t * dyntracer,
+                                      const SEXP r_symbol,
+                                      const SEXP r_value,
+                                      const SEXP r_rho) {
+        INVOKE_CALLBACK(
+            INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
+            instrumentr_tracer_t tracer =
+                instrumentr_dyntracer_get_tracer(dyntracer),
+            NOTRACE(instrumentr_application_t application =
+                        instrumentr_tracer_get_application(tracer);
+                    SEXP r_variable =
+                        PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
+            cfun(tracer, callback, application, r_variable, r_value, r_rho),
+            NOTRACE(WRAP(tracer); WRAP(application));
+            Rf_eval(Rf_lang7(r_name,
+                             r_tracer,
+                             r_callback,
+                             r_application,
+                             r_variable,
+                             r_value,
+                             r_rho),
+                    r_environment);
+            UNPROTECT(2), UNPROTECT(1));
+    }
+
+    void dyntrace_variable_assignment(dyntracer_t * dyntracer,
+                                      const SEXP r_symbol,
+                                      const SEXP r_value,
+                                      const SEXP r_rho) {
+        INVOKE_CALLBACK(
+            INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
+            instrumentr_tracer_t tracer =
+                instrumentr_dyntracer_get_tracer(dyntracer),
+            NOTRACE(instrumentr_application_t application =
+                        instrumentr_tracer_get_application(tracer);
+                    SEXP r_variable =
+                        PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
+            cfun(tracer, callback, application, r_variable, r_value, r_rho),
+            NOTRACE(WRAP(tracer); WRAP(application));
+            Rf_eval(Rf_lang7(r_name,
+                             r_tracer,
+                             r_callback,
+                             r_application,
+                             r_variable,
+                             r_value,
+                             r_rho),
+                    r_environment);
+            UNPROTECT(2), UNPROTECT(1));
+    }
+
+    void dyntrace_variable_removal(
+        dyntracer_t * dyntracer, const SEXP r_symbol, const SEXP r_rho) {
+        INVOKE_CALLBACK(INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
+                        instrumentr_tracer_t tracer =
+                            instrumentr_dyntracer_get_tracer(dyntracer),
+                        NOTRACE(instrumentr_application_t application =
+                                    instrumentr_tracer_get_application(tracer);
+                                SEXP r_variable = PROTECT(
+                                    mkString(CHAR(PRINTNAME(r_symbol))))),
+                        cfun(tracer, callback, application, r_variable, r_rho),
+                        NOTRACE(WRAP(tracer); WRAP(application));
+                        Rf_eval(Rf_lang6(r_name,
+                                         r_tracer,
+                                         r_callback,
+                                         r_application,
+                                         r_variable,
+                                         r_rho),
+                                r_environment);
+                        UNPROTECT(2), UNPROTECT(1));
+    }
+
+    void dyntrace_variable_lookup(dyntracer_t * dyntracer,
                                   const SEXP r_symbol,
                                   const SEXP r_value,
                                   const SEXP r_rho) {
-    INVOKE_CALLBACK(
-        INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
-        instrumentr_tracer_t tracer =
-            instrumentr_dyntracer_get_tracer(dyntracer),
-        NOTRACE(instrumentr_application_t application =
-                    instrumentr_tracer_get_application(tracer);
-                SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
-        cfun(tracer, callback, application, r_variable, r_value, r_rho),
-        NOTRACE(WRAP(tracer); WRAP(application));
-        Rf_eval(Rf_lang7(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_variable,
-                         r_value,
-                         r_rho),
-                r_environment);
-        UNPROTECT(2), UNPROTECT(1));
-}
-
-void dyntrace_variable_assignment(dyntracer_t* dyntracer,
-                                  const SEXP r_symbol,
-                                  const SEXP r_value,
-                                  const SEXP r_rho) {
-    INVOKE_CALLBACK(
-        INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
-        instrumentr_tracer_t tracer =
-            instrumentr_dyntracer_get_tracer(dyntracer),
-        NOTRACE(instrumentr_application_t application =
-                    instrumentr_tracer_get_application(tracer);
-                SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
-        cfun(tracer, callback, application, r_variable, r_value, r_rho),
-        NOTRACE(WRAP(tracer); WRAP(application));
-        Rf_eval(Rf_lang7(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_variable,
-                         r_value,
-                         r_rho),
-                r_environment);
-        UNPROTECT(2), UNPROTECT(1));
-}
-
-void dyntrace_variable_removal(dyntracer_t* dyntracer,
-                               const SEXP r_symbol,
-                               const SEXP r_rho) {
-    INVOKE_CALLBACK(
-        INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
-        instrumentr_tracer_t tracer =
-            instrumentr_dyntracer_get_tracer(dyntracer),
-        NOTRACE(instrumentr_application_t application =
-                    instrumentr_tracer_get_application(tracer);
-                SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
-        cfun(tracer, callback, application, r_variable, r_rho),
-        NOTRACE(WRAP(tracer); WRAP(application));
-        Rf_eval(
-            Rf_lang6(
-                r_name, r_tracer, r_callback, r_application, r_variable, r_rho),
-            r_environment);
-        UNPROTECT(2), UNPROTECT(1));
-}
-
-void dyntrace_variable_lookup(dyntracer_t* dyntracer,
-                              const SEXP r_symbol,
-                              const SEXP r_value,
-                              const SEXP r_rho) {
-    INVOKE_CALLBACK(
-        INSTRUMENTR_EVENT_VARIABLE_LOOKUP,
-        instrumentr_tracer_t tracer =
-            instrumentr_dyntracer_get_tracer(dyntracer),
-        NOTRACE(instrumentr_application_t application =
-                    instrumentr_tracer_get_application(tracer);
-                SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
-        cfun(tracer, callback, application, r_variable, r_value, r_rho),
-        NOTRACE(WRAP(tracer); WRAP(application));
-        Rf_eval(Rf_lang7(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_application,
-                         r_variable,
-                         r_value,
-                         r_rho),
-                r_environment);
-        UNPROTECT(2), UNPROTECT(1));
-}
+        INVOKE_CALLBACK(
+            INSTRUMENTR_EVENT_VARIABLE_LOOKUP,
+            instrumentr_tracer_t tracer =
+                instrumentr_dyntracer_get_tracer(dyntracer),
+            NOTRACE(instrumentr_application_t application =
+                        instrumentr_tracer_get_application(tracer);
+                    SEXP r_variable =
+                        PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
+            cfun(tracer, callback, application, r_variable, r_value, r_rho),
+            NOTRACE(WRAP(tracer); WRAP(application));
+            Rf_eval(Rf_lang7(r_name,
+                             r_tracer,
+                             r_callback,
+                             r_application,
+                             r_variable,
+                             r_value,
+                             r_rho),
+                    r_environment);
+            UNPROTECT(2), UNPROTECT(1));
+    }
 
 #endif
 

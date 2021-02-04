@@ -11,6 +11,7 @@
 #include "argument.h"
 #include "call_stack.h"
 #include "callback.h"
+#include "context.h"
 #include "interop.h"
 
 #include <R_ext/Rdynload.h>
@@ -163,6 +164,9 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_value_get_sexp, 1),
     DECLARE_BINDING(instrumentr_value_get_sexp_address, 1),
     DECLARE_BINDING(instrumentr_value_get_sexp_type, 1),
+
+    /* context */
+    DECLARE_BINDING(instrumentr_context_get_pointer, 1),
 
     /* exec_stats */
     DECLARE_BINDING(instrumentr_exec_stats_get_minimum_time, 1),

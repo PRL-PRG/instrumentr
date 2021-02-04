@@ -502,7 +502,7 @@ SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
 
         assign_exec_stats_fields(
             exec_stats,
-            instrumentr_event_to_string(index),
+            instrumentr_event_to_string(event),
             index,
             r_callback,
             r_count,

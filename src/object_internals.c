@@ -61,6 +61,12 @@ void instrumentr_object_class_initialize() {
         create_class("instrumentr_value");
     instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_VALUE]);
 
+    object_class_table[INSTRUMENTR_FRAME] = create_class("instrumentr_frame");
+    instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_FRAME]);
+
+    object_class_table[INSTRUMENTR_CONTEXT] = create_class("instrumentr_context");
+    instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_CONTEXT]);
+
     object_class_table[INSTRUMENTR_EXEC_STATS] = create_class("instrumentr_exec_stats");
     instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_EXEC_STATS]);
 }
@@ -92,6 +98,10 @@ void instrumentr_object_class_finalize() {
     object_class_table[INSTRUMENTR_PROMISE] = NULL;
     instrumentr_sexp_release(object_class_table[INSTRUMENTR_VALUE]);
     object_class_table[INSTRUMENTR_VALUE] = NULL;
+    instrumentr_sexp_release(object_class_table[INSTRUMENTR_FRAME]);
+    object_class_table[INSTRUMENTR_FRAME] = NULL;
+    instrumentr_sexp_release(object_class_table[INSTRUMENTR_CONTEXT]);
+    object_class_table[INSTRUMENTR_CONTEXT] = NULL;
     instrumentr_sexp_release(object_class_table[INSTRUMENTR_EXEC_STATS]);
     object_class_table[INSTRUMENTR_EXEC_STATS] = NULL;
 }

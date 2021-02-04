@@ -1,5 +1,5 @@
 #include "call_stack.h"
-#include "call.h"
+#include "frame.h"
 #include "interop.h"
 #include "object.h"
 #include "vec.h"
@@ -8,11 +8,11 @@
  * definition
  *******************************************************************************/
 
-typedef vec_t(instrumentr_call_t) vec_call_t;
+typedef vec_t(instrumentr_frame_t) vec_frame_t;
 
 struct instrumentr_call_stack_impl_t {
     struct instrumentr_object_impl_t object;
-    vec_call_t calls;
+    vec_frame_t frames;
 };
 
 /********************************************************************************
@@ -22,13 +22,13 @@ struct instrumentr_call_stack_impl_t {
 void instrumentr_call_stack_finalize(instrumentr_object_t object) {
     instrumentr_call_stack_t call_stack = (instrumentr_call_stack_t)(object);
 
-    int size = call_stack -> calls.length;
+    int size = call_stack -> frames.length;
 
     for (; size > 0; --size) {
         instrumentr_call_stack_pop(call_stack);
     }
 
-    vec_deinit(&call_stack->calls);
+    vec_deinit(&call_stack->frames);
 }
 
 /********************************************************************************
@@ -43,7 +43,7 @@ instrumentr_call_stack_t instrumentr_call_stack_create() {
 
     instrumentr_call_stack_t call_stack = (instrumentr_call_stack_t)(object);
 
-    vec_init(&call_stack->calls);
+    vec_init(&call_stack->frames);
 
     return call_stack;
 }
@@ -68,7 +68,7 @@ instrumentr_call_stack_t instrumentr_call_stack_unwrap(SEXP r_call_stack) {
 
 /* accessor  */
 int instrumentr_call_stack_get_size(instrumentr_call_stack_t call_stack) {
-    return call_stack->calls.length;
+    return call_stack->frames.length;
 }
 
 SEXP r_instrumentr_call_stack_get_size(SEXP r_call_stack) {
@@ -79,24 +79,24 @@ SEXP r_instrumentr_call_stack_get_size(SEXP r_call_stack) {
 }
 
 /********************************************************************************
- * calls
+ * frames
  *******************************************************************************/
 
 /* mutator  */
 void instrumentr_call_stack_push(instrumentr_call_stack_t call_stack,
-                                 instrumentr_call_t call) {
-    instrumentr_object_acquire(call);
-    vec_push(&call_stack->calls, call);
+                                 instrumentr_frame_t frame) {
+    instrumentr_object_acquire(frame);
+    vec_push(&call_stack->frames, frame);
 }
 
 /* mutator  */
 void instrumentr_call_stack_pop(instrumentr_call_stack_t call_stack) {
-    instrumentr_call_t call = vec_pop(&call_stack->calls);
-    instrumentr_object_release(call);
+    instrumentr_frame_t frame = vec_pop(&call_stack->frames);
+    instrumentr_object_release(frame);
 }
 
 /* accessor  */
-instrumentr_call_t
+instrumentr_frame_t
 instrumentr_call_stack_peek_frame(instrumentr_call_stack_t call_stack, int index) {
     int reverse_index = instrumentr_call_stack_get_size(call_stack) - 1 - index;
     if (reverse_index < 0) {
@@ -105,7 +105,7 @@ instrumentr_call_stack_peek_frame(instrumentr_call_stack_t call_stack, int index
         /* NOTE: not executed */
         return NULL;
     } else {
-        return call_stack->calls.data[reverse_index];
+        return call_stack->frames.data[reverse_index];
     }
 }
 
@@ -113,6 +113,6 @@ SEXP r_instrumentr_call_stack_peek_frame(SEXP r_call_stack, SEXP r_index) {
     instrumentr_call_stack_t call_stack =
         instrumentr_call_stack_unwrap(r_call_stack);
     int index = instrumentr_r_integer_to_c_int(r_index);
-    instrumentr_call_t call = instrumentr_call_stack_peek_frame(call_stack, index);
-    return instrumentr_call_wrap(call);
+    instrumentr_frame_t frame = instrumentr_call_stack_peek_frame(call_stack, index);
+    return instrumentr_frame_wrap(frame);
 }

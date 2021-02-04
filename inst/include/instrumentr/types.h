@@ -92,6 +92,18 @@ typedef struct instrumentr_callback_impl_t* instrumentr_callback_t;
 
 typedef struct instrumentr_tracer_impl_t* instrumentr_tracer_t;
 
+/********************************************************************************
+ * frame
+ *******************************************************************************/
+
+typedef struct instrumentr_frame_impl_t* instrumentr_frame_t;
+
+/********************************************************************************
+ * context
+ *******************************************************************************/
+
+typedef struct instrumentr_context_impl_t* instrumentr_context_t;
+
 typedef void (*tracing_initialization_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
@@ -221,6 +233,16 @@ typedef void (*variable_lookup_function_t)(
     SEXP r_variable,
     SEXP r_value,
     SEXP r_rho);
+
+typedef void (*context_entry_function_t)(instrumentr_tracer_t tracer,
+                                         instrumentr_callback_t callback,
+                                         instrumentr_application_t application,
+                                         instrumentr_context_t context);
+
+typedef void (*context_exit_function_t)(instrumentr_tracer_t tracer,
+                                        instrumentr_callback_t callback,
+                                        instrumentr_application_t application,
+                                        instrumentr_context_t context);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
     MACRO(                                                                     \
