@@ -4,6 +4,10 @@
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************************************************************************
  * create
  *******************************************************************************/
@@ -20,12 +24,14 @@ instrumentr_function_t instrumentr_function_create_special(int funtab_index,
                                                            CCODE ccode,
                                                            int internal);
 
-instrumentr_function_t instrumentr_function_create_closure(const char* name,
-                                                           int parameter_count,
-                                                           SEXP sexp,
-                                                           int pub,
-                                                           int s3_generic,
-                                                           int s3_method);
+instrumentr_function_t
+instrumentr_function_create_closure(const char* name,
+                                    int parameter_count,
+                                    SEXP sexp,
+                                    instrumentr_function_t parent,
+                                    int pub,
+                                    int s3_generic,
+                                    int s3_method);
 
 SEXP r_instrumentr_function_create_closure(SEXP r_name,
                                            SEXP r_parameter_count,
@@ -58,7 +64,6 @@ SEXP r_instrumentr_function_is_special(SEXP r_function);
 int instrumentr_function_is_closure(instrumentr_function_t function);
 SEXP r_instrumentr_function_is_closure(SEXP r_function);
 
-
 /********************************************************************************
  * name
  *******************************************************************************/
@@ -66,6 +71,13 @@ SEXP r_instrumentr_function_is_closure(SEXP r_function);
 /* accessor  */
 const char* instrumentr_function_get_name(instrumentr_function_t function);
 SEXP r_instrumentr_function_get_name(SEXP r_function);
+
+int instrumentr_function_has_name(instrumentr_function_t function);
+SEXP r_instrumentr_function_has_name(SEXP r_function);
+
+/* mutator */
+void instrumentr_function_set_name(instrumentr_function_t function,
+                                   const char* name);
 
 /********************************************************************************
  * definition
@@ -75,6 +87,21 @@ SEXP r_instrumentr_function_get_name(SEXP r_function);
 instrumentr_function_definition_t
 instrumentr_function_get_definition(instrumentr_function_t function);
 SEXP r_instrumentr_function_get_definition(SEXP r_function);
+
+/********************************************************************************
+ * parent
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_function_is_inner(instrumentr_function_t function);
+
+SEXP r_instrumentr_function_is_inner(SEXP r_function);
+
+/* accessor  */
+instrumentr_function_t
+instrumentr_function_get_parent(instrumentr_function_t function);
+
+SEXP r_instrumentr_function_get_parent(SEXP r_function);
 
 /********************************************************************************
  * parameter_count
@@ -91,6 +118,8 @@ SEXP r_instrumentr_function_get_parameter_count(SEXP r_function);
 /* accessor  */
 int instrumentr_function_is_public(instrumentr_function_t function);
 SEXP r_instrumentr_function_is_public(SEXP r_function);
+/* mutator */
+void instrumentr_function_set_public(instrumentr_function_t function, int pub);
 
 /********************************************************************************
  * s3_generic
@@ -99,6 +128,9 @@ SEXP r_instrumentr_function_is_public(SEXP r_function);
 /* accessor  */
 int instrumentr_function_is_s3_generic(instrumentr_function_t function);
 SEXP r_instrumentr_function_is_s3_generic(SEXP r_function);
+/* mutator */
+void instrumentr_function_set_s3_generic(instrumentr_function_t function,
+                                         int s3_generic);
 
 /********************************************************************************
  * s3_method
@@ -107,5 +139,12 @@ SEXP r_instrumentr_function_is_s3_generic(SEXP r_function);
 /* accessor  */
 int instrumentr_function_is_s3_method(instrumentr_function_t function);
 SEXP r_instrumentr_function_is_s3_method(SEXP r_function);
+/* mutator */
+void instrumentr_function_set_s3_method(instrumentr_function_t function,
+                                        int s3_method);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_FUNCTION_H */

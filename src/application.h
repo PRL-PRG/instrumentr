@@ -6,6 +6,10 @@
 #include "call_stack.h"
 #include "package.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************************************************************************
  * create
  *******************************************************************************/
@@ -120,5 +124,47 @@ void instrumentr_application_remove_package(
 
 SEXP r_instrumentr_application_remove_package(SEXP r_application,
                                               SEXP r_package);
+
+/*******************************************************************************
+ * call_stack
+ *******************************************************************************/
+
+instrumentr_function_t instrumentr_application_function_map_lookup(
+    instrumentr_application_t application,
+    SEXP r_closure,
+    SEXP r_call);
+
+instrumentr_function_t instrumentr_application_function_map_insert(
+    instrumentr_application_t application,
+    instrumentr_function_t function,
+    SEXP r_closure);
+
+void instrumentr_application_function_map_remove(
+    instrumentr_application_t application,
+    SEXP r_closure);
+
+instrumentr_function_t
+instrumentr_application_function_map_add(instrumentr_application_t application,
+                                         SEXP r_closure);
+
+void instrumentr_application_function_map_update_name(
+    instrumentr_application_t application,
+    SEXP r_symbol,
+    SEXP r_value,
+    SEXP r_rho);
+
+SEXP r_instrumentr_application_function_map_update_properties(
+    SEXP r_application,
+    SEXP r_package,
+    SEXP r_name,
+    SEXP r_closure,
+    SEXP r_rho,
+    SEXP r_pub,
+    SEXP r_s3_generic,
+    SEXP r_s3_method);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_APPLICATION_H */

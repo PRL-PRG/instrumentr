@@ -3,6 +3,10 @@
 
 #include <instrumentr/Rincludes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void instrumentr_initialize_utilities(SEXP r_package_environment,
                                       SEXP r_state_environment);
 
@@ -44,5 +48,9 @@ char* instrumentr_duplicate_string(const char* original);
 char* int_to_string(int value);
 
 char* address_to_string(void* ptr);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_UTILITIES_H */

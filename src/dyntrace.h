@@ -2,6 +2,13 @@
 #define INSTRUMENTR_DYNTRACE_H
 
 #include <instrumentr/Rincludes.h>
+#include "tracer.h"
+
+dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer);
+
+void instrumentr_dyntracer_destroy(dyntracer_t* dyntracer);
+
+instrumentr_tracer_t instrumentr_dyntracer_get_tracer(dyntracer_t* dyntracer);
 
 void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
                                SEXP r_call,
@@ -69,5 +76,7 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
                               const SEXP r_symbol,
                               const SEXP r_value,
                               const SEXP r_rho);
+
+void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object);
 
 #endif /* INSTRUMENTR_DYNTRACE_H */

@@ -43,13 +43,18 @@ instrumentr_frame_t instrumentr_frame_create(instrumentr_object_t kernel) {
 }
 
 instrumentr_frame_t
+instrumentr_frame_create_from_call(instrumentr_call_t call) {
+    return instrumentr_frame_create((instrumentr_object_t) call);
+}
+
+instrumentr_frame_t
 instrumentr_frame_create_from_promise(instrumentr_promise_t promise) {
     return instrumentr_frame_create((instrumentr_object_t) promise);
 }
 
 instrumentr_frame_t
-instrumentr_frame_create_from_value(instrumentr_value_t value) {
-    return instrumentr_frame_create((instrumentr_object_t) value);
+instrumentr_frame_create_from_context(instrumentr_context_t context) {
+    return instrumentr_frame_create((instrumentr_object_t) context);
 }
 
 /********************************************************************************

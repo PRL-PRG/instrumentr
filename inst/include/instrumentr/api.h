@@ -230,30 +230,31 @@
  CALL STACK API
  *******************************************************************************/
 
-#define INSTRUMENTR_CALL_STACK_API_MAP(MACRO)                                  \
-    MACRO(instrumentr_call_stack_wrap,                                         \
-          SEXP,                                                                \
-          instrumentr_call_stack_t call_stack)                                 \
-    MACRO(instrumentr_call_stack_unwrap,                                       \
-          instrumentr_call_stack_t,                                            \
-          SEXP r_call_stack)                                                   \
-    MACRO(instrumentr_call_stack_get_size,                                     \
-          int,                                                                 \
-          instrumentr_call_stack_t call_stack)                                 \
-    MACRO(r_instrumentr_call_stack_get_size, SEXP, SEXP r_call_stack)          \
-    MACRO(instrumentr_call_stack_push,                                         \
-          void,                                                                \
-          instrumentr_call_stack_t call_stack,                                 \
-          instrumentr_call_t call)                                             \
-    MACRO(                                                                     \
-        instrumentr_call_stack_pop, void, instrumentr_call_stack_t call_stack) \
-    MACRO(instrumentr_call_stack_peek_frame,                                   \
-          instrumentr_call_t,                                                  \
-          instrumentr_call_stack_t call_stack,                                 \
-          int index)                                                           \
-    MACRO(r_instrumentr_call_stack_peek_frame,                                 \
-          SEXP,                                                                \
-          SEXP r_call_stack,                                                   \
+#define INSTRUMENTR_CALL_STACK_API_MAP(MACRO)                         \
+    MACRO(instrumentr_call_stack_wrap,                                \
+          SEXP,                                                       \
+          instrumentr_call_stack_t call_stack)                        \
+    MACRO(instrumentr_call_stack_unwrap,                              \
+          instrumentr_call_stack_t,                                   \
+          SEXP r_call_stack)                                          \
+    MACRO(instrumentr_call_stack_get_size,                            \
+          int,                                                        \
+          instrumentr_call_stack_t call_stack)                        \
+    MACRO(r_instrumentr_call_stack_get_size, SEXP, SEXP r_call_stack) \
+    MACRO(instrumentr_call_stack_push_frame,                          \
+          void,                                                       \
+          instrumentr_call_stack_t call_stack,                        \
+          instrumentr_call_t call)                                    \
+    MACRO(instrumentr_call_stack_pop_frame,                           \
+          void,                                                       \
+          instrumentr_call_stack_t call_stack)                        \
+    MACRO(instrumentr_call_stack_peek_frame,                          \
+          instrumentr_call_t,                                         \
+          instrumentr_call_stack_t call_stack,                        \
+          int index)                                                  \
+    MACRO(r_instrumentr_call_stack_peek_frame,                        \
+          SEXP,                                                       \
+          SEXP r_call_stack,                                          \
           SEXP r_index)
 
 /********************************************************************************

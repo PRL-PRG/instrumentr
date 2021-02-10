@@ -110,7 +110,8 @@ get_functions.instrumentr_package <- function(object) { # nolint
     .Call(C_instrumentr_package_get_functions, object)
 }
 
-create_package <- function(package_name,
+create_package <- function(application_ptr,
+                           package_name,
                            package_directory = dirname(system.file(package=package_name)),
                            package_environment = getNamespace(package_name),
                            attached = FALSE) {
@@ -127,14 +128,16 @@ create_package <- function(package_name,
 
         function_info <- get(function_name, envir=function_table)
 
-        function_ptr <- create_function(function_name,
-                                        length(formals(function_info$definition)),
-                                        function_info$definition,
-                                        function_info$public,
-                                        function_info$s3_generic,
-                                        function_info$s3_method)
-
-        .Call(C_instrumentr_package_add_function, package_ptr, function_ptr)
+        ## NOTE: calling this also adds the function to package
+        .Call(C_instrumentr_application_function_map_update_properties,
+              application_ptr,
+              package_ptr,
+              function_name,
+              function_info$definition,
+              package_environment,
+              function_info$public,
+              function_info$s3_generic,
+              function_info$s3_method)
     }
 
     message("Added ", length(get_functions(package_ptr)), " functions from ", package_name)

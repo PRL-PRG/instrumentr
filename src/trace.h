@@ -5,9 +5,11 @@
 
 SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment);
 
-SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer, SEXP r_application);
+SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer,
+                                                SEXP r_application);
 
-SEXP r_instrumentr_trace_tracing_finalization(SEXP r_tracer, SEXP r_application);
+SEXP r_instrumentr_trace_tracing_finalization(SEXP r_tracer,
+                                              SEXP r_application);
 
 SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
                                       SEXP r_application,
@@ -48,5 +50,25 @@ void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_package_t package,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call);
+
+void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
+                                          instrumentr_application_t application,
+                                          instrumentr_package_t package,
+                                          instrumentr_function_t function,
+                                          instrumentr_call_t call);
+
+void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
+                                         instrumentr_application_t application,
+                                         instrumentr_package_t package,
+                                         instrumentr_function_t function,
+                                         instrumentr_call_t call);
+
+void instrumentr_trace_context_entry(instrumentr_tracer_t tracer,
+                                     instrumentr_application_t application,
+                                     instrumentr_context_t context);
+
+void instrumentr_trace_context_exit(instrumentr_tracer_t tracer,
+                                    instrumentr_application_t application,
+                                    instrumentr_context_t context);
 
 #endif /* INSTRUMENTR_TRACE_H */

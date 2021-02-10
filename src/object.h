@@ -4,6 +4,10 @@
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void (*instrumentr_object_finalizer_t)(instrumentr_object_t object);
 
 /*******************************************************************************
@@ -109,5 +113,9 @@ SEXP r_instrumentr_object_get_data(SEXP r_object);
 /* mutator  */
 void instrumentr_object_remove_data(void* object);
 SEXP r_instrumentr_object_remove_data(SEXP r_object);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_OBJECT_H */

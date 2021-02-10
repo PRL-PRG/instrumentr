@@ -7,6 +7,10 @@
 #include "promise.h"
 #include "context.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************************************************************************
  * create
  *******************************************************************************/
@@ -59,5 +63,9 @@ SEXP r_instrumentr_frame_is_context(SEXP r_frame);
 
 instrumentr_context_t instrumentr_frame_as_context(instrumentr_frame_t frame);
 SEXP r_instrumentr_frame_as_context(SEXP r_frame);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_FRAME_H */

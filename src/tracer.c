@@ -7,7 +7,7 @@
 #include "interop.h"
 #include "utilities.h"
 #include "dyntrace.h"
-#include "dyntracer.h"
+#include "dyntrace.h"
 
 /********************************************************************************
  * definition

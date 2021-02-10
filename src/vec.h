@@ -13,6 +13,9 @@
 
 #define VEC_VERSION "0.2.1"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define vec_unpack_(v)\
   (char**)&(v)->data, &(v)->length, &(v)->capacity, sizeof(*(v)->data)
@@ -177,5 +180,9 @@ typedef vec_t(int) vec_int_t;
 typedef vec_t(char) vec_char_t;
 typedef vec_t(float) vec_float_t;
 typedef vec_t(double) vec_double_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

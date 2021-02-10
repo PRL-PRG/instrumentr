@@ -3,6 +3,10 @@
 
 #include <instrumentr/Rincludes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void instrumentr_log_error(const char* fmt, ...);
 
 void instrumentr_log_warning(const char* fmt, ...);
@@ -40,4 +44,9 @@ SEXP r_instrumentr_get_object_details(SEXP r_value,
                                       SEXP r_variable,
                                       SEXP r_environment,
                                       SEXP r_peek);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* INSTRUMENTR_INTEROP_H */

@@ -418,3 +418,18 @@ get_parameter_count <- function(object) { # nolint
 get_argument_count <- function(object) { # nolint
     UseMethod("get_argument_count")
 }
+
+#' @export
+has_name <- function(object) { # nolint
+    UseMethod("has_name")
+}
+
+#' @export
+is_inner <- function(object) { # nolint
+    UseMethod("is_inner")
+}
+
+#' @export
+get_parent <- function(object) { # nolint
+    UseMethod("get_parent")
+}

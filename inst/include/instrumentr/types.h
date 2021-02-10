@@ -170,20 +170,17 @@ typedef void (*closure_call_entry_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_application_t application,
-    SEXP r_call,
-    SEXP r_op,
-    SEXP r_args,
-    SEXP r_rho);
+    instrumentr_package_t package,
+    instrumentr_function_t function,
+    instrumentr_call_t call);
 
 typedef void (*closure_call_exit_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_application_t application,
-    SEXP r_call,
-    SEXP r_op,
-    SEXP r_args,
-    SEXP r_rho,
-    SEXP r_result);
+    instrumentr_package_t package,
+    instrumentr_function_t function,
+    instrumentr_call_t call);
 
 typedef void (*eval_entry_function_t)(instrumentr_tracer_t tracer,
                                       instrumentr_callback_t callback,

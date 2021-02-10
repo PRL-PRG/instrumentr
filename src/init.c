@@ -95,6 +95,7 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_application_add_package, 2),
     DECLARE_BINDING(instrumentr_application_remove_package, 2),
     DECLARE_BINDING(instrumentr_application_get_call_stack, 1),
+    DECLARE_BINDING(instrumentr_application_function_map_update_properties, 8),
 
     /* call_stack */
     DECLARE_BINDING(instrumentr_call_stack_get_size, 1),
@@ -114,10 +115,12 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_package_get_functions, 1),
 
     /* function */
-    DECLARE_BINDING(instrumentr_function_create_closure, 6),
+    DECLARE_BINDING(instrumentr_function_has_name, 1),
     DECLARE_BINDING(instrumentr_function_get_name, 1),
     DECLARE_BINDING(instrumentr_function_get_parameter_count, 1),
     DECLARE_BINDING(instrumentr_function_get_definition, 1),
+    DECLARE_BINDING(instrumentr_function_is_inner, 1),
+    DECLARE_BINDING(instrumentr_function_get_parent, 1),
     DECLARE_BINDING(instrumentr_function_is_public, 1),
     DECLARE_BINDING(instrumentr_function_is_s3_generic, 1),
     DECLARE_BINDING(instrumentr_function_is_s3_method, 1),
@@ -176,8 +179,7 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_exec_stats_get_execution_count, 1),
     DECLARE_BINDING(instrumentr_exec_stats_as_data_frame, 1),
 
-    {NULL, NULL, 0}
-};
+    {NULL, NULL, 0}};
 
 void R_init_instrumentr(DllInfo* dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);

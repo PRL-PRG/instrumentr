@@ -92,7 +92,6 @@ instrumentr_package_t instrumentr_package_create(const char* name,
     if (strcmp(name, "base") == 0) {
         int funtab_size = instrumentr_funtab_get_size();
         for(int i = 0; i < funtab_size; ++i) {
-            //printf("here %d", i);
             vec_push(&package->basic_functions, instrumentr_funtab_create_function(i));
         }
     }
@@ -318,6 +317,7 @@ void instrumentr_package_add_function(instrumentr_package_t package,
     vec_find(&package->functions, function, index);
     if (index == -1) {
         vec_push(&package->functions, function);
+        instrumentr_object_acquire(function);
     } else {
         instrumentr_log_error("function '%s' already added to package %s",
                               instrumentr_function_get_name(function),
@@ -337,6 +337,7 @@ SEXP r_instrumentr_package_add_function(SEXP r_package, SEXP r_function) {
 void instrumentr_package_remove_function(instrumentr_package_t package,
                                          instrumentr_function_t function) {
     vec_remove(&package->functions, function);
+    instrumentr_object_release(function);
 }
 
 /* accessor  */

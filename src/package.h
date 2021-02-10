@@ -5,6 +5,10 @@
 #include <instrumentr/types.h>
 #include "function.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************************************************************************
  * create
  *******************************************************************************/
@@ -105,5 +109,9 @@ void instrumentr_package_remove_function(instrumentr_package_t package,
 instrumentr_function_t instrumentr_package_get_basic_function_by_position(
     instrumentr_package_t package,
     int position);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_PACKAGE_H */

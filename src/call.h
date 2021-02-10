@@ -6,6 +6,10 @@
 #include "parameter.h"
 #include "function.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************************************************************************
  * create
  *******************************************************************************/
@@ -109,5 +113,9 @@ SEXP r_instrumentr_call_get_parameters(SEXP r_call);
 /* mutator  */
 void instrumentr_call_append_parameter(instrumentr_call_t call,
                                        instrumentr_parameter_t parameter);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_CALL_H */

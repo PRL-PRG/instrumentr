@@ -15,6 +15,7 @@ struct instrumentr_function_impl_t {
     const char* name;
     int parameter_count;
     instrumentr_function_definition_t definition;
+    instrumentr_function_t parent;
     int pub;
     int s3_generic;
     int s3_method;
@@ -29,12 +30,14 @@ void instrumentr_function_finalize(instrumentr_object_t object) {
     instrumentr_function_t function = (instrumentr_function_t)(object);
 
     free((char*) (function->name));
-
-    if (function->type == INSTRUMENTR_FUNCTION_CLOSURE) {
-        instrumentr_sexp_release(function->definition.sexp);
-    }
+    function->name = NULL;
 
     function->definition.ccode = NULL;
+
+    if(function->parent != NULL) {
+        instrumentr_object_release(function->parent);
+        function->parent = NULL;
+    }
 }
 
 /********************************************************************************
@@ -47,6 +50,7 @@ instrumentr_function_create(instrumentr_function_type_t type,
                             const char* name,
                             int parameter_count,
                             instrumentr_function_definition_t definition,
+                            instrumentr_function_t parent,
                             int pub,
                             int s3_generic,
                             int s3_method,
@@ -66,11 +70,13 @@ instrumentr_function_create(instrumentr_function_type_t type,
     function->name = duplicate_name;
     function->parameter_count = parameter_count;
 
-    if (type == INSTRUMENTR_FUNCTION_CLOSURE) {
-        instrumentr_sexp_acquire(definition.sexp);
-    }
-
+    /* NOTE: definition sexp is not acquired */
     function->definition = definition;
+
+    function->parent = parent;
+    if(parent != NULL) {
+        instrumentr_object_acquire(parent);
+    }
 
     function->pub = pub;
     function->s3_generic = s3_generic;
@@ -93,6 +99,7 @@ instrumentr_function_t instrumentr_function_create_builtin(int funtab_index,
                                        name,
                                        parameter_count,
                                        definition,
+                                       NULL,
                                        0,
                                        0,
                                        0,
@@ -112,18 +119,21 @@ instrumentr_function_t instrumentr_function_create_special(int funtab_index,
                                        name,
                                        parameter_count,
                                        definition,
+                                       NULL,
                                        0,
                                        0,
                                        0,
                                        internal);
 }
 
-instrumentr_function_t instrumentr_function_create_closure(const char* name,
-                                                           int parameter_count,
-                                                           SEXP sexp,
-                                                           int pub,
-                                                           int s3_generic,
-                                                           int s3_method) {
+instrumentr_function_t
+instrumentr_function_create_closure(const char* name,
+                                    int parameter_count,
+                                    SEXP sexp,
+                                    instrumentr_function_t parent,
+                                    int pub,
+                                    int s3_generic,
+                                    int s3_method) {
     instrumentr_function_definition_t definition;
     definition.sexp = sexp;
 
@@ -132,26 +142,11 @@ instrumentr_function_t instrumentr_function_create_closure(const char* name,
                                        name,
                                        parameter_count,
                                        definition,
+                                       parent,
                                        pub,
                                        s3_generic,
                                        s3_method,
                                        0);
-}
-
-SEXP r_instrumentr_function_create_closure(SEXP r_name,
-                                           SEXP r_parameter_count,
-                                           SEXP r_definition,
-                                           SEXP r_pub,
-                                           SEXP r_s3_generic,
-                                           SEXP r_s3_method) {
-    const char* name = instrumentr_r_character_to_c_string(r_name);
-    int parameter_count = instrumentr_r_integer_to_c_int(r_parameter_count);
-    int pub = instrumentr_r_logical_to_c_int(r_pub);
-    int s3_generic = instrumentr_r_logical_to_c_int(r_s3_generic);
-    int s3_method = instrumentr_r_logical_to_c_int(r_s3_method);
-    instrumentr_function_t function = instrumentr_function_create_closure(
-        name, parameter_count, r_definition, pub, s3_generic, s3_method);
-    return instrumentr_function_wrap(function);
 }
 
 /********************************************************************************
@@ -222,13 +217,30 @@ SEXP r_instrumentr_function_get_name(SEXP r_function) {
     return instrumentr_c_string_to_r_character(name);
 }
 
+int instrumentr_function_has_name(instrumentr_function_t function) {
+    return function->name != NULL;
+}
+
+SEXP r_instrumentr_function_has_name(SEXP r_function) {
+    instrumentr_function_t function = instrumentr_function_unwrap(r_function);
+    int result = instrumentr_function_has_name(function);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+
+/* mutator */
+void instrumentr_function_set_name(instrumentr_function_t function,
+                                   const char* name){
+    function->name = instrumentr_duplicate_string(name);
+}
+
 /********************************************************************************
  * definition
  *******************************************************************************/
 
 /* accessor  */
 instrumentr_function_definition_t
-instrumentr_function_get_definition(instrumentr_function_t function) {
+    instrumentr_function_get_definition(instrumentr_function_t function) {
     return function->definition;
 }
 
@@ -244,6 +256,32 @@ SEXP r_instrumentr_function_get_definition(SEXP r_function) {
         return instrumentr_c_pointer_to_r_externalptr(
             definition.ccode, R_NilValue, R_NilValue, NULL);
     }
+}
+
+/********************************************************************************
+ * parent
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_function_is_inner(instrumentr_function_t function) {
+    return function->parent != NULL;
+}
+
+SEXP r_instrumentr_function_is_inner(SEXP r_function) {
+    instrumentr_function_t function = instrumentr_function_unwrap(r_function);
+    int result = instrumentr_function_is_inner(function);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+/* accessor  */
+instrumentr_function_t instrumentr_function_get_parent(instrumentr_function_t function) {
+    return function->parent;
+}
+
+SEXP r_instrumentr_function_get_parent(SEXP r_function) {
+    instrumentr_function_t function = instrumentr_function_unwrap(r_function);
+    instrumentr_function_t parent = instrumentr_function_get_parent(function);
+    return instrumentr_function_wrap(parent);
 }
 
 /********************************************************************************
@@ -276,6 +314,12 @@ SEXP r_instrumentr_function_is_public(SEXP r_function) {
     return instrumentr_c_int_to_r_logical(result);
 }
 
+/* mutator */
+void instrumentr_function_set_public(instrumentr_function_t function,
+                                     int pub) {
+    function->pub = pub;
+}
+
 /********************************************************************************
  * s3_generic
  *******************************************************************************/
@@ -291,6 +335,11 @@ SEXP r_instrumentr_function_is_s3_generic(SEXP r_function) {
     return instrumentr_c_int_to_r_logical(result);
 }
 
+/* mutator */
+void instrumentr_function_set_s3_generic(instrumentr_function_t function, int s3_generic) {
+    function->s3_generic = s3_generic;
+}
+
 /********************************************************************************
  * s3_method
  *******************************************************************************/
@@ -304,6 +353,12 @@ SEXP r_instrumentr_function_is_s3_method(SEXP r_function) {
     instrumentr_function_t function = instrumentr_function_unwrap(r_function);
     int result = instrumentr_function_is_s3_method(function);
     return instrumentr_c_int_to_r_logical(result);
+}
+
+/* mutator */
+void instrumentr_function_set_s3_method(instrumentr_function_t function,
+                                         int s3_method) {
+    function->s3_method = s3_method;
 }
 
 /********************************************************************************

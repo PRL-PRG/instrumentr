@@ -21,7 +21,7 @@ handle_current_packages <- function(tracer_ptr, application_ptr) {
     )
 
     create_and_add <- function(package_name, attached) {
-        package_ptr <- create_package(package_name, attached = attached)
+        package_ptr <- create_package(application_ptr, package_name, attached = attached)
         add_package(application_ptr, package_ptr)
     }
 
@@ -39,40 +39,40 @@ handle_current_packages <- function(tracer_ptr, application_ptr) {
 handle_future_packages <- function(tracer_ptr, application_ptr) {
 
     handle_package_on_load <- function(package_name, ...) {
-        .Call(C_instrumentr_tracer_disable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_disable, tracer_ptr)
 
-        package_ptr <- create_package(package_name, attached = FALSE)
+        package_ptr <- create_package(application_ptr, package_name, attached = FALSE)
         .Call(C_instrumentr_trace_package_load, tracer_ptr, application_ptr, package_ptr)
 
-        .Call(C_instrumentr_tracer_enable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_enable, tracer_ptr)
     }
 
     handle_package_attach <- function(package_name, ...) {
-        .Call(C_instrumentr_tracer_disable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_disable, tracer_ptr)
 
         package_ptr <- get_package(application_ptr, package_name)
         .Call(C_instrumentr_trace_package_attach, tracer_ptr, application_ptr, package_ptr)
 
-        .Call(C_instrumentr_tracer_enable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_enable, tracer_ptr)
     }
 
     handle_package_detach <- function(package_name, ...) {
-        .Call(C_instrumentr_tracer_disable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_disable, tracer_ptr)
 
         package_ptr <- get_package(application_ptr, package_name)
         .Call(C_instrumentr_trace_package_detach, tracer_ptr, application_ptr, package_ptr)
 
-        .Call(C_instrumentr_tracer_enable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_enable, tracer_ptr)
     }
 
     handle_package_on_unload <- function(package_name, ...) {
-        .Call(C_instrumentr_tracer_disable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_disable, tracer_ptr)
 
         package_ptr <- get_package(application_ptr, package_name)
         .Call(C_instrumentr_trace_package_unload, tracer_ptr, application_ptr, package_ptr)
         .Call(C_instrumentr_application_remove_package, application_ptr, package_ptr)
 
-        .Call(C_instrumentr_tracer_enable, tracer_ptr)
+        #.Call(C_instrumentr_tracer_enable, tracer_ptr)
     }
 
     future_packages <- setdiff(unname(installed.packages()[,1]), loadedNamespaces())
