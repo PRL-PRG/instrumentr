@@ -42,7 +42,10 @@ class Callback: public Object {
         VariableDefinition,
         VariableAssignment,
         VariableRemoval,
-        VariableLookup
+        VariableLookup,
+        ContextEntry,
+        ContextExit,
+        ContextJump
     };
 
     Callback(Type type, void* function, bool is_r_function);

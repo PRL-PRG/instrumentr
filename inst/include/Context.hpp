@@ -33,6 +33,9 @@
 #include "ObjectDuplicateCallback.hpp"
 #include "VectorCopyCallback.hpp"
 #include "MatrixCopyCallback.hpp"
+#include "ContextEntryCallback.hpp"
+#include "ContextExitCallback.hpp"
+#include "ContextJumpCallback.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -67,14 +70,13 @@ class Context: public Object {
 #define INSTRUMENTR_GENERATE_CALLBACK_PREDICATE(CALLBACK_CLASS,    \
                                                 CALLBACK_VARIABLE) \
     bool has_##CALLBACK_VARIABLE() const {                         \
-        return (bool) ( CALLBACK_VARIABLE##_ );                    \
+        return (bool) (CALLBACK_VARIABLE##_);                      \
     }
 
 #define INSTRUMENTR_GENERATE_CALLBACK_API(CALLBACK_CLASS, CALLBACK_VARIABLE) \
     INSTRUMENTR_GENERATE_CALLBACK_GETTER(CALLBACK_CLASS, CALLBACK_VARIABLE)  \
     INSTRUMENTR_GENERATE_CALLBACK_SETTER(CALLBACK_CLASS, CALLBACK_VARIABLE)  \
     INSTRUMENTR_GENERATE_CALLBACK_PREDICATE(CALLBACK_CLASS, CALLBACK_VARIABLE)
-
 
     INSTRUMENTR_GENERATE_CALLBACK_API(ApplicationLoadCallback,
                                       application_load_callback)
@@ -129,6 +131,12 @@ class Context: public Object {
                                       variable_removal_callback)
     INSTRUMENTR_GENERATE_CALLBACK_API(VariableLookupCallback,
                                       variable_lookup_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ContextEntryCallback,
+                                      context_entry_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ContextExitCallback,
+                                      context_exit_callback)
+    INSTRUMENTR_GENERATE_CALLBACK_API(ContextJumpCallback,
+                                      context_jump_callback)
 
     void set_environment(SEXP r_environment) {
         R_ReleaseObject(r_environment_);
@@ -314,6 +322,9 @@ class Context: public Object {
     VariableAssignmentCallbackSPtr variable_assignment_callback_;
     VariableRemovalCallbackSPtr variable_removal_callback_;
     VariableLookupCallbackSPtr variable_lookup_callback_;
+    ContextEntryCallbackSPtr context_entry_callback_;
+    ContextExitCallbackSPtr context_exit_callback_;
+    ContextJumpCallbackSPtr context_jump_callback_;
     ApplicationSPtr application_;
     SEXP r_environment_;
     std::unordered_map<std::string, std::unordered_set<std::string>> packages_;

@@ -85,6 +85,12 @@ std::string callback_type_to_string(Callback::Type callback_type) {
         return "instrumentr_variable_removal_callback";
     case Callback::Type::VariableLookup:
         return "instrumentr_variable_lookup_callback";
+    case Callback::Type::ContextEntry:
+        return "instrumentr_context_entry_callback";
+    case Callback::Type::ContextExit:
+        return "instrumentr_context_exit_callback";
+    case Callback::Type::ContextJump:
+        return "instrumentr_context_jump_callback";
     }
     return "undefined";
 }

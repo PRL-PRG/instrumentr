@@ -16,14 +16,6 @@ using instrumentr::ApplicationLoadCallbackSPtr;
 using instrumentr::ApplicationSPtr;
 using instrumentr::ApplicationUnloadCallback;
 using instrumentr::ApplicationUnloadCallbackSPtr;
-using instrumentr::ObjectCoerceCallback;
-using instrumentr::ObjectCoerceCallbackSPtr;
-using instrumentr::ObjectDuplicateCallback;
-using instrumentr::ObjectDuplicateCallbackSPtr;
-using instrumentr::VectorCopyCallback;
-using instrumentr::VectorCopyCallbackSPtr;
-using instrumentr::MatrixCopyCallback;
-using instrumentr::MatrixCopyCallbackSPtr;
 using instrumentr::BuiltinCallEntryCallback;
 using instrumentr::BuiltinCallEntryCallbackSPtr;
 using instrumentr::BuiltinCallExitCallback;
@@ -41,6 +33,12 @@ using instrumentr::ClosureCallEntryCallbackSPtr;
 using instrumentr::ClosureCallExitCallback;
 using instrumentr::ClosureCallExitCallbackSPtr;
 using instrumentr::Context;
+using instrumentr::ContextEntryCallback;
+using instrumentr::ContextEntryCallbackSPtr;
+using instrumentr::ContextExitCallback;
+using instrumentr::ContextExitCallbackSPtr;
+using instrumentr::ContextJumpCallback;
+using instrumentr::ContextJumpCallbackSPtr;
 using instrumentr::ContextSPtr;
 using instrumentr::EvalEntryCallback;
 using instrumentr::EvalEntryCallbackSPtr;
@@ -57,6 +55,12 @@ using instrumentr::GcAllocationCallback;
 using instrumentr::GcAllocationCallbackSPtr;
 using instrumentr::GcUnmarkCallback;
 using instrumentr::GcUnmarkCallbackSPtr;
+using instrumentr::MatrixCopyCallback;
+using instrumentr::MatrixCopyCallbackSPtr;
+using instrumentr::ObjectCoerceCallback;
+using instrumentr::ObjectCoerceCallbackSPtr;
+using instrumentr::ObjectDuplicateCallback;
+using instrumentr::ObjectDuplicateCallbackSPtr;
 using instrumentr::Package;
 using instrumentr::PackageAttachCallback;
 using instrumentr::PackageAttachCallbackSPtr;
@@ -80,6 +84,8 @@ using instrumentr::VariableLookupCallback;
 using instrumentr::VariableLookupCallbackSPtr;
 using instrumentr::VariableRemovalCallback;
 using instrumentr::VariableRemovalCallbackSPtr;
+using instrumentr::VectorCopyCallback;
+using instrumentr::VectorCopyCallbackSPtr;
 
 SEXP r_context_create_context(SEXP r_environment) {
     ContextSPtr context = Context::create(r_environment);
@@ -323,7 +329,8 @@ SEXP r_context_has_call_exit_callback(SEXP r_context) {
 
 SEXP r_context_set_object_coerce_callback(SEXP r_context, SEXP r_callback) {
     ContextSPtr context = from_sexp<Context>(r_context);
-    ObjectCoerceCallbackSPtr callback = from_sexp<ObjectCoerceCallback>(r_callback);
+    ObjectCoerceCallbackSPtr callback =
+        from_sexp<ObjectCoerceCallback>(r_callback);
     context->set_object_coerce_callback(callback);
     return R_NilValue;
 }
@@ -341,14 +348,16 @@ SEXP r_context_has_object_coerce_callback(SEXP r_context) {
 
 SEXP r_context_set_object_duplicate_callback(SEXP r_context, SEXP r_callback) {
     ContextSPtr context = from_sexp<Context>(r_context);
-    ObjectDuplicateCallbackSPtr callback = from_sexp<ObjectDuplicateCallback>(r_callback);
+    ObjectDuplicateCallbackSPtr callback =
+        from_sexp<ObjectDuplicateCallback>(r_callback);
     context->set_object_duplicate_callback(callback);
     return R_NilValue;
 }
 
 SEXP r_context_get_object_duplicate_callback(SEXP r_context) {
     ContextSPtr context = from_sexp<Context>(r_context);
-    ObjectDuplicateCallbackSPtr callback = context->get_object_duplicate_callback();
+    ObjectDuplicateCallbackSPtr callback =
+        context->get_object_duplicate_callback();
     return to_sexp<ObjectDuplicateCallback>(callback);
 }
 
@@ -669,6 +678,63 @@ SEXP r_context_get_variable_lookup_callback(SEXP r_context) {
 SEXP r_context_has_variable_lookup_callback(SEXP r_context) {
     ContextSPtr context = from_sexp<Context>(r_context);
     return ScalarLogical(context->has_variable_lookup_callback());
+}
+
+SEXP r_context_set_context_entry_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ContextEntryCallbackSPtr callback =
+        from_sexp<ContextEntryCallback>(r_callback);
+    context->set_context_entry_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_context_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ContextEntryCallbackSPtr callback = context->get_context_entry_callback();
+    return to_sexp<ContextEntryCallback>(callback);
+}
+
+SEXP r_context_has_context_entry_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_context_entry_callback());
+}
+
+SEXP r_context_set_context_exit_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ContextExitCallbackSPtr callback =
+        from_sexp<ContextExitCallback>(r_callback);
+    context->set_context_exit_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_context_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ContextExitCallbackSPtr callback = context->get_context_exit_callback();
+    return to_sexp<ContextExitCallback>(callback);
+}
+
+SEXP r_context_has_context_exit_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_context_exit_callback());
+}
+
+SEXP r_context_set_context_jump_callback(SEXP r_context, SEXP r_callback) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ContextJumpCallbackSPtr callback =
+        from_sexp<ContextJumpCallback>(r_callback);
+    context->set_context_jump_callback(callback);
+    return R_NilValue;
+}
+
+SEXP r_context_get_context_jump_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    ContextJumpCallbackSPtr callback = context->get_context_jump_callback();
+    return to_sexp<ContextJumpCallback>(callback);
+}
+
+SEXP r_context_has_context_jump_callback(SEXP r_context) {
+    ContextSPtr context = from_sexp<Context>(r_context);
+    return ScalarLogical(context->has_context_jump_callback());
 }
 
 SEXP r_context_set_environment(SEXP r_context, SEXP r_environment) {

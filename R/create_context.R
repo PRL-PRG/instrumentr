@@ -30,6 +30,9 @@ create_context <- function(application_load_callback,  # nolint
                            variable_assignment_callback,
                            variable_removal_callback,
                            variable_lookup_callback,
+                           context_entry_callback,
+                           context_exit_callback,
+                           context_jump_callback,
                            packages = character(0),
                            functions = character(0)) {
 
@@ -163,6 +166,18 @@ create_context <- function(application_load_callback,  # nolint
 
     if (!missing(variable_lookup_callback)) {
         set_variable_lookup_callback(context, variable_lookup_callback)
+    }
+
+    if (!missing(context_entry_callback)) {
+        set_context_entry_callback(context, context_entry_callback)
+    }
+
+    if (!missing(context_exit_callback)) {
+        set_context_exit_callback(context, context_exit_callback)
+    }
+
+    if (!missing(context_jump_callback)) {
+        set_context_jump_callback(context, context_jump_callback)
     }
 
     context

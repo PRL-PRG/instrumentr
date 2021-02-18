@@ -2186,3 +2186,222 @@ create_variable_removal_callback.externalptr <- function(object) { # nolint
 is_instrumentr_variable_removal_callback <- function(object) { # nolint
     inherits(object, 'instrumentr_variable_removal_callback')
 }
+
+
+################################################################################
+## context_entry
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_context_entry_callback <- function(context, ...) {
+    UseMethod("get_context_entry_callback")
+}
+
+#' @export
+get_context_entry_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_context_entry_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_context_entry_callback <- function(context, callback, ...) {
+    UseMethod("set_context_entry_callback")
+}
+
+#' @export
+set_context_entry_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_context_entry_callback(callback)) {
+        callback <- create_context_entry_callback(callback)
+    }
+
+    .Call(C_context_set_context_entry_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_context_entry_callback <- function(object, ...) { # nolint
+    UseMethod("has_context_entry_callback")
+}
+
+#' @export
+has_context_entry_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_context_entry_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_context_entry_callback <- function(object) { # nolint
+    UseMethod("create_context_entry_callback")
+}
+
+#' @export
+create_context_entry_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 3))
+
+    .Call(C_context_entry_callback_create_from_r_function, object)
+}
+
+#' @export
+create_context_entry_callback.externalptr <- function(object) { # nolint
+    .Call(C_context_entry_callback_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_context_entry_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_context_entry_callback')
+}
+
+
+################################################################################
+## context_exit
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_context_exit_callback <- function(context, ...) {
+    UseMethod("get_context_exit_callback")
+}
+
+#' @export
+get_context_exit_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_context_exit_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_context_exit_callback <- function(context, callback, ...) {
+    UseMethod("set_context_exit_callback")
+}
+
+#' @export
+set_context_exit_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_context_exit_callback(callback)) {
+        callback <- create_context_exit_callback(callback)
+    }
+
+    .Call(C_context_set_context_exit_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_context_exit_callback <- function(object, ...) { # nolint
+    UseMethod("has_context_exit_callback")
+}
+
+#' @export
+has_context_exit_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_context_exit_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_context_exit_callback <- function(object) { # nolint
+    UseMethod("create_context_exit_callback")
+}
+
+#' @export
+create_context_exit_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 3))
+
+    .Call(C_context_exit_callback_create_from_r_function, object)
+}
+
+#' @export
+create_context_exit_callback.externalptr <- function(object) { # nolint
+    .Call(C_context_exit_callback_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_context_exit_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_context_exit_callback')
+}
+
+
+################################################################################
+## context_jump
+################################################################################
+
+## GET #########################################################################
+
+#' @export
+get_context_jump_callback <- function(context, ...) {
+    UseMethod("get_context_jump_callback")
+}
+
+#' @export
+get_context_jump_callback.instrumentr_context <- function(context, ...) { # nolint
+    .Call(C_context_get_context_jump_callback, context)
+}
+
+## SET #########################################################################
+
+#' @export
+set_context_jump_callback <- function(context, callback, ...) {
+    UseMethod("set_context_jump_callback")
+}
+
+#' @export
+set_context_jump_callback.instrumentr_context <- function(context, callback, ...) { # nolint
+
+    if (!is_instrumentr_context_jump_callback(callback)) {
+        callback <- create_context_jump_callback(callback)
+    }
+
+    .Call(C_context_set_context_jump_callback, context, callback)
+
+    invisible(NULL)
+}
+
+## HAS #########################################################################
+
+#' @export
+has_context_jump_callback <- function(object, ...) { # nolint
+    UseMethod("has_context_jump_callback")
+}
+
+#' @export
+has_context_jump_callback.instrumentr_context <- function(object, ...) { # nolint
+    .Call(C_context_has_context_jump_callback, object)
+}
+
+## CREATE ######################################################################
+
+#' @export
+create_context_jump_callback <- function(object) { # nolint
+    UseMethod("create_context_jump_callback")
+}
+
+#' @export
+create_context_jump_callback.function <- function(object) { # nolint
+    stopifnot(is_closure(object) && has_parameters(object, 3))
+
+    .Call(C_context_jump_callback_create_from_r_function, object)
+}
+
+#' @export
+create_context_jump_callback.externalptr <- function(object) { # nolint
+    .Call(C_context_jump_callback_create_from_c_function, object)
+}
+
+## IS ##########################################################################
+
+is_instrumentr_context_jump_callback <- function(object) { # nolint
+    inherits(object, 'instrumentr_context_jump_callback')
+}

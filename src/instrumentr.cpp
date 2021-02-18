@@ -111,6 +111,9 @@ void initialize_instrumentr(SEXP r_package_environment,
         VariableAssignmentCallback::initialize();
         VariableRemovalCallback::initialize();
         VariableLookupCallback::initialize();
+        ContextEntryCallback::initialize();
+        ContextExitCallback::initialize();
+        ContextJumpCallback::initialize();
     }
 }
 
@@ -156,6 +159,9 @@ void finalize_instrumentr() {
         VariableAssignmentCallback::finalize();
         VariableRemovalCallback::finalize();
         VariableLookupCallback::finalize();
+        ContextEntryCallback::finalize();
+        ContextExitCallback::finalize();
+        ContextJumpCallback::finalize();
     }
 }
 

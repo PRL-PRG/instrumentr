@@ -39,6 +39,9 @@
 #include "r_variable_assignment_callback.h"
 #include "r_variable_removal_callback.h"
 #include "r_variable_lookup_callback.h"
+#include "r_context_entry_callback.h"
+#include "r_context_exit_callback.h"
+#include "r_context_jump_callback.h"
 
 #include <R_ext/Rdynload.h>
 
@@ -157,6 +160,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"context_set_variable_lookup_callback", (DL_FUNC) &r_context_set_variable_lookup_callback, 2},
     {"context_get_variable_lookup_callback", (DL_FUNC) &r_context_get_variable_lookup_callback, 1},
     {"context_has_variable_lookup_callback", (DL_FUNC) &r_context_has_variable_lookup_callback, 1},
+    {"context_set_context_entry_callback", (DL_FUNC) &r_context_set_context_entry_callback, 2},
+    {"context_get_context_entry_callback", (DL_FUNC) &r_context_get_context_entry_callback, 1},
+    {"context_has_context_entry_callback", (DL_FUNC) &r_context_has_context_entry_callback, 1},
+    {"context_set_context_exit_callback", (DL_FUNC) &r_context_set_context_exit_callback, 2},
+    {"context_get_context_exit_callback", (DL_FUNC) &r_context_get_context_exit_callback, 1},
+    {"context_has_context_exit_callback", (DL_FUNC) &r_context_has_context_exit_callback, 1},
+    {"context_set_context_jump_callback", (DL_FUNC) &r_context_set_context_jump_callback, 2},
+    {"context_get_context_jump_callback", (DL_FUNC) &r_context_get_context_jump_callback, 1},
+    {"context_has_context_jump_callback", (DL_FUNC) &r_context_has_context_jump_callback, 1},
     {"context_set_environment", (DL_FUNC) &r_context_set_environment, 2},
     {"context_get_environment", (DL_FUNC) &r_context_get_environment, 1},
     {"context_trace_package", (DL_FUNC) &r_context_trace_package, 2},
@@ -376,6 +388,18 @@ static const R_CallMethodDef CallEntries[] = {
     /* VariableLookupCallback */
     {"variable_lookup_callback_create_from_r_function", (DL_FUNC) &r_variable_lookup_callback_create_from_r_function, 1},
     {"variable_lookup_callback_create_from_c_function", (DL_FUNC) &r_variable_lookup_callback_create_from_c_function, 1},
+
+    /* ContextEntryCallback */
+    {"context_entry_callback_create_from_r_function", (DL_FUNC) &r_context_entry_callback_create_from_r_function, 1},
+    {"context_entry_callback_create_from_c_function", (DL_FUNC) &r_context_entry_callback_create_from_c_function, 1},
+
+    /* ContextExitCallback */
+    {"context_exit_callback_create_from_r_function", (DL_FUNC) &r_context_exit_callback_create_from_r_function, 1},
+    {"context_exit_callback_create_from_c_function", (DL_FUNC) &r_context_exit_callback_create_from_c_function, 1},
+
+    /* ContextJumpCallback */
+    {"context_jump_callback_create_from_r_function", (DL_FUNC) &r_context_jump_callback_create_from_r_function, 1},
+    {"context_jump_callback_create_from_c_function", (DL_FUNC) &r_context_jump_callback_create_from_c_function, 1},
 
     {NULL, NULL, 0}
 };

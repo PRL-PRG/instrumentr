@@ -94,6 +94,16 @@ SEXP r_context_has_variable_removal_callback(SEXP r_context);
 SEXP r_context_set_variable_lookup_callback(SEXP r_context, SEXP r_callback);
 SEXP r_context_get_variable_lookup_callback(SEXP r_context);
 SEXP r_context_has_variable_lookup_callback(SEXP r_context);
+SEXP r_context_set_context_entry_callback(SEXP r_context, SEXP r_callback);
+SEXP r_context_get_context_entry_callback(SEXP r_context);
+SEXP r_context_has_context_entry_callback(SEXP r_context);
+SEXP r_context_set_context_exit_callback(SEXP r_context, SEXP r_callback);
+SEXP r_context_get_context_exit_callback(SEXP r_context);
+SEXP r_context_has_context_exit_callback(SEXP r_context);
+SEXP r_context_set_context_jump_callback(SEXP r_context, SEXP r_callback);
+SEXP r_context_get_context_jump_callback(SEXP r_context);
+SEXP r_context_has_context_jump_callback(SEXP r_context);
+
 SEXP r_context_set_environment(SEXP r_context, SEXP r_environment);
 SEXP r_context_get_environment(SEXP r_context);
 SEXP r_context_trace_package(SEXP r_context, SEXP r_package_name);

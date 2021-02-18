@@ -38,7 +38,11 @@ callback_specs <- list(
     list(name = "variable_assignment", parameter_count = 5),
     list(name = "variable_definition", parameter_count = 5),
     list(name = "variable_lookup", parameter_count = 5),
-    list(name = "variable_removal", parameter_count = 4)
+    list(name = "variable_removal", parameter_count = 4),
+
+    list(name = "context_entry", parameter_count = 3),
+    list(name = "context_exit", parameter_count = 3),
+    list(name = "context_jump", parameter_count = 3)
 )
 
 generate_get_api <- function(callback_spec) {
