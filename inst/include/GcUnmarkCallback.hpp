@@ -2,8 +2,13 @@
 #define INSTRUMENTR_GC_UNMARK_CALLBACK_HPP
 
 #include "Callback.hpp"
+#include "Application.hpp"
 
 namespace instrumentr {
+
+class Context;
+
+using ContextSPtr = std::shared_ptr<Context>;
 
 class GcUnmarkCallback: public Callback {
   public:
@@ -11,7 +16,8 @@ class GcUnmarkCallback: public Callback {
         : Callback(Type::GcUnmark, function, is_r_callback) {
     }
 
-    void invoke(SEXP r_context, SEXP r_application, SEXP r_object);
+    void
+    invoke(ContextSPtr context, ApplicationSPtr application, SEXP r_object);
 
     static void initialize();
 

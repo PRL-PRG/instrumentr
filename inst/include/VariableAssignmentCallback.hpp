@@ -2,8 +2,13 @@
 #define INSTRUMENTR_VARIABLE_ASSIGNMENT_CALLBACK_HPP
 
 #include "Callback.hpp"
+#include "Application.hpp"
 
 namespace instrumentr {
+
+class Context;
+
+using ContextSPtr = std::shared_ptr<Context>;
 
 class VariableAssignmentCallback: public Callback {
   public:
@@ -11,8 +16,8 @@ class VariableAssignmentCallback: public Callback {
         : Callback(Type::VariableAssignment, function, is_r_callback) {
     }
 
-    void invoke(SEXP r_context,
-                SEXP r_application,
+    void invoke(ContextSPtr context,
+                ApplicationSPtr application,
                 SEXP r_variable,
                 SEXP r_value,
                 SEXP r_rho);

@@ -2,8 +2,13 @@
 #define INSTRUMENTR_VARIABLE_REMOVAL_CALLBACK_HPP
 
 #include "Callback.hpp"
+#include "Application.hpp"
 
 namespace instrumentr {
+
+class Context;
+
+using ContextSPtr = std::shared_ptr<Context>;
 
 class VariableRemovalCallback: public Callback {
   public:
@@ -11,7 +16,10 @@ class VariableRemovalCallback: public Callback {
         : Callback(Type::VariableRemoval, function, is_r_callback) {
     }
 
-    void invoke(SEXP r_context, SEXP r_application, SEXP r_variable, SEXP r_rho);
+    void invoke(ContextSPtr context,
+                ApplicationSPtr application,
+                SEXP r_variable,
+                SEXP r_rho);
 
     static void initialize();
 

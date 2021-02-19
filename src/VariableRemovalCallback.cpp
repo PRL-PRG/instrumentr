@@ -25,15 +25,11 @@ SEXP VariableRemovalCallback::get_class() {
     return class_;
 }
 
-void VariableRemovalCallback::invoke(SEXP r_context,
-                                     SEXP r_application,
+void VariableRemovalCallback::invoke(ContextSPtr context,
+                                     ApplicationSPtr application,
                                      SEXP r_variable,
                                      SEXP r_rho) {
-    ContextSPtr context = from_sexp<Context>(r_context);
-
     if (is_c_callback()) {
-        ApplicationSPtr application = from_sexp<Application>(r_application);
-
         callback_t callback = get_function<callback_t>();
         callback(context, application, r_variable, r_rho);
     }
@@ -41,6 +37,9 @@ void VariableRemovalCallback::invoke(SEXP r_context,
     else {
         SEXP r_function_name = get_function_name();
         SEXP r_environment = context->get_environment();
+
+        SEXP r_context = to_sexp(context);
+        SEXP r_application = to_sexp(application);
 
         Rf_eval(
             Rf_lang5(

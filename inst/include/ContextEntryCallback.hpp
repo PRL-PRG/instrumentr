@@ -2,8 +2,16 @@
 #define INSTRUMENTR_CONTEXT_ENTRY_CALLBACK_HPP
 
 #include "Callback.hpp"
+#include "Application.hpp"
+
+using instrumentr::Application;
+using instrumentr::ApplicationSPtr;
 
 namespace instrumentr {
+
+class Context;
+
+using ContextSPtr = std::shared_ptr<Context>;
 
 class ContextEntryCallback: public Callback {
   public:
@@ -11,7 +19,9 @@ class ContextEntryCallback: public Callback {
         : Callback(Type::ContextEntry, function, is_r_callback) {
     }
 
-    void invoke(SEXP r_context, SEXP r_application, SEXP r_call_context);
+    void invoke(ContextSPtr context,
+                ApplicationSPtr application,
+                void* call_context);
 
     static void initialize();
 

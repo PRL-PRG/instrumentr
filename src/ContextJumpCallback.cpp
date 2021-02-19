@@ -1,5 +1,4 @@
 #include "ContextJumpCallback.hpp"
-#include "Application.hpp"
 #include "Context.hpp"
 
 using instrumentr::Application;
@@ -29,25 +28,28 @@ SEXP ContextJumpCallback::get_class() {
     return class_;
 }
 
-void ContextJumpCallback::invoke(SEXP r_context,
-                                 SEXP r_application,
-                                 SEXP r_call_context) {
-    ContextSPtr context = from_sexp<Context>(r_context);
-
+void ContextJumpCallback::invoke(ContextSPtr context,
+                                 ApplicationSPtr application,
+                                 void* call_context) {
     if (is_c_callback()) {
-        ApplicationSPtr application = from_sexp<Application>(r_application);
-
         callback_t callback = get_function<callback_t>();
-        callback(context, application, R_ExternalPtrAddr(r_call_context));
+        callback(context, application, call_context);
     }
     /**/
     else {
         SEXP r_function_name = get_function_name();
         SEXP r_environment = context->get_environment();
 
+        SEXP r_context = to_sexp(context);
+        SEXP r_application = to_sexp(application);
+        SEXP r_call_context =
+            PROTECT(R_MakeExternalPtr(call_context, R_NilValue, R_NilValue));
+
         Rf_eval(
             Rf_lang4(r_function_name, r_context, r_application, r_call_context),
             r_environment);
+
+        UNPROTECT(1);
     }
 }
 

@@ -388,10 +388,8 @@ void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_context = to_sexp(context);
-            SEXP r_application = to_sexp(application);
 
-            callback->invoke(r_context, r_application, r_object);
+            callback->invoke(context, application, r_object);
 
             context->finalize_callback_invocation();
         }
@@ -408,10 +406,8 @@ void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object) {
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_context = to_sexp(context);
-            SEXP r_application = to_sexp(application);
 
-            callback->invoke(r_context, r_application, r_object);
+            callback->invoke(context, application, r_object);
 
             context->finalize_callback_invocation();
         }
@@ -433,15 +429,9 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_application = to_sexp(application);
-            SEXP r_context = to_sexp(context);
-
-            SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
 
             callback->invoke(
-                r_context, r_application, r_variable, r_value, r_rho);
-
-            UNPROTECT(1);
+                context, application, r_symbol, r_value, r_rho);
 
             context->finalize_callback_invocation();
         }
@@ -463,15 +453,9 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_application = to_sexp(application);
-            SEXP r_context = to_sexp(context);
-
-            SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
 
             callback->invoke(
-                r_context, r_application, r_variable, r_value, r_rho);
-
-            UNPROTECT(1);
+                context, application, r_symbol, r_value, r_rho);
 
             context->finalize_callback_invocation();
         }
@@ -492,14 +476,8 @@ void dyntrace_variable_removal(dyntracer_t* dyntracer,
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_application = to_sexp(application);
-            SEXP r_context = to_sexp(context);
 
-            SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
-
-            callback->invoke(r_context, r_application, r_variable, r_rho);
-
-            UNPROTECT(1);
+            callback->invoke(context, application, r_symbol, r_rho);
 
             context->finalize_callback_invocation();
         }
@@ -521,15 +499,9 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_context = to_sexp(context);
-            SEXP r_application = to_sexp(application);
-
-            SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
 
             callback->invoke(
-                r_context, r_application, r_variable, r_value, r_rho);
-
-            UNPROTECT(1);
+                context, application, r_symbol, r_value, r_rho);
 
             context->finalize_callback_invocation();
         }
@@ -548,13 +520,8 @@ void dyntrace_context_entry(dyntracer_t* dyntracer, void* call_context) {
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_context = to_sexp(context);
-            SEXP r_application = to_sexp(application);
 
-            SEXP r_call_context =
-                R_MakeExternalPtr(call_context, R_NilValue, R_NilValue);
-
-            callback->invoke(r_context, r_application, r_call_context);
+            callback->invoke(context, application, call_context);
 
             context->finalize_callback_invocation();
         }
@@ -565,20 +532,14 @@ void dyntrace_context_exit(dyntracer_t* dyntracer, void* call_context) {
     ContextSPtr context = extract_context_from_dyntracer(dyntracer);
 
     if (context->is_tracing_enabled() && context->has_context_exit_callback()) {
-        ContextExitCallbackSPtr callback =
-            context->get_context_exit_callback();
+        ContextExitCallbackSPtr callback = context->get_context_exit_callback();
 
         if (callback->is_active()) {
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_context = to_sexp(context);
-            SEXP r_application = to_sexp(application);
 
-            SEXP r_call_context =
-                R_MakeExternalPtr(call_context, R_NilValue, R_NilValue);
-
-            callback->invoke(r_context, r_application, r_call_context);
+            callback->invoke(context, application, call_context);
 
             context->finalize_callback_invocation();
         }
@@ -592,20 +553,14 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
     ContextSPtr context = extract_context_from_dyntracer(dyntracer);
 
     if (context->is_tracing_enabled() && context->has_context_jump_callback()) {
-        ContextJumpCallbackSPtr callback =
-            context->get_context_jump_callback();
+        ContextJumpCallbackSPtr callback = context->get_context_jump_callback();
 
         if (callback->is_active()) {
             context->initialize_callback_invocation(callback);
 
             ApplicationSPtr application = context->get_application();
-            SEXP r_context = to_sexp(context);
-            SEXP r_application = to_sexp(application);
 
-            SEXP r_call_context =
-                R_MakeExternalPtr(call_context, R_NilValue, R_NilValue);
-
-            callback->invoke(r_context, r_application, r_call_context);
+            callback->invoke(context, application, call_context);
 
             context->finalize_callback_invocation();
         }
@@ -635,12 +590,9 @@ dyntracer_t* rdyntrace_create_dyntracer() {
                                          dyntrace_closure_call_entry);
     dyntracer_set_closure_exit_callback(dyntracer, dyntrace_closure_call_exit);
 
-    dyntracer_set_context_entry_callback(dyntracer,
-                                         dyntrace_context_entry);
-    dyntracer_set_context_exit_callback(dyntracer,
-                                        dyntrace_context_exit);
-    dyntracer_set_context_jump_callback(dyntracer,
-                                        dyntrace_context_jump);
+    dyntracer_set_context_entry_callback(dyntracer, dyntrace_context_entry);
+    dyntracer_set_context_exit_callback(dyntracer, dyntrace_context_exit);
+    dyntracer_set_context_jump_callback(dyntracer, dyntrace_context_jump);
 
     dyntracer_set_eval_entry_callback(dyntracer, dyntrace_eval_entry);
     dyntracer_set_eval_exit_callback(dyntracer, dyntrace_eval_exit);
