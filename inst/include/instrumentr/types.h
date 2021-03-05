@@ -3,6 +3,10 @@
 
 #include <instrumentr/Rincludes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* The type of the do_xxxx functions. */
 /* These are the built-in R functions. */
 typedef SEXP (*CCODE)(SEXP, SEXP, SEXP, SEXP);
@@ -128,6 +132,13 @@ typedef struct instrumentr_frame_impl_t* instrumentr_frame_t;
  *******************************************************************************/
 
 typedef struct instrumentr_context_impl_t* instrumentr_context_t;
+
+/********************************************************************************
+ * exec_stats
+ *******************************************************************************/
+
+typedef struct instrumentr_exec_stats_impl_t* instrumentr_exec_stats_t;
+
 
 typedef void (*tracing_initialization_function_t)(
     instrumentr_tracer_t tracer,
@@ -297,5 +308,9 @@ typedef void (*context_exit_function_t)(instrumentr_tracer_t tracer,
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO(MACRO) \
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, NULL)
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif /* INSTRUMENTR_TYPES_H */

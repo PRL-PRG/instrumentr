@@ -3,12 +3,11 @@
 
 #include <time.h>
 #include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
 
-/********************************************************************************
- * declaration
- *******************************************************************************/
-
-typedef struct instrumentr_exec_stats_impl_t* instrumentr_exec_stats_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /********************************************************************************
  * create
@@ -90,5 +89,9 @@ SEXP r_instrumentr_exec_stats_as_data_frame(SEXP r_exec_stats);
 /* mutator */
 void instrumentr_exec_stats_update(instrumentr_exec_stats_t exec_stats,
                                    clock_t time);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_EXEC_STATS_H */
