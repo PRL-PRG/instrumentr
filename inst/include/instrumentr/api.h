@@ -375,10 +375,20 @@
  CALLBACK API
  *******************************************************************************/
 
+
 #define INSTRUMENTR_CALLBACK_API_MAP(MACRO)                                   \
     MACRO(instrumentr_callback_wrap, SEXP, instrumentr_callback_t callback)   \
-    MACRO(                                                                    \
-        instrumentr_callback_unwrap, instrumentr_callback_t, SEXP r_callback) \
+    MACRO(instrumentr_callback_unwrap,                                        \
+          instrumentr_callback_t,                                             \
+          SEXP r_callback)                                                    \
+    MACRO(instrumentr_callback_create_from_r_function,                        \
+          instrumentr_callback_t,                                             \
+          SEXP r_function,                                                    \
+          instrumentr_event_t event);                                         \
+    MACRO(instrumentr_callback_create_from_c_function,                        \
+          instrumentr_callback_t,                                             \
+          void* c_function,                                                   \
+          instrumentr_event_t event);                                         \
     MACRO(instrumentr_callback_get_event,                                     \
           instrumentr_event_t,                                                \
           instrumentr_callback_t callback)                                    \
