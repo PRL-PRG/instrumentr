@@ -329,7 +329,7 @@
           instrumentr_argument_t argument)                                     \
     MACRO(r_instrumentr_argument_get_name, SEXP, SEXP r_argument)              \
     MACRO(instrumentr_argument_is_value, int, instrumentr_argument_t argument) \
-    MACRO(r_instrumentr_argument_is_value, SEXP, SEXP r_argument);             \
+    MACRO(r_instrumentr_argument_is_value, SEXP, SEXP r_argument)              \
     MACRO(instrumentr_argument_as_value,                                       \
           instrumentr_value_t,                                                 \
           instrumentr_argument_t argument)                                     \
@@ -384,11 +384,11 @@
     MACRO(instrumentr_callback_create_from_r_function,                        \
           instrumentr_callback_t,                                             \
           SEXP r_function,                                                    \
-          instrumentr_event_t event);                                         \
+          instrumentr_event_t event)                                          \
     MACRO(instrumentr_callback_create_from_c_function,                        \
           instrumentr_callback_t,                                             \
           void* c_function,                                                   \
-          instrumentr_event_t event);                                         \
+          instrumentr_event_t event)                                          \
     MACRO(instrumentr_callback_get_event,                                     \
           instrumentr_event_t,                                                \
           instrumentr_callback_t callback)                                    \

@@ -22,7 +22,6 @@ typedef union {
     CCODE ccode;
 } instrumentr_function_definition_t;
 
-
 typedef enum {
     INSTRUMENTR_EVENT_TRACING_INITIALIZATION = 0,
     INSTRUMENTR_EVENT_TRACING_FINALIZATION,
@@ -138,7 +137,6 @@ typedef struct instrumentr_context_impl_t* instrumentr_context_t;
  *******************************************************************************/
 
 typedef struct instrumentr_exec_stats_impl_t* instrumentr_exec_stats_t;
-
 
 typedef void (*tracing_initialization_function_t)(
     instrumentr_tracer_t tracer,
@@ -310,7 +308,7 @@ typedef void (*context_exit_function_t)(instrumentr_tracer_t tracer,
     INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, NULL)
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif /* INSTRUMENTR_TYPES_H */
