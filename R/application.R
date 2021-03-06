@@ -45,7 +45,7 @@
 #'
 #' @examples
 #' tracer <- create_tracer(tracing_entry =
-#'     function(tracer, callback, application) {
+#'     function(tracer, callback, state, application) {
 #'         cat("Name           : ", get_name(application), "\n")
 #'         cat("Directory      : ", get_directory(application), "\n")
 #'         cat("Code           : ", deparse(get_code(application)), "\n")

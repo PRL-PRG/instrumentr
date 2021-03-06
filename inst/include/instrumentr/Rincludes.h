@@ -8,5 +8,6 @@
 #ifdef USING_DYNTRACE
 #    include <Rdyntrace.h>
 #endif
+#undef length
 
 #endif /* INSTRUMENTR_R_INCLUDES_H */

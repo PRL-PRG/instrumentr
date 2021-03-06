@@ -20,27 +20,27 @@ library(instrumentr)
 
 ```{r create-context}
 
-package_load_callback <- function(tracer, callback, application, package) {
+package_load_callback <- function(tracer, callback, state, application, package) {
     cat("Loaded", get_name(package), "\n")
 }
 
-package_unload_callback <- function(tracer, callback, application, package) {
+package_unload_callback <- function(tracer, callback, state, application, package) {
     cat("Unloaded", get_name(package), "\n")
 }
 
-package_attach_callback <- function(tracer, callback, application, package) {
+package_attach_callback <- function(tracer, callback, state, application, package) {
     cat("Attached", get_name(package), "\n")
 }
 
-package_detach_callback <- function(tracer, callback, application, package) {
+package_detach_callback <- function(tracer, callback, state, application, package) {
     cat("Detached", get_name(package), "\n")
 }
 
-tracing_entry_callback <- function(tracer, callback, application) {
+tracing_entry_callback <- function(tracer, callback, state, application) {
     print("Trace Entry")
 }
 
-tracing_exit_callback <- function(tracer, callback, application) {
+tracing_exit_callback <- function(tracer, callback, state, application) {
     cat("Trace Exit")
     print(search())
     print(names(get_packages(application)))

@@ -55,6 +55,12 @@ typedef int instrumentr_id_t;
 typedef struct instrumentr_object_impl_t* instrumentr_object_t;
 
 /*******************************************************************************
+ * state
+ *******************************************************************************/
+
+typedef struct instrumentr_state_impl_t* instrumentr_state_t;
+
+/*******************************************************************************
  * application
  *******************************************************************************/
 
@@ -140,35 +146,42 @@ typedef struct instrumentr_exec_stats_impl_t* instrumentr_exec_stats_t;
 
 typedef void (*tracing_entry_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,
+                                         instrumentr_state_t state,
                                          instrumentr_application_t application);
 
 typedef void (*tracing_exit_function_t)(instrumentr_tracer_t tracer,
                                         instrumentr_callback_t callback,
+                                        instrumentr_state_t state,
                                         instrumentr_application_t application);
 
 typedef void (*package_load_function_t)(instrumentr_tracer_t tracer,
                                         instrumentr_callback_t callback,
+                                        instrumentr_state_t state,
                                         instrumentr_application_t application,
                                         instrumentr_package_t package);
 
 typedef void (*package_unload_function_t)(instrumentr_tracer_t tracer,
                                           instrumentr_callback_t callback,
+                                          instrumentr_state_t state,
                                           instrumentr_application_t application,
                                           instrumentr_package_t package);
 
 typedef void (*package_attach_function_t)(instrumentr_tracer_t tracer,
                                           instrumentr_callback_t callback,
+                                          instrumentr_state_t state,
                                           instrumentr_application_t application,
                                           instrumentr_package_t package);
 
 typedef void (*package_detach_function_t)(instrumentr_tracer_t tracer,
                                           instrumentr_callback_t callback,
+                                          instrumentr_state_t state,
                                           instrumentr_application_t application,
                                           instrumentr_package_t package);
 
 typedef void (*builtin_call_entry_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     instrumentr_package_t package,
     instrumentr_function_t function,
@@ -177,6 +190,7 @@ typedef void (*builtin_call_entry_function_t)(
 typedef void (*builtin_call_exit_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     instrumentr_package_t package,
     instrumentr_function_t function,
@@ -185,6 +199,7 @@ typedef void (*builtin_call_exit_function_t)(
 typedef void (*special_call_entry_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     instrumentr_package_t package,
     instrumentr_function_t function,
@@ -193,6 +208,7 @@ typedef void (*special_call_entry_function_t)(
 typedef void (*special_call_exit_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     instrumentr_package_t package,
     instrumentr_function_t function,
@@ -201,6 +217,7 @@ typedef void (*special_call_exit_function_t)(
 typedef void (*closure_call_entry_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     instrumentr_package_t package,
     instrumentr_function_t function,
@@ -209,6 +226,7 @@ typedef void (*closure_call_entry_function_t)(
 typedef void (*closure_call_exit_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     instrumentr_package_t package,
     instrumentr_function_t function,
@@ -216,12 +234,14 @@ typedef void (*closure_call_exit_function_t)(
 
 typedef void (*eval_entry_function_t)(instrumentr_tracer_t tracer,
                                       instrumentr_callback_t callback,
+                                      instrumentr_state_t state,
                                       instrumentr_application_t application,
                                       SEXP r_expression,
                                       SEXP r_rho);
 
 typedef void (*eval_exit_function_t)(instrumentr_tracer_t tracer,
                                      instrumentr_callback_t callback,
+                                     instrumentr_state_t state,
                                      instrumentr_application_t application,
                                      SEXP r_expression,
                                      SEXP r_rho,
@@ -229,12 +249,14 @@ typedef void (*eval_exit_function_t)(instrumentr_tracer_t tracer,
 
 typedef void (*gc_allocation_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,
+                                         instrumentr_state_t state,
                                          instrumentr_application_t application,
                                          SEXP r_object);
 
 typedef void (*variable_definition_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_variable,
     SEXP r_value,
@@ -243,6 +265,7 @@ typedef void (*variable_definition_function_t)(
 typedef void (*variable_assignment_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_variable,
     SEXP r_value,
@@ -251,6 +274,7 @@ typedef void (*variable_assignment_function_t)(
 typedef void (*variable_removal_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_variable,
     SEXP r_rho);
@@ -258,6 +282,7 @@ typedef void (*variable_removal_function_t)(
 typedef void (*variable_lookup_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_variable,
     SEXP r_value,
@@ -265,11 +290,13 @@ typedef void (*variable_lookup_function_t)(
 
 typedef void (*context_entry_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,
+                                         instrumentr_state_t state,
                                          instrumentr_application_t application,
                                          instrumentr_context_t context);
 
 typedef void (*context_exit_function_t)(instrumentr_tracer_t tracer,
                                         instrumentr_callback_t callback,
+                                        instrumentr_state_t state,
                                         instrumentr_application_t application,
                                         instrumentr_context_t context);
 

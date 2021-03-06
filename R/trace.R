@@ -65,7 +65,8 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
         if (is_value(result) || get_source(get_error(result)) == "application") {
-            .Call(C_instrumentr_trace_tracing_exit, tracer, application)
+            state <- .Call(C_instrumentr_trace_tracing_exit, tracer, application)
+            result <- set_state(result, state)
         }
     },
     error = function(e) {

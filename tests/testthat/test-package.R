@@ -2,10 +2,10 @@
 test_that("get_name returns correct package name", {
 
     tracer <- create_tracer(
-        tracing_entry = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, state, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
-        package_attach = function(tracer, callback, application, package) {
+        package_attach = function(tracer, callback, state, application, package) {
             data <- get_data(tracer)
             data$name <- get_name(package)
         }
@@ -25,10 +25,10 @@ test_that("get_name returns correct package name", {
 test_that("get_directory returns correct package directory", {
 
     tracer <- create_tracer(
-        tracing_entry = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, state, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
-        package_attach = function(tracer, callback, application, package) {
+        package_attach = function(tracer, callback, state, application, package) {
             data <- get_data(tracer)
             data$directory <- get_directory(package)
         }
@@ -47,10 +47,10 @@ test_that("get_directory returns correct package directory", {
 test_that("get_namespace returns correct package namespace", {
 
     tracer <- create_tracer(
-        tracing_entry = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, state, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
-        package_attach = function(tracer, callback, application, package) {
+        package_attach = function(tracer, callback, state, application, package) {
             data <- get_data(tracer)
             namespace <- get_namespace(package)
             data$received_namespace <- get_object_details(namespace)$address
@@ -72,25 +72,25 @@ test_that("get_namespace returns correct package namespace", {
 test_that("is_attached correctly identifies if package is attached", {
 
     tracer <- create_tracer(
-        tracing_entry = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, state, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
-        package_load = function(tracer, callback, application, package) {
+        package_load = function(tracer, callback, state, application, package) {
             data <- get_data(tracer)
             key <- paste0("load","_", get_name(package))
             data[[key]] <- is_attached(package)
         },
-        package_attach = function(tracer, callback, application, package) {
+        package_attach = function(tracer, callback, state, application, package) {
             data <- get_data(tracer)
             key <- paste0("attach","_", get_name(package))
             data[[key]] <- is_attached(package)
         },
-        package_detach = function(tracer, callback, application, package) {
+        package_detach = function(tracer, callback, state, application, package) {
             data <- get_data(tracer)
             key <- paste0("detach","_", get_name(package))
             data[[key]] <- is_attached(package)
         },
-        package_unload = function(tracer, callback, application, package) {
+        package_unload = function(tracer, callback, state, application, package) {
             data <- get_data(tracer)
             key <- paste0("unload","_", get_name(package))
             data[[key]] <- is_attached(package)
@@ -119,16 +119,16 @@ test_that("is_attached correctly identifies if package is attached", {
 test_that("get_functions correctly returns all package functions", {
 
     tracer <- create_tracer(
-        tracing_entry = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, state, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
-        package_load = function(tracer, callback, application, package) {
+        package_load = function(tracer, callback, state, application, package) {
             package_name <- get_name(package)
             function_names <- names(get_functions(package))
             data <- get_data(tracer)
             data[[package_name]] <- function_names
         },
-        package_attach = function(tracer, callback, application, package) {
+        package_attach = function(tracer, callback, state, application, package) {
             package_name <- get_name(package)
             function_names <- names(get_functions(package))
             data <- get_data(tracer)
@@ -175,16 +175,16 @@ test_that("get_functions correctly returns all package functions", {
 test_that("get_function_count correctly returns package function count", {
 
     tracer <- create_tracer(
-        tracing_entry = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, state, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
-        package_load = function(tracer, callback, application, package) {
+        package_load = function(tracer, callback, state, application, package) {
             package_name <- get_name(package)
             function_count <- get_function_count(package)
             data <- get_data(tracer)
             data[[package_name]] <- function_count
         },
-        package_attach = function(tracer, callback, application, package) {
+        package_attach = function(tracer, callback, state, application, package) {
             package_name <- get_name(package)
             function_count <- get_function_count(package)
             data <- get_data(tracer)

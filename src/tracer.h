@@ -35,6 +35,14 @@ void instrumentr_tracer_reset(instrumentr_tracer_t tracer);
 dyntracer_t* instrumentr_tracer_get_dyntracer(instrumentr_tracer_t tracer);
 
 /********************************************************************************
+ * state
+ *******************************************************************************/
+
+/*  accessor  */
+instrumentr_state_t instrumentr_tracer_get_state(instrumentr_tracer_t tracer);
+SEXP r_instrumentr_tracer_get_state(SEXP r_tracer);
+
+/********************************************************************************
  * application
  *******************************************************************************/
 

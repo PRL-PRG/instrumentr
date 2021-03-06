@@ -27,6 +27,10 @@ void instrumentr_object_class_initialize() {
         create_class("instrumentr_callback");
     instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_CALLBACK]);
 
+    object_class_table[INSTRUMENTR_STATE] =
+        create_class("instrumentr_state");
+    instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_STATE]);
+
     object_class_table[INSTRUMENTR_APPLICATION] =
         create_class("instrumentr_application");
     instrumentr_sexp_acquire(object_class_table[INSTRUMENTR_APPLICATION]);
@@ -80,6 +84,8 @@ void instrumentr_object_class_finalize() {
     object_class_table[INSTRUMENTR_TRACER] = NULL;
     instrumentr_sexp_release(object_class_table[INSTRUMENTR_CALLBACK]);
     object_class_table[INSTRUMENTR_CALLBACK] = NULL;
+    instrumentr_sexp_release(object_class_table[INSTRUMENTR_STATE]);
+    object_class_table[INSTRUMENTR_STATE] = NULL;
     instrumentr_sexp_release(object_class_table[INSTRUMENTR_APPLICATION]);
     object_class_table[INSTRUMENTR_APPLICATION] = NULL;
     instrumentr_sexp_release(object_class_table[INSTRUMENTR_PACKAGE]);

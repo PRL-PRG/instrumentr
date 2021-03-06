@@ -36,7 +36,7 @@
 #'
 #' @examples
 #' tracer <- create_tracer(package_attach =
-#'     function(tracer, callback, application, package) {
+#'     function(tracer, callback, state, application, package) {
 #'         cat("Name           : ", get_name(package), "\n")
 #'         cat("Directory      : ", get_directory(package), "\n")
 #'         cat("Namespace      : ", get_object_details(package)$address, "\n")

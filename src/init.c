@@ -13,6 +13,7 @@
 #include "callback.h"
 #include "context.h"
 #include "interop.h"
+#include "state.h"
 
 #include <R_ext/Rdynload.h>
 
@@ -80,6 +81,16 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_callback_get_c_function, 1),
     DECLARE_BINDING(instrumentr_callback_is_active, 1),
     DECLARE_BINDING(instrumentr_callback_get_exec_stats, 1),
+
+    /* state */
+    DECLARE_BINDING(instrumentr_state_is_empty, 1),
+    DECLARE_BINDING(instrumentr_state_get_size, 1),
+    DECLARE_BINDING(instrumentr_state_clear, 1),
+    DECLARE_BINDING(instrumentr_state_has_key, 2),
+    DECLARE_BINDING(instrumentr_state_as_list, 1),
+    DECLARE_BINDING(instrumentr_state_lookup, 3),
+    DECLARE_BINDING(instrumentr_state_insert, 4),
+    DECLARE_BINDING(instrumentr_state_erase, 3),
 
     /* application */
     DECLARE_BINDING(instrumentr_application_create, 5),

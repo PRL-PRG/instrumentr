@@ -165,7 +165,7 @@ get_result <- function(object, ...) {
 }
 
 #' @export
-get_size <- function(call_stack, ...) {
+get_size <- function(object) {
     UseMethod("get_size")
 }
 
@@ -432,4 +432,49 @@ is_inner <- function(object) { # nolint
 #' @export
 get_parent <- function(object) { # nolint
     UseMethod("get_parent")
+}
+
+#' @export
+is_empty <- function(state) {
+    NextMethod("is_empty")
+}
+
+#' @export
+clear <- function(state) {
+    NextMethod("clear")
+}
+
+#' @export
+has_key <- function(state) {
+    NextMethod("has_key")
+}
+
+#' @export
+as_list <- function(state) {
+    NextMethod("as_list")
+}
+
+#' @export
+lookup <- function(state) {
+    NextMethod("lookup")
+}
+
+#' @export
+insert <- function(state) {
+    NextMethod("insert")
+}
+
+#' @export
+erase <- function(state) {
+    NextMethod("erase")
+}
+
+#' @export
+set_state <- function(object, state) {
+    UseMethod("set_state")
+}
+
+#' @export
+get_state <- function(object) {
+    UseMethod("get_state")
 }

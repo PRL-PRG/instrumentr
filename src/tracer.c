@@ -8,6 +8,7 @@
 #include "utilities.h"
 #include "dyntrace.h"
 #include "dyntrace.h"
+#include "state.h"
 
 /********************************************************************************
  * definition
@@ -17,6 +18,7 @@ struct instrumentr_tracer_impl_t {
     struct instrumentr_object_impl_t object;
     dyntracer_t* dyntracer;
 
+    instrumentr_state_t state;
     instrumentr_application_t application;
     SEXP r_environment;
     instrumentr_callback_t active_callback;
@@ -43,6 +45,11 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
        dyntracer.
     */
     tracer->dyntracer = NULL;
+
+    if (tracer->state != NULL) {
+        instrumentr_object_release(tracer->state);
+        tracer->state = NULL;
+    }
 
     if (tracer->application != NULL) {
         instrumentr_object_release(tracer->application);
@@ -89,6 +96,8 @@ instrumentr_tracer_t instrumentr_tracer_create() {
        dyntracer.
     */
     tracer->dyntracer = dyntracer;
+
+    tracer->state = instrumentr_state_create();
 
     tracer->application = NULL;
 
@@ -139,6 +148,22 @@ instrumentr_tracer_t instrumentr_tracer_unwrap(SEXP r_tracer) {
 
 dyntracer_t* instrumentr_tracer_get_dyntracer(instrumentr_tracer_t tracer) {
     return tracer->dyntracer;
+}
+
+/********************************************************************************
+ * state
+ *******************************************************************************/
+
+/*  accessor  */
+instrumentr_state_t
+instrumentr_tracer_get_state(instrumentr_tracer_t tracer) {
+    return tracer->state;
+}
+
+SEXP r_instrumentr_tracer_get_state(SEXP r_tracer) {
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+    return instrumentr_state_wrap(state);
 }
 
 /********************************************************************************
