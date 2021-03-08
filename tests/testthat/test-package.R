@@ -2,7 +2,7 @@
 test_that("get_name returns correct package name", {
 
     tracer <- create_tracer(
-        tracing_initialization = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
         package_attach = function(tracer, callback, application, package) {
@@ -25,7 +25,7 @@ test_that("get_name returns correct package name", {
 test_that("get_directory returns correct package directory", {
 
     tracer <- create_tracer(
-        tracing_initialization = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
         package_attach = function(tracer, callback, application, package) {
@@ -47,7 +47,7 @@ test_that("get_directory returns correct package directory", {
 test_that("get_namespace returns correct package namespace", {
 
     tracer <- create_tracer(
-        tracing_initialization = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
         package_attach = function(tracer, callback, application, package) {
@@ -72,7 +72,7 @@ test_that("get_namespace returns correct package namespace", {
 test_that("is_attached correctly identifies if package is attached", {
 
     tracer <- create_tracer(
-        tracing_initialization = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
         package_load = function(tracer, callback, application, package) {
@@ -119,7 +119,7 @@ test_that("is_attached correctly identifies if package is attached", {
 test_that("get_functions correctly returns all package functions", {
 
     tracer <- create_tracer(
-        tracing_initialization = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
         package_load = function(tracer, callback, application, package) {
@@ -175,7 +175,7 @@ test_that("get_functions correctly returns all package functions", {
 test_that("get_function_count correctly returns package function count", {
 
     tracer <- create_tracer(
-        tracing_initialization = function(tracer, callback, application) {
+        tracing_entry = function(tracer, callback, application) {
             set_data(tracer, new.env(parent = emptyenv()))
         },
         package_load = function(tracer, callback, application, package) {

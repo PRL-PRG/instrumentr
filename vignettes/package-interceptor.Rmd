@@ -36,18 +36,18 @@ package_detach_callback <- function(tracer, callback, application, package) {
     cat("Detached", get_name(package), "\n")
 }
 
-tracing_initialization_callback <- function(tracer, callback, application) {
+tracing_entry_callback <- function(tracer, callback, application) {
     print("Trace Entry")
 }
 
-tracing_finalization_callback <- function(tracer, callback, application) {
+tracing_exit_callback <- function(tracer, callback, application) {
     cat("Trace Exit")
     print(search())
     print(names(get_packages(application)))
 }
 
-tracer <- create_tracer(tracing_initialization = tracing_initialization_callback,
-                        tracing_finalization = tracing_finalization_callback,
+tracer <- create_tracer(tracing_entry = tracing_entry_callback,
+                        tracing_exit = tracing_exit_callback,
                         package_load = package_load_callback,
                         package_unload = package_unload_callback,
                         package_attach = package_attach_callback,

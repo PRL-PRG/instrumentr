@@ -36,8 +36,8 @@ const R_CallMethodDef CallEntries[] = {
 
     /* trace */
     DECLARE_BINDING(instrumentr_trace_code, 3),
-    DECLARE_BINDING(instrumentr_trace_tracing_initialization, 2),
-    DECLARE_BINDING(instrumentr_trace_tracing_finalization, 2),
+    DECLARE_BINDING(instrumentr_trace_tracing_entry, 2),
+    DECLARE_BINDING(instrumentr_trace_tracing_exit, 2),
     DECLARE_BINDING(instrumentr_trace_package_load, 3),
     DECLARE_BINDING(instrumentr_trace_package_unload, 3),
     DECLARE_BINDING(instrumentr_trace_package_attach, 3),

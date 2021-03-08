@@ -1,6 +1,6 @@
 
-EVENT_TRACING_INITIALIZATION <- "tracing_initialization"
-EVENT_TRACING_FINALIZATION <- "tracing_finalization"
+EVENT_TRACING_ENTRY <- "tracing_entry"
+EVENT_TRACING_EXIT <- "tracing_exit"
 EVENT_PACKAGE_LOAD <- "package_load"
 EVENT_PACKAGE_UNLOAD <- "package_unload"
 EVENT_PACKAGE_ATTACH <- "package_attach"

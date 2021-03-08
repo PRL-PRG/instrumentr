@@ -44,7 +44,7 @@
 #' @family application api
 #'
 #' @examples
-#' tracer <- create_tracer(tracing_initialization =
+#' tracer <- create_tracer(tracing_entry =
 #'     function(tracer, callback, application) {
 #'         cat("Name           : ", get_name(application), "\n")
 #'         cat("Directory      : ", get_directory(application), "\n")

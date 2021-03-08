@@ -5,11 +5,9 @@
 
 SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment);
 
-SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer,
-                                                SEXP r_application);
+SEXP r_instrumentr_trace_tracing_entry(SEXP r_tracer, SEXP r_application);
 
-SEXP r_instrumentr_trace_tracing_finalization(SEXP r_tracer,
-                                              SEXP r_application);
+SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application);
 
 SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
                                       SEXP r_application,

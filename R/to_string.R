@@ -54,8 +54,8 @@ to_string.instrumentr_tracer <- function(object, ...) {
 
     representation <-
       sprintf("Context(%s%s%s%s%s%s%s%s%s%s%s",
-              get_callback_representation(EVENT_TRACING_INITIALIZATION),
-              get_callback_representation(EVENT_TRACING_FINALIZATION),
+              get_callback_representation(EVENT_TRACING_ENTRY),
+              get_callback_representation(EVENT_TRACING_EXIT),
               get_callback_representation(EVENT_PACKAGE_LOAD),
               get_callback_representation(EVENT_PACKAGE_UNLOAD),
               get_callback_representation(EVENT_PACKAGE_ATTACH),

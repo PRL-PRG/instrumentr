@@ -114,10 +114,10 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
     return r_result;
 }
 
-SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer,
-                                                SEXP r_application) {
+SEXP r_instrumentr_trace_tracing_entry(SEXP r_tracer,
+                                       SEXP r_application) {
     INVOKE_CALLBACK(/* NAME */
-                    INSTRUMENTR_EVENT_TRACING_INITIALIZATION,
+                    INSTRUMENTR_EVENT_TRACING_ENTRY,
                     /* TRACER  */
                     UNWRAP(tracer),
                     // instrumentr_tracer_enable(tracer),
@@ -136,10 +136,10 @@ SEXP r_instrumentr_trace_tracing_initialization(SEXP r_tracer,
     return R_NilValue;
 }
 
-SEXP r_instrumentr_trace_tracing_finalization(SEXP r_tracer,
+SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer,
                                               SEXP r_application) {
     INVOKE_CALLBACK(/* NAME */
-                    INSTRUMENTR_EVENT_TRACING_FINALIZATION,
+                    INSTRUMENTR_EVENT_TRACING_EXIT,
                     /* TRACER  */
                     UNWRAP(tracer),
                     /* INIT */

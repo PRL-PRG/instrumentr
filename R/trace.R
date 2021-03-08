@@ -40,7 +40,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
 
         insert_package_hooks(tracer, application)
 
-        .Call(C_instrumentr_trace_tracing_initialization, tracer, application)
+        .Call(C_instrumentr_trace_tracing_entry, tracer, application)
 
         value <- .Call(C_instrumentr_trace_code, tracer, code, environment)
 
@@ -65,7 +65,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
         if (is_value(result) || get_source(get_error(result)) == "application") {
-            .Call(C_instrumentr_trace_tracing_finalization, tracer, application)
+            .Call(C_instrumentr_trace_tracing_exit, tracer, application)
         }
     },
     error = function(e) {

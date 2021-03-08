@@ -23,8 +23,8 @@ typedef union {
 } instrumentr_function_definition_t;
 
 typedef enum {
-    INSTRUMENTR_EVENT_TRACING_INITIALIZATION = 0,
-    INSTRUMENTR_EVENT_TRACING_FINALIZATION,
+    INSTRUMENTR_EVENT_TRACING_ENTRY = 0,
+    INSTRUMENTR_EVENT_TRACING_EXIT,
     INSTRUMENTR_EVENT_PACKAGE_LOAD,
     INSTRUMENTR_EVENT_PACKAGE_UNLOAD,
     INSTRUMENTR_EVENT_PACKAGE_ATTACH,
@@ -138,15 +138,13 @@ typedef struct instrumentr_context_impl_t* instrumentr_context_t;
 
 typedef struct instrumentr_exec_stats_impl_t* instrumentr_exec_stats_t;
 
-typedef void (*tracing_initialization_function_t)(
-    instrumentr_tracer_t tracer,
-    instrumentr_callback_t callback,
-    instrumentr_application_t application);
+typedef void (*tracing_entry_function_t)(instrumentr_tracer_t tracer,
+                                         instrumentr_callback_t callback,
+                                         instrumentr_application_t application);
 
-typedef void (*tracing_finalization_function_t)(
-    instrumentr_tracer_t tracer,
-    instrumentr_callback_t callback,
-    instrumentr_application_t application);
+typedef void (*tracing_exit_function_t)(instrumentr_tracer_t tracer,
+                                        instrumentr_callback_t callback,
+                                        instrumentr_application_t application);
 
 typedef void (*package_load_function_t)(instrumentr_tracer_t tracer,
                                         instrumentr_callback_t callback,
@@ -276,9 +274,8 @@ typedef void (*context_exit_function_t)(instrumentr_tracer_t tracer,
                                         instrumentr_context_t context);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
-    MACRO(                                                                     \
-        INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_initialization, ARGUMENT)  \
-    MACRO(INSTRUMENTR_CALLBACK_TRACING_EXIT, tracing_finalization, ARGUMENT)   \
+    MACRO(INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_entry, ARGUMENT)         \
+    MACRO(INSTRUMENTR_CALLBACK_TRACING_EXIT, tracing_exit, ARGUMENT)           \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_LOAD, package_load, ARGUMENT)           \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_UNLOAD, package_unload, ARGUMENT)       \
     MACRO(INSTRUMENTR_CALLBACK_PACKAGE_ATTACH, package_attach, ARGUMENT)       \
