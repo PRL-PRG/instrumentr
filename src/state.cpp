@@ -12,6 +12,7 @@
 struct instrumentr_state_impl_t {
     struct instrumentr_object_impl_t object;
     std::unordered_map<std::string, SEXP>* external;
+    int time;
 };
 
 /********************************************************************************
@@ -38,6 +39,7 @@ instrumentr_state_t instrumentr_state_create() {
     instrumentr_state_t state = (instrumentr_state_t)(object);
 
     state->external = new std::unordered_map<std::string, SEXP>();
+    state->time = 0;
 
     return state;
 }
@@ -233,4 +235,12 @@ SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive) {
     int permissive = instrumentr_r_logical_to_c_int(r_permissive);
     instrumentr_state_erase(state, key, permissive);
     return R_NilValue;
+}
+
+/*******************************************************************************
+ * time
+ *******************************************************************************/
+/*  mutator  */
+void instrumentr_state_increment_time(instrumentr_state_t state) {
+    ++state->time;
 }

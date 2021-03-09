@@ -91,6 +91,12 @@ void instrumentr_state_erase(instrumentr_state_t state,
                              int permissive);
 SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive);
 
+/*******************************************************************************
+ * time
+ *******************************************************************************/
+/*  mutator  */
+void instrumentr_state_increment_time(instrumentr_state_t state);
+
 #ifdef __cplusplus
 }
 #endif

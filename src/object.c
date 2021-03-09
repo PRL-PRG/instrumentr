@@ -22,6 +22,9 @@ instrumentr_object_create(int size,
     object->type = type;
     object->reference_count = 1;
     object->finalizer = finalizer;
+    object->birth_time = -1; /* TODO */
+    object->death_time = -1; /* TODO */
+    object->local = 0;       /* TODO */
     object->r_data = NULL;
 
     return object;
@@ -120,6 +123,109 @@ SEXP r_instrumentr_object_get_id(SEXP r_object) {
     instrumentr_id_t id = instrumentr_object_get_id(object);
     return instrumentr_c_int_to_r_integer(id);
 }
+
+/*******************************************************************************
+ * time
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_object_get_birth_time(instrumentr_object_t object) {
+    return object -> birth_time;
+}
+
+SEXP r_instrumentr_object_get_birth_time(SEXP r_object) {
+    instrumentr_object_t object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
+    int result = instrumentr_object_get_birth_time(object);
+    return instrumentr_c_int_to_r_integer(result);
+}
+
+/* accessor */
+int instrumentr_object_get_death_time(instrumentr_object_t object) {
+    return object -> death_time;
+}
+
+SEXP r_instrumentr_object_get_death_time(SEXP r_object) {
+    instrumentr_object_t object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
+    int result = instrumentr_object_get_death_time(object);
+    return instrumentr_c_int_to_r_integer(result);
+}
+
+/* accessor */
+int instrumentr_object_get_life_time(instrumentr_object_t object) {
+    if(object -> death_time < 0) {
+        return object -> death_time;
+    }
+    else if(object -> birth_time < 0) {
+        return object -> birth_time;
+    }
+    else {
+        return object->death_time - object->birth_time;
+    }
+}
+
+SEXP r_instrumentr_object_get_life_time(SEXP r_object) {
+    instrumentr_object_t object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
+    int result = instrumentr_object_get_life_time(object);
+    return instrumentr_c_int_to_r_integer(result);
+}
+
+/*******************************************************************************
+ * alive
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_object_is_alive(instrumentr_object_t object) {
+    return !(object -> death_time > 0);
+}
+
+SEXP r_instrumentr_object_is_alive(SEXP r_object) {
+    instrumentr_object_t object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
+    int result = instrumentr_object_is_alive(object);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+/* accessor */
+int instrumentr_object_is_dead(instrumentr_object_t object) {
+    return !instrumentr_object_is_alive(object);
+}
+
+SEXP r_instrumentr_object_is_dead(SEXP r_object) {
+    instrumentr_object_t object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
+    int result = instrumentr_object_is_dead(object);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+void instrumentr_object_kill(instrumentr_object_t object, int time) {
+    object -> death_time = time;
+}
+
+/*******************************************************************************
+ * local
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_object_is_local(instrumentr_object_t object) {
+    return object -> local;
+}
+
+SEXP r_instrumentr_object_is_local(SEXP r_object) {
+    instrumentr_object_t object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
+    int result = instrumentr_object_is_local(object);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+/* accessor */
+int instrumentr_object_is_foreign(instrumentr_object_t object) {
+    return !instrumentr_object_is_local(object);
+}
+
+SEXP r_instrumentr_object_is_foreign(SEXP r_object) {
+    instrumentr_object_t object = instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT);
+    int result = instrumentr_object_is_foreign(object);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+
 
 /*******************************************************************************
  * r_data

@@ -33,10 +33,11 @@
 #define INVOKE_CALLBACK(NAME, TRACER, INIT, CCALL, RCALL, FIN)               \
     TRACER;                                                                  \
     INIT;                                                                    \
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);        \
+    instrumentr_state_increment_time(state);                                 \
     if (instrumentr_tracer_has_callback(tracer, NAME)) {                     \
         instrumentr_callback_t callback =                                    \
             instrumentr_tracer_get_callback(tracer, NAME);                   \
-        instrumentr_state_t state = instrumentr_tracer_get_state(tracer);    \
                                                                              \
         clock_t begin = clock();                                             \
                                                                              \
@@ -161,7 +162,6 @@ SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application) {
                     /* FIN */
                     instrumentr_tracer_remove_application(tracer));
 
-    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
     return instrumentr_state_as_list(state);
 }
 

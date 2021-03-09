@@ -38,6 +38,9 @@ struct instrumentr_object_impl_t {
     instrumentr_object_type_t type;
     int reference_count;
     instrumentr_object_finalizer_t finalizer;
+    int birth_time;
+    int death_time;
+    int local;
     void* c_data;
     SEXP r_data;
 };
@@ -94,6 +97,49 @@ int instrumentr_object_acquire(void* object);
 
 /* mutator  */
 int instrumentr_object_release(void* object);
+
+/*******************************************************************************
+ * time
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_object_get_birth_time(instrumentr_object_t object);
+SEXP r_instrumentr_object_get_birth_time(SEXP r_object);
+
+/* accessor */
+int instrumentr_object_get_death_time(instrumentr_object_t object);
+SEXP r_instrumentr_object_get_death_time(SEXP r_object);
+
+/* accessor */
+int instrumentr_object_get_life_time(instrumentr_object_t object);
+SEXP r_instrumentr_object_get_life_time(SEXP r_object);
+
+/*******************************************************************************
+ * alive
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_object_is_alive(instrumentr_object_t object);
+SEXP r_instrumentr_object_is_alive(SEXP r_object);
+
+/* accessor */
+int instrumentr_object_is_dead(instrumentr_object_t object);
+SEXP r_instrumentr_object_is_dead(SEXP r_object);
+
+/* mutator */
+void instrumentr_object_kill(instrumentr_object_t object, int time);
+
+/*******************************************************************************
+ * local
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_object_is_local(instrumentr_object_t object);
+SEXP r_instrumentr_object_is_local(SEXP r_object);
+
+/* accessor */
+int instrumentr_object_is_foreign(instrumentr_object_t object);
+SEXP r_instrumentr_object_is_foreign(SEXP r_object);
 
 /*******************************************************************************
  * r_data
