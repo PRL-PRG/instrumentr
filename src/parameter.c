@@ -4,6 +4,7 @@
 #include "utilities.h"
 #include <string.h>
 #include "vec.h"
+#include "argument.h"
 
 typedef vec_t(instrumentr_argument_t) instrumentr_argument_vector_t;
 
@@ -43,15 +44,18 @@ void instrumentr_parameter_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_parameter_t instrumentr_parameter_create(const char* name,
+instrumentr_parameter_t instrumentr_parameter_create(instrumentr_state_t state,
+                                                     const char* name,
                                                      int position,
                                                      SEXP r_default_argument) {
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_parameter_impl_t),
-                                  INSTRUMENTR_PARAMETER,
-                                  instrumentr_parameter_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_parameter_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_PARAMETER,
+                                                 instrumentr_parameter_finalize,
+                                                 INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_parameter_t parameter = (instrumentr_parameter_t)(object);
 

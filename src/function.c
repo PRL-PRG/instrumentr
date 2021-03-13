@@ -45,7 +45,8 @@ void instrumentr_function_finalize(instrumentr_object_t object) {
  *******************************************************************************/
 
 instrumentr_function_t
-instrumentr_function_create(instrumentr_function_type_t type,
+instrumentr_function_create(instrumentr_state_t state,
+                            instrumentr_function_type_t type,
                             int funtab_index,
                             const char* name,
                             int parameter_count,
@@ -58,9 +59,11 @@ instrumentr_function_create(instrumentr_function_type_t type,
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_function_impl_t),
-                                  INSTRUMENTR_FUNCTION,
-                                  instrumentr_function_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_function_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_FUNCTION,
+                                                 instrumentr_function_finalize,
+                                                 INSTRUMENTR_ORIGIN_FOREIGN);
 
     instrumentr_function_t function = (instrumentr_function_t)(object);
 
@@ -86,7 +89,8 @@ instrumentr_function_create(instrumentr_function_type_t type,
     return function;
 }
 
-instrumentr_function_t instrumentr_function_create_builtin(int funtab_index,
+instrumentr_function_t instrumentr_function_create_builtin(instrumentr_state_t state,
+                                                           int funtab_index,
                                                            const char* name,
                                                            int parameter_count,
                                                            CCODE ccode,
@@ -94,7 +98,8 @@ instrumentr_function_t instrumentr_function_create_builtin(int funtab_index,
     instrumentr_function_definition_t definition;
     definition.ccode = ccode;
 
-    return instrumentr_function_create(INSTRUMENTR_FUNCTION_BUILTIN,
+    return instrumentr_function_create(state,
+                                       INSTRUMENTR_FUNCTION_BUILTIN,
                                        funtab_index,
                                        name,
                                        parameter_count,
@@ -106,7 +111,8 @@ instrumentr_function_t instrumentr_function_create_builtin(int funtab_index,
                                        internal);
 }
 
-instrumentr_function_t instrumentr_function_create_special(int funtab_index,
+instrumentr_function_t instrumentr_function_create_special(instrumentr_state_t state,
+                                                           int funtab_index,
                                                            const char* name,
                                                            int parameter_count,
                                                            CCODE ccode,
@@ -114,7 +120,8 @@ instrumentr_function_t instrumentr_function_create_special(int funtab_index,
     instrumentr_function_definition_t definition;
     definition.ccode = ccode;
 
-    return instrumentr_function_create(INSTRUMENTR_FUNCTION_SPECIAL,
+    return instrumentr_function_create(state,
+                                       INSTRUMENTR_FUNCTION_SPECIAL,
                                        funtab_index,
                                        name,
                                        parameter_count,
@@ -127,7 +134,8 @@ instrumentr_function_t instrumentr_function_create_special(int funtab_index,
 }
 
 instrumentr_function_t
-instrumentr_function_create_closure(const char* name,
+instrumentr_function_create_closure(instrumentr_state_t state,
+                                    const char* name,
                                     int parameter_count,
                                     SEXP sexp,
                                     instrumentr_function_t parent,
@@ -137,7 +145,8 @@ instrumentr_function_create_closure(const char* name,
     instrumentr_function_definition_t definition;
     definition.sexp = sexp;
 
-    return instrumentr_function_create(INSTRUMENTR_FUNCTION_CLOSURE,
+    return instrumentr_function_create(state,
+                                       INSTRUMENTR_FUNCTION_CLOSURE,
                                        -1,
                                        name,
                                        parameter_count,

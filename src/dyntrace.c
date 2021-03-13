@@ -7,6 +7,10 @@
 #include "trace.h"
 #include "funtab.h"
 #include "state.h"
+#include "package.h"
+#include "function.h"
+#include "call.h"
+#include "context.h"
 
 dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_t* dyntracer = dyntracer_create(NULL);
@@ -109,6 +113,9 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
                               SEXP r_result) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state =
+        instrumentr_tracer_get_state(tracer);
+
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
@@ -139,7 +146,7 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
     /* TODO attach result to call */
     if (!strcmp(instrumentr_function_get_name(function), "function") &&
         TYPEOF(r_result) == CLOSXP) {
-        instrumentr_application_function_map_add(application, r_result);
+        instrumentr_application_function_map_add(state, application, r_result);
     }
 
     if (instrumentr_function_is_builtin(function)) {
@@ -169,7 +176,7 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
         instrumentr_application_get_base_package(application);
 
     instrumentr_function_t function =
-        instrumentr_application_function_map_lookup(application, r_op, r_call);
+        instrumentr_application_function_map_lookup(state, application, r_op, r_call);
 
     instrumentr_call_t call =
         instrumentr_call_create(state,
@@ -230,12 +237,15 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
 void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state =
+        instrumentr_tracer_get_state(tracer);
+
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
-    instrumentr_context_t context = instrumentr_context_create(pointer);
+    instrumentr_context_t context = instrumentr_context_create(state, pointer);
 
-    instrumentr_frame_t frame = instrumentr_frame_create_from_context(context);
+    instrumentr_frame_t frame = instrumentr_frame_create_from_context(state, context);
     instrumentr_object_release(context);
 
     // fprintf(stderr, "++ %p\n", pointer);

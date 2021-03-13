@@ -1,20 +1,19 @@
 #ifndef INSTRUMENTR_APPLICATION_H
 #define INSTRUMENTR_APPLICATION_H
 
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-#include "call_stack.h"
-#include "package.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
-SEXP r_instrumentr_application_create(SEXP r_name,
+SEXP r_instrumentr_application_create(SEXP r_state,
+                                      SEXP r_name,
                                       SEXP r_directory,
                                       SEXP r_code,
                                       SEXP r_environment,
@@ -130,6 +129,7 @@ SEXP r_instrumentr_application_remove_package(SEXP r_application,
  *******************************************************************************/
 
 instrumentr_function_t instrumentr_application_function_map_lookup(
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_closure,
     SEXP r_call);
@@ -144,16 +144,19 @@ void instrumentr_application_function_map_remove(
     SEXP r_closure);
 
 instrumentr_function_t
-instrumentr_application_function_map_add(instrumentr_application_t application,
+instrumentr_application_function_map_add(instrumentr_state_t state,
+                                         instrumentr_application_t application,
                                          SEXP r_closure);
 
 void instrumentr_application_function_map_update_name(
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_symbol,
     SEXP r_value,
     SEXP r_rho);
 
 SEXP r_instrumentr_application_function_map_update_properties(
+    SEXP r_state,
     SEXP r_application,
     SEXP r_package,
     SEXP r_name,

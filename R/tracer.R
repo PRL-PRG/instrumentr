@@ -12,18 +12,25 @@ create_tracer <- function(...) {
     #environment <- new.env(parent = sys.frame(-1))
 
     tracer <- .Call(C_instrumentr_tracer_create)#, environment)
+    state <- get_state(tracer)
 
     functions <- list(...)
     events <- names(functions)
 
     Map(function(func, event) {
-        callback <- create_callback(func, event)
+        callback <- create_callback(func, state, event)
         set_callback(tracer, callback)
     },
     functions,
     events)
 
     tracer
+}
+
+#' @export
+#' @rdname tracer
+get_state.instrumentr_tracer <- function(tracer) {
+    .Call(C_instrumentr_tracer_get_state, tracer)
 }
 
 #' @export

@@ -3,6 +3,9 @@
 #include "interop.h"
 #include "utilities.h"
 #include "object.h"
+#include "promise.h"
+#include "call.h"
+#include "context.h"
 
 /********************************************************************************
  * definition
@@ -28,11 +31,14 @@ void instrumentr_frame_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_frame_t instrumentr_frame_create(instrumentr_object_t kernel) {
+instrumentr_frame_t instrumentr_frame_create(instrumentr_state_t state,
+                                             instrumentr_object_t kernel) {
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_frame_impl_t),
-                                  INSTRUMENTR_FRAME,
-                                  instrumentr_frame_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_frame_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_FRAME,
+                                                 instrumentr_frame_finalize,
+                                                 INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_frame_t frame = (instrumentr_frame_t)(object);
 
@@ -43,18 +49,21 @@ instrumentr_frame_t instrumentr_frame_create(instrumentr_object_t kernel) {
 }
 
 instrumentr_frame_t
-instrumentr_frame_create_from_call(instrumentr_call_t call) {
-    return instrumentr_frame_create((instrumentr_object_t) call);
+instrumentr_frame_create_from_call(instrumentr_state_t state,
+                                   instrumentr_call_t call) {
+    return instrumentr_frame_create(state, (instrumentr_object_t) call);
 }
 
 instrumentr_frame_t
-instrumentr_frame_create_from_promise(instrumentr_promise_t promise) {
-    return instrumentr_frame_create((instrumentr_object_t) promise);
+instrumentr_frame_create_from_promise(instrumentr_state_t state,
+                                      instrumentr_promise_t promise) {
+    return instrumentr_frame_create(state, (instrumentr_object_t) promise);
 }
 
 instrumentr_frame_t
-instrumentr_frame_create_from_context(instrumentr_context_t context) {
-    return instrumentr_frame_create((instrumentr_object_t) context);
+instrumentr_frame_create_from_context(instrumentr_state_t state,
+                                      instrumentr_context_t context) {
+    return instrumentr_frame_create(state, (instrumentr_object_t) context);
 }
 
 /********************************************************************************

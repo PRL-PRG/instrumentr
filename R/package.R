@@ -110,7 +110,8 @@ get_functions.instrumentr_package <- function(object) { # nolint
     .Call(C_instrumentr_package_get_functions, object)
 }
 
-create_package <- function(application_ptr,
+create_package <- function(state,
+                           application_ptr,
                            package_name,
                            package_directory = dirname(system.file(package=package_name)),
                            package_environment = getNamespace(package_name),
@@ -120,7 +121,7 @@ create_package <- function(application_ptr,
     stopifnot(is_environment(package_environment))
     stopifnot(is_scalar_logical(attached))
 
-    package_ptr <- .Call(C_instrumentr_package_create, package_name, package_directory, package_environment, attached)
+    package_ptr <- .Call(C_instrumentr_package_create, state, package_name, package_directory, package_environment, attached)
 
     function_table <- get_function_table(package_environment)
 
@@ -130,6 +131,7 @@ create_package <- function(application_ptr,
 
         ## NOTE: calling this also adds the function to package
         .Call(C_instrumentr_application_function_map_update_properties,
+              state,
               application_ptr,
               package_ptr,
               function_name,

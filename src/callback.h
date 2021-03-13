@@ -1,27 +1,33 @@
 #ifndef INSTRUMENTR_CALLBACK_H
 #define INSTRUMENTR_CALLBACK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/types.h>
 #include <instrumentr/Rincludes.h>
-#include "event.h"
-#include "exec_stats.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
 instrumentr_callback_t
-instrumentr_callback_create_from_r_function(SEXP r_function,
+instrumentr_callback_create_from_r_function(instrumentr_state_t state,
+                                            SEXP r_function,
                                             instrumentr_event_t event);
 
-SEXP r_instrumentr_callback_create_from_r_function(SEXP r_event,
+SEXP r_instrumentr_callback_create_from_r_function(SEXP r_state,
+                                                   SEXP r_event,
                                                    SEXP r_function);
 
 instrumentr_callback_t
-instrumentr_callback_create_from_c_function(void* c_function,
+instrumentr_callback_create_from_c_function(instrumentr_state_t state,
+                                            void* c_function,
                                             instrumentr_event_t event);
 
-SEXP r_instrumentr_callback_create_from_c_function(SEXP r_c_function,
+SEXP r_instrumentr_callback_create_from_c_function(SEXP r_state,
+                                                   SEXP r_c_function,
                                                    SEXP r_event);
 
 /********************************************************************************
@@ -101,5 +107,9 @@ instrumentr_callback_get_exec_stats(instrumentr_callback_t callback);
 
 /* accessor  */
 SEXP r_instrumentr_callback_get_exec_stats(SEXP r_callback);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_CALLBACK_H */

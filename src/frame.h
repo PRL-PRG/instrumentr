@@ -3,9 +3,6 @@
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
-#include "call.h"
-#include "promise.h"
-#include "context.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,13 +13,16 @@ extern "C" {
  *******************************************************************************/
 
 instrumentr_frame_t
-instrumentr_frame_create_from_call(instrumentr_call_t call);
+instrumentr_frame_create_from_call(instrumentr_state_t state,
+                                   instrumentr_call_t call);
 
 instrumentr_frame_t
-instrumentr_frame_create_from_promise(instrumentr_promise_t promise);
+instrumentr_frame_create_from_promise(instrumentr_state_t state,
+                                      instrumentr_promise_t promise);
 
 instrumentr_frame_t
-instrumentr_frame_create_from_context(instrumentr_context_t context);
+instrumentr_frame_create_from_context(instrumentr_state_t state,
+                                      instrumentr_context_t context);
 
 /********************************************************************************
  * interop

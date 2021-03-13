@@ -1,3 +1,4 @@
+#include "promise.h"
 #include "object.h"
 #include "interop.h"
 #include "utilities.h"
@@ -51,11 +52,14 @@ void instrumentr_promise_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_promise_t instrumentr_promise_create(SEXP r_promise) {
-    instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_promise_impl_t),
-                                  INSTRUMENTR_PROMISE,
-                                  instrumentr_promise_finalize);
+instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
+                                                 SEXP r_promise) {
+    instrumentr_object_t object = instrumentr_object_create_and_initialize(
+        sizeof(struct instrumentr_promise_impl_t),
+        state,
+        INSTRUMENTR_PROMISE,
+        instrumentr_promise_finalize,
+        INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_promise_t promise = (instrumentr_promise_t)(object);
 

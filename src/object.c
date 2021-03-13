@@ -1,33 +1,60 @@
 #include "object.h"
 #include "interop.h"
 #include "utilities.h"
-
-static int object_counter = 0;
+#include "state.h"
 
 /*******************************************************************************
  * create
  *******************************************************************************/
 
 instrumentr_object_t
-instrumentr_object_create(int size,
-                          instrumentr_object_type_t type,
-                          instrumentr_object_finalizer_t finalizer) {
+instrumentr_object_create(int size) {
     instrumentr_object_t object = (instrumentr_object_t) calloc(1, size);
-
     if (object == NULL) {
         Rf_error("allocation of new instrumentr object failed");
     }
+    return object;
+}
 
-    object->id = object_counter++;
+void
+instrumentr_object_initialize(instrumentr_object_t object,
+                              instrumentr_state_t state,
+                              instrumentr_object_type_t type,
+                              instrumentr_object_finalizer_t finalizer,
+                              instrumentr_origin_t origin) {
+    object->id = instrumentr_state_get_next_id(state);
     object->type = type;
     object->reference_count = 1;
     object->finalizer = finalizer;
-    object->birth_time = -1; /* TODO */
-    object->death_time = -1; /* TODO */
-    object->local = 0;       /* TODO */
+    object->birth_time = instrumentr_state_get_time(state);
+    object->death_time = -1;
+    object->origin = origin;
     object->r_data = NULL;
+}
 
+
+instrumentr_object_t
+instrumentr_object_create_and_initialize(int size,
+                                         instrumentr_state_t state,
+                                         instrumentr_object_type_t type,
+                                         instrumentr_object_finalizer_t finalizer,
+                                         instrumentr_origin_t origin) {
+    instrumentr_object_t object = instrumentr_object_create(size);
+    instrumentr_object_initialize(object, state, type, finalizer, origin);
     return object;
+}
+
+/*******************************************************************************
+ * kill
+ *******************************************************************************/
+
+void instrumentr_object_kill(instrumentr_object_t object, instrumentr_state_t state) {
+    if(object->death_time != -1) {
+        Rf_error("attempt to kill a dead object");
+    }
+    object->death_time = instrumentr_state_get_time(state);
+    object->finalizer(object);
+    object->finalizer = NULL;
 }
 
 /*******************************************************************************
@@ -35,12 +62,13 @@ instrumentr_object_create(int size,
  *******************************************************************************/
 
 void instrumentr_object_destroy(instrumentr_object_t object) {
-    object->finalizer(object);
+    /* if object is not killed before */
+    if(object -> death_time == -1) {
+        object->finalizer(object);
 
-    instrumentr_object_remove_data(object);
-    object->finalizer = NULL;
-    object->id = -1;
-
+        instrumentr_object_remove_data(object);
+        object->finalizer = NULL;
+    }
     free(object);
 }
 
@@ -195,17 +223,13 @@ SEXP r_instrumentr_object_is_dead(SEXP r_object) {
     return instrumentr_c_int_to_r_logical(result);
 }
 
-void instrumentr_object_kill(instrumentr_object_t object, int time) {
-    object -> death_time = time;
-}
-
 /*******************************************************************************
- * local
+ * origin
  *******************************************************************************/
 
 /* accessor */
 int instrumentr_object_is_local(instrumentr_object_t object) {
-    return object -> local;
+    return object -> origin == INSTRUMENTR_ORIGIN_LOCAL;
 }
 
 SEXP r_instrumentr_object_is_local(SEXP r_object) {
@@ -216,7 +240,7 @@ SEXP r_instrumentr_object_is_local(SEXP r_object) {
 
 /* accessor */
 int instrumentr_object_is_foreign(instrumentr_object_t object) {
-    return !instrumentr_object_is_local(object);
+    return object -> origin == INSTRUMENTR_ORIGIN_FOREIGN;
 }
 
 SEXP r_instrumentr_object_is_foreign(SEXP r_object) {

@@ -2,6 +2,9 @@
 #include "object.h"
 #include "vec.h"
 #include "interop.h"
+#include "exec_stats.h"
+#include "event.h"
+#include "state.h"
 
 /********************************************************************************
  * definition
@@ -52,7 +55,8 @@ instrumentr_callback_create(instrumentr_callback_t callback,
     return callback;
 }
 
-instrumentr_callback_t instrumentr_callback_create_from_r_function(SEXP r_function,
+instrumentr_callback_t instrumentr_callback_create_from_r_function(instrumentr_state_t state,
+                                                                   SEXP r_function,
                                                                    instrumentr_event_t event) {
     const char* name = instrumentr_event_to_string(event);
 
@@ -70,9 +74,11 @@ instrumentr_callback_t instrumentr_callback_create_from_r_function(SEXP r_functi
     }
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_callback_impl_t),
-                                  INSTRUMENTR_CALLBACK,
-                                  instrumentr_callback_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_callback_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_CALLBACK,
+                                                 instrumentr_callback_finalize,
+                                                 INSTRUMENTR_ORIGIN_FOREIGN);
 
     instrumentr_callback_t callback = (instrumentr_callback_t)(object);
 
@@ -85,19 +91,24 @@ instrumentr_callback_t instrumentr_callback_create_from_r_function(SEXP r_functi
 }
 
 SEXP
-r_instrumentr_callback_create_from_r_function(SEXP r_function,
+r_instrumentr_callback_create_from_r_function(SEXP r_state,
+                                              SEXP r_function,
                                               SEXP r_event) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
     instrumentr_event_t event = instrumentr_event_unwrap(r_event);
-    instrumentr_callback_t callback = instrumentr_callback_create_from_r_function(r_function, event);
+    instrumentr_callback_t callback = instrumentr_callback_create_from_r_function(state, r_function, event);
     return instrumentr_callback_wrap(callback);
 }
 
-instrumentr_callback_t instrumentr_callback_create_from_c_function(void* c_function,
+instrumentr_callback_t instrumentr_callback_create_from_c_function(instrumentr_state_t state,
+                                                                   void* c_function,
                                                                    instrumentr_event_t event) {
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_callback_impl_t),
-                                  INSTRUMENTR_CALLBACK,
-                                  instrumentr_callback_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_callback_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_CALLBACK,
+                                                 instrumentr_callback_finalize,
+                                                 INSTRUMENTR_ORIGIN_FOREIGN);
 
     instrumentr_callback_t callback = (instrumentr_callback_t)(object);
 
@@ -108,11 +119,14 @@ instrumentr_callback_t instrumentr_callback_create_from_c_function(void* c_funct
     return instrumentr_callback_create(callback, event);
 }
 
-SEXP r_instrumentr_callback_create_from_c_function(SEXP r_c_function, SEXP r_event) {
+SEXP r_instrumentr_callback_create_from_c_function(SEXP r_state,
+                                                   SEXP r_c_function,
+                                                   SEXP r_event) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
     void* c_function = instrumentr_r_externalptr_to_c_pointer(r_c_function);
     instrumentr_event_t event = instrumentr_event_unwrap(r_event);
     instrumentr_callback_t callback =
-        instrumentr_callback_create_from_c_function(c_function, event);
+        instrumentr_callback_create_from_c_function(state, c_function, event);
     return instrumentr_callback_wrap(callback);
 }
 

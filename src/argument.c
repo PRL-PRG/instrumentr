@@ -3,6 +3,8 @@
 #include "interop.h"
 #include "utilities.h"
 #include "object.h"
+#include "promise.h"
+#include "value.h"
 
 /********************************************************************************
  * definition
@@ -32,14 +34,17 @@ void instrumentr_argument_finalize(instrumentr_object_t object) {
  *******************************************************************************/
 
 instrumentr_argument_t
-instrumentr_argument_create(const char* name,
+instrumentr_argument_create(instrumentr_state_t state,
+                            const char* name,
                             instrumentr_object_t promise_or_value) {
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_argument_impl_t),
-                                  INSTRUMENTR_ARGUMENT,
-                                  instrumentr_argument_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_argument_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_ARGUMENT,
+                                                 instrumentr_argument_finalize,
+                                                 INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_argument_t argument = (instrumentr_argument_t)(object);
 
@@ -52,15 +57,17 @@ instrumentr_argument_create(const char* name,
 }
 
 instrumentr_argument_t
-instrumentr_argument_create_from_promise(const char* name,
+instrumentr_argument_create_from_promise(instrumentr_state_t state,
+                                         const char* name,
                                          instrumentr_promise_t promise) {
-    return instrumentr_argument_create(name, (instrumentr_object_t)promise);
+    return instrumentr_argument_create(state, name, (instrumentr_object_t)promise);
 }
 
 instrumentr_argument_t
-instrumentr_argument_create_from_value(const char* name,
+instrumentr_argument_create_from_value(instrumentr_state_t state,
+                                       const char* name,
                                        instrumentr_value_t value) {
-    return instrumentr_argument_create(name, (instrumentr_object_t) value);
+    return instrumentr_argument_create(state, name, (instrumentr_object_t) value);
 }
 
 /********************************************************************************

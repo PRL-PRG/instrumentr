@@ -12,7 +12,7 @@ extern "C" {
  * create
  *******************************************************************************/
 
-instrumentr_call_stack_t instrumentr_call_stack_create();
+instrumentr_call_stack_t instrumentr_call_stack_create(instrumentr_state_t state);
 
 /********************************************************************************
  * interop

@@ -15,6 +15,7 @@
 #include "interop.h"
 #include "state.h"
 #include "promise.h"
+#include "value.h"
 
 #include <R_ext/Rdynload.h>
 
@@ -54,6 +55,7 @@ const R_CallMethodDef CallEntries[] = {
 
     /* tracer */
     DECLARE_BINDING(instrumentr_tracer_create, 0),
+    DECLARE_BINDING(instrumentr_tracer_get_state, 1),
     DECLARE_BINDING(instrumentr_tracer_get_application, 1),
     DECLARE_BINDING(instrumentr_tracer_get_environment, 1),
     DECLARE_BINDING(instrumentr_tracer_is_active, 1),
@@ -71,8 +73,8 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_tracer_get_exec_stats, 1),
 
     /* callback */
-    DECLARE_BINDING(instrumentr_callback_create_from_r_function, 2),
-    DECLARE_BINDING(instrumentr_callback_create_from_c_function, 2),
+    DECLARE_BINDING(instrumentr_callback_create_from_r_function, 3),
+    DECLARE_BINDING(instrumentr_callback_create_from_c_function, 3),
     DECLARE_BINDING(instrumentr_callback_get_event, 1),
     DECLARE_BINDING(instrumentr_callback_handles_event, 2),
     DECLARE_BINDING(instrumentr_callback_get_parameter_count, 1),
@@ -94,7 +96,7 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_state_erase, 3),
 
     /* application */
-    DECLARE_BINDING(instrumentr_application_create, 5),
+    DECLARE_BINDING(instrumentr_application_create, 6),
     DECLARE_BINDING(instrumentr_application_get_name, 1),
     DECLARE_BINDING(instrumentr_application_get_directory, 1),
     DECLARE_BINDING(instrumentr_application_get_code, 1),
@@ -114,7 +116,7 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_call_stack_peek_frame, 2),
 
     /* package */
-    DECLARE_BINDING(instrumentr_package_create, 4),
+    DECLARE_BINDING(instrumentr_package_create, 5),
     DECLARE_BINDING(instrumentr_package_add_function, 2),
     DECLARE_BINDING(instrumentr_package_get_name, 1),
     DECLARE_BINDING(instrumentr_package_get_directory, 1),

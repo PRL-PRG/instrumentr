@@ -26,11 +26,13 @@ void instrumentr_value_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_value_t instrumentr_value_create(SEXP r_sexp) {
+instrumentr_value_t instrumentr_value_create(instrumentr_state_t state, SEXP r_sexp) {
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_value_impl_t),
-                                  INSTRUMENTR_VALUE,
-                                  instrumentr_value_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_value_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_VALUE,
+                                                 instrumentr_value_finalize,
+                                                 INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_value_t value = (instrumentr_value_t)(object);
 

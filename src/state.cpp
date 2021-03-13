@@ -12,8 +12,9 @@
 
 struct instrumentr_state_impl_t {
     struct instrumentr_object_impl_t object;
-    std::unordered_map<std::string, SEXP>* external;
+    int next_id;
     int time;
+    std::unordered_map<std::string, SEXP>* external;
     std::unordered_map<SEXP, instrumentr_promise_t>* promise_table;
 };
 
@@ -37,18 +38,20 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
  *******************************************************************************/
 
 instrumentr_state_t instrumentr_state_create() {
-    instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_state_impl_t),
-                                  INSTRUMENTR_STATE,
-                                  instrumentr_state_finalize);
+    instrumentr_state_t state = (instrumentr_state_t) instrumentr_object_create(
+        sizeof(instrumentr_state_impl_t));
 
-    instrumentr_state_t state = (instrumentr_state_t)(object);
-
+    state->next_id = 0;
+    state->time = -1;
     state->external = new std::unordered_map<std::string, SEXP>();
-    state->time = 0;
     state->promise_table =
         new std::unordered_map<SEXP, instrumentr_promise_t>();
 
+    instrumentr_object_initialize((instrumentr_object_t) state,
+                                  state,
+                                  INSTRUMENTR_STATE,
+                                  instrumentr_state_finalize,
+                                  INSTRUMENTR_ORIGIN_FOREIGN);
     return state;
 }
 
@@ -64,6 +67,26 @@ instrumentr_state_t instrumentr_state_unwrap(SEXP r_state) {
     instrumentr_object_t object =
         instrumentr_object_unwrap(r_state, INSTRUMENTR_STATE);
     return (instrumentr_state_t)(object);
+}
+
+/********************************************************************************
+ * id
+ *******************************************************************************/
+
+int instrumentr_state_get_next_id(instrumentr_state_t state) {
+    return (state->next_id)++;
+}
+
+/********************************************************************************
+ * time
+ *******************************************************************************/
+
+int instrumentr_state_get_time(instrumentr_state_t state) {
+    return state->time;
+}
+
+void instrumentr_state_increment_time(instrumentr_state_t state) {
+    ++state->time;
 }
 
 /*******************************************************************************
@@ -246,21 +269,13 @@ SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive) {
 }
 
 /*******************************************************************************
- * time
- *******************************************************************************/
-/*  mutator  */
-void instrumentr_state_increment_time(instrumentr_state_t state) {
-    ++state->time;
-}
-
-/*******************************************************************************
  * promise_table
  *******************************************************************************/
 instrumentr_promise_t
 instrumentr_state_promise_table_create(instrumentr_state_t state,
                                        SEXP r_promise) {
     /* TODO: set promise birth time */
-    instrumentr_promise_t promise = instrumentr_promise_create(r_promise);
+    instrumentr_promise_t promise = instrumentr_promise_create(state, r_promise);
     auto result = state->promise_table->insert({r_promise, promise});
     if (!result.second) {
         instrumentr_object_release(result.first->second);

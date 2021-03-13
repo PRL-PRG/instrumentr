@@ -12,7 +12,8 @@ extern "C" {
  * create
  *******************************************************************************/
 
-instrumentr_promise_t instrumentr_promise_create(SEXP r_promise);
+instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
+                                                 SEXP r_promise);
 
 /********************************************************************************
  * interop

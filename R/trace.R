@@ -32,7 +32,8 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         ## nolint - doTryCatch(return(expr), name, parentenv, handler)
         frame_position <- (function() sys.nframe())()
 
-        application <- create_application(infer_application_name(),
+        application <- create_application(get_state(tracer),
+                                          infer_application_name(),
                                           getwd(),
                                           substitute(code),
                                           environment,

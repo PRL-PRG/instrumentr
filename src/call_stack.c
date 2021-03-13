@@ -3,6 +3,7 @@
 #include "interop.h"
 #include "object.h"
 #include "vec.h"
+#include "context.h"
 
 /********************************************************************************
  * definition
@@ -35,11 +36,13 @@ void instrumentr_call_stack_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_call_stack_t instrumentr_call_stack_create() {
+instrumentr_call_stack_t instrumentr_call_stack_create(instrumentr_state_t state) {
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_call_stack_impl_t),
-                                  INSTRUMENTR_CALL_STACK,
-                                  instrumentr_call_stack_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_call_stack_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_CALL_STACK,
+                                                 instrumentr_call_stack_finalize,
+                                                 INSTRUMENTR_ORIGIN_FOREIGN);
 
     instrumentr_call_stack_t call_stack = (instrumentr_call_stack_t)(object);
 

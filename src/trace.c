@@ -19,6 +19,8 @@
 #include "context.h"
 #include "frame.h"
 #include "state.h"
+#include "call_stack.h"
+#include "promise.h"
 
 #define WRAP(name) SEXP r_##name = PROTECT(instrumentr_##name##_wrap(name));
 
@@ -32,8 +34,8 @@
 
 #define INVOKE_CALLBACK(NAME, TRACER, INIT, CCALL, RCALL, FIN)               \
     TRACER;                                                                  \
-    INIT;                                                                    \
     instrumentr_state_t state = instrumentr_tracer_get_state(tracer);        \
+    INIT;                                                                    \
     instrumentr_state_increment_time(state);                                 \
     if (instrumentr_tracer_has_callback(tracer, NAME)) {                     \
         instrumentr_callback_t callback =                                    \
@@ -365,7 +367,7 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
-                        instrumentr_frame_create_from_call(call);
+                    instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
                         instrumentr_application_get_call_stack(application);
                     instrumentr_call_stack_push_frame(call_stack, frame);
@@ -440,7 +442,7 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
-                        instrumentr_frame_create_from_call(call);
+                    instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
                         instrumentr_application_get_call_stack(application);
                     instrumentr_call_stack_push_frame(call_stack, frame);
@@ -515,7 +517,7 @@ void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
-                        instrumentr_frame_create_from_call(call);
+                    instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
                         instrumentr_application_get_call_stack(application);
                     instrumentr_call_stack_push_frame(call_stack, frame);
@@ -773,8 +775,7 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
                     instrumentr_tracer_get_application(tracer);
                 SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
                 /* TODO: move the rest to trace_variable_definition */
-                instrumentr_application_function_map_update_name(
-                    application, r_symbol, r_value, r_rho);),
+                instrumentr_application_function_map_update_name(state, application, r_symbol, r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,
@@ -802,7 +803,7 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
                 SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
                 /* TODO: move the rest to trace_variable_definition */
                 instrumentr_application_function_map_update_name(
-                    application, r_symbol, r_value, r_rho);),
+                                                                 state, application, r_symbol, r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,

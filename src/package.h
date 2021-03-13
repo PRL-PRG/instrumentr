@@ -3,7 +3,6 @@
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
-#include "function.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,12 +12,14 @@ extern "C" {
  * create
  *******************************************************************************/
 
-instrumentr_package_t instrumentr_package_create(const char* name,
+instrumentr_package_t instrumentr_package_create(instrumentr_state_t state,
+                                                 const char* name,
                                                  const char* directory,
                                                  SEXP r_namespace,
                                                  int attached);
 
-SEXP r_instrumentr_package_create(SEXP r_name,
+SEXP r_instrumentr_package_create(SEXP r_state,
+                                  SEXP r_name,
                                   SEXP r_directory,
                                   SEXP r_namespace,
                                   SEXP r_attached);

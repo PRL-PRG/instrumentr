@@ -7,19 +7,19 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
-#include "value.h"
-#include "promise.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
 instrumentr_argument_t
-instrumentr_argument_create_from_promise(const char* name,
+instrumentr_argument_create_from_promise(instrumentr_state_t state,
+                                         const char* name,
                                          instrumentr_promise_t promise);
 
 instrumentr_argument_t
-instrumentr_argument_create_from_value(const char* name,
+instrumentr_argument_create_from_value(instrumentr_state_t state,
+                                       const char* name,
                                        instrumentr_value_t value);
 
 /********************************************************************************

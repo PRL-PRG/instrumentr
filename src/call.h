@@ -3,8 +3,6 @@
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
-#include "parameter.h"
-#include "function.h"
 
 #ifdef __cplusplus
 extern "C" {

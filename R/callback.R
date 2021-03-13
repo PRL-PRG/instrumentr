@@ -13,13 +13,13 @@ is_callback <- function(object) {
 }
 
 #' @export
-create_callback.function <- function(object, event) { # nolint
-    .Call(C_instrumentr_callback_create_from_r_function, object, event)
+create_callback.function <- function(object, state, event) { # nolint
+    .Call(C_instrumentr_callback_create_from_r_function, state, object, event)
 }
 
 #' @export
-create_callback.externalptr <- function(object, event) { # nolint
-    .Call(C_instrumentr_callback_create_from_c_function, object, event)
+create_callback.externalptr <- function(object, state, event) { # nolint
+    .Call(C_instrumentr_callback_create_from_c_function, state, object, event)
 }
 
 #' @export

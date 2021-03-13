@@ -112,7 +112,7 @@ int instrumentr_funtab_get_size() {
     return size;
 }
 
-instrumentr_function_t instrumentr_funtab_create_function(int index) {
+instrumentr_function_t instrumentr_funtab_create_function(instrumentr_state_t state, int index) {
     FUNTAB* entry = get_funtab_entry(index);
     int builtin = instrumentr_funtab_is_builtin(entry);
     const char* name = instrumentr_funtab_get_name(entry);
@@ -121,10 +121,8 @@ instrumentr_function_t instrumentr_funtab_create_function(int index) {
     CCODE ccode = instrumentr_funtab_get_definition(entry);
 
     if (builtin) {
-        return instrumentr_function_create_builtin(
-            index, name, parameter_count, ccode, internal);
+        return instrumentr_function_create_builtin(state, index, name, parameter_count, ccode, internal);
     } else {
-        return instrumentr_function_create_special(
-            index, name, parameter_count, ccode, internal);
+        return instrumentr_function_create_special(state, index, name, parameter_count, ccode, internal);
     }
 }

@@ -26,11 +26,14 @@ void instrumentr_context_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_context_t instrumentr_context_create(void *pointer) {
+instrumentr_context_t instrumentr_context_create(instrumentr_state_t state,
+                                                 void *pointer) {
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_context_impl_t),
-                                  INSTRUMENTR_CONTEXT,
-                                  instrumentr_context_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_context_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_CONTEXT,
+                                                 instrumentr_context_finalize,
+                                                 INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_context_t context = (instrumentr_context_t)(object);
     context->pointer = pointer;

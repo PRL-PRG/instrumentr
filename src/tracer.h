@@ -1,6 +1,10 @@
 #ifndef INSTRUMENTR_TRACER_H
 #define INSTRUMENTR_TRACER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 #include "event.h"
@@ -157,5 +161,9 @@ instrumentr_tracer_get_event_exec_stats(instrumentr_tracer_t tracer,
 SEXP r_instrumentr_tracer_get_event_exec_stats(SEXP r_tracer, SEXP r_event);
 
 SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_TRACER_H */

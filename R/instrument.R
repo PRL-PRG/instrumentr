@@ -21,7 +21,10 @@ handle_current_packages <- function(tracer_ptr, application_ptr) {
     )
 
     create_and_add <- function(package_name, attached) {
-        package_ptr <- create_package(application_ptr, package_name, attached = attached)
+        package_ptr <- create_package(get_state(tracer_ptr),
+                                      application_ptr,
+                                      package_name,
+                                      attached = attached)
         add_package(application_ptr, package_ptr)
     }
 
@@ -41,7 +44,10 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
     handle_package_on_load <- function(package_name, ...) {
         #.Call(C_instrumentr_tracer_disable, tracer_ptr)
 
-        package_ptr <- create_package(application_ptr, package_name, attached = FALSE)
+        package_ptr <- create_package(get_state(tracer_ptr),
+                                      application_ptr,
+                                      package_name,
+                                      attached = FALSE)
         .Call(C_instrumentr_trace_package_load, tracer_ptr, application_ptr, package_ptr)
 
         #.Call(C_instrumentr_tracer_enable, tracer_ptr)

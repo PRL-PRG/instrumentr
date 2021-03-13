@@ -6,6 +6,9 @@
 #include "utilities.h"
 #include "object.h"
 #include "state.h"
+#include "promise.h"
+#include "value.h"
+#include "function.h"
 
 /********************************************************************************
  * definition
@@ -71,7 +74,7 @@ void process_promise_argument(instrumentr_state_t state,
         instrumentr_state_promise_table_lookup(state, r_argument_value, 1);
 
     instrumentr_argument_t argument =
-        instrumentr_argument_create_from_promise(unwrap_name(r_argument_name), promise);
+        instrumentr_argument_create_from_promise(state, unwrap_name(r_argument_name), promise);
 
     instrumentr_parameter_append_argument(parameter, argument);
     /* NOTE: argument is owned by parameter now */
@@ -81,12 +84,14 @@ void process_promise_argument(instrumentr_state_t state,
 }
 
 
-void process_value_argument(instrumentr_parameter_t parameter,
-                           SEXP r_argument_name,
-                           SEXP r_argument_value) {
-    instrumentr_value_t value = instrumentr_value_create(r_argument_value);
+void process_value_argument(instrumentr_state_t state,
+                            instrumentr_parameter_t parameter,
+                            SEXP r_argument_name,
+                            SEXP r_argument_value) {
+    instrumentr_value_t value = instrumentr_value_create(state, r_argument_value);
 
-    instrumentr_argument_t argument = instrumentr_argument_create_from_value(unwrap_name(r_argument_name), value);
+    instrumentr_argument_t argument = instrumentr_argument_create_from_value(state,
+                                                                             unwrap_name(r_argument_name), value);
     /* NOTE: value is owned by argument now */
     instrumentr_object_release(value);
 
@@ -117,9 +122,10 @@ void process_vararg_argument(instrumentr_state_t state,
         }
         /* non promise value */
         else {
-            process_value_argument(parameter,
-                                  r_dot_argument_name,
-                                  r_dot_argument_value);
+            process_value_argument(state,
+                                   parameter,
+                                   r_dot_argument_name,
+                                   r_dot_argument_value);
         }
     }
 }
@@ -133,8 +139,10 @@ void process_parameter(instrumentr_state_t state,
 
     const char* argument_name = unwrap_name(r_argument_name);
 
-    instrumentr_parameter_t parameter = instrumentr_parameter_create(
-        argument_name, position, r_default_argument);
+    instrumentr_parameter_t parameter = instrumentr_parameter_create(state,
+                                                                     argument_name,
+                                                                     position,
+                                                                     r_default_argument);
 
     instrumentr_call_append_parameter(call, parameter);
 
@@ -156,7 +164,7 @@ void process_parameter(instrumentr_state_t state,
     }
     /* non promise  */
     else {
-        process_value_argument(parameter, R_NilValue, r_argument_value);
+        process_value_argument(state, parameter, R_NilValue, r_argument_value);
     }
 }
 
@@ -175,7 +183,7 @@ void process_closure_parameters(instrumentr_state_t state,
         SEXP r_argument_name = TAG(r_parameter_list);
 
         SEXP r_default_argument = CAR(r_parameter_list);
-
+        
         SEXP r_argument_value =
             Rf_findVarInFrame(r_environment, r_argument_name);
 
@@ -214,9 +222,11 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
                                            SEXP r_environment,
                                            int frame_position) {
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_call_impl_t),
-                                  INSTRUMENTR_CALL,
-                                  instrumentr_call_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_call_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_CALL,
+                                                 instrumentr_call_finalize,
+                                                 INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_call_t call = (instrumentr_call_t)(object);
 

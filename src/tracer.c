@@ -83,10 +83,14 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
  *******************************************************************************/
 
 instrumentr_tracer_t instrumentr_tracer_create() {
+    instrumentr_state_t state = instrumentr_state_create();
+
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_tracer_impl_t),
-                                  INSTRUMENTR_TRACER,
-                                  instrumentr_tracer_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_tracer_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_TRACER,
+                                                 instrumentr_tracer_finalize,
+                                                 INSTRUMENTR_ORIGIN_FOREIGN);
 
     instrumentr_tracer_t tracer = (instrumentr_tracer_t)(object);
 
@@ -97,7 +101,7 @@ instrumentr_tracer_t instrumentr_tracer_create() {
     */
     tracer->dyntracer = dyntracer;
 
-    tracer->state = instrumentr_state_create();
+    tracer->state = state;
 
     tracer->application = NULL;
 

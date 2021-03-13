@@ -22,6 +22,20 @@ SEXP instrumentr_state_wrap(instrumentr_state_t state);
 
 instrumentr_state_t instrumentr_state_unwrap(SEXP r_state);
 
+/********************************************************************************
+ * id
+ *******************************************************************************/
+
+int instrumentr_state_get_next_id(instrumentr_state_t state);
+
+/********************************************************************************
+ * time
+ *******************************************************************************/
+
+int instrumentr_state_get_time(instrumentr_state_t state);
+
+void instrumentr_state_increment_time(instrumentr_state_t state);
+
 /*******************************************************************************
  * empty
  *******************************************************************************/
@@ -90,12 +104,6 @@ void instrumentr_state_erase(instrumentr_state_t state,
                              const char* key,
                              int permissive);
 SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive);
-
-/*******************************************************************************
- * time
- *******************************************************************************/
-/*  mutator  */
-void instrumentr_state_increment_time(instrumentr_state_t state);
 
 /*******************************************************************************
  * promise_table

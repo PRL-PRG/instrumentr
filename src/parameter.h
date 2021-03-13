@@ -7,13 +7,13 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
-#include "argument.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
-instrumentr_parameter_t instrumentr_parameter_create(const char* name,
+instrumentr_parameter_t instrumentr_parameter_create(instrumentr_state_t state,
+                                                     const char* name,
                                                      int position,
                                                      SEXP r_default_expression);
 

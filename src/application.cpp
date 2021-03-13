@@ -1,12 +1,15 @@
 #include "object.h"
 #include "application.h"
 #include "package.h"
+#include "function.h"
 #include "call_stack.h"
 #include "interop.h"
 #include "utilities.h"
 #include "vec.h"
 #include <unordered_map>
 #include "frame.h"
+#include "state.h"
+#include "call.h"
 
 /********************************************************************************
  * definition
@@ -66,7 +69,8 @@ void instrumentr_application_finalize(instrumentr_object_t object) {
  *******************************************************************************/
 
 instrumentr_application_t
-instrumentr_application_create(const char* const name,
+instrumentr_application_create(instrumentr_state_t state,
+                               const char* const name,
                                const char* const directory,
                                SEXP r_code,
                                SEXP r_environment,
@@ -75,10 +79,12 @@ instrumentr_application_create(const char* const name,
 
     const char* duplicate_directory = instrumentr_duplicate_string(directory);
 
-    instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_application_impl_t),
-                                  INSTRUMENTR_APPLICATION,
-                                  instrumentr_application_finalize);
+    instrumentr_object_t object = instrumentr_object_create_and_initialize(
+        sizeof(struct instrumentr_application_impl_t),
+        state,
+        INSTRUMENTR_APPLICATION,
+        instrumentr_application_finalize,
+        INSTRUMENTR_ORIGIN_FOREIGN);
 
     instrumentr_application_t application = (instrumentr_application_t)(object);
 
@@ -93,7 +99,7 @@ instrumentr_application_create(const char* const name,
 
     application->frame_position = frame_position;
 
-    application->call_stack = instrumentr_call_stack_create();
+    application->call_stack = instrumentr_call_stack_create(state);
 
     vec_init(&application->packages);
 
@@ -103,17 +109,19 @@ instrumentr_application_create(const char* const name,
     return application;
 }
 
-SEXP r_instrumentr_application_create(SEXP r_name,
+SEXP r_instrumentr_application_create(SEXP r_state,
+                                      SEXP r_name,
                                       SEXP r_directory,
                                       SEXP r_code,
                                       SEXP r_environment,
                                       SEXP r_frame_position) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
     const char* const name = instrumentr_r_character_to_c_string(r_name);
     const char* const directory =
         instrumentr_r_character_to_c_string(r_directory);
     int frame_position = instrumentr_r_integer_to_c_int(r_frame_position);
     instrumentr_application_t application = instrumentr_application_create(
-        name, directory, r_code, r_environment, frame_position);
+        state, name, directory, r_code, r_environment, frame_position);
     SEXP r_application = instrumentr_application_wrap(application);
     instrumentr_object_release(application);
     return r_application;
@@ -393,6 +401,7 @@ SEXP r_instrumentr_application_remove_package(SEXP r_application,
 }
 
 instrumentr_function_t instrumentr_application_function_map_lookup(
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_closure,
     SEXP r_call) {
@@ -406,8 +415,8 @@ instrumentr_function_t instrumentr_application_function_map_lookup(
     }
     /* create the function and add to cache if function is not present */
     else {
-        function =
-            instrumentr_application_function_map_add(application, r_closure);
+        function = instrumentr_application_function_map_add(
+            state, application, r_closure);
     }
 
     /* the function does not have a name */
@@ -470,7 +479,8 @@ void instrumentr_application_function_map_remove(
 }
 
 instrumentr_function_t
-instrumentr_application_function_map_add(instrumentr_application_t application,
+instrumentr_application_function_map_add(instrumentr_state_t state,
+                                         instrumentr_application_t application,
                                          SEXP r_closure) {
     int alien = 0;
     instrumentr_function_t parent = NULL;
@@ -510,7 +520,8 @@ instrumentr_application_function_map_add(instrumentr_application_t application,
     }
     /* TODO: memory management - function will not be collected if insert
      * fails. */
-    function = instrumentr_function_create_closure(function_name,
+    function = instrumentr_function_create_closure(state,
+                                                   function_name,
                                                    Rf_length(CAR(r_closure)),
                                                    r_closure,
                                                    parent,
@@ -526,6 +537,7 @@ instrumentr_application_function_map_add(instrumentr_application_t application,
 }
 
 void instrumentr_application_function_map_update_name(
+    instrumentr_state_t state,
     instrumentr_application_t application,
     SEXP r_symbol,
     SEXP r_value,
@@ -576,7 +588,8 @@ void instrumentr_application_function_map_update_name(
         /* TODO: memory management - function will not be collected if insert
          * fails. */
         function =
-            instrumentr_function_create_closure(name,
+            instrumentr_function_create_closure(state,
+                                                name,
                                                 Rf_length(CAR(r_closure)),
                                                 r_closure,
                                                 parent,
@@ -592,6 +605,7 @@ void instrumentr_application_function_map_update_name(
 /* NOTE: this function is called from package load hook for top level package
  * functions. It updates function properties and adds them to package */
 SEXP r_instrumentr_application_function_map_update_properties(
+    SEXP r_state,
     SEXP r_application,
     SEXP r_package,
     SEXP r_name,
@@ -600,6 +614,7 @@ SEXP r_instrumentr_application_function_map_update_properties(
     SEXP r_pub,
     SEXP r_s3_generic,
     SEXP r_s3_method) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
     instrumentr_application_t application =
         instrumentr_application_unwrap(r_application);
 
@@ -627,7 +642,8 @@ SEXP r_instrumentr_application_function_map_update_properties(
         /* TODO: memory management - function will not be collected if insert
          * fails. */
         function =
-            instrumentr_function_create_closure(name,
+            instrumentr_function_create_closure(state,
+                                                name,
                                                 Rf_length(CAR(r_closure)),
                                                 r_closure,
                                                 parent,

@@ -40,21 +40,23 @@ struct instrumentr_object_impl_t {
     instrumentr_object_finalizer_t finalizer;
     int birth_time;
     int death_time;
-    int local;
+    instrumentr_origin_t origin;
     void* c_data;
     SEXP r_data;
 };
 
 /*******************************************************************************
- * initialize
+ * kill
+ *******************************************************************************/
+
+void instrumentr_object_kill(instrumentr_object_t object,
+                             instrumentr_state_t state);
+
+/*******************************************************************************
+ * object class
  *******************************************************************************/
 
 void instrumentr_object_class_initialize();
-
-/*******************************************************************************
- * finalize
- *******************************************************************************/
-
 void instrumentr_object_class_finalize();
 
 /*******************************************************************************
@@ -67,10 +69,20 @@ SEXP instrumentr_object_get_class(instrumentr_object_type_t object_type);
  * create
  *******************************************************************************/
 
-instrumentr_object_t
-instrumentr_object_create(int size,
-                          instrumentr_object_type_t type,
-                          instrumentr_object_finalizer_t finalizer);
+instrumentr_object_t instrumentr_object_create(int size);
+
+void instrumentr_object_initialize(instrumentr_object_t object,
+                                   instrumentr_state_t state,
+                                   instrumentr_object_type_t type,
+                                   instrumentr_object_finalizer_t finalizer,
+                                   instrumentr_origin_t origin);
+
+instrumentr_object_t instrumentr_object_create_and_initialize(
+    int size,
+    instrumentr_state_t state,
+    instrumentr_object_type_t type,
+    instrumentr_object_finalizer_t finalizer,
+    instrumentr_origin_t origin);
 
 /*******************************************************************************
  * interop
@@ -126,11 +138,8 @@ SEXP r_instrumentr_object_is_alive(SEXP r_object);
 int instrumentr_object_is_dead(instrumentr_object_t object);
 SEXP r_instrumentr_object_is_dead(SEXP r_object);
 
-/* mutator */
-void instrumentr_object_kill(instrumentr_object_t object, int time);
-
 /*******************************************************************************
- * local
+ * origin
  *******************************************************************************/
 
 /* accessor */

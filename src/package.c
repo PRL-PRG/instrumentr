@@ -4,6 +4,8 @@
 #include "vec.h"
 #include "utilities.h"
 #include "funtab.h"
+#include "function.h"
+#include "state.h"
 
 /********************************************************************************
  * definition
@@ -61,7 +63,8 @@ void instrumentr_package_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_package_t instrumentr_package_create(const char* name,
+instrumentr_package_t instrumentr_package_create(instrumentr_state_t state,
+                                                 const char* name,
                                                  const char* directory,
                                                  SEXP r_namespace,
                                                  int attached) {
@@ -69,10 +72,13 @@ instrumentr_package_t instrumentr_package_create(const char* name,
 
     const char* duplicate_directory = instrumentr_duplicate_string(directory);
 
+    /* TODO: make foreign for instrumentr package */
     instrumentr_object_t object =
-        instrumentr_object_create(sizeof(struct instrumentr_package_impl_t),
-                                  INSTRUMENTR_PACKAGE,
-                                  instrumentr_package_finalize);
+        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_package_impl_t),
+                                                 state,
+                                                 INSTRUMENTR_PACKAGE,
+                                                 instrumentr_package_finalize,
+                                                 INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_package_t package = (instrumentr_package_t)(object);
 
@@ -92,23 +98,25 @@ instrumentr_package_t instrumentr_package_create(const char* name,
     if (strcmp(name, "base") == 0) {
         int funtab_size = instrumentr_funtab_get_size();
         for(int i = 0; i < funtab_size; ++i) {
-            vec_push(&package->basic_functions, instrumentr_funtab_create_function(i));
+            vec_push(&package->basic_functions, instrumentr_funtab_create_function(state, i));
         }
     }
 
     return package;
 }
 
-SEXP r_instrumentr_package_create(SEXP r_name,
+SEXP r_instrumentr_package_create(SEXP r_state,
+                                  SEXP r_name,
                                   SEXP r_directory,
                                   SEXP r_namespace,
                                   SEXP r_attached) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
     const char* name = instrumentr_r_character_to_c_string(r_name);
     const char* directory = instrumentr_r_character_to_c_string(r_directory);
     int attached = instrumentr_r_logical_to_c_int(r_attached);
 
     instrumentr_package_t package =
-        instrumentr_package_create(name, directory, r_namespace, attached);
+        instrumentr_package_create(state, name, directory, r_namespace, attached);
 
     return instrumentr_package_wrap(package);
 }

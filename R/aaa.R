@@ -1,5 +1,10 @@
 
 #' @export
+get_state <- function(object) {
+    UseMethod("get_state")
+}
+
+#' @export
 get_application <- function(object) { # nolint
     UseMethod("get_application")
 }
@@ -310,7 +315,7 @@ as_promise <- function(object) {
 }
 
 #' @export
-create_callback <- function(object, event) {
+create_callback <- function(object, state, event) {
     UseMethod("create_callback")
 }
 

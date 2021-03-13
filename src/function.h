@@ -12,20 +12,25 @@ extern "C" {
  * create
  *******************************************************************************/
 
-instrumentr_function_t instrumentr_function_create_builtin(int funtab_index,
-                                                           const char* name,
-                                                           int parameter_count,
-                                                           CCODE ccode,
-                                                           int internal);
-
-instrumentr_function_t instrumentr_function_create_special(int funtab_index,
-                                                           const char* name,
-                                                           int parameter_count,
-                                                           CCODE ccode,
-                                                           int internal);
+instrumentr_function_t
+instrumentr_function_create_builtin(instrumentr_state_t state,
+                                    int funtab_index,
+                                    const char* name,
+                                    int parameter_count,
+                                    CCODE ccode,
+                                    int internal);
 
 instrumentr_function_t
-instrumentr_function_create_closure(const char* name,
+instrumentr_function_create_special(instrumentr_state_t state,
+                                    int funtab_index,
+                                    const char* name,
+                                    int parameter_count,
+                                    CCODE ccode,
+                                    int internal);
+
+instrumentr_function_t
+instrumentr_function_create_closure(instrumentr_state_t state,
+                                    const char* name,
                                     int parameter_count,
                                     SEXP sexp,
                                     instrumentr_function_t parent,
@@ -33,7 +38,8 @@ instrumentr_function_create_closure(const char* name,
                                     int s3_generic,
                                     int s3_method);
 
-SEXP r_instrumentr_function_create_closure(SEXP r_name,
+SEXP r_instrumentr_function_create_closure(SEXP r_state,
+                                           SEXP r_name,
                                            SEXP r_parameter_count,
                                            SEXP r_definition,
                                            SEXP r_public,
