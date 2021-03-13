@@ -41,8 +41,6 @@ struct instrumentr_object_impl_t {
     int birth_time;
     int death_time;
     instrumentr_origin_t origin;
-    void* c_data;
-    SEXP r_data;
 };
 
 /*******************************************************************************
@@ -149,26 +147,6 @@ SEXP r_instrumentr_object_is_local(SEXP r_object);
 /* accessor */
 int instrumentr_object_is_foreign(instrumentr_object_t object);
 SEXP r_instrumentr_object_is_foreign(SEXP r_object);
-
-/*******************************************************************************
- * r_data
- *******************************************************************************/
-
-/* accessor */
-int instrumentr_object_has_data(void* object);
-SEXP r_instrumentr_object_has_data(SEXP r_object);
-
-/* mutator  */
-void instrumentr_object_set_data(void* object, SEXP r_data);
-SEXP r_instrumentr_object_set_data(SEXP r_object, SEXP r_data);
-
-/* accessor */
-SEXP instrumentr_object_get_data(void* object);
-SEXP r_instrumentr_object_get_data(SEXP r_object);
-
-/* mutator  */
-void instrumentr_object_remove_data(void* object);
-SEXP r_instrumentr_object_remove_data(SEXP r_object);
 
 #ifdef __cplusplus
 }

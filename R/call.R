@@ -106,18 +106,18 @@ get_parameter_count.instrumentr_call <- function(object) { # nolint
 
 #' @export
 #' @rdname call
-get_parameter.instrumentr_call <- function(call, position_or_name, ...) { # nolint
+get_parameter.instrumentr_call <- function(object, position_or_name) { # nolint
     if (is_scalar_character(position_or_name)) {
-        .Call(C_instrumentr_call_get_parameter_by_name, call, position_or_name)
+        .Call(C_instrumentr_call_get_parameter_by_name, object, position_or_name)
     }
 
     else if (is_scalar_integer(position_or_name)) {
-        .Call(C_instrumentr_call_get_parameter_by_position, call, position_or_name)
+        .Call(C_instrumentr_call_get_parameter_by_position, object, position_or_name)
     }
 
     else if (is_scalar_real(position_or_name)) {
         position_or_name <- as.integer(position_or_name)
-        .Call(C_instrumentr_call_get_parameter_by_position, call, position_or_name)
+        .Call(C_instrumentr_call_get_parameter_by_position, object, position_or_name)
     }
 
     else {

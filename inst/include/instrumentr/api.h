@@ -40,15 +40,7 @@
     MACRO(instrumentr_object_acquire, int, void* object)                   \
     MACRO(instrumentr_object_release, int, void* object)                   \
     MACRO(instrumentr_object_get_id, instrumentr_id_t, void* object)       \
-    MACRO(r_instrumentr_object_get_id, SEXP, SEXP r_object)                \
-    MACRO(instrumentr_object_has_data, int, void* object)                  \
-    MACRO(r_instrumentr_object_has_data, SEXP, SEXP r_object)              \
-    MACRO(instrumentr_object_set_data, void, void* object, SEXP r_data)    \
-    MACRO(r_instrumentr_object_set_data, SEXP, SEXP r_object, SEXP r_data) \
-    MACRO(instrumentr_object_get_data, SEXP, void* object)                 \
-    MACRO(r_instrumentr_object_get_data, SEXP, SEXP r_object)              \
-    MACRO(instrumentr_object_remove_data, void, void* object)              \
-    MACRO(r_instrumentr_object_remove_data, SEXP, SEXP r_object)
+    MACRO(r_instrumentr_object_get_id, SEXP, SEXP r_object)
 
 #define INSTRUMENTR_STATE_API_MAP(MACRO)                               \
     MACRO(instrumentr_state_wrap, SEXP, instrumentr_state_t state)     \

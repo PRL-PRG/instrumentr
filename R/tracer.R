@@ -29,8 +29,8 @@ create_tracer <- function(...) {
 
 #' @export
 #' @rdname tracer
-get_state.instrumentr_tracer <- function(tracer) {
-    .Call(C_instrumentr_tracer_get_state, tracer)
+get_state.instrumentr_tracer <- function(object) {
+    .Call(C_instrumentr_tracer_get_state, object)
 }
 
 #' @export

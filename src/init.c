@@ -48,10 +48,6 @@ const R_CallMethodDef CallEntries[] = {
 
     /* object */
     DECLARE_BINDING(instrumentr_object_get_id, 1),
-    DECLARE_BINDING(instrumentr_object_has_data, 1),
-    DECLARE_BINDING(instrumentr_object_get_data, 1),
-    DECLARE_BINDING(instrumentr_object_set_data, 2),
-    DECLARE_BINDING(instrumentr_object_remove_data, 1),
 
     /* tracer */
     DECLARE_BINDING(instrumentr_tracer_create, 0),
@@ -109,7 +105,7 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_application_add_package, 2),
     DECLARE_BINDING(instrumentr_application_remove_package, 2),
     DECLARE_BINDING(instrumentr_application_get_call_stack, 1),
-    DECLARE_BINDING(instrumentr_application_function_map_update_properties, 8),
+    DECLARE_BINDING(instrumentr_application_function_map_update_properties, 9),
 
     /* call_stack */
     DECLARE_BINDING(instrumentr_call_stack_get_size, 1),

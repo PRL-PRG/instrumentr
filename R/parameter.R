@@ -21,18 +21,18 @@ get_argument_count.instrumentr_parameter <- function(object) { # nolint
 
 #' @export
 #' @rdname parameter
-get_argument.instrumentr_parameter <- function(parameter, position_or_name, ...) { # nolint
+get_argument.instrumentr_parameter <- function(object, position_or_name) { # nolint
     if (is_scalar_character(position_or_name)) {
-        .Call(C_instrumentr_parameter_get_argument_by_name, parameter, position_or_name)
+        .Call(C_instrumentr_parameter_get_argument_by_name, object, position_or_name)
     }
 
     else if (is_scalar_integer(position_or_name)) {
-        .Call(C_instrumentr_parameter_get_argument_by_position, parameter, position_or_name)
+        .Call(C_instrumentr_parameter_get_argument_by_position, object, position_or_name)
     }
 
     else if (is_scalar_real(position_or_name)) {
         position_or_name <- as.integer(position_or_name)
-        .Call(C_instrumentr_parameter_get_argument_by_position, parameter, position_or_name)
+        .Call(C_instrumentr_parameter_get_argument_by_position, object, position_or_name)
     }
 
     else {

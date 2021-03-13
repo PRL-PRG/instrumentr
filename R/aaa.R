@@ -441,37 +441,37 @@ get_parent <- function(object) { # nolint
 
 #' @export
 is_empty <- function(state) {
-    NextMethod("is_empty")
+    UseMethod("is_empty")
 }
 
 #' @export
 clear <- function(state) {
-    NextMethod("clear")
+    UseMethod("clear")
 }
 
 #' @export
 has_key <- function(state) {
-    NextMethod("has_key")
+    UseMethod("has_key")
 }
 
 #' @export
 as_list <- function(state) {
-    NextMethod("as_list")
+    UseMethod("as_list")
 }
 
 #' @export
-lookup <- function(state) {
-    NextMethod("lookup")
+lookup <- function(state, key, alternative) {
+    UseMethod("lookup")
 }
 
 #' @export
-insert <- function(state) {
-    NextMethod("insert")
+insert <- function(state, key, value, overwrite) {
+    UseMethod("insert")
 }
 
 #' @export
-erase <- function(state) {
-    NextMethod("erase")
+erase <- function(state, key) {
+    UseMethod("erase")
 }
 
 #' @export
@@ -504,11 +504,11 @@ is_unknown <- function(object) {
     UseMethod("is_unknown")
 }
 
-get_argument <- function(object) {
+get_argument <- function(object, position_or_name) {
     UseMethod("get_argument")
 }
 
-get_parameter <- function(object) {
+get_parameter <- function(object, position_or_name) {
     UseMethod("get_parameter")
 }
 
