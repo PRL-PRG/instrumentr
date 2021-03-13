@@ -4,6 +4,7 @@
 #include "interop.h"
 #include <string>
 #include <unordered_map>
+#include "promise.h"
 
 /********************************************************************************
  * definition
@@ -13,6 +14,7 @@ struct instrumentr_state_impl_t {
     struct instrumentr_object_impl_t object;
     std::unordered_map<std::string, SEXP>* external;
     int time;
+    std::unordered_map<SEXP, instrumentr_promise_t>* promise_table;
 };
 
 /********************************************************************************
@@ -21,9 +23,13 @@ struct instrumentr_state_impl_t {
 
 void instrumentr_state_finalize(instrumentr_object_t object) {
     instrumentr_state_t state = (instrumentr_state_t)(object);
-    state->external->clear();
+    instrumentr_state_clear(state);
     delete state->external;
     state->external = nullptr;
+
+    instrumentr_state_promise_table_clear(state);
+    delete state->promise_table;
+    state->promise_table = nullptr;
 }
 
 /********************************************************************************
@@ -40,6 +46,8 @@ instrumentr_state_t instrumentr_state_create() {
 
     state->external = new std::unordered_map<std::string, SEXP>();
     state->time = 0;
+    state->promise_table =
+        new std::unordered_map<SEXP, instrumentr_promise_t>();
 
     return state;
 }
@@ -243,4 +251,56 @@ SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive) {
 /*  mutator  */
 void instrumentr_state_increment_time(instrumentr_state_t state) {
     ++state->time;
+}
+
+/*******************************************************************************
+ * promise_table
+ *******************************************************************************/
+instrumentr_promise_t
+instrumentr_state_promise_table_create(instrumentr_state_t state,
+                                       SEXP r_promise) {
+    /* TODO: set promise birth time */
+    instrumentr_promise_t promise = instrumentr_promise_create(r_promise);
+    auto result = state->promise_table->insert({r_promise, promise});
+    if (!result.second) {
+        instrumentr_object_release(result.first->second);
+        result.first->second = promise;
+    }
+
+    return promise;
+}
+
+void instrumentr_state_promise_table_remove(instrumentr_state_t state,
+                                            SEXP r_promise) {
+    auto result = state->promise_table->find(r_promise);
+    if (result != state->promise_table->end()) {
+        instrumentr_object_release(result->second);
+        state->promise_table->erase(result);
+        /* TODO: kill promise */
+    }
+}
+
+instrumentr_promise_t
+instrumentr_state_promise_table_lookup(instrumentr_state_t state,
+                                       SEXP r_promise,
+                                       int create) {
+    auto result = state->promise_table->find(r_promise);
+    if (result != state->promise_table->end()) {
+        return result->second;
+    } else if (create) {
+        return instrumentr_state_promise_table_create(state, r_promise);
+    } else {
+        instrumentr_log_error("promise %p not present in promise table",
+                              r_promise);
+        return NULL;
+    }
+}
+
+void instrumentr_state_promise_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->promise_table->begin();
+         iter != state->promise_table->end();
+         ++iter) {
+        instrumentr_object_release(iter->second);
+    }
+    state->promise_table->clear();
 }

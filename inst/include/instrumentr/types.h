@@ -17,6 +17,13 @@ typedef enum {
     INSTRUMENTR_FUNCTION_SPECIAL
 } instrumentr_function_type_t;
 
+typedef enum {
+    INSTRUMENTR_PROMISE_TYPE_ARGUMENT,
+    INSTRUMENTR_PROMISE_TYPE_DELAYED_ASSIGN,
+    INSTRUMENTR_PROMISE_TYPE_LAZY_LOAD,
+    INSTRUMENTR_PROMISE_TYPE_UNKNOWN
+} instrumentr_promise_type_t;
+
 typedef union {
     SEXP sexp;
     CCODE ccode;
@@ -43,7 +50,9 @@ typedef enum {
     INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
     INSTRUMENTR_EVENT_VARIABLE_LOOKUP,
     INSTRUMENTR_EVENT_CONTEXT_ENTRY,
-    INSTRUMENTR_EVENT_CONTEXT_EXIT
+    INSTRUMENTR_EVENT_CONTEXT_EXIT,
+    INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY,
+    INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT
 } instrumentr_event_t;
 
 /*******************************************************************************
@@ -299,6 +308,20 @@ typedef void (*context_exit_function_t)(instrumentr_tracer_t tracer,
                                         instrumentr_state_t state,
                                         instrumentr_application_t application,
                                         instrumentr_context_t context);
+
+typedef void (*promise_force_entry_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_promise_t promise);
+
+typedef void (*promise_force_exit_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_promise_t promise);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
     MACRO(INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_entry, ARGUMENT)         \

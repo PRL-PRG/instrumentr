@@ -24,3 +24,51 @@ get_expression.instrumentr_promise <- function(object) {
 get_value.instrumentr_promise <- function(object) {
     .Call(C_instrumentr_promise_get_value, object)
 }
+
+#' @export
+#' @rdname promise
+get_type.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_get_type, object)
+}
+
+#' @export
+#' @rdname promise
+is_argument.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_is_argument, object)
+}
+
+#' @export
+#' @rdname promise
+is_delayed_assign.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_is_delayed_assign, object)
+}
+
+#' @export
+#' @rdname promise
+is_lazy_load.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_is_lazy_load, object)
+}
+
+#' @export
+#' @rdname promise
+is_unknown.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_is_unknown, object)
+}
+
+#' @export
+#' @rdname promise
+get_argument.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_get_argument, object)
+}
+
+#' @export
+#' @rdname promise
+get_parameter.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_get_parameter, object)
+}
+
+#' @export
+#' @rdname promise
+get_call.instrumentr_promise <- function(object) {
+    .Call(C_instrumentr_promise_get_call, object)
+}

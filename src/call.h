@@ -14,7 +14,8 @@ extern "C" {
  * create
  *******************************************************************************/
 
-instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
+instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
+                                           instrumentr_function_t function,
                                            SEXP r_expression,
                                            SEXP r_environment,
                                            int frame_position);

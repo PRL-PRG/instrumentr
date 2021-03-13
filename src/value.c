@@ -19,7 +19,6 @@ struct instrumentr_value_impl_t {
 void instrumentr_value_finalize(instrumentr_object_t object) {
     instrumentr_value_t value = (instrumentr_value_t)(object);
 
-    instrumentr_sexp_release(value->r_sexp);
     value->r_sexp = NULL;
 }
 
@@ -35,7 +34,6 @@ instrumentr_value_t instrumentr_value_create(SEXP r_sexp) {
 
     instrumentr_value_t value = (instrumentr_value_t)(object);
 
-    instrumentr_sexp_acquire(r_sexp);
     value->r_sexp = r_sexp;
 
     return value;

@@ -395,15 +395,42 @@
  PROMISE API
  *******************************************************************************/
 
-#define INSTRUMENTR_PROMISE_API_MAP(MACRO)                                    \
-    MACRO(instrumentr_promise_is_forced, int, instrumentr_promise_t promise)  \
-    MACRO(r_instrumentr_promise_is_forced, SEXP, SEXP r_promise)              \
-    MACRO(instrumentr_promise_get_expression,                                 \
-          SEXP,                                                               \
-          instrumentr_promise_t promise)                                      \
-    MACRO(r_instrumentr_promise_get_expression, SEXP, SEXP r_promise)         \
-    MACRO(instrumentr_promise_get_value, SEXP, instrumentr_promise_t promise) \
-    MACRO(r_instrumentr_promise_get_value, SEXP, SEXP r_promise)
+#define INSTRUMENTR_PROMISE_API_MAP(MACRO)                                     \
+    MACRO(instrumentr_promise_is_forced, int, instrumentr_promise_t promise)   \
+    MACRO(r_instrumentr_promise_is_forced, SEXP, SEXP r_promise)               \
+    MACRO(instrumentr_promise_get_expression,                                  \
+          SEXP,                                                                \
+          instrumentr_promise_t promise)                                       \
+    MACRO(r_instrumentr_promise_get_expression, SEXP, SEXP r_promise)          \
+    MACRO(instrumentr_promise_get_value, SEXP, instrumentr_promise_t promise)  \
+    MACRO(r_instrumentr_promise_get_value, SEXP, SEXP r_promise)               \
+    MACRO(instrumentr_promise_get_type,                                        \
+          instrumentr_promise_type_t,                                          \
+          instrumentr_promise_t promise)                                       \
+    MACRO(instrumentr_promise_is_argument, int, instrumentr_promise_t promise) \
+    MACRO(instrumentr_promise_set_argument,                                    \
+          void,                                                                \
+          instrumentr_promise_t promise,                                       \
+          instrumentr_call_t call,                                             \
+          instrumentr_parameter_t parameter,                                   \
+          instrumentr_argument_t argument)                                     \
+    MACRO(instrumentr_promise_is_delayed_assign,                               \
+          int,                                                                 \
+          instrumentr_promise_t promise)                                       \
+    MACRO(                                                                     \
+        instrumentr_promise_is_lazy_load, int, instrumentr_promise_t promise)  \
+    MACRO(instrumentr_promise_is_unknown,                                      \
+          int,                                                                 \
+          instrumentr_promise_t promise)                                       \
+    MACRO(instrumentr_promise_get_argument,                                    \
+          instrumentr_argument_t,                                              \
+          instrumentr_promise_t promise)                                       \
+    MACRO(instrumentr_promise_get_parameter,                                   \
+          instrumentr_parameter_t,                                             \
+          instrumentr_promise_t promise)                                       \
+    MACRO(instrumentr_promise_get_call,                                        \
+          instrumentr_call_t,                                                  \
+          instrumentr_promise_t promise)
 
 /********************************************************************************
  VALUE API
@@ -490,6 +517,10 @@
     MACRO(r_instrumentr_tracer_create, SEXP, )                                 \
     MACRO(instrumentr_tracer_wrap, SEXP, instrumentr_tracer_t tracer)          \
     MACRO(instrumentr_tracer_unwrap, instrumentr_tracer_t, SEXP r_tracer)      \
+   MACRO(instrumentr_tracer_get_state,                                         \
+         instrumentr_state_t,                                                  \
+         instrumentr_tracer_t tracer)                                          \
+    MACRO(r_instrumentr_tracer_get_state, SEXP, SEXP r_tracer)                 \
     MACRO(instrumentr_tracer_get_application,                                  \
           instrumentr_application_t,                                           \
           instrumentr_tracer_t tracer)                                         \

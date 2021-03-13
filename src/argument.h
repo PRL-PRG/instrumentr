@@ -1,6 +1,10 @@
 #ifndef INSTRUMENTR_ARGUMENT_H
 #define INSTRUMENTR_ARGUMENT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 #include "value.h"
@@ -61,5 +65,9 @@ SEXP r_instrumentr_argument_is_value(SEXP r_argument);
 instrumentr_value_t
 instrumentr_argument_as_value(instrumentr_argument_t argument);
 SEXP r_instrumentr_argument_as_value(SEXP r_argument);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_ARGUMENT_H */

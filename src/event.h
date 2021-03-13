@@ -1,6 +1,10 @@
 #ifndef INSTRUMENTR_EVENT_H
 #define INSTRUMENTR_EVENT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/types.h>
 
 #define INSTRUMENTR_EVENT_TRACING_ENTRY_FUNCTION_T tracing_entry_function_t
@@ -24,8 +28,10 @@
 #define INSTRUMENTR_EVENT_VARIABLE_LOOKUP_FUNCTION_T variable_lookup_function_t
 #define INSTRUMENTR_EVENT_CONTEXT_ENTRY_FUNCTION_T context_entry_function_t
 #define INSTRUMENTR_EVENT_CONTEXT_EXIT_FUNCTION_T context_exit_function_t
+#define INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY_FUNCTION_T promise_force_entry_function_t
+#define INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT_FUNCTION_T  promise_force_exit_function_t
 
-#define INSTRUMENTR_EVENT_COUNT 21
+#define INSTRUMENTR_EVENT_COUNT 23
 
 int instrumentr_event_get_parameter_count(instrumentr_event_t event);
 
@@ -34,5 +40,9 @@ instrumentr_event_to_string(instrumentr_event_t event);
 
 SEXP instrumentr_event_wrap(instrumentr_event_t event);
 instrumentr_event_t instrumentr_event_unwrap(SEXP r_event);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_EVENT_H */

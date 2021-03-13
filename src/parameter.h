@@ -1,6 +1,10 @@
 #ifndef INSTRUMENTR_PARAMETER_H
 #define INSTRUMENTR_PARAMETER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 #include "argument.h"
@@ -86,5 +90,9 @@ SEXP r_instrumentr_parameter_get_arguments(SEXP r_parameter);
 /* mutator */
 void instrumentr_parameter_append_argument(instrumentr_parameter_t parameter,
                                            instrumentr_argument_t argument);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_PARAMETER_H */

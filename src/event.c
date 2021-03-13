@@ -49,7 +49,11 @@ event_info_t table[] = {
     /* INSTRUMENTR_EVENT_CONTEXT_ENTRY */
     {INSTRUMENTR_EVENT_CONTEXT_ENTRY, "context_entry", 5},
     /* INSTRUMENTR_EVENT_CONTEXT_EXIT */
-    {INSTRUMENTR_EVENT_CONTEXT_EXIT, "context_exit", 5}
+    {INSTRUMENTR_EVENT_CONTEXT_EXIT, "context_exit", 5},
+    /* INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY */
+    {INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY, "promise_force_entry", 5},
+    /* INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT */
+    {INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT, "promise_force_exit", 5}
 };
 
 int instrumentr_event_get_parameter_count(

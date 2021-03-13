@@ -97,6 +97,23 @@ SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive);
 /*  mutator  */
 void instrumentr_state_increment_time(instrumentr_state_t state);
 
+/*******************************************************************************
+ * promise_table
+ *******************************************************************************/
+instrumentr_promise_t
+instrumentr_state_promise_table_create(instrumentr_state_t state,
+                                       SEXP r_promise);
+
+void instrumentr_state_promise_table_remove(instrumentr_state_t state,
+                                            SEXP r_promise);
+
+instrumentr_promise_t
+instrumentr_state_promise_table_lookup(instrumentr_state_t state,
+                                       SEXP r_promise,
+                                       int create);
+
+void instrumentr_state_promise_table_clear(instrumentr_state_t state);
+
 #ifdef __cplusplus
 }
 #endif

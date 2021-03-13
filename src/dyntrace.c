@@ -6,6 +6,7 @@
 #include "application.h"
 #include "trace.h"
 #include "funtab.h"
+#include "state.h"
 
 dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_t* dyntracer = dyntracer_create(NULL);
@@ -24,6 +25,10 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_eval_exit_callback(dyntracer, dyntrace_eval_exit);
     dyntracer_set_gc_allocate_callback(dyntracer, dyntrace_gc_allocation);
     dyntracer_set_gc_unmark_callback(dyntracer, dyntrace_gc_unmark);
+    dyntracer_set_promise_force_entry_callback(dyntracer,
+                                               dyntrace_promise_force_entry);
+    dyntracer_set_promise_force_exit_callback(dyntracer,
+                                              dyntrace_promise_force_exit);
     dyntracer_set_environment_variable_define_callback(
         dyntracer, dyntrace_variable_definition);
     dyntracer_set_environment_variable_assign_callback(
@@ -62,6 +67,9 @@ void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
                                dyntrace_dispatch_t dispatch) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state =
+        instrumentr_tracer_get_state(tracer);
+
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
@@ -74,7 +82,8 @@ void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
         instrumentr_package_get_basic_function_by_position(package, index);
 
     instrumentr_call_t call =
-        instrumentr_call_create(function,
+        instrumentr_call_create(state,
+                                function,
                                 r_call,
                                 r_rho,
                                 /* TODO: fix frame position */ 0);
@@ -150,6 +159,8 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
                                  dyntrace_dispatch_t dispatch) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
@@ -161,7 +172,8 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
         instrumentr_application_function_map_lookup(application, r_op, r_call);
 
     instrumentr_call_t call =
-        instrumentr_call_create(function,
+        instrumentr_call_create(state,
+                                function,
                                 r_call,
                                 r_rho,
                                 /* TODO: fix frame position */ 0);
@@ -339,13 +351,38 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
 }
 
 void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object) {
-    if (TYPEOF(r_object) == CLOSXP) {
-        instrumentr_tracer_t tracer =
-            instrumentr_dyntracer_get_tracer(dyntracer);
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+
+    if (TYPEOF(r_object) == CLOSXP) {
         instrumentr_application_t application =
             instrumentr_tracer_get_application(tracer);
 
         instrumentr_application_function_map_remove(application, r_object);
+    } else if (TYPEOF(r_object) == PROMSXP) {
+        instrumentr_state_promise_table_remove(state, r_object);
     }
+}
+
+void dyntrace_promise_force_entry(dyntracer_t* dyntracer, SEXP r_promise) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+
+    instrumentr_promise_t promise =
+        instrumentr_state_promise_table_lookup(state, r_promise, 1);
+
+    instrumentr_trace_promise_force_entry(tracer, promise);
+}
+
+void dyntrace_promise_force_exit(dyntracer_t* dyntracer, SEXP r_promise) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+
+    instrumentr_promise_t promise =
+        instrumentr_state_promise_table_lookup(state, r_promise, 1);
+
+    instrumentr_trace_promise_force_exit(tracer, promise);
 }

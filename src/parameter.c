@@ -28,8 +28,6 @@ void instrumentr_parameter_finalize(instrumentr_object_t object) {
 
     free((char*)(parameter->name));
 
-    instrumentr_sexp_release(parameter->r_default_argument);
-
     int count = parameter->arguments.length;
     instrumentr_argument_t* arguments = parameter->arguments.data;
 
@@ -61,7 +59,6 @@ instrumentr_parameter_t instrumentr_parameter_create(const char* name,
     parameter->position = position;
 
     parameter->r_default_argument = r_default_argument;
-    instrumentr_sexp_acquire(r_default_argument);
 
     vec_init(&parameter->arguments);
 

@@ -14,6 +14,7 @@
 #include "context.h"
 #include "interop.h"
 #include "state.h"
+#include "promise.h"
 
 #include <R_ext/Rdynload.h>
 
@@ -173,6 +174,14 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_promise_is_forced, 1),
     DECLARE_BINDING(instrumentr_promise_get_expression, 1),
     DECLARE_BINDING(instrumentr_promise_get_value, 1),
+    DECLARE_BINDING(instrumentr_promise_get_type, 1),
+    DECLARE_BINDING(instrumentr_promise_is_argument, 1),
+    DECLARE_BINDING(instrumentr_promise_is_delayed_assign, 1),
+    DECLARE_BINDING(instrumentr_promise_is_lazy_load, 1),
+    DECLARE_BINDING(instrumentr_promise_is_unknown, 1),
+    DECLARE_BINDING(instrumentr_promise_get_argument, 1),
+    DECLARE_BINDING(instrumentr_promise_get_parameter, 1),
+    DECLARE_BINDING(instrumentr_promise_get_call, 1),
 
     /* value */
     DECLARE_BINDING(instrumentr_value_get_sexp, 1),

@@ -1,6 +1,10 @@
 #ifndef INSTRUMENTR_DYNTRACE_H
 #define INSTRUMENTR_DYNTRACE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/Rincludes.h>
 #include "tracer.h"
 
@@ -78,5 +82,13 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
                               const SEXP r_rho);
 
 void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object);
+
+void dyntrace_promise_force_entry(dyntracer_t* dyntracer, SEXP r_promise);
+
+void dyntrace_promise_force_exit(dyntracer_t* dyntracer, SEXP r_promise);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_DYNTRACE_H */

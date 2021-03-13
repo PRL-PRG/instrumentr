@@ -478,3 +478,35 @@ set_state <- function(object, state) {
 get_state <- function(object) {
     UseMethod("get_state")
 }
+
+get_type <- function(object) {
+    UseMethod("get_type")
+}
+
+is_argument <- function(object) {
+    UseMethod("is_argument")
+}
+
+is_delayed_assign <- function(object) {
+    UseMethod("is_delayed_assign")
+}
+
+is_lazy_load <- function(object) {
+    UseMethod("is_lazy_load")
+}
+
+is_unknown <- function(object) {
+    UseMethod("is_unknown")
+}
+
+get_argument <- function(object) {
+    UseMethod("get_argument")
+}
+
+get_parameter <- function(object) {
+    UseMethod("get_parameter")
+}
+
+get_call <- function(object) {
+    UseMethod("get_call")
+}

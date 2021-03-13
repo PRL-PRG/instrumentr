@@ -5,7 +5,7 @@
 #include "interop.h"
 #include "utilities.h"
 #include "object.h"
-#include "object.h"
+#include "state.h"
 
 /********************************************************************************
  * definition
@@ -33,9 +33,9 @@ void instrumentr_call_finalize(instrumentr_object_t object) {
 
     instrumentr_object_release(call->function);
 
-    instrumentr_sexp_release(call->r_expression);
-    instrumentr_sexp_release(call->r_environment);
-    instrumentr_sexp_release(call->r_result);
+    call->r_expression;
+    call->r_environment;
+    call->r_result;
 
     int count = call->parameters.length;
     instrumentr_parameter_t* parameters = call->parameters.data;
@@ -62,20 +62,22 @@ const char* unwrap_name(SEXP r_name) {
     return name;
 }
 
-void process_promise_argument(instrumentr_parameter_t parameter,
+void process_promise_argument(instrumentr_state_t state,
+                              instrumentr_call_t call,
+                              instrumentr_parameter_t parameter,
                               SEXP r_argument_name,
                               SEXP r_argument_value) {
     instrumentr_promise_t promise =
-        instrumentr_promise_create(r_argument_value);
+        instrumentr_state_promise_table_lookup(state, r_argument_value, 1);
 
     instrumentr_argument_t argument =
         instrumentr_argument_create_from_promise(unwrap_name(r_argument_name), promise);
-    /* NOTE: promise is owned by argument now */
-    instrumentr_object_release(promise);
 
     instrumentr_parameter_append_argument(parameter, argument);
     /* NOTE: argument is owned by parameter now */
     instrumentr_object_release(argument);
+
+    instrumentr_promise_set_argument(promise, call, parameter, argument);
 }
 
 
@@ -93,8 +95,10 @@ void process_value_argument(instrumentr_parameter_t parameter,
     instrumentr_object_release(argument);
 }
 
-void process_vararg_argument(instrumentr_parameter_t parameter,
-                                SEXP r_argument_value) {
+void process_vararg_argument(instrumentr_state_t state,
+                             instrumentr_call_t call,
+                             instrumentr_parameter_t parameter,
+                             SEXP r_argument_value) {
     for (SEXP r_dot_argument_pointer = r_argument_value;
          r_dot_argument_pointer != R_NilValue;
          r_dot_argument_pointer = CDR(r_dot_argument_pointer)) {
@@ -105,9 +109,11 @@ void process_vararg_argument(instrumentr_parameter_t parameter,
 
         /* promise value */
         if(TYPEOF(r_dot_argument_value) == PROMSXP) {
-            process_promise_argument(parameter,
-                                    r_dot_argument_name,
-                                    r_dot_argument_value);
+            process_promise_argument(state,
+                                     call,
+                                     parameter,
+                                     r_dot_argument_name,
+                                     r_dot_argument_value);
         }
         /* non promise value */
         else {
@@ -118,11 +124,12 @@ void process_vararg_argument(instrumentr_parameter_t parameter,
     }
 }
 
-void process_parameter(instrumentr_call_t call,
-                      SEXP r_argument_name,
-                      SEXP r_argument_value,
-                      SEXP r_default_argument,
-                      int position) {
+void process_parameter(instrumentr_state_t state,
+                       instrumentr_call_t call,
+                       SEXP r_argument_name,
+                       SEXP r_argument_value,
+                       SEXP r_default_argument,
+                       int position) {
 
     const char* argument_name = unwrap_name(r_argument_name);
 
@@ -141,11 +148,11 @@ void process_parameter(instrumentr_call_t call,
     }
     /* ... */
     else if (TYPEOF(r_argument_value) == DOTSXP) {
-        process_vararg_argument(parameter, r_argument_value);
+        process_vararg_argument(state, call, parameter, r_argument_value);
     }
     /* promise  */
     else if (TYPEOF(r_argument_value) == PROMSXP) {
-        process_promise_argument(parameter, R_NilValue, r_argument_value);
+        process_promise_argument(state, call, parameter, R_NilValue, r_argument_value);
     }
     /* non promise  */
     else {
@@ -153,7 +160,8 @@ void process_parameter(instrumentr_call_t call,
     }
 }
 
-void process_closure_parameters(instrumentr_call_t call,
+void process_closure_parameters(instrumentr_state_t state,
+                                instrumentr_call_t call,
                                 instrumentr_function_t function,
                                 SEXP r_environment) {
     /* TODO - process calls to special and builtin */
@@ -171,7 +179,8 @@ void process_closure_parameters(instrumentr_call_t call,
         SEXP r_argument_value =
             Rf_findVarInFrame(r_environment, r_argument_name);
 
-        process_parameter(call,
+        process_parameter(state,
+                          call,
                          r_argument_name,
                          r_argument_value,
                          r_default_argument,
@@ -179,7 +188,8 @@ void process_closure_parameters(instrumentr_call_t call,
     }
 }
 
-void process_non_closure_parameters(instrumentr_call_t call, SEXP r_args) {
+void process_non_closure_parameters(instrumentr_state_t state,
+                                    instrumentr_call_t call, SEXP r_args) {
     for (int position = 0; r_args != R_NilValue;
          ++position, r_args = CDR(r_args)) {
         SEXP r_argument_name = TAG(r_args);
@@ -189,7 +199,8 @@ void process_non_closure_parameters(instrumentr_call_t call, SEXP r_args) {
 
         SEXP r_argument_value = CAR(r_args);
 
-        process_parameter(call,
+        process_parameter(state,
+                          call,
                          r_argument_name,
                          r_argument_value,
                          r_default_argument,
@@ -197,7 +208,8 @@ void process_non_closure_parameters(instrumentr_call_t call, SEXP r_args) {
     }
 }
 
-instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
+instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
+                                           instrumentr_function_t function,
                                            SEXP r_expression,
                                            SEXP r_environment,
                                            int frame_position) {
@@ -212,45 +224,21 @@ instrumentr_call_t instrumentr_call_create(instrumentr_function_t function,
     instrumentr_object_acquire(call->function);
 
     call->r_expression = r_expression;
-    instrumentr_sexp_acquire(call->r_expression);
 
     call->r_environment = r_environment;
-    instrumentr_sexp_acquire(call->r_environment);
 
     call->frame_position = frame_position;
 
     vec_init(&call->parameters);
 
     if(instrumentr_function_is_closure(function)) {
-        process_closure_parameters(call, function, r_environment);
+        process_closure_parameters(state, call, function, r_environment);
     }
     else {
-        process_non_closure_parameters(call, CDR(r_expression));
+        process_non_closure_parameters(state, call, CDR(r_expression));
     }
 
     return call;
-}
-
-SEXP r_instrumentr_call_create(SEXP r_function,
-                               SEXP r_expression,
-                               SEXP r_environment,
-                               SEXP r_frame_position) {
-    instrumentr_function_t function = instrumentr_function_unwrap(r_function);
-    int frame_position = instrumentr_r_integer_to_c_int(r_frame_position);
-
-    /* TODO - process calls to special and builtin */
-    instrumentr_function_definition_t definition =
-        instrumentr_function_get_definition(function);
-    SEXP r_definition = definition.sexp;
-
-    instrumentr_call_t call = instrumentr_call_create(
-        function, r_expression, r_environment, frame_position);
-
-    SEXP r_call = instrumentr_call_wrap(call);
-
-    instrumentr_object_release(call);
-
-    return r_call;
 }
 
 /********************************************************************************
@@ -384,7 +372,6 @@ SEXP r_instrumentr_call_get_result(SEXP r_call) {
 /* mutator */
 void instrumentr_call_set_result(instrumentr_call_t call, SEXP r_result) {
     call->r_result = r_result;
-    instrumentr_sexp_acquire(r_result);
 }
 
 /********************************************************************************
