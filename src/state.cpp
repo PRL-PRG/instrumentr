@@ -275,7 +275,8 @@ instrumentr_promise_t
 instrumentr_state_promise_table_create(instrumentr_state_t state,
                                        SEXP r_promise) {
     /* TODO: set promise birth time */
-    instrumentr_promise_t promise = instrumentr_promise_create(state, r_promise);
+    instrumentr_promise_t promise =
+        instrumentr_promise_create(state, r_promise);
     auto result = state->promise_table->insert({r_promise, promise});
     if (!result.second) {
         instrumentr_object_release(result.first->second);
@@ -289,6 +290,7 @@ void instrumentr_state_promise_table_remove(instrumentr_state_t state,
                                             SEXP r_promise) {
     auto result = state->promise_table->find(r_promise);
     if (result != state->promise_table->end()) {
+        instrumentr_object_kill((instrumentr_object_t) result->second, state);
         instrumentr_object_release(result->second);
         state->promise_table->erase(result);
         /* TODO: kill promise */

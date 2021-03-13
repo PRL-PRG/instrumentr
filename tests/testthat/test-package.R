@@ -24,7 +24,7 @@ test_that("get_directory returns correct package directory", {
         }
     )
 
-    trace_code(tracer, {
+    result <- trace_code(tracer, {
         library(MASS)
         unloadNamespace("MASS")
     })
@@ -79,7 +79,6 @@ test_that("is_attached correctly identifies if package is attached", {
         unloadNamespace("Matrix")
     })
 
-    print(result)
     expect_identical(result$state$load_MASS, FALSE)
     expect_identical(result$state$attach_MASS, TRUE)
     expect_identical(result$state$detach_MASS, TRUE)
