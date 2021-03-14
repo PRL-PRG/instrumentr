@@ -286,15 +286,6 @@ void dyntrace_context_exit(dyntracer_t* dyntracer, void* pointer) {
             instrumentr_trace_context_exit(tracer, application, context);
             instrumentr_call_stack_pop_frame(call_stack);
         } else {
-            for (int i = 0; i < instrumentr_call_stack_get_size(call_stack);
-                 ++i) {
-                instrumentr_frame_t frame =
-                    instrumentr_call_stack_peek_frame(call_stack, i);
-                instrumentr_context_t context =
-                    instrumentr_frame_as_context(frame);
-                void* p = instrumentr_context_get_pointer(context);
-                fprintf(stderr, "++ %p\n", p);
-            }
             instrumentr_log_error(
                 "expected context pointer '%p' on call stack, received '%p'",
                 pointer,

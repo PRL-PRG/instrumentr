@@ -3,16 +3,20 @@ test_that("get_name returns correct package name", {
 
     tracer <- create_tracer(
         package_attach = function(tracer, callback, state, application, package) {
+            print('assinging')
             insert(state, "name", get_name(package))
+            print('here')
         }
     )
 
     result <- trace_code(tracer, {
         library(MASS)
+        print("unloading")
         unloadNamespace("MASS")
+        print("done unloading")
     })
 
-    expect_identical("MASS", result$state$name)
+    expect_identical("MASS", result$output$name)
 })
 
 
@@ -29,7 +33,7 @@ test_that("get_directory returns correct package directory", {
         unloadNamespace("MASS")
     })
 
-    expect_identical(result$state$directory, installed.packages()["MASS", "LibPath"])
+    expect_identical(result$output$directory, installed.packages()["MASS", "LibPath"])
 })
 
 test_that("get_namespace returns correct package namespace", {
@@ -47,7 +51,7 @@ test_that("get_namespace returns correct package namespace", {
         unloadNamespace("MASS")
     })
 
-    expect_identical(result$state$received_namespace, result$state$actual_namespace)
+    expect_identical(result$output$received_namespace, result$output$actual_namespace)
 })
 
 test_that("is_attached correctly identifies if package is attached", {
@@ -79,12 +83,12 @@ test_that("is_attached correctly identifies if package is attached", {
         unloadNamespace("Matrix")
     })
 
-    expect_identical(result$state$load_MASS, FALSE)
-    expect_identical(result$state$attach_MASS, TRUE)
-    expect_identical(result$state$detach_MASS, TRUE)
-    expect_identical(result$state$unload_MASS, FALSE)
-    expect_identical(result$state$load_Matrix, FALSE)
-    expect_identical(result$state$unload_Matrix, FALSE)
+    expect_identical(result$output$load_MASS, FALSE)
+    expect_identical(result$output$attach_MASS, TRUE)
+    expect_identical(result$output$detach_MASS, TRUE)
+    expect_identical(result$output$unload_MASS, FALSE)
+    expect_identical(result$output$load_Matrix, FALSE)
+    expect_identical(result$output$unload_Matrix, FALSE)
 })
 
 test_that("get_functions correctly returns all package functions", {
@@ -115,8 +119,8 @@ test_that("get_functions correctly returns all package functions", {
         print('unloaded')
     })
 
-    received_mass_funs <- sort(result$state[["MASS"]])
-    received_matrix_funs <- sort(result$state[["Matrix"]])
+    received_mass_funs <- sort(result$output[["MASS"]])
+    received_matrix_funs <- sort(result$output[["Matrix"]])
 
     get_function_bindings <- function(ns) {
         fun_names <- ls(envir = ns, all.names = TRUE, sorted = TRUE)
@@ -176,9 +180,11 @@ test_that("get_function_count correctly returns package function count", {
         print("here .. 3")
     })
 
+    print(result)
+
     print("here also")
-    received_mass_count <- result$state[["MASS"]]
-    received_matrix_count <- result$state[["Matrix"]]
+    received_mass_count <- result$output[["MASS"]]
+    received_matrix_count <- result$output[["Matrix"]]
 
     get_function_bindings <- function(ns) {
         fun_names <- ls(envir = ns, all.names = TRUE, sorted = TRUE)

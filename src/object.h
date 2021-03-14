@@ -14,27 +14,6 @@ typedef void (*instrumentr_object_finalizer_t)(instrumentr_object_t object);
  * definition
  *******************************************************************************/
 
-typedef enum {
-    INSTRUMENTR_TRACER = 0,
-    INSTRUMENTR_CALLBACK,
-    INSTRUMENTR_STATE,
-    INSTRUMENTR_APPLICATION,
-    INSTRUMENTR_PACKAGE,
-    INSTRUMENTR_FUNCTION,
-    INSTRUMENTR_CALL,
-    INSTRUMENTR_CALL_STACK,
-    INSTRUMENTR_PARAMETER,
-    INSTRUMENTR_ARGUMENT,
-    INSTRUMENTR_PROMISE,
-    INSTRUMENTR_VALUE,
-    INSTRUMENTR_FRAME,
-    INSTRUMENTR_CONTEXT,
-    INSTRUMENTR_EXEC_STATS,
-    INSTRUMENTR_ALLOC_STATS,
-    /* NOTE: this has to be the last one always */
-    INSTRUMENTR_OBJECT
-} instrumentr_object_type_t;
-
 struct instrumentr_object_impl_t {
     instrumentr_id_t id;
     instrumentr_object_type_t type;
@@ -44,6 +23,12 @@ struct instrumentr_object_impl_t {
     int death_time;
     instrumentr_origin_t origin;
 };
+
+/*******************************************************************************
+ * to_string
+ *******************************************************************************/
+
+const char* instrumentr_object_type_to_string(instrumentr_object_type_t object_type);
 
 /*******************************************************************************
  * kill

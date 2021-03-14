@@ -37,6 +37,14 @@ int instrumentr_state_get_time(instrumentr_state_t state);
 void instrumentr_state_increment_time(instrumentr_state_t state);
 
 /*******************************************************************************
+ * alloc_stats
+ *******************************************************************************/
+
+instrumentr_alloc_stats_t
+instrumentr_state_get_alloc_stats(instrumentr_state_t state);
+SEXP r_instrumentr_state_get_alloc_stats(SEXP r_state);
+
+/*******************************************************************************
  * empty
  *******************************************************************************/
 

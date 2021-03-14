@@ -10,6 +10,7 @@
 #include "frame.h"
 #include "call.h"
 #include "package.h"
+#include "alloc_stats.h"
 
 /********************************************************************************
  * definition
@@ -17,6 +18,9 @@
 
 struct instrumentr_state_impl_t {
     struct instrumentr_object_impl_t object;
+
+    instrumentr_alloc_stats_t alloc_stats;
+
     int next_id;
     int time;
     std::unordered_map<std::string, SEXP>* external;
@@ -45,6 +49,8 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
     instrumentr_state_function_table_clear(state);
     delete state->function_table;
     state->function_table = nullptr;
+
+    instrumentr_alloc_stats_destroy(state->alloc_stats);
 }
 
 /********************************************************************************
@@ -55,11 +61,11 @@ instrumentr_state_t instrumentr_state_create() {
     instrumentr_state_t state = (instrumentr_state_t) instrumentr_object_create(
         sizeof(instrumentr_state_impl_t));
 
+    state->alloc_stats = instrumentr_alloc_stats_create();
+
     state->next_id = 0;
     state->time = -1;
     state->external = new std::unordered_map<std::string, SEXP>();
-
-    state->call_stack = instrumentr_call_stack_create(state);
 
     state->promise_table =
         new std::unordered_map<SEXP, instrumentr_promise_t>();
@@ -72,6 +78,9 @@ instrumentr_state_t instrumentr_state_create() {
                                   INSTRUMENTR_STATE,
                                   instrumentr_state_finalize,
                                   INSTRUMENTR_ORIGIN_FOREIGN);
+
+    state->call_stack = instrumentr_call_stack_create(state);
+
     return state;
 }
 
@@ -107,6 +116,21 @@ int instrumentr_state_get_time(instrumentr_state_t state) {
 
 void instrumentr_state_increment_time(instrumentr_state_t state) {
     ++state->time;
+}
+
+/*******************************************************************************
+ * alloc_stats
+ *******************************************************************************/
+
+instrumentr_alloc_stats_t
+instrumentr_state_get_alloc_stats(instrumentr_state_t state) {
+    return state->alloc_stats;
+}
+
+SEXP r_instrumentr_state_get_alloc_stats(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_alloc_stats_t stats = instrumentr_state_get_alloc_stats(state);
+    return instrumentr_alloc_stats_as_data_frame(stats);
 }
 
 /*******************************************************************************
@@ -178,7 +202,7 @@ SEXP r_instrumentr_state_has_key(SEXP r_state, SEXP r_key) {
  * as_list
  *******************************************************************************/
 /*  accessor  */
-SEXP instrumentr_state_as_list(instrumentr_state_t state) {
+SEXP instrumentr_state_output_as_list(instrumentr_state_t state) {
     int size = instrumentr_state_get_size(state);
 
     SEXP r_keys = PROTECT(allocVector(STRSXP, size));
@@ -190,6 +214,38 @@ SEXP instrumentr_state_as_list(instrumentr_state_t state) {
         SET_STRING_ELT(r_keys, index, mkChar(iter->first.c_str()));
         SET_VECTOR_ELT(r_values, index, iter->second);
     }
+
+    Rf_setAttrib(r_values, R_NamesSymbol, r_keys);
+    UNPROTECT(2);
+
+    return r_values;
+}
+
+/*  accessor  */
+SEXP instrumentr_state_stats_as_list(instrumentr_state_t state) {
+    SEXP r_keys = PROTECT(allocVector(STRSXP, 1));
+    SEXP r_values = PROTECT(allocVector(VECSXP, 1));
+
+    SET_STRING_ELT(r_keys, 0, mkChar("allocation"));
+    SET_VECTOR_ELT(
+        r_values, 0, instrumentr_alloc_stats_as_data_frame(state->alloc_stats));
+
+    Rf_setAttrib(r_values, R_NamesSymbol, r_keys);
+    UNPROTECT(2);
+
+    return r_values;
+}
+
+SEXP instrumentr_state_as_list(instrumentr_state_t state) {
+
+    SEXP r_keys = PROTECT(allocVector(STRSXP, 2));
+    SEXP r_values = PROTECT(allocVector(VECSXP, 2));
+
+    SET_STRING_ELT(r_keys, 0, mkChar("output"));
+    SET_VECTOR_ELT(r_values, 0, instrumentr_state_output_as_list(state));
+
+    SET_STRING_ELT(r_keys, 1, mkChar("statistics"));
+    SET_VECTOR_ELT(r_values, 1, instrumentr_state_stats_as_list(state));
 
     Rf_setAttrib(r_values, R_NamesSymbol, r_keys);
     UNPROTECT(2);

@@ -2,6 +2,35 @@
 #include "interop.h"
 #include "utilities.h"
 #include "state.h"
+#include "alloc_stats.h"
+
+/*******************************************************************************
+ * to_string
+ *******************************************************************************/
+
+const char* instrumentr_object_type_to_string(instrumentr_object_type_t object_type) {
+    switch(object_type) {
+    case INSTRUMENTR_TRACER: return "tracer"; break;
+    case INSTRUMENTR_CALLBACK: return "callback"; break;
+    case INSTRUMENTR_STATE: return "state"; break;
+    case INSTRUMENTR_APPLICATION: return "application"; break;
+    case INSTRUMENTR_PACKAGE: return "package"; break;
+    case INSTRUMENTR_FUNCTION: return "function"; break;
+    case INSTRUMENTR_CALL: return "call"; break;
+    case INSTRUMENTR_CALL_STACK: return "call_stack"; break;
+    case INSTRUMENTR_PARAMETER: return "parameter"; break;
+    case INSTRUMENTR_ARGUMENT: return "argument"; break;
+    case INSTRUMENTR_PROMISE: return "promise"; break;
+    case INSTRUMENTR_VALUE: return "value"; break;
+    case INSTRUMENTR_FRAME: return "frame"; break;
+    case INSTRUMENTR_CONTEXT: return "context"; break;
+    case INSTRUMENTR_EXEC_STATS: return "exex_stats"; break;
+    case INSTRUMENTR_ALLOC_STATS: return "alloc_stats"; break;
+    case INSTRUMENTR_OBJECT: return "object"; break;
+    }
+}
+
+
 
 /*******************************************************************************
  * create
@@ -38,8 +67,14 @@ instrumentr_object_create_and_initialize(int size,
                                          instrumentr_object_type_t type,
                                          instrumentr_object_finalizer_t finalizer,
                                          instrumentr_origin_t origin) {
+
     instrumentr_object_t object = instrumentr_object_create(size);
     instrumentr_object_initialize(object, state, type, finalizer, origin);
+
+    instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(state);
+    instrumentr_alloc_stats_increment_total_count(alloc_stats, object -> type);
+    instrumentr_alloc_stats_set_object_size(alloc_stats, object -> type, size);
+
     return object;
 }
 
@@ -48,6 +83,8 @@ instrumentr_object_create_and_initialize(int size,
  *******************************************************************************/
 
 void instrumentr_object_kill(instrumentr_object_t object, instrumentr_state_t state) {
+    instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(state);
+    instrumentr_alloc_stats_increment_dead_count(alloc_stats, object -> type);
     if(object->death_time != -1) {
         Rf_error("attempt to kill a dead object");
     }

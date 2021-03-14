@@ -1,2 +1,2 @@
 GIT_COMMIT_HASH != git log --format='%h' -n 1
-PKG_CPPFLAGS = -I../inst/include/ -DGIT_COMMIT_HASH=\"$(GIT_COMMIT_HASH)\"
+PKG_CPPFLAGS = -I../inst/include/ -DGIT_COMMIT_HASH=\"$(GIT_COMMIT_HASH)\" -O0

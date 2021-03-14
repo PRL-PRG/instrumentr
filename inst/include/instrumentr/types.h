@@ -12,6 +12,27 @@ extern "C" {
 typedef SEXP (*CCODE)(SEXP, SEXP, SEXP, SEXP);
 
 typedef enum {
+    INSTRUMENTR_TRACER = 0,
+    INSTRUMENTR_CALLBACK,
+    INSTRUMENTR_STATE,
+    INSTRUMENTR_APPLICATION,
+    INSTRUMENTR_PACKAGE,
+    INSTRUMENTR_FUNCTION,
+    INSTRUMENTR_CALL,
+    INSTRUMENTR_CALL_STACK,
+    INSTRUMENTR_PARAMETER,
+    INSTRUMENTR_ARGUMENT,
+    INSTRUMENTR_PROMISE,
+    INSTRUMENTR_VALUE,
+    INSTRUMENTR_FRAME,
+    INSTRUMENTR_CONTEXT,
+    INSTRUMENTR_EXEC_STATS,
+    INSTRUMENTR_ALLOC_STATS,
+    /* NOTE: this has to be the last one always */
+    INSTRUMENTR_OBJECT
+} instrumentr_object_type_t;
+
+typedef enum {
     INSTRUMENTR_ORIGIN_LOCAL,
     INSTRUMENTR_ORIGIN_FOREIGN
 } instrumentr_origin_t;
@@ -157,6 +178,12 @@ typedef struct instrumentr_context_impl_t* instrumentr_context_t;
  *******************************************************************************/
 
 typedef struct instrumentr_exec_stats_impl_t* instrumentr_exec_stats_t;
+
+/********************************************************************************
+ * alloc_stats
+ *******************************************************************************/
+
+typedef struct instrumentr_alloc_stats_impl_t* instrumentr_alloc_stats_t;
 
 typedef void (*tracing_entry_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,
