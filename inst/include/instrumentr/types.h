@@ -78,7 +78,9 @@ typedef enum {
     INSTRUMENTR_EVENT_CONTEXT_ENTRY,
     INSTRUMENTR_EVENT_CONTEXT_EXIT,
     INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY,
-    INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT
+    INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT,
+    /* NOTE: this has to be the last event */
+    INSTRUMENTR_EVENT_COUNT
 } instrumentr_event_t;
 
 /*******************************************************************************

@@ -45,6 +45,14 @@ instrumentr_state_get_alloc_stats(instrumentr_state_t state);
 SEXP r_instrumentr_state_get_alloc_stats(SEXP r_state);
 
 /*******************************************************************************
+ * exec_stats
+ *******************************************************************************/
+
+instrumentr_exec_stats_t
+instrumentr_state_get_exec_stats(instrumentr_state_t state);
+SEXP r_instrumentr_state_get_exec_stats(SEXP r_state);
+
+/*******************************************************************************
  * empty
  *******************************************************************************/
 

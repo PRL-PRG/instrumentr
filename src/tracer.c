@@ -24,11 +24,8 @@ struct instrumentr_tracer_impl_t {
     instrumentr_callback_t active_callback;
     vec_int_t status;
 
-    instrumentr_exec_stats_t tracing_exec_stats;
-
     struct {
         instrumentr_callback_t callback;
-        instrumentr_exec_stats_t exec_stats;
     } callbacks[INSTRUMENTR_EVENT_COUNT];
 };
 
@@ -63,18 +60,11 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
 
     vec_deinit(&tracer->status);
 
-    instrumentr_exec_stats_destroy(tracer->tracing_exec_stats);
-    tracer->tracing_exec_stats = NULL;
-
     for (int i = 0; i < INSTRUMENTR_EVENT_COUNT; ++i) {
         if (tracer->callbacks[i].callback != NULL) {
             instrumentr_object_release(tracer->callbacks[i].callback);
             tracer->callbacks[i].callback = NULL;
         }
-        /* NOTE: exec_stats is created for all callbacks even if they are not
-         * attached */
-        instrumentr_exec_stats_destroy(tracer->callbacks[i].exec_stats);
-        tracer->callbacks[i].exec_stats = NULL;
     }
 }
 
@@ -123,13 +113,8 @@ instrumentr_tracer_t instrumentr_tracer_create() {
 
     vec_init(&tracer->status);
 
-    tracer->tracing_exec_stats = instrumentr_exec_stats_create();
-    instrumentr_object_acquire(tracer->tracing_exec_stats);
-
     for (int i = 0; i < INSTRUMENTR_EVENT_COUNT; ++i) {
         tracer->callbacks[i].callback = NULL;
-        tracer->callbacks[i].exec_stats = instrumentr_exec_stats_create();
-        instrumentr_object_acquire(tracer->callbacks[i].exec_stats);
     }
 
     return tracer;
@@ -447,139 +432,3 @@ SEXP r_instrumentr_tracer_remove_callback(SEXP r_tracer, SEXP r_event) {
     return R_NilValue;
 }
 
-/********************************************************************************
- * exec_stats
- *******************************************************************************/
-
-/* accessor */
-instrumentr_exec_stats_t
-instrumentr_tracer_get_tracing_exec_stats(instrumentr_tracer_t tracer) {
-    return tracer->tracing_exec_stats;
-}
-
-/* accessor */
-SEXP r_instrumentr_tracer_get_tracing_exec_stats(SEXP r_tracer) {
-    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
-    instrumentr_exec_stats_t exec_stats =
-        instrumentr_tracer_get_tracing_exec_stats(tracer);
-
-    return instrumentr_exec_stats_wrap(exec_stats);
-}
-
-instrumentr_exec_stats_t
-instrumentr_tracer_get_event_exec_stats(instrumentr_tracer_t tracer,
-                                           instrumentr_event_t event) {
-    return tracer->callbacks[event].exec_stats;
-}
-
-SEXP r_instrumentr_tracer_get_event_exec_stats(SEXP r_tracer, SEXP r_event) {
-    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
-    instrumentr_event_t event = instrumentr_event_unwrap(r_event);
-    instrumentr_exec_stats_t exec_stats =
-        instrumentr_tracer_get_event_exec_stats(tracer, event);
-    return instrumentr_exec_stats_wrap(exec_stats);
-}
-
-void assign_exec_stats_fields(instrumentr_exec_stats_t exec_stats,
-                              const char* event_name,
-                              int index,
-                              SEXP r_callback,
-                              SEXP r_count,
-                              SEXP r_minimum,
-                              SEXP r_maximum,
-                              SEXP r_average,
-                              SEXP r_total) {
-    SET_STRING_ELT(r_callback, index, mkChar(event_name));
-
-    int count = instrumentr_exec_stats_get_execution_count(exec_stats);
-    INTEGER(r_count)[index] = count;
-
-    double minimum = instrumentr_exec_stats_get_minimum_time(exec_stats);
-    REAL(r_minimum)[index] = minimum;
-
-    double maximum = instrumentr_exec_stats_get_maximum_time(exec_stats);
-    REAL(r_maximum)[index] = maximum;
-
-    double average = instrumentr_exec_stats_get_average_time(exec_stats);
-    REAL(r_average)[index] = average;
-
-    double total = instrumentr_exec_stats_get_total_time(exec_stats);
-    REAL(r_total)[index] = total;
-}
-
-SEXP r_instrumentr_tracer_get_exec_stats(SEXP r_tracer) {
-    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
-
-    /* NOTE: there will always be 1 row corresponding to an end-to-end tracing
-     * exec stats */
-    int row_count = 1;
-
-    for (int i = 0; i < INSTRUMENTR_EVENT_COUNT; ++i) {
-        instrumentr_exec_stats_t exec_stats = tracer->callbacks[i].exec_stats;
-        int count = instrumentr_exec_stats_get_execution_count(exec_stats);
-        if (count != 0)
-            ++row_count;
-    }
-
-    SEXP r_callback = PROTECT(allocVector(STRSXP, row_count));
-    SEXP r_count = PROTECT(allocVector(INTSXP, row_count));
-    SEXP r_minimum = PROTECT(allocVector(REALSXP, row_count));
-    SEXP r_maximum = PROTECT(allocVector(REALSXP, row_count));
-    SEXP r_average = PROTECT(allocVector(REALSXP, row_count));
-    SEXP r_total = PROTECT(allocVector(REALSXP, row_count));
-
-    int index = 0;
-
-    for (int event = 0; event < INSTRUMENTR_EVENT_COUNT; ++event) {
-        instrumentr_exec_stats_t exec_stats =
-            tracer->callbacks[event].exec_stats;
-        int count = instrumentr_exec_stats_get_execution_count(exec_stats);
-
-        if(count == 0) {
-            continue;
-        }
-
-        assign_exec_stats_fields(
-            exec_stats,
-            instrumentr_event_to_string(event),
-            index,
-            r_callback,
-            r_count,
-            r_minimum,
-            r_maximum,
-            r_average,
-            r_total);
-
-        ++index;
-    }
-
-    instrumentr_exec_stats_t exec_stats =
-        instrumentr_tracer_get_tracing_exec_stats(tracer);
-    assign_exec_stats_fields(exec_stats,
-                             "tracing",
-                             index,
-                             r_callback,
-                             r_count,
-                             r_minimum,
-                             r_maximum,
-                             r_average,
-                             r_total);
-
-    SEXP r_data_frame = PROTECT(instrumentr_create_data_frame(6,
-                                                              "callback",
-                                                              r_callback,
-                                                              "execution_count",
-                                                              r_count,
-                                                              "minimum_time",
-                                                              r_minimum,
-                                                              "maximum_time",
-                                                              r_maximum,
-                                                              "average_time",
-                                                              r_average,
-                                                              "total_time",
-                                                              r_total));
-
-    UNPROTECT(7);
-
-    return r_data_frame;
-}

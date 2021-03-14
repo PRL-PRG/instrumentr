@@ -68,3 +68,8 @@ get_packages.instrumentr_state <- function(state) { # nolint
     .Call(C_instrumentr_state_get_packages, state)
 }
 
+#' @export
+#' @rdname state
+get_exec_stats.instrumentr_state <- function(object, ...) {
+    .Call(C_instrumentr_state_get_exec_stats, object)
+}

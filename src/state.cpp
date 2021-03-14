@@ -11,6 +11,7 @@
 #include "call.h"
 #include "package.h"
 #include "alloc_stats.h"
+#include "exec_stats.h"
 
 /********************************************************************************
  * definition
@@ -20,6 +21,7 @@ struct instrumentr_state_impl_t {
     struct instrumentr_object_impl_t object;
 
     instrumentr_alloc_stats_t alloc_stats;
+    instrumentr_exec_stats_t exec_stats;
 
     int next_id;
     int time;
@@ -56,6 +58,7 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
     state->package_table = nullptr;
 
     instrumentr_alloc_stats_destroy(state->alloc_stats);
+    instrumentr_exec_stats_destroy(state->exec_stats);
 }
 
 /********************************************************************************
@@ -67,6 +70,7 @@ instrumentr_state_t instrumentr_state_create() {
         sizeof(instrumentr_state_impl_t));
 
     state->alloc_stats = instrumentr_alloc_stats_create();
+    state->exec_stats = instrumentr_exec_stats_create();
 
     state->next_id = 0;
     state->time = -1;
@@ -139,6 +143,21 @@ SEXP r_instrumentr_state_get_alloc_stats(SEXP r_state) {
     instrumentr_state_t state = instrumentr_state_unwrap(r_state);
     instrumentr_alloc_stats_t stats = instrumentr_state_get_alloc_stats(state);
     return instrumentr_alloc_stats_as_data_frame(stats);
+}
+
+/*******************************************************************************
+ * exec_stats
+ *******************************************************************************/
+
+instrumentr_exec_stats_t
+instrumentr_state_get_exec_stats(instrumentr_state_t state) {
+    return state->exec_stats;
+}
+
+SEXP r_instrumentr_state_get_exec_stats(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_exec_stats_t stats = instrumentr_state_get_exec_stats(state);
+    return instrumentr_exec_stats_as_data_frame(stats);
 }
 
 /*******************************************************************************
@@ -231,12 +250,16 @@ SEXP instrumentr_state_output_as_list(instrumentr_state_t state) {
 
 /*  accessor  */
 SEXP instrumentr_state_stats_as_list(instrumentr_state_t state) {
-    SEXP r_keys = PROTECT(allocVector(STRSXP, 1));
-    SEXP r_values = PROTECT(allocVector(VECSXP, 1));
+    SEXP r_keys = PROTECT(allocVector(STRSXP, 2));
+    SEXP r_values = PROTECT(allocVector(VECSXP, 2));
 
     SET_STRING_ELT(r_keys, 0, mkChar("allocation"));
     SET_VECTOR_ELT(
         r_values, 0, instrumentr_alloc_stats_as_data_frame(state->alloc_stats));
+
+    SET_STRING_ELT(r_keys, 1, mkChar("execution"));
+    SET_VECTOR_ELT(
+        r_values, 1, instrumentr_exec_stats_as_data_frame(state->exec_stats));
 
     Rf_setAttrib(r_values, R_NamesSymbol, r_keys);
     UNPROTECT(2);

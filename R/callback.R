@@ -48,12 +48,6 @@ get_r_function.instrumentr_callback <- function(object) { # nolint
 
 #' @export
 #' @rdname callback
-get_exec_stats.instrumentr_callback <- function(object) {
-    .Call(C_instrumentr_callback_get_exec_stats, object)
-}
-
-#' @export
-#' @rdname callback
 has_c_function.instrumentr_callback <- function(object) { # nolint
     .Call(C_instrumentr_callback_has_c_function, object)
 }

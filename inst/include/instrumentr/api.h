@@ -478,11 +478,7 @@
         instrumentr_callback_activate, void, instrumentr_callback_t callback) \
     MACRO(instrumentr_callback_deactivate,                                    \
           void,                                                               \
-          instrumentr_callback_t callback)                                    \
-    MACRO(instrumentr_callback_get_exec_stats,                                \
-          instrumentr_exec_stats_t,                                           \
-          instrumentr_callback_t callback)                                    \
-    MACRO(r_instrumentr_callback_get_exec_stats, SEXP, SEXP r_callback)
+          instrumentr_callback_t callback)
 
 /********************************************************************************
  TRACER API
@@ -552,53 +548,61 @@
     MACRO(r_instrumentr_tracer_remove_callback,                                \
           SEXP,                                                                \
           SEXP r_tracer,                                                       \
-          SEXP r_event)                                                        \
-    MACRO(instrumentr_tracer_get_tracing_exec_stats,                           \
-          instrumentr_exec_stats_t,                                            \
-          instrumentr_tracer_t tracer)                                         \
-    MACRO(r_instrumentr_tracer_get_tracing_exec_stats, SEXP, SEXP r_tracer)    \
-    MACRO(instrumentr_tracer_get_event_exec_stats,                             \
-          instrumentr_exec_stats_t,                                            \
-          instrumentr_tracer_t tracer,                                         \
-          instrumentr_event_t event)                                           \
-    MACRO(r_instrumentr_tracer_get_event_exec_stats,                           \
-          SEXP,                                                                \
-          SEXP r_tracer,                                                       \
-          SEXP r_event)                                                        \
-    MACRO(r_instrumentr_tracer_get_exec_stats, SEXP, SEXP r_tracer)
+          SEXP r_event)
 
-#define INSTRUMENTR_EXEC_STATS_API_MAP(MACRO)                                  \
-    MACRO(instrumentr_exec_stats_wrap,                                         \
-          SEXP,                                                                \
-          instrumentr_exec_stats_t exec_stats)                                 \
-    MACRO(instrumentr_exec_stats_unwrap,                                       \
-          instrumentr_exec_stats_t,                                            \
-          SEXP r_exec_stats)                                                   \
-    MACRO(instrumentr_exec_stats_get_minimum_time,                             \
-          double,                                                              \
-          instrumentr_exec_stats_t exec_stats)                                 \
-    MACRO(r_instrumentr_exec_stats_get_minimum_time, SEXP, SEXP r_exec_stats)  \
-    MACRO(instrumentr_exec_stats_get_maximum_time,                             \
-          double,                                                              \
-          instrumentr_exec_stats_t exec_stats)                                 \
-    MACRO(r_instrumentr_exec_stats_get_maximum_time, SEXP, SEXP r_exec_stats)  \
-    MACRO(instrumentr_exec_stats_get_average_time,                             \
-          double,                                                              \
-          instrumentr_exec_stats_t exec_stats)                                 \
-    MACRO(r_instrumentr_exec_stats_get_average_time, SEXP, SEXP r_exec_stats)  \
-    MACRO(instrumentr_exec_stats_get_total_time,                               \
-          double,                                                              \
-          instrumentr_exec_stats_t exec_stats)                                 \
-    MACRO(r_instrumentr_exec_stats_get_total_time, SEXP, SEXP r_exec_stats)    \
-    MACRO(instrumentr_exec_stats_get_execution_count,                          \
-          int,                                                                 \
-          instrumentr_exec_stats_t exec_stats)                                 \
-    MACRO(                                                                     \
-        r_instrumentr_exec_stats_get_execution_count, SEXP, SEXP r_exec_stats) \
-    MACRO(instrumentr_exec_stats_as_data_frame,                                \
-          SEXP,                                                                \
-          instrumentr_exec_stats_t exec_stats)                                 \
-    MACRO(r_instrumentr_exec_stats_as_data_frame, SEXP, SEXP r_exec_stats)
+#define INSTRUMENTR_EXEC_STATS_API_MAP(MACRO)           \
+    MACRO(instrumentr_exec_stats_wrap,                  \
+          SEXP,                                         \
+          instrumentr_exec_stats_t exec_stats)          \
+    MACRO(instrumentr_exec_stats_unwrap,                \
+          instrumentr_exec_stats_t,                     \
+          SEXP r_exec_stats)                            \
+    MACRO(instrumentr_exec_stats_get_minimum_time,      \
+          double,                                       \
+          instrumentr_exec_stats_t exec_stats,          \
+          instrumentr_event_t event)                    \
+    MACRO(r_instrumentr_exec_stats_get_minimum_time,    \
+          SEXP,                                         \
+          SEXP r_exec_stats,                            \
+          SEXP r_event)                                 \
+    MACRO(instrumentr_exec_stats_get_maximum_time,      \
+          double,                                       \
+                                                        \
+          instrumentr_exec_stats_t exec_stats,          \
+          instrumentr_event_t event)                    \
+    MACRO(r_instrumentr_exec_stats_get_maximum_time,    \
+          SEXP,                                         \
+          SEXP r_exec_stats,                            \
+          SEXP r_event)                                 \
+    MACRO(instrumentr_exec_stats_get_average_time,      \
+          double,                                       \
+          instrumentr_exec_stats_t exec_stats,          \
+          instrumentr_event_t event)                    \
+    MACRO(r_instrumentr_exec_stats_get_average_time,    \
+          SEXP,                                         \
+          SEXP r_exec_stats,                            \
+          SEXP r_event)                                 \
+    MACRO(instrumentr_exec_stats_get_total_time,        \
+          double,                                       \
+          instrumentr_exec_stats_t exec_stats,          \
+          instrumentr_event_t event)                    \
+    MACRO(r_instrumentr_exec_stats_get_total_time,      \
+          SEXP,                                         \
+          SEXP r_exec_stats,                            \
+          SEXP r_event)                                 \
+    MACRO(instrumentr_exec_stats_get_execution_count,   \
+          int,                                          \
+          instrumentr_exec_stats_t exec_stats,          \
+          instrumentr_event_t event)                    \
+    MACRO(r_instrumentr_exec_stats_get_execution_count, \
+          SEXP,                                         \
+          SEXP r_exec_stats,                            \
+          SEXP r_event)                                 \
+    MACRO(instrumentr_exec_stats_as_data_frame,         \
+          SEXP,                                         \
+          instrumentr_exec_stats_t exec_stats,          \
+          instrumentr_event_t event)
+
 
 #define INSTRUMENTR_API_MAP(MACRO)         \
     INSTRUMENTR_INTEROP_API_MAP(MACRO)     \

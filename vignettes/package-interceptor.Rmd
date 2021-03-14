@@ -83,10 +83,4 @@ result <- trace_code(tracer, {
 })
 
 print(get_value(result))
-
-get_exec_stats(tracer)
-
-#get_exec_stats(get_application_load_callback(tracer))
-#get_exec_stats(get_application_unload_callback(tracer))
-#get_exec_stats(get_call_exit_callback(tracer))
 ```

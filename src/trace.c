@@ -21,6 +21,7 @@
 #include "state.h"
 #include "call_stack.h"
 #include "promise.h"
+#include "exec_stats.h"
 
 #define WRAP(name) SEXP r_##name = PROTECT(instrumentr_##name##_wrap(name));
 
@@ -66,17 +67,14 @@
                                                                              \
         clock_t diff = end - begin;                                          \
                                                                              \
-        UPDATE_EXEC_STATS(NAME, tracer, callback, diff);                     \
+        UPDATE_EXEC_STATS(NAME, state, diff);                                \
     }                                                                        \
     FIN;
 
-#define UPDATE_EXEC_STATS(NAME, tracer, callback, time)        \
-    instrumentr_exec_stats_t tracer_exec_stats =               \
-        instrumentr_tracer_get_event_exec_stats(tracer, NAME); \
-    instrumentr_exec_stats_update(tracer_exec_stats, time);    \
-    instrumentr_exec_stats_t callback_exec_stats =             \
-        instrumentr_callback_get_exec_stats(callback);         \
-    instrumentr_exec_stats_update(callback_exec_stats, time);
+#define UPDATE_EXEC_STATS(NAME, state, time)                   \
+    instrumentr_exec_stats_t exec_stats =                      \
+        instrumentr_state_get_exec_stats(state);               \
+    instrumentr_exec_stats_update(exec_stats, NAME, time);
 
 void initialize_callback_invocation(instrumentr_tracer_t tracer,
                                     instrumentr_callback_t callback) {
@@ -95,6 +93,7 @@ void finalize_callback_invocation(instrumentr_tracer_t tracer) {
 
 SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
     instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
     clock_t start = clock();
 
@@ -113,9 +112,9 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
 
     clock_t diff = end - start;
 
-    instrumentr_exec_stats_t tracing_exec_stats =
-        instrumentr_tracer_get_tracing_exec_stats(tracer);
-    instrumentr_exec_stats_update(tracing_exec_stats, diff);
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_state_get_exec_stats(state);
+    instrumentr_exec_stats_update(exec_stats, INSTRUMENTR_EVENT_COUNT, diff);
 
     return r_result;
 }

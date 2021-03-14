@@ -2,7 +2,6 @@
 #include "object.h"
 #include "vec.h"
 #include "interop.h"
-#include "exec_stats.h"
 #include "event.h"
 #include "state.h"
 
@@ -21,7 +20,6 @@ struct instrumentr_callback_impl_t {
     function_t function;
     int has_r_function;
     int active;
-    instrumentr_exec_stats_t exec_stats;
 };
 
 /********************************************************************************
@@ -35,8 +33,6 @@ void instrumentr_callback_finalize(instrumentr_object_t object) {
         instrumentr_sexp_release(callback->function.r);
     }
     callback->function.r = NULL;
-
-    instrumentr_exec_stats_destroy(callback->exec_stats);
 }
 
 /********************************************************************************
@@ -49,8 +45,6 @@ instrumentr_callback_create(instrumentr_callback_t callback,
     callback->event = event;
 
     callback->active = 0;
-
-    callback->exec_stats = instrumentr_exec_stats_create();
 
     return callback;
 }
@@ -283,22 +277,4 @@ void instrumentr_callback_activate(instrumentr_callback_t callback) {
 /* mutator  */
 void instrumentr_callback_deactivate(instrumentr_callback_t callback) {
     callback->active = 0;
-}
-
-/********************************************************************************
- * exec_stats
- *******************************************************************************/
-
-/* accessor  */
-instrumentr_exec_stats_t
-instrumentr_callback_get_exec_stats(instrumentr_callback_t callback) {
-    return callback->exec_stats;
-}
-
-/* accessor  */
-SEXP r_instrumentr_callback_get_exec_stats(SEXP r_callback) {
-    instrumentr_callback_t callback = instrumentr_callback_unwrap(r_callback);
-    instrumentr_exec_stats_t exec_stats =
-        instrumentr_callback_get_exec_stats(callback);
-    return instrumentr_exec_stats_wrap(exec_stats);
 }

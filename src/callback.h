@@ -97,17 +97,6 @@ void instrumentr_callback_activate(instrumentr_callback_t callback);
 /* mutator  */
 void instrumentr_callback_deactivate(instrumentr_callback_t callback);
 
-/********************************************************************************
- * exec_stats
- *******************************************************************************/
-
-/* accessor  */
-instrumentr_exec_stats_t
-instrumentr_callback_get_exec_stats(instrumentr_callback_t callback);
-
-/* accessor  */
-SEXP r_instrumentr_callback_get_exec_stats(SEXP r_callback);
-
 #ifdef __cplusplus
 }
 #endif

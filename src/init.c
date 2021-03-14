@@ -16,6 +16,7 @@
 #include "state.h"
 #include "promise.h"
 #include "value.h"
+#include "exec_stats.h"
 
 #include <R_ext/Rdynload.h>
 
@@ -64,9 +65,6 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_tracer_get_callback, 2),
     DECLARE_BINDING(instrumentr_tracer_set_callback, 2),
     DECLARE_BINDING(instrumentr_tracer_remove_callback, 2),
-    DECLARE_BINDING(instrumentr_tracer_get_tracing_exec_stats, 1),
-    DECLARE_BINDING(instrumentr_tracer_get_event_exec_stats, 2),
-    DECLARE_BINDING(instrumentr_tracer_get_exec_stats, 1),
 
     /* callback */
     DECLARE_BINDING(instrumentr_callback_create_from_r_function, 3),
@@ -79,9 +77,9 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_callback_has_c_function, 1),
     DECLARE_BINDING(instrumentr_callback_get_c_function, 1),
     DECLARE_BINDING(instrumentr_callback_is_active, 1),
-    DECLARE_BINDING(instrumentr_callback_get_exec_stats, 1),
 
     /* state */
+    DECLARE_BINDING(instrumentr_state_get_exec_stats, 1),
     DECLARE_BINDING(instrumentr_state_is_empty, 1),
     DECLARE_BINDING(instrumentr_state_get_size, 1),
     DECLARE_BINDING(instrumentr_state_clear, 1),
@@ -188,12 +186,11 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_context_get_pointer, 1),
 
     /* exec_stats */
-    DECLARE_BINDING(instrumentr_exec_stats_get_minimum_time, 1),
-    DECLARE_BINDING(instrumentr_exec_stats_get_maximum_time, 1),
-    DECLARE_BINDING(instrumentr_exec_stats_get_average_time, 1),
-    DECLARE_BINDING(instrumentr_exec_stats_get_total_time, 1),
-    DECLARE_BINDING(instrumentr_exec_stats_get_execution_count, 1),
-    DECLARE_BINDING(instrumentr_exec_stats_as_data_frame, 1),
+    DECLARE_BINDING(instrumentr_exec_stats_get_minimum_time, 2),
+    DECLARE_BINDING(instrumentr_exec_stats_get_maximum_time, 2),
+    DECLARE_BINDING(instrumentr_exec_stats_get_average_time, 2),
+    DECLARE_BINDING(instrumentr_exec_stats_get_total_time, 2),
+    DECLARE_BINDING(instrumentr_exec_stats_get_execution_count, 2),
 
     {NULL, NULL, 0}};
 
