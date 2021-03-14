@@ -39,7 +39,7 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
     delete state->external;
     state->external = nullptr;
 
-    instrumentr_object_release(state->call_stack);
+    instrumentr_object_kill(state->call_stack);
     state->call_stack = NULL;
 
     instrumentr_state_promise_table_clear(state);
@@ -372,7 +372,6 @@ instrumentr_state_promise_table_create(instrumentr_state_t state,
     auto result = state->promise_table->insert({r_promise, promise});
     if (!result.second) {
         instrumentr_object_kill(result.first->second);
-        instrumentr_object_release(result.first->second);
         result.first->second = promise;
     }
 
@@ -384,12 +383,7 @@ void instrumentr_state_promise_table_remove(instrumentr_state_t state,
     auto result = state->promise_table->find(r_promise);
     if (result != state->promise_table->end()) {
         instrumentr_object_kill(result->second);
-        instrumentr_object_release(result->second);
-        // fprintf(stderr,
-        //        "ref count %d\n",
-        //        );
         state->promise_table->erase(result);
-        /* TODO: kill promise */
     }
 }
 
@@ -416,7 +410,6 @@ void instrumentr_state_promise_table_clear(instrumentr_state_t state) {
          iter != state->promise_table->end();
          ++iter) {
         instrumentr_object_kill(iter->second);
-        instrumentr_object_release(iter->second);
     }
     state->promise_table->clear();
 }
@@ -681,7 +674,6 @@ void instrumentr_state_function_table_clear(instrumentr_state_t state) {
          iter != state->function_table->end();
          ++iter) {
         instrumentr_object_kill(iter->second);
-        instrumentr_object_release(iter->second);
     }
     state->function_table->clear();
 }

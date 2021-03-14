@@ -164,10 +164,10 @@ SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application) {
                     /* FIN */
                     instrumentr_tracer_remove_application(tracer));
 
-    instrumentr_state_promise_table_clear(state);
-    instrumentr_state_function_table_clear(state);
-
-    return instrumentr_state_as_list(state);
+    SEXP r_result = PROTECT(instrumentr_state_as_list(state));
+    instrumentr_tracer_clear(tracer);
+    UNPROTECT(1);
+    return r_result;
 }
 
 SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
@@ -559,9 +559,7 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
-                    instrumentr_object_kill(call);
-                    instrumentr_call_stack_pop_frame(call_stack);
-                    /* instrumentr_object_kill(call)*/);
+                    instrumentr_call_stack_pop_frame(call_stack););
 }
 
 // SEXP instrumentr_trace_non_closure_call(dyntracer_t* dyntracer,

@@ -25,7 +25,15 @@ void instrumentr_argument_finalize(instrumentr_object_t object) {
 
     free((char*)(argument->name));
 
-    instrumentr_object_release(argument->promise_or_value);
+
+    /* argument is the primary owner of value but a secondary owner of promise */
+    if(argument -> promise_or_value -> type == INSTRUMENTR_VALUE) {
+        instrumentr_object_kill(argument->promise_or_value);
+    }
+    else {
+        instrumentr_object_release(argument->promise_or_value);
+    }
+
     argument->promise_or_value = NULL;
 }
 

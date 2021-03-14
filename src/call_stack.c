@@ -95,7 +95,7 @@ void instrumentr_call_stack_push_frame(instrumentr_call_stack_t call_stack,
 /* mutator  */
 void instrumentr_call_stack_pop_frame(instrumentr_call_stack_t call_stack) {
     instrumentr_frame_t frame = vec_pop(&call_stack->frames);
-    instrumentr_object_release(frame);
+    instrumentr_object_kill(frame);
 }
 
 /* accessor  */

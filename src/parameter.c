@@ -35,7 +35,6 @@ void instrumentr_parameter_finalize(instrumentr_object_t object) {
     for (int i = 0; i < count; ++i) {
         instrumentr_argument_t argument = arguments[i];
         instrumentr_object_kill(argument);
-        instrumentr_object_release(argument);
     }
 
     vec_deinit(&parameter->arguments);

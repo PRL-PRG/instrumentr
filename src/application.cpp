@@ -49,7 +49,7 @@ void instrumentr_application_finalize(instrumentr_object_t object) {
 
     for (int i = 0; i < count; ++i) {
         instrumentr_package_t package = packages[i];
-        instrumentr_object_release(package);
+        instrumentr_object_kill(package);
     }
 
     vec_deinit(&application->packages);

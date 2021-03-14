@@ -81,20 +81,21 @@ instrumentr_object_create_and_initialize(int size,
 }
 
 /*******************************************************************************
- * kill
+ * finalize
  *******************************************************************************/
 
-void instrumentr_object_kill(void* object) {
+void instrumentr_object_finalize(void* object) {
     instrumentr_object_t obj = (instrumentr_object_t)(object);
-    instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(obj -> state);
-    instrumentr_alloc_stats_increment_zombie_count(alloc_stats, obj -> type);
-    if(obj->death_time != -1) {
-        Rf_error("attempt to kill a dead object");
+
+    if(obj->finalizer == NULL) {
+        Rf_error("attempt to finalize already finalized object");
     }
-    obj->death_time = instrumentr_state_get_time(obj -> state);
     obj->finalizer(obj);
     obj->finalizer = NULL;
+    /* this is the point where the object's kernel is deleted */
+    obj->death_time = instrumentr_state_get_time(obj -> state);
 }
+
 
 /*******************************************************************************
  * destroy
@@ -102,9 +103,8 @@ void instrumentr_object_kill(void* object) {
 
 void instrumentr_object_destroy(instrumentr_object_t object) {
     /* if object is not killed before */
-    if(object -> death_time == -1) {
-        object->finalizer(object);
-        object->finalizer = NULL;
+    if(object -> finalizer != NULL) {
+        instrumentr_object_finalize(object);
     }
 
     instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(object->state);
@@ -176,6 +176,21 @@ int instrumentr_object_release(void* object) {
 
     return reference_count;
 }
+
+void instrumentr_object_kill(void* object) {
+    int ref_count = instrumentr_object_release(object);
+
+    /* this means the object is not destroyed  */
+    if(ref_count != 0) {
+        instrumentr_object_t obj = (instrumentr_object_t)(object);
+
+        instrumentr_object_finalize(object);
+
+        instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(obj -> state);
+        instrumentr_alloc_stats_increment_zombie_count(alloc_stats, obj -> type);
+    }
+}
+
 
 int instrumentr_object_get_ref_count(void* object) {
     instrumentr_object_t obj = (instrumentr_object_t)(object);

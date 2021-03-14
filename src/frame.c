@@ -23,7 +23,7 @@ struct instrumentr_frame_impl_t {
 void instrumentr_frame_finalize(instrumentr_object_t object) {
     instrumentr_frame_t frame = (instrumentr_frame_t)(object);
 
-    instrumentr_object_release(frame->kernel);
+    instrumentr_object_kill(frame->kernel);
     frame->kernel = NULL;
 }
 

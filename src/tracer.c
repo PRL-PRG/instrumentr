@@ -79,6 +79,16 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
 }
 
 /********************************************************************************
+ * clear
+ *******************************************************************************/
+
+void instrumentr_tracer_clear(instrumentr_tracer_t tracer) {
+    instrumentr_object_kill(tracer->state);
+    tracer->state = NULL;
+}
+
+
+/********************************************************************************
  * create
  *******************************************************************************/
 
@@ -196,7 +206,7 @@ void instrumentr_tracer_set_application(instrumentr_tracer_t tracer,
 
 /*  mutator  */
 void instrumentr_tracer_remove_application(instrumentr_tracer_t tracer) {
-    instrumentr_object_release(tracer->application);
+    instrumentr_object_kill(tracer->application);
     tracer->application = NULL;
 }
 
