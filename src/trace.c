@@ -165,7 +165,8 @@ SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application) {
                     instrumentr_tracer_remove_application(tracer));
 
     SEXP r_result = PROTECT(instrumentr_state_as_list(state));
-    instrumentr_tracer_clear(tracer);
+    //TODO: fix and uncomment this
+    // instrumentr_tracer_clear(tracer);
     UNPROTECT(1);
     return r_result;
 }
