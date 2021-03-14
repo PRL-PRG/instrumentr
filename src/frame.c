@@ -23,7 +23,14 @@ struct instrumentr_frame_impl_t {
 void instrumentr_frame_finalize(instrumentr_object_t object) {
     instrumentr_frame_t frame = (instrumentr_frame_t)(object);
 
-    instrumentr_object_kill(frame->kernel);
+    /* do not kill promise as it is owned by state */
+    if(frame->kernel->type == INSTRUMENTR_PROMISE) {
+        instrumentr_object_release(frame->kernel);
+    }
+    else {
+        instrumentr_object_kill(frame->kernel);
+    }
+
     frame->kernel = NULL;
 }
 

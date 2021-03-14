@@ -896,7 +896,13 @@ void instrumentr_trace_promise_force_entry(instrumentr_tracer_t tracer,
                                      r_promise),
                             r_environment);
                     UNPROTECT(3),
-                    /* FIN */);
+                    /* FIN */
+                    instrumentr_frame_t frame =
+                    instrumentr_frame_create_from_promise(state, promise);
+                    instrumentr_call_stack_t call_stack =
+                    instrumentr_state_get_call_stack(state);
+                    instrumentr_call_stack_push_frame(call_stack, frame);
+                    instrumentr_object_release(frame););
 }
 
 
@@ -926,7 +932,10 @@ void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
                                      r_promise),
                             r_environment);
                     UNPROTECT(3),
-                    /* FIN */);
+                    /* FIN */
+                    instrumentr_call_stack_t call_stack =
+                    instrumentr_state_get_call_stack(state);
+                    instrumentr_call_stack_pop_frame(call_stack););
 }
 
 #undef INVOKE_CALLBACK
