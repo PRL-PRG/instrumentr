@@ -237,7 +237,6 @@ SEXP instrumentr_state_stats_as_list(instrumentr_state_t state) {
 }
 
 SEXP instrumentr_state_as_list(instrumentr_state_t state) {
-
     SEXP r_keys = PROTECT(allocVector(STRSXP, 2));
     SEXP r_values = PROTECT(allocVector(VECSXP, 2));
 
@@ -372,6 +371,7 @@ instrumentr_state_promise_table_create(instrumentr_state_t state,
         instrumentr_promise_create(state, r_promise);
     auto result = state->promise_table->insert({r_promise, promise});
     if (!result.second) {
+        instrumentr_object_kill(result.first->second);
         instrumentr_object_release(result.first->second);
         result.first->second = promise;
     }
@@ -383,7 +383,7 @@ void instrumentr_state_promise_table_remove(instrumentr_state_t state,
                                             SEXP r_promise) {
     auto result = state->promise_table->find(r_promise);
     if (result != state->promise_table->end()) {
-        instrumentr_object_kill((instrumentr_object_t) result->second, state);
+        instrumentr_object_kill(result->second);
         instrumentr_object_release(result->second);
         // fprintf(stderr,
         //        "ref count %d\n",
@@ -415,6 +415,7 @@ void instrumentr_state_promise_table_clear(instrumentr_state_t state) {
     for (auto iter = state->promise_table->begin();
          iter != state->promise_table->end();
          ++iter) {
+        instrumentr_object_kill(iter->second);
         instrumentr_object_release(iter->second);
     }
     state->promise_table->clear();
@@ -679,6 +680,7 @@ void instrumentr_state_function_table_clear(instrumentr_state_t state) {
     for (auto iter = state->function_table->begin();
          iter != state->function_table->end();
          ++iter) {
+        instrumentr_object_kill(iter->second);
         instrumentr_object_release(iter->second);
     }
     state->function_table->clear();

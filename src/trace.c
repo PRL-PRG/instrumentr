@@ -165,6 +165,8 @@ SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application) {
                     instrumentr_tracer_remove_application(tracer));
 
     instrumentr_state_promise_table_clear(state);
+    instrumentr_state_function_table_clear(state);
+
     return instrumentr_state_as_list(state);
 }
 
@@ -557,19 +559,9 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
-                    int pc = instrumentr_call_get_parameter_count(call);
-                    for(int i = 0; i < pc; ++i) {
-                        instrumentr_parameter_t parameter = instrumentr_call_get_parameter_by_position(call, i);
-                        int ac = instrumentr_parameter_get_argument_count(parameter);
-                        for(int j = 0; j < ac; ++j) {
-                            instrumentr_argument_t argument = instrumentr_parameter_get_argument_by_position(parameter, j);
-                            instrumentr_object_kill((instrumentr_object_t)argument, state);
-                        }
-                        instrumentr_object_kill((instrumentr_object_t)parameter, state);
-                    }
-                    instrumentr_object_kill((instrumentr_object_t)call, state);
+                    instrumentr_object_kill(call);
                     instrumentr_call_stack_pop_frame(call_stack);
-                    /* instrumentr_object_kill((instrumentr_object_t)call, state)*/);
+                    /* instrumentr_object_kill(call)*/);
 }
 
 // SEXP instrumentr_trace_non_closure_call(dyntracer_t* dyntracer,

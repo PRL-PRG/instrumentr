@@ -10,7 +10,7 @@ struct instrumentr_alloc_stats_impl_t {
     int object_size[INSTRUMENTR_OBJECT];
     int alive_count[INSTRUMENTR_OBJECT];
     int dead_count[INSTRUMENTR_OBJECT];
-    int total_count[INSTRUMENTR_OBJECT];
+    int zombie_count[INSTRUMENTR_OBJECT];
 };
 
 /********************************************************************************
@@ -86,21 +86,21 @@ void instrumentr_alloc_stats_increment_dead_count(
 }
 
 /********************************************************************************
- * total_count
+ * zombie_count
  *******************************************************************************/
 
 /* accessor */
-int instrumentr_alloc_stats_get_total_count(
+int instrumentr_alloc_stats_get_zombie_count(
     instrumentr_alloc_stats_t alloc_stats,
     instrumentr_object_type_t object_type) {
-    return alloc_stats->total_count[(int) (object_type)];
+    return alloc_stats->zombie_count[(int) (object_type)];
 }
 
 /* accessor */
-void instrumentr_alloc_stats_increment_total_count(
+void instrumentr_alloc_stats_increment_zombie_count(
     instrumentr_alloc_stats_t alloc_stats,
     instrumentr_object_type_t object_type) {
-    ++alloc_stats->total_count[(int) (object_type)];
+    ++alloc_stats->zombie_count[(int) (object_type)];
 }
 
 /********************************************************************************
@@ -114,7 +114,7 @@ SEXP instrumentr_alloc_stats_as_data_frame(
     SEXP r_object_size = PROTECT(allocVector(INTSXP, INSTRUMENTR_OBJECT));
     SEXP r_alive_count = PROTECT(allocVector(INTSXP, INSTRUMENTR_OBJECT));
     SEXP r_dead_count = PROTECT(allocVector(INTSXP, INSTRUMENTR_OBJECT));
-    SEXP r_total_count = PROTECT(allocVector(INTSXP, INSTRUMENTR_OBJECT));
+    SEXP r_zombie_count = PROTECT(allocVector(INTSXP, INSTRUMENTR_OBJECT));
 
     for (int i = 0; i < (int) (INSTRUMENTR_OBJECT); ++i) {
         instrumentr_object_type_t object_type = (instrumentr_object_type_t)(i);
@@ -124,7 +124,7 @@ SEXP instrumentr_alloc_stats_as_data_frame(
         INTEGER(r_object_size)[i] = alloc_stats->object_size[i];
         INTEGER(r_alive_count)[i] = alloc_stats->alive_count[i];
         INTEGER(r_dead_count)[i] = alloc_stats->dead_count[i];
-        INTEGER(r_total_count)[i] = alloc_stats->total_count[i];
+        INTEGER(r_zombie_count)[i] = alloc_stats->zombie_count[i];
     }
 
     SEXP r_data_frame = PROTECT(instrumentr_create_data_frame(5,
@@ -136,8 +136,8 @@ SEXP instrumentr_alloc_stats_as_data_frame(
                                                               r_alive_count,
                                                               "dead_count",
                                                               r_dead_count,
-                                                              "total_count",
-                                                              r_total_count));
+                                                              "zombie_count",
+                                                              r_zombie_count));
 
     UNPROTECT(6);
 

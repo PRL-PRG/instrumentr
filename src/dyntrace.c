@@ -354,7 +354,8 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
         }
         /* promise */
         else if (instrumentr_frame_is_promise(frame)) {
-            /*TODO: add promise exit */
+            instrumentr_promise_t promise = instrumentr_frame_as_promise(frame);
+            instrumentr_trace_promise_force_exit(tracer, promise);
         }
         --frame_count;
     }

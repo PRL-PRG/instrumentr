@@ -45,6 +45,7 @@ void instrumentr_call_finalize(instrumentr_object_t object) {
 
     for (int i = 0; i < count; ++i) {
         instrumentr_parameter_t parameter = parameters[i];
+        instrumentr_object_kill(parameter);
         instrumentr_object_release(parameter);
     }
 

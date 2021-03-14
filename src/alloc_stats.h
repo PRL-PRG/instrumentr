@@ -63,16 +63,16 @@ void instrumentr_alloc_stats_increment_dead_count(
     instrumentr_object_type_t object_type);
 
 /********************************************************************************
- * total_count
+ * zombie_count
  *******************************************************************************/
 
 /* accessor */
-int instrumentr_alloc_stats_get_total_count(
+int instrumentr_alloc_stats_get_zombie_count(
     instrumentr_alloc_stats_t alloc_stats,
     instrumentr_object_type_t object_type);
 
 /* accessor */
-void instrumentr_alloc_stats_increment_total_count(
+void instrumentr_alloc_stats_increment_zombie_count(
     instrumentr_alloc_stats_t alloc_stats,
     instrumentr_object_type_t object_type);
 

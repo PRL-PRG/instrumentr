@@ -22,6 +22,7 @@ struct instrumentr_object_impl_t {
     int birth_time;
     int death_time;
     instrumentr_origin_t origin;
+    instrumentr_state_t state;
 };
 
 /*******************************************************************************
@@ -34,8 +35,7 @@ const char* instrumentr_object_type_to_string(instrumentr_object_type_t object_t
  * kill
  *******************************************************************************/
 
-void instrumentr_object_kill(instrumentr_object_t object,
-                             instrumentr_state_t state);
+void instrumentr_object_kill(void* object);
 
 /*******************************************************************************
  * object class

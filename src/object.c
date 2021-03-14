@@ -58,6 +58,8 @@ instrumentr_object_initialize(instrumentr_object_t object,
     object->birth_time = instrumentr_state_get_time(state);
     object->death_time = -1;
     object->origin = origin;
+    object->state = state;
+    instrumentr_object_acquire(state);
 }
 
 
@@ -72,7 +74,7 @@ instrumentr_object_create_and_initialize(int size,
     instrumentr_object_initialize(object, state, type, finalizer, origin);
 
     instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(state);
-    instrumentr_alloc_stats_increment_total_count(alloc_stats, object -> type);
+    instrumentr_alloc_stats_increment_alive_count(alloc_stats, object -> type);
     instrumentr_alloc_stats_set_object_size(alloc_stats, object -> type, size);
 
     return object;
@@ -82,15 +84,16 @@ instrumentr_object_create_and_initialize(int size,
  * kill
  *******************************************************************************/
 
-void instrumentr_object_kill(instrumentr_object_t object, instrumentr_state_t state) {
-    instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(state);
-    instrumentr_alloc_stats_increment_dead_count(alloc_stats, object -> type);
-    if(object->death_time != -1) {
+void instrumentr_object_kill(void* object) {
+    instrumentr_object_t obj = (instrumentr_object_t)(object);
+    instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(obj -> state);
+    instrumentr_alloc_stats_increment_zombie_count(alloc_stats, obj -> type);
+    if(obj->death_time != -1) {
         Rf_error("attempt to kill a dead object");
     }
-    object->death_time = instrumentr_state_get_time(state);
-    object->finalizer(object);
-    object->finalizer = NULL;
+    obj->death_time = instrumentr_state_get_time(obj -> state);
+    obj->finalizer(obj);
+    obj->finalizer = NULL;
 }
 
 /*******************************************************************************
@@ -103,6 +106,11 @@ void instrumentr_object_destroy(instrumentr_object_t object) {
         object->finalizer(object);
         object->finalizer = NULL;
     }
+
+    instrumentr_alloc_stats_t alloc_stats = instrumentr_state_get_alloc_stats(object->state);
+    instrumentr_alloc_stats_increment_dead_count(alloc_stats, object -> type);
+    instrumentr_object_release(object->state);
+    object->state = NULL;
     free(object);
 }
 
