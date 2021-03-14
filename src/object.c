@@ -24,7 +24,7 @@ const char* instrumentr_object_type_to_string(instrumentr_object_type_t object_t
     case INSTRUMENTR_VALUE: return "value"; break;
     case INSTRUMENTR_FRAME: return "frame"; break;
     case INSTRUMENTR_CONTEXT: return "context"; break;
-    case INSTRUMENTR_EXEC_STATS: return "exex_stats"; break;
+    case INSTRUMENTR_EXEC_STATS: return "exec_stats"; break;
     case INSTRUMENTR_ALLOC_STATS: return "alloc_stats"; break;
     case INSTRUMENTR_OBJECT: return "object"; break;
     }
