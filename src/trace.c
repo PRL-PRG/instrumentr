@@ -180,7 +180,7 @@ SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
         UNWRAP(tracer),
         /* INIT */
         NOTRACE(UNWRAP(application); UNWRAP(package);
-                instrumentr_application_add_package(application, package)),
+                instrumentr_state_add_package(state, package)),
         /* CCALL */
         cfun(tracer, callback, state, application, package),
         /* RCALL */
@@ -218,7 +218,7 @@ SEXP r_instrumentr_trace_package_unload(SEXP r_tracer,
                          r_package),
                 r_environment),
         /* FIN */
-        NOTRACE(instrumentr_application_remove_package(application, state, package)));
+        NOTRACE(instrumentr_state_remove_package(state, package)));
 
     return R_NilValue;
 }

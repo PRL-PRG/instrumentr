@@ -78,7 +78,7 @@ void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
         instrumentr_tracer_get_application(tracer);
 
     instrumentr_package_t package =
-        instrumentr_application_get_base_package(application);
+        instrumentr_state_get_base_package(state);
 
     int index = instrumentr_funtab_get_index(r_op);
 
@@ -141,7 +141,7 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
     }
 
     instrumentr_package_t package =
-        instrumentr_application_get_base_package(application);
+        instrumentr_state_get_base_package(state);
 
     /* TODO attach result to call */
     if (!strcmp(instrumentr_function_get_name(function), "function") &&
@@ -173,7 +173,7 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
 
     /* fix package */
     instrumentr_package_t package =
-        instrumentr_application_get_base_package(application);
+        instrumentr_state_get_base_package(state);
 
     instrumentr_function_t function =
         instrumentr_state_function_table_lookup(state, r_op, r_call);
@@ -231,7 +231,7 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
 
     /* TODO: fix package  */
     instrumentr_package_t package =
-        instrumentr_application_get_base_package(application);
+        instrumentr_state_get_base_package(state);
 
     instrumentr_trace_closure_call_exit(
         tracer, application, package, function, call);
@@ -334,7 +334,7 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
             instrumentr_function_t function =
                 instrumentr_call_get_function(call);
             instrumentr_package_t package =
-                instrumentr_application_get_base_package(application);
+                instrumentr_state_get_base_package(state);
 
             /* builtin */
             if (instrumentr_function_is_builtin(function)) {

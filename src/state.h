@@ -175,6 +175,39 @@ SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
 
 void instrumentr_state_function_table_clear(instrumentr_state_t state);
 
+/*******************************************************************************
+ * package_table
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_state_get_package_count(instrumentr_state_t state);
+
+SEXP r_instrumentr_state_get_package_count(SEXP r_application);
+
+/* accessor */
+instrumentr_package_t instrumentr_state_get_package(instrumentr_state_t state,
+                                                    const char* name);
+SEXP r_instrumentr_state_get_package(SEXP r_state, SEXP r_name);
+
+/* accessor */
+instrumentr_package_t
+instrumentr_state_get_base_package(instrumentr_state_t state);
+SEXP r_instrumentr_state_get_base_package(SEXP r_state);
+
+/* mutator  */
+void instrumentr_state_add_package(instrumentr_state_t state,
+                                   instrumentr_package_t package);
+SEXP r_instrumentr_state_add_package(SEXP r_state, SEXP r_package);
+
+/* mutator  */
+void instrumentr_state_remove_package(instrumentr_state_t state,
+                                      instrumentr_package_t package);
+
+/* accessor */
+SEXP r_instrumentr_state_get_packages(SEXP r_application);
+
+void instrumentr_state_package_table_clear(instrumentr_state_t state);
+
 #ifdef __cplusplus
 }
 #endif

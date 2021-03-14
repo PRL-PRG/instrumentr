@@ -39,7 +39,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
                                           environment,
                                           frame_position)
 
-        insert_package_hooks(tracer, application)
+        insert_package_hooks(tracer, application, get_state(tracer))
 
         .Call(C_instrumentr_trace_tracing_entry, tracer, application)
 

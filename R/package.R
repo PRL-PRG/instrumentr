@@ -111,7 +111,6 @@ get_functions.instrumentr_package <- function(object) { # nolint
 }
 
 create_package <- function(state,
-                           application_ptr,
                            package_name,
                            package_directory = dirname(system.file(package=package_name)),
                            package_environment = getNamespace(package_name),
@@ -124,7 +123,7 @@ create_package <- function(state,
     package_ptr <- .Call(C_instrumentr_package_create, state, package_name, package_directory, package_environment, attached)
 
     function_table <- get_function_table(package_environment)
-
+ 
     for (function_name in ls(envir = function_table, all.names = TRUE)) {
 
         function_info <- get(function_name, envir=function_table)

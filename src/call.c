@@ -36,9 +36,9 @@ void instrumentr_call_finalize(instrumentr_object_t object) {
 
     instrumentr_object_release(call->function);
 
-    call->r_expression;
-    call->r_environment;
-    call->r_result;
+    call->r_expression = NULL;
+    call->r_environment = NULL;
+    call->r_result = NULL;
 
     int count = call->parameters.length;
     instrumentr_parameter_t* parameters = call->parameters.data;
@@ -183,7 +183,7 @@ void process_closure_parameters(instrumentr_state_t state,
         SEXP r_argument_name = TAG(r_parameter_list);
 
         SEXP r_default_argument = CAR(r_parameter_list);
-        
+
         SEXP r_argument_value =
             Rf_findVarInFrame(r_environment, r_argument_name);
 

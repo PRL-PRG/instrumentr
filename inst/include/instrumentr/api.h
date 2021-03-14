@@ -42,58 +42,66 @@
     MACRO(instrumentr_object_get_id, instrumentr_id_t, void* object) \
     MACRO(r_instrumentr_object_get_id, SEXP, SEXP r_object)
 
-#define INSTRUMENTR_STATE_API_MAP(MACRO)                               \
-    MACRO(instrumentr_state_wrap, SEXP, instrumentr_state_t state)     \
-    MACRO(instrumentr_state_unwrap, instrumentr_state_t, SEXP r_state) \
-    MACRO(instrumentr_state_is_empty, int, instrumentr_state_t state)  \
-    MACRO(r_instrumentr_state_is_empty, SEXP, SEXP r_state)            \
-    MACRO(instrumentr_state_get_size, int, instrumentr_state_t state)  \
-    MACRO(r_instrumentr_state_get_size, SEXP, SEXP r_state)            \
-    MACRO(instrumentr_state_clear, void, instrumentr_state_t state)    \
-    MACRO(r_instrumentr_state_clear, SEXP, SEXP r_state)               \
-    MACRO(instrumentr_state_has_key,                                   \
-          int,                                                         \
-          instrumentr_state_t state,                                   \
-          const char* key)                                             \
-    MACRO(r_instrumentr_state_has_key, SEXP, SEXP r_state, SEXP r_key) \
-    MACRO(instrumentr_state_as_list, SEXP, instrumentr_state_t state)  \
-    MACRO(r_instrumentr_state_as_list, SEXP, SEXP r_state)             \
-    MACRO(instrumentr_state_lookup,                                    \
-          SEXP,                                                        \
-          instrumentr_state_t state,                                   \
-          const char* key,                                             \
-          SEXP r_alternative)                                          \
-    MACRO(r_instrumentr_state_lookup,                                  \
-          SEXP,                                                        \
-          SEXP r_state,                                                \
-          SEXP r_key,                                                  \
-          SEXP r_alternative)                                          \
-    MACRO(instrumentr_state_insert,                                    \
-          void,                                                        \
-          instrumentr_state_t state,                                   \
-          const char* key,                                             \
-          SEXP r_value,                                                \
-          int overwrite)                                               \
-    MACRO(r_instrumentr_state_insert,                                  \
-          SEXP,                                                        \
-          SEXP r_state,                                                \
-          SEXP r_key,                                                  \
-          SEXP r_value,                                                \
-          SEXP r_overwrite)                                            \
-    MACRO(instrumentr_state_erase,                                     \
-          void,                                                        \
-          instrumentr_state_t state,                                   \
-          const char* key,                                             \
-          int permissive)                                              \
-    MACRO(r_instrumentr_state_erase,                                   \
-          SEXP,                                                        \
-          SEXP r_state,                                                \
-          SEXP r_key,                                                  \
-          SEXP r_permissive)                                           \
-    MACRO(instrumentr_state_get_call_stack,                            \
-          instrumentr_call_stack_t,                                    \
-          instrumentr_state_t state)                                   \
-    MACRO(r_instrumentr_state_get_call_stack, SEXP, SEXP r_state)
+#define INSTRUMENTR_STATE_API_MAP(MACRO)                                       \
+    MACRO(instrumentr_state_wrap, SEXP, instrumentr_state_t state)             \
+    MACRO(instrumentr_state_unwrap, instrumentr_state_t, SEXP r_state)         \
+    MACRO(instrumentr_state_is_empty, int, instrumentr_state_t state)          \
+    MACRO(r_instrumentr_state_is_empty, SEXP, SEXP r_state)                    \
+    MACRO(instrumentr_state_get_size, int, instrumentr_state_t state)          \
+    MACRO(r_instrumentr_state_get_size, SEXP, SEXP r_state)                    \
+    MACRO(instrumentr_state_clear, void, instrumentr_state_t state)            \
+    MACRO(r_instrumentr_state_clear, SEXP, SEXP r_state)                       \
+    MACRO(instrumentr_state_has_key,                                           \
+          int,                                                                 \
+          instrumentr_state_t state,                                           \
+          const char* key)                                                     \
+    MACRO(r_instrumentr_state_has_key, SEXP, SEXP r_state, SEXP r_key)         \
+    MACRO(instrumentr_state_as_list, SEXP, instrumentr_state_t state)          \
+    MACRO(r_instrumentr_state_as_list, SEXP, SEXP r_state)                     \
+    MACRO(instrumentr_state_lookup,                                            \
+          SEXP,                                                                \
+          instrumentr_state_t state,                                           \
+          const char* key,                                                     \
+          SEXP r_alternative)                                                  \
+    MACRO(r_instrumentr_state_lookup,                                          \
+          SEXP,                                                                \
+          SEXP r_state,                                                        \
+          SEXP r_key,                                                          \
+          SEXP r_alternative)                                                  \
+    MACRO(instrumentr_state_insert,                                            \
+          void,                                                                \
+          instrumentr_state_t state,                                           \
+          const char* key,                                                     \
+          SEXP r_value,                                                        \
+          int overwrite)                                                       \
+    MACRO(r_instrumentr_state_insert,                                          \
+          SEXP,                                                                \
+          SEXP r_state,                                                        \
+          SEXP r_key,                                                          \
+          SEXP r_value,                                                        \
+          SEXP r_overwrite)                                                    \
+    MACRO(instrumentr_state_erase,                                             \
+          void,                                                                \
+          instrumentr_state_t state,                                           \
+          const char* key,                                                     \
+          int permissive)                                                      \
+    MACRO(r_instrumentr_state_erase,                                           \
+          SEXP,                                                                \
+          SEXP r_state,                                                        \
+          SEXP r_key,                                                          \
+          SEXP r_permissive)                                                   \
+    MACRO(instrumentr_state_get_call_stack,                                    \
+          instrumentr_call_stack_t,                                            \
+          instrumentr_state_t state)                                           \
+    MACRO(r_instrumentr_state_get_call_stack, SEXP, SEXP r_state)              \
+    MACRO(instrumentr_state_get_package_count, int, instrumentr_state_t state) \
+    MACRO(r_instrumentr_state_get_package_count, SEXP, SEXP r_state)           \
+    MACRO(instrumentr_state_get_package,                                       \
+          instrumentr_package_t,                                               \
+          instrumentr_state_t state,                                           \
+          const char* name)                                                    \
+    MACRO(r_instrumentr_state_get_package, SEXP, SEXP r_state, SEXP r_name)    \
+    MACRO(r_instrumentr_state_get_packages, SEXP, SEXP r_state)
 
 /********************************************************************************
  APPLICATION API
@@ -127,29 +135,7 @@
           instrumentr_application_t application)                               \
     MACRO(r_instrumentr_application_get_frame_position,                        \
           SEXP,                                                                \
-          SEXP r_application)                                                  \
-    MACRO(instrumentr_application_get_package_count,                           \
-          int,                                                                 \
-          instrumentr_application_t application)                               \
-    MACRO(                                                                     \
-        r_instrumentr_application_get_package_count, SEXP, SEXP r_application) \
-    MACRO(instrumentr_application_get_package_by_position,                     \
-          instrumentr_package_t,                                               \
-          instrumentr_application_t application,                               \
-          int position)                                                        \
-    MACRO(r_instrumentr_application_get_package_by_position,                   \
-          SEXP,                                                                \
-          SEXP r_application,                                                  \
-          SEXP r_position)                                                     \
-    MACRO(instrumentr_application_get_package_by_name,                         \
-          instrumentr_package_t,                                               \
-          instrumentr_application_t application,                               \
-          const char* name)                                                    \
-    MACRO(r_instrumentr_application_get_package_by_name,                       \
-          SEXP,                                                                \
-          SEXP r_application,                                                  \
-          SEXP r_name)                                                         \
-    MACRO(r_instrumentr_application_get_packages, SEXP, SEXP r_application)
+          SEXP r_application)
 
 /********************************************************************************
  PACKAGE API

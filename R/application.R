@@ -97,32 +97,6 @@ get_frame_position.instrumentr_application <- function(object) { # nolint
     .Call(C_instrumentr_application_get_frame_position, object)
 }
 
-#' @export
-#' @rdname application
-get_package_count.instrumentr_application <- function(object) { # nolint
-    .Call(C_instrumentr_application_get_package_count, object)
-}
-
-#' @export
-#' @rdname application
-get_package.instrumentr_application <- function(application, name_or_position) { # nolint
-    if(is.character(name_or_position)) {
-        .Call(C_instrumentr_application_get_package_by_name, application, name_or_position[1])
-    }
-    else if(is.numeric(name_or_position)) {
-        .Call(C_instrumentr_application_get_package_by_position, application, as.integer(name_or_position)[1])
-    }
-    else {
-        stop("Expecting character or numeric value for `name_or_position` argument to get_package")
-    }
-}
-
-
-#' @export
-#' @rdname application
-get_packages.instrumentr_application <- function(application) { # nolint
-    .Call(C_instrumentr_application_get_packages, application)
-}
 
 create_application <- function(state, name, directory, code, environment, frame_position) {
     stopifnot(is_scalar_character(name))
@@ -133,12 +107,3 @@ create_application <- function(state, name, directory, code, environment, frame_
 
     .Call(C_instrumentr_application_create, state, name, directory, code, environment, frame_position)
 }
-
-add_package <- function(object, package, ...) {
-    UseMethod("add_package")
-}
-
-add_package.instrumentr_application <- function(object, package, ...) {
-    .Call(C_instrumentr_application_add_package, object, package)
-}
-

@@ -515,3 +515,7 @@ get_parameter <- function(object, position_or_name) {
 get_call <- function(object) {
     UseMethod("get_call")
 }
+
+add_package <- function(object, package, ...) {
+    UseMethod("add_package")
+}

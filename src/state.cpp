@@ -27,6 +27,7 @@ struct instrumentr_state_impl_t {
     instrumentr_call_stack_t call_stack;
     std::unordered_map<SEXP, instrumentr_promise_t>* promise_table;
     std::unordered_map<SEXP, instrumentr_function_t>* function_table;
+    std::unordered_map<std::string, instrumentr_package_t>* package_table;
 };
 
 /********************************************************************************
@@ -50,6 +51,10 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
     delete state->function_table;
     state->function_table = nullptr;
 
+    instrumentr_state_package_table_clear(state);
+    delete state->package_table;
+    state->package_table = nullptr;
+
     instrumentr_alloc_stats_destroy(state->alloc_stats);
 }
 
@@ -72,6 +77,9 @@ instrumentr_state_t instrumentr_state_create() {
 
     state->function_table =
         new std::unordered_map<SEXP, instrumentr_function_t>();
+
+    state->package_table =
+        new std::unordered_map<std::string, instrumentr_package_t>();
 
     instrumentr_object_initialize((instrumentr_object_t) state,
                                   state,
@@ -676,4 +684,122 @@ void instrumentr_state_function_table_clear(instrumentr_state_t state) {
         instrumentr_object_kill(iter->second);
     }
     state->function_table->clear();
+}
+
+/*******************************************************************************
+ * package_table
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_state_get_package_count(instrumentr_state_t state) {
+    return state->package_table->size();
+}
+
+SEXP r_instrumentr_state_get_package_count(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    int count = instrumentr_state_get_package_count(state);
+    return instrumentr_c_int_to_r_integer(count);
+}
+
+/* accessor  */
+instrumentr_package_t instrumentr_state_get_package(instrumentr_state_t state,
+                                                    const char* name) {
+    auto iter = state->package_table->find(std::string(name));
+
+    if (iter == state->package_table->end()) {
+        instrumentr_log_error("package '%s' does not exist", name);
+    }
+
+    return iter->second;
+}
+
+SEXP r_instrumentr_state_get_package(SEXP r_state, SEXP r_name) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    const char* name = instrumentr_r_character_to_c_string(r_name);
+    instrumentr_package_t package = instrumentr_state_get_package(state, name);
+    return instrumentr_package_wrap(package);
+}
+
+/* accessor */
+instrumentr_package_t
+instrumentr_state_get_base_package(instrumentr_state_t state) {
+    return instrumentr_state_get_package(state, "base");
+}
+
+SEXP r_instrumentr_state_get_base_package(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_package_t package = instrumentr_state_get_base_package(state);
+    return instrumentr_package_wrap(package);
+}
+
+/* accessor */
+SEXP r_instrumentr_state_get_packages(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+
+    int count = instrumentr_state_get_package_count(state);
+
+    SEXP r_packages = PROTECT(allocVector(VECSXP, count));
+    SEXP r_names = PROTECT(allocVector(STRSXP, count));
+
+    int index = 0;
+
+    for (auto iter = state->package_table->begin();
+         iter != state->package_table->end();
+         ++iter, ++index) {
+        instrumentr_package_t package = iter->second;
+        const char* name = instrumentr_package_get_name(package);
+        SET_VECTOR_ELT(r_packages, index, instrumentr_package_wrap(package));
+        SET_STRING_ELT(r_names, index, name == NULL ? NA_STRING : mkChar(name));
+    }
+
+    Rf_setAttrib(r_packages, R_NamesSymbol, r_names);
+    UNPROTECT(2);
+    return r_packages;
+}
+
+/* mutator */
+void instrumentr_state_add_package(instrumentr_state_t state,
+                                   instrumentr_package_t package) {
+    const char* name = instrumentr_package_get_name(package);
+
+    auto result = state->package_table->insert({name, package});
+
+    if (!result.second) {
+        instrumentr_log_error("package '%s' already exists", name);
+    }
+
+    instrumentr_object_acquire(package);
+}
+
+/* mutator */
+SEXP r_instrumentr_state_add_package(SEXP r_state, SEXP r_package) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+    instrumentr_state_add_package(state, package);
+    return R_NilValue;
+}
+
+/* mutator */
+void instrumentr_state_remove_package(instrumentr_state_t state,
+                                      instrumentr_package_t package) {
+    const char* name = instrumentr_package_get_name(package);
+
+    auto iter = state->package_table->find(name);
+
+    if (iter == state->package_table->end()) {
+        instrumentr_log_error("package '%s' cannot be removed", name);
+    }
+
+    state->package_table->erase(iter);
+
+    instrumentr_object_kill(package);
+}
+
+void instrumentr_state_package_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->package_table->begin();
+         iter != state->package_table->end();
+         ++iter) {
+        instrumentr_object_kill(iter->second);
+    }
+    state->package_table->clear();
 }
