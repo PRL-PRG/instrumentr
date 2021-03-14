@@ -124,14 +124,6 @@ get_packages.instrumentr_application <- function(application) { # nolint
     .Call(C_instrumentr_application_get_packages, application)
 }
 
-
-#' @export
-#' @rdname application
-get_call_stack.instrumentr_application <- function(object) { # nolint
-    .Call(C_instrumentr_application_get_call_stack, object)
-}
-
-
 create_application <- function(state, name, directory, code, environment, frame_position) {
     stopifnot(is_scalar_character(name))
     stopifnot(is_scalar_character(directory))

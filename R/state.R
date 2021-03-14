@@ -38,3 +38,10 @@ insert.instrumentr_state <- function(state, key, value, overwrite = FALSE) {
 erase.instrumentr_state <- function(state, key) {
     .Call(C_instrumentr_state_erase, state, key)
 }
+
+#' @export
+#' @rdname state
+get_call_stack.instrumentr_state <- function(object) { # nolint
+    .Call(C_instrumentr_state_get_call_stack, object)
+}
+

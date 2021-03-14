@@ -36,10 +36,10 @@
  OBJECT API
  *******************************************************************************/
 
-#define INSTRUMENTR_OBJECT_API_MAP(MACRO)                                  \
-    MACRO(instrumentr_object_acquire, int, void* object)                   \
-    MACRO(instrumentr_object_release, int, void* object)                   \
-    MACRO(instrumentr_object_get_id, instrumentr_id_t, void* object)       \
+#define INSTRUMENTR_OBJECT_API_MAP(MACRO)                            \
+    MACRO(instrumentr_object_acquire, int, void* object)             \
+    MACRO(instrumentr_object_release, int, void* object)             \
+    MACRO(instrumentr_object_get_id, instrumentr_id_t, void* object) \
     MACRO(r_instrumentr_object_get_id, SEXP, SEXP r_object)
 
 #define INSTRUMENTR_STATE_API_MAP(MACRO)                               \
@@ -89,7 +89,11 @@
           SEXP,                                                        \
           SEXP r_state,                                                \
           SEXP r_key,                                                  \
-          SEXP r_permissive)
+          SEXP r_permissive)                                           \
+    MACRO(instrumentr_state_get_call_stack,                            \
+          instrumentr_call_stack_t,                                    \
+          instrumentr_state_t state)                                   \
+    MACRO(r_instrumentr_state_get_call_stack, SEXP, SEXP r_state)
 
 /********************************************************************************
  APPLICATION API
@@ -124,10 +128,6 @@
     MACRO(r_instrumentr_application_get_frame_position,                        \
           SEXP,                                                                \
           SEXP r_application)                                                  \
-    MACRO(instrumentr_application_get_call_stack,                              \
-          instrumentr_call_stack_t,                                            \
-          instrumentr_application_t application)                               \
-    MACRO(r_instrumentr_application_get_call_stack, SEXP, SEXP r_application)  \
     MACRO(instrumentr_application_get_package_count,                           \
           int,                                                                 \
           instrumentr_application_t application)                               \
@@ -411,9 +411,7 @@
           instrumentr_promise_t promise)                                       \
     MACRO(                                                                     \
         instrumentr_promise_is_lazy_load, int, instrumentr_promise_t promise)  \
-    MACRO(instrumentr_promise_is_unknown,                                      \
-          int,                                                                 \
-          instrumentr_promise_t promise)                                       \
+    MACRO(instrumentr_promise_is_unknown, int, instrumentr_promise_t promise)  \
     MACRO(instrumentr_promise_get_argument,                                    \
           instrumentr_argument_t,                                              \
           instrumentr_promise_t promise)                                       \
@@ -509,9 +507,9 @@
     MACRO(r_instrumentr_tracer_create, SEXP, )                                 \
     MACRO(instrumentr_tracer_wrap, SEXP, instrumentr_tracer_t tracer)          \
     MACRO(instrumentr_tracer_unwrap, instrumentr_tracer_t, SEXP r_tracer)      \
-   MACRO(instrumentr_tracer_get_state,                                         \
-         instrumentr_state_t,                                                  \
-         instrumentr_tracer_t tracer)                                          \
+    MACRO(instrumentr_tracer_get_state,                                        \
+          instrumentr_state_t,                                                 \
+          instrumentr_tracer_t tracer)                                         \
     MACRO(r_instrumentr_tracer_get_state, SEXP, SEXP r_tracer)                 \
     MACRO(instrumentr_tracer_get_application,                                  \
           instrumentr_application_t,                                           \

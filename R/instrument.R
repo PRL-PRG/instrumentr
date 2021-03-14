@@ -76,7 +76,6 @@ handle_future_packages <- function(tracer_ptr, application_ptr) {
 
         package_ptr <- get_package(application_ptr, package_name)
         .Call(C_instrumentr_trace_package_unload, tracer_ptr, application_ptr, package_ptr)
-        .Call(C_instrumentr_application_remove_package, application_ptr, package_ptr)
 
         #.Call(C_instrumentr_tracer_enable, tracer_ptr)
     }

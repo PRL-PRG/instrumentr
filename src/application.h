@@ -72,15 +72,6 @@ int instrumentr_application_get_frame_position(
 SEXP r_instrumentr_application_get_frame_position(SEXP r_application);
 
 /*******************************************************************************
- * call_stack
- *******************************************************************************/
-
-/* accessor */
-instrumentr_call_stack_t
-instrumentr_application_get_call_stack(instrumentr_application_t application);
-SEXP r_instrumentr_application_get_call_stack(SEXP r_application);
-
-/*******************************************************************************
  * packages
  *******************************************************************************/
 
@@ -119,52 +110,8 @@ SEXP r_instrumentr_application_add_package(SEXP r_application, SEXP r_package);
 /* mutator  */
 void instrumentr_application_remove_package(
     instrumentr_application_t application,
+    instrumentr_state_t state,
     instrumentr_package_t package);
-
-SEXP r_instrumentr_application_remove_package(SEXP r_application,
-                                              SEXP r_package);
-
-/*******************************************************************************
- * call_stack
- *******************************************************************************/
-
-instrumentr_function_t instrumentr_application_function_map_lookup(
-    instrumentr_state_t state,
-    instrumentr_application_t application,
-    SEXP r_closure,
-    SEXP r_call);
-
-instrumentr_function_t instrumentr_application_function_map_insert(
-    instrumentr_application_t application,
-    instrumentr_function_t function,
-    SEXP r_closure);
-
-void instrumentr_application_function_map_remove(
-    instrumentr_application_t application,
-    SEXP r_closure);
-
-instrumentr_function_t
-instrumentr_application_function_map_add(instrumentr_state_t state,
-                                         instrumentr_application_t application,
-                                         SEXP r_closure);
-
-void instrumentr_application_function_map_update_name(
-    instrumentr_state_t state,
-    instrumentr_application_t application,
-    SEXP r_symbol,
-    SEXP r_value,
-    SEXP r_rho);
-
-SEXP r_instrumentr_application_function_map_update_properties(
-    SEXP r_state,
-    SEXP r_application,
-    SEXP r_package,
-    SEXP r_name,
-    SEXP r_closure,
-    SEXP r_rho,
-    SEXP r_pub,
-    SEXP r_s3_generic,
-    SEXP r_s3_method);
 
 #ifdef __cplusplus
 }

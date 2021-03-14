@@ -130,9 +130,8 @@ create_package <- function(state,
         function_info <- get(function_name, envir=function_table)
 
         ## NOTE: calling this also adds the function to package
-        .Call(C_instrumentr_application_function_map_update_properties,
+        .Call(C_instrumentr_state_function_table_update_properties,
               state,
-              application_ptr,
               package_ptr,
               function_name,
               function_info$definition,

@@ -106,6 +106,15 @@ void instrumentr_state_erase(instrumentr_state_t state,
 SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive);
 
 /*******************************************************************************
+ * call_stack
+ *******************************************************************************/
+
+/* accessor */
+instrumentr_call_stack_t
+instrumentr_state_get_call_stack(instrumentr_state_t state);
+SEXP r_instrumentr_state_get_call_stack(SEXP r_state);
+
+/*******************************************************************************
  * promise_table
  *******************************************************************************/
 instrumentr_promise_t
@@ -121,6 +130,42 @@ instrumentr_state_promise_table_lookup(instrumentr_state_t state,
                                        int create);
 
 void instrumentr_state_promise_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * function_table
+ *******************************************************************************/
+
+instrumentr_function_t
+instrumentr_state_function_table_lookup(instrumentr_state_t state,
+                                        SEXP r_closure,
+                                        SEXP r_call);
+
+instrumentr_function_t
+instrumentr_state_function_table_insert(instrumentr_state_t state,
+                                        instrumentr_function_t function,
+                                        SEXP r_closure);
+
+void instrumentr_state_function_table_remove(instrumentr_state_t state,
+                                             SEXP r_closure);
+
+instrumentr_function_t
+instrumentr_state_function_table_add(instrumentr_state_t state, SEXP r_closure);
+
+void instrumentr_state_function_table_update_name(instrumentr_state_t state,
+                                                  SEXP r_symbol,
+                                                  SEXP r_value,
+                                                  SEXP r_rho);
+
+SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
+                                                          SEXP r_package,
+                                                          SEXP r_name,
+                                                          SEXP r_closure,
+                                                          SEXP r_rho,
+                                                          SEXP r_pub,
+                                                          SEXP r_s3_generic,
+                                                          SEXP r_s3_method);
+
+void instrumentr_state_function_table_clear(instrumentr_state_t state);
 
 #ifdef __cplusplus
 }

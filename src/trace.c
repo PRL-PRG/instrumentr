@@ -216,7 +216,7 @@ SEXP r_instrumentr_trace_package_unload(SEXP r_tracer,
                          r_package),
                 r_environment),
         /* FIN */
-        NOTRACE(instrumentr_application_remove_package(application, package)));
+        NOTRACE(instrumentr_application_remove_package(application, state, package)));
 
     return R_NilValue;
 }
@@ -369,7 +369,7 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                     instrumentr_frame_t frame =
                     instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
-                        instrumentr_application_get_call_stack(application);
+                        instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
                     instrumentr_object_release(frame););
 }
@@ -406,7 +406,7 @@ void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
-                        instrumentr_application_get_call_stack(application);
+                        instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_pop_frame(call_stack););
 }
 
@@ -444,7 +444,7 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                     instrumentr_frame_t frame =
                     instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
-                        instrumentr_application_get_call_stack(application);
+                        instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
                     instrumentr_object_release(frame););
 }
@@ -481,7 +481,7 @@ void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
-                        instrumentr_application_get_call_stack(application);
+                        instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_pop_frame(call_stack););
 }
 
@@ -519,7 +519,7 @@ void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                     instrumentr_frame_t frame =
                     instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
-                        instrumentr_application_get_call_stack(application);
+                        instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
                     instrumentr_object_release(frame););
 }
@@ -556,7 +556,7 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
-                        instrumentr_application_get_call_stack(application);
+                        instrumentr_state_get_call_stack(state);
                     int pc = instrumentr_call_get_parameter_count(call);
                     for(int i = 0; i < pc; ++i) {
                         instrumentr_parameter_t parameter = instrumentr_call_get_parameter_by_position(call, i);
@@ -597,7 +597,7 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
 //        instrumentr_application_t application =
 //            instrumentr_tracer_get_application(tracer);
 //        instrumentr_call_stack_t call_stack =
-//            instrumentr_application_get_call_stack(application);
+//            instrumentr_state_get_call_stack(state);
 //        instrumentr_call_activate(call);
 //        instrumentr_call_stack_push(call_stack, call);
 //
@@ -621,7 +621,7 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
 //        instrumentr_application_t application =
 //            instrumentr_tracer_get_application(tracer);
 //        instrumentr_call_stack_t call_stack =
-//            instrumentr_application_get_call_stack(application);
+//            instrumentr_state_get_call_stack(state);
 //        instrumentr_call_stack_pop(call_stack);
 //        if (builtin) {
 //            instrumentr_trace_builtin_call_exit(
@@ -787,7 +787,7 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
                     instrumentr_tracer_get_application(tracer);
                 SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
                 /* TODO: move the rest to trace_variable_definition */
-                instrumentr_application_function_map_update_name(state, application, r_symbol, r_value, r_rho);),
+                instrumentr_state_function_table_update_name(state, r_symbol, r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,
@@ -814,8 +814,7 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
                     instrumentr_tracer_get_application(tracer);
                 SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
                 /* TODO: move the rest to trace_variable_definition */
-                instrumentr_application_function_map_update_name(
-                                                                 state, application, r_symbol, r_value, r_rho);),
+                instrumentr_state_function_table_update_name(state, r_symbol, r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,

@@ -5,6 +5,11 @@
 #include <string>
 #include <unordered_map>
 #include "promise.h"
+#include "function.h"
+#include "call_stack.h"
+#include "frame.h"
+#include "call.h"
+#include "package.h"
 
 /********************************************************************************
  * definition
@@ -15,7 +20,9 @@ struct instrumentr_state_impl_t {
     int next_id;
     int time;
     std::unordered_map<std::string, SEXP>* external;
+    instrumentr_call_stack_t call_stack;
     std::unordered_map<SEXP, instrumentr_promise_t>* promise_table;
+    std::unordered_map<SEXP, instrumentr_function_t>* function_table;
 };
 
 /********************************************************************************
@@ -28,9 +35,16 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
     delete state->external;
     state->external = nullptr;
 
+    instrumentr_object_release(state->call_stack);
+    state->call_stack = NULL;
+
     instrumentr_state_promise_table_clear(state);
     delete state->promise_table;
     state->promise_table = nullptr;
+
+    instrumentr_state_function_table_clear(state);
+    delete state->function_table;
+    state->function_table = nullptr;
 }
 
 /********************************************************************************
@@ -44,8 +58,14 @@ instrumentr_state_t instrumentr_state_create() {
     state->next_id = 0;
     state->time = -1;
     state->external = new std::unordered_map<std::string, SEXP>();
+
+    state->call_stack = instrumentr_call_stack_create(state);
+
     state->promise_table =
         new std::unordered_map<SEXP, instrumentr_promise_t>();
+
+    state->function_table =
+        new std::unordered_map<SEXP, instrumentr_function_t>();
 
     instrumentr_object_initialize((instrumentr_object_t) state,
                                   state,
@@ -269,6 +289,23 @@ SEXP r_instrumentr_state_erase(SEXP r_state, SEXP r_key, SEXP r_permissive) {
 }
 
 /*******************************************************************************
+ * call_stack
+ *******************************************************************************/
+
+/* accessor  */
+instrumentr_call_stack_t
+instrumentr_state_get_call_stack(instrumentr_state_t state) {
+    return state->call_stack;
+}
+
+SEXP r_instrumentr_state_get_call_stack(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
+    return instrumentr_call_stack_wrap(call_stack);
+}
+
+/*******************************************************************************
  * promise_table
  *******************************************************************************/
 instrumentr_promise_t
@@ -292,6 +329,9 @@ void instrumentr_state_promise_table_remove(instrumentr_state_t state,
     if (result != state->promise_table->end()) {
         instrumentr_object_kill((instrumentr_object_t) result->second, state);
         instrumentr_object_release(result->second);
+        // fprintf(stderr,
+        //        "ref count %d\n",
+        //        );
         state->promise_table->erase(result);
         /* TODO: kill promise */
     }
@@ -303,6 +343,8 @@ instrumentr_state_promise_table_lookup(instrumentr_state_t state,
                                        int create) {
     auto result = state->promise_table->find(r_promise);
     if (result != state->promise_table->end()) {
+        // fprintf(stderr, "ref count on lookup: %d\n",
+        //        instrumentr_object_get_ref_count(result->second));
         return result->second;
     } else if (create) {
         return instrumentr_state_promise_table_create(state, r_promise);
@@ -320,4 +362,268 @@ void instrumentr_state_promise_table_clear(instrumentr_state_t state) {
         instrumentr_object_release(iter->second);
     }
     state->promise_table->clear();
+}
+
+/*******************************************************************************
+ * function_table
+ *******************************************************************************/
+
+instrumentr_function_t
+instrumentr_state_function_table_lookup(instrumentr_state_t state,
+                                        SEXP r_closure,
+                                        SEXP r_call) {
+    instrumentr_function_t function = NULL;
+
+    auto result = state->function_table->find(r_closure);
+
+    /* the function is already present */
+    if (result != state->function_table->end()) {
+        function = result->second;
+    }
+    /* create the function and add to cache if function is not present */
+    else {
+        function = instrumentr_state_function_table_add(state, r_closure);
+    }
+
+    /* the function does not have a name */
+    if (!instrumentr_function_has_name(function)) {
+        SEXP r_call_name = CAR(r_call);
+
+        /* the call has a name which could be function's canonical name */
+        if (TYPEOF(r_call_name) == SYMSXP) {
+            SEXP r_lexenv = CLOENV(r_closure);
+            SEXP r_result = Rf_findVarInFrame(r_lexenv, r_call_name);
+
+            int is_bound = r_result == r_closure;
+            is_bound =
+                is_bound ||
+                TYPEOF(r_result) == PROMSXP &&
+                    (dyntrace_get_promise_value(r_result) == r_closure ||
+                     dyntrace_get_promise_expression(r_result) == r_closure);
+
+            if (is_bound) {
+                instrumentr_function_set_name(function,
+                                              CHAR(PRINTNAME(r_call_name)));
+            }
+        }
+    }
+
+    return function;
+}
+
+instrumentr_function_t
+instrumentr_state_function_table_insert(instrumentr_state_t state,
+                                        instrumentr_function_t function,
+                                        SEXP r_closure) {
+    auto result = state->function_table->insert({r_closure, function});
+
+    bool inserted = result.second;
+
+    if (!inserted) {
+        instrumentr_object_release(result.first->second);
+        result.first->second = function;
+
+        // TODO: uncommenting this causes errors. fix them!
+        // instrumentr_log_error(
+        //    "unable to insert a new function object to function map, perhaps "
+        //    "the cache has not been cleaned of old objects?");
+    }
+
+    return function;
+}
+
+void instrumentr_state_function_table_remove(instrumentr_state_t state,
+                                             SEXP r_closure) {
+    auto result = state->function_table->find(r_closure);
+
+    /* this means the function is already present (it is not alien) */
+    if (result != state->function_table->end()) {
+        instrumentr_object_release(result->second);
+        state->function_table->erase(r_closure);
+    }
+}
+
+instrumentr_function_t
+instrumentr_state_function_table_add(instrumentr_state_t state,
+                                     SEXP r_closure) {
+    int alien = 0;
+    instrumentr_function_t parent = NULL;
+    instrumentr_function_t function = NULL;
+    const char* function_name = NULL;
+
+    SEXP r_lexenv = CLOENV(r_closure);
+
+    SEXP r_env_name = R_PackageEnvName(r_lexenv);
+
+    if (r_env_name != R_NilValue) {
+    }
+
+    /* if the function is not a package function */
+    if (r_env_name == R_NilValue) {
+        instrumentr_call_stack_t call_stack =
+            instrumentr_state_get_call_stack(state);
+        int size = instrumentr_call_stack_get_size(call_stack);
+
+        for (int i = size - 1; i >= 0; --i) {
+            instrumentr_frame_t frame =
+                instrumentr_call_stack_get_frame(call_stack, i);
+            if (!instrumentr_frame_is_call(frame)) {
+                continue;
+            }
+            instrumentr_call_t call = instrumentr_frame_as_call(frame);
+            instrumentr_function_t call_fun =
+                instrumentr_call_get_function(call);
+
+            /* call's environment is function's lexical environment */
+            if (instrumentr_function_is_closure(call_fun) &&
+                instrumentr_call_get_environment(call) == r_lexenv) {
+                parent = call_fun;
+                break;
+            }
+        }
+    }
+    /* TODO: memory management - function will not be collected if insert
+     * fails. */
+    function = instrumentr_function_create_closure(state,
+                                                   function_name,
+                                                   Rf_length(CAR(r_closure)),
+                                                   r_closure,
+                                                   parent,
+                                                   0,
+                                                   0,
+                                                   0
+                                                   /*,
+                                                   alien,
+                                                   parent*/);
+
+    return instrumentr_state_function_table_insert(state, function, r_closure);
+}
+
+void instrumentr_state_function_table_update_name(instrumentr_state_t state,
+                                                  SEXP r_symbol,
+                                                  SEXP r_value,
+                                                  SEXP r_rho) {
+    SEXP r_closure = NULL;
+
+    if (TYPEOF(r_value) == CLOSXP) {
+        r_closure = r_value;
+    } else if (TYPEOF(r_value) == PROMSXP) {
+        SEXP r_promval = dyntrace_get_promise_value(r_value);
+
+        if (TYPEOF(r_promval) == CLOSXP) {
+            r_closure = r_promval;
+        } else {
+            SEXP r_promexpr = dyntrace_get_promise_expression(r_value);
+            if (TYPEOF(r_promexpr) == CLOSXP) {
+                r_closure = r_promexpr;
+            }
+        }
+    }
+
+    if (r_closure == NULL) {
+        return;
+    }
+
+    SEXP r_lexenv = CLOENV(r_closure);
+
+    bool in_scope = r_lexenv == r_rho;
+
+    const char* name = in_scope ? CHAR(PRINTNAME(r_symbol)) : NULL;
+
+    instrumentr_function_t function = NULL;
+
+    auto result = state->function_table->find(r_closure);
+
+    /* this means the function is already present (it is not alien) */
+    if (result != state->function_table->end()) {
+        function = result->second;
+        if (!instrumentr_function_has_name(function)) {
+            instrumentr_function_set_name(function, name);
+        }
+    }
+    /* this means the function is alien */
+    else {
+        int alien = 1;
+        instrumentr_function_t parent = NULL;
+
+        /* TODO: memory management - function will not be collected if insert
+         * fails. */
+        function =
+            instrumentr_function_create_closure(state,
+                                                name,
+                                                Rf_length(CAR(r_closure)),
+                                                r_closure,
+                                                parent,
+                                                0,
+                                                0,
+                                                0 /*, alien, parent*/);
+
+        instrumentr_state_function_table_insert(state, function, r_closure);
+    }
+}
+
+/* NOTE: this function is called from package load hook for top level package
+ * functions. It updates function properties and adds them to package */
+SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
+                                                          SEXP r_package,
+                                                          SEXP r_name,
+                                                          SEXP r_closure,
+                                                          SEXP r_rho,
+                                                          SEXP r_pub,
+                                                          SEXP r_s3_generic,
+                                                          SEXP r_s3_method) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+
+    instrumentr_function_t parent = NULL;
+    int pub = asLogical(r_pub);
+    int s3_generic = asLogical(r_s3_generic);
+    int s3_method = asLogical(r_s3_method);
+
+    const char* name = CHAR(STRING_ELT(r_name, 0));
+
+    instrumentr_function_t function = NULL;
+
+    auto result = state->function_table->find(r_closure);
+
+    /* this means the function is already present (it is not alien) */
+    if (result != state->function_table->end()) {
+        function = result->second;
+        instrumentr_function_set_name(function, name);
+        instrumentr_function_set_public(function, pub);
+        instrumentr_function_set_s3_generic(function, s3_generic);
+        instrumentr_function_set_s3_method(function, s3_method);
+    }
+    /* this means the function is alien */
+    else {
+        /* TODO: memory management - function will not be collected if insert
+         * fails. */
+        function =
+            instrumentr_function_create_closure(state,
+                                                name,
+                                                Rf_length(CAR(r_closure)),
+                                                r_closure,
+                                                parent,
+                                                pub,
+                                                s3_generic,
+                                                s3_method /*, alien, */);
+
+        instrumentr_state_function_table_insert(state, function, r_closure);
+    }
+
+    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
+
+    if (!instrumentr_package_has_function(package, name)) {
+        instrumentr_package_add_function(package, function);
+    }
+
+    return R_NilValue;
+}
+
+void instrumentr_state_function_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->function_table->begin();
+         iter != state->function_table->end();
+         ++iter) {
+        instrumentr_object_release(iter->second);
+    }
+    state->function_table->clear();
 }

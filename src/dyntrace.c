@@ -120,7 +120,7 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
         instrumentr_tracer_get_application(tracer);
 
     instrumentr_call_stack_t call_stack =
-        instrumentr_application_get_call_stack(application);
+        instrumentr_state_get_call_stack(state);
 
     instrumentr_frame_t frame =
         instrumentr_call_stack_peek_frame(call_stack, 0);
@@ -146,7 +146,7 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
     /* TODO attach result to call */
     if (!strcmp(instrumentr_function_get_name(function), "function") &&
         TYPEOF(r_result) == CLOSXP) {
-        instrumentr_application_function_map_add(state, application, r_result);
+        instrumentr_state_function_table_add(state, r_result);
     }
 
     if (instrumentr_function_is_builtin(function)) {
@@ -176,7 +176,7 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
         instrumentr_application_get_base_package(application);
 
     instrumentr_function_t function =
-        instrumentr_application_function_map_lookup(state, application, r_op, r_call);
+        instrumentr_state_function_table_lookup(state, r_op, r_call);
 
     instrumentr_call_t call =
         instrumentr_call_create(state,
@@ -201,11 +201,14 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
                                 SEXP r_result) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state =
+        instrumentr_tracer_get_state(tracer);
+
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
     instrumentr_call_stack_t call_stack =
-        instrumentr_application_get_call_stack(application);
+        instrumentr_state_get_call_stack(state);
 
     instrumentr_frame_t frame =
         instrumentr_call_stack_peek_frame(call_stack, 0);
@@ -251,7 +254,7 @@ void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
     // fprintf(stderr, "++ %p\n", pointer);
 
     instrumentr_call_stack_t call_stack =
-        instrumentr_application_get_call_stack(application);
+        instrumentr_state_get_call_stack(state);
 
     instrumentr_call_stack_push_frame(call_stack, frame);
     instrumentr_object_release(frame);
@@ -262,11 +265,14 @@ void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
 void dyntrace_context_exit(dyntracer_t* dyntracer, void* pointer) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state =
+        instrumentr_tracer_get_state(tracer);
+
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
     instrumentr_call_stack_t call_stack =
-        instrumentr_application_get_call_stack(application);
+        instrumentr_state_get_call_stack(state);
 
     instrumentr_frame_t frame =
         instrumentr_call_stack_peek_frame(call_stack, 0);
@@ -305,11 +311,14 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
                            int restart) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
+    instrumentr_state_t state =
+        instrumentr_tracer_get_state(tracer);
+
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
     instrumentr_call_stack_t call_stack =
-        instrumentr_application_get_call_stack(application);
+        instrumentr_state_get_call_stack(state);
 
     int frame_count =
         instrumentr_call_stack_get_jumped_frame_count(call_stack, pointer);
@@ -369,7 +378,7 @@ void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object) {
         instrumentr_application_t application =
             instrumentr_tracer_get_application(tracer);
 
-        instrumentr_application_function_map_remove(application, r_object);
+        instrumentr_state_function_table_remove(state, r_object);
     } else if (TYPEOF(r_object) == PROMSXP) {
         instrumentr_state_promise_table_remove(state, r_object);
     }

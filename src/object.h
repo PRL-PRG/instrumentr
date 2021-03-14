@@ -15,8 +15,7 @@ typedef void (*instrumentr_object_finalizer_t)(instrumentr_object_t object);
  *******************************************************************************/
 
 typedef enum {
-    INSTRUMENTR_OBJECT = 0,
-    INSTRUMENTR_TRACER,
+    INSTRUMENTR_TRACER = 0,
     INSTRUMENTR_CALLBACK,
     INSTRUMENTR_STATE,
     INSTRUMENTR_APPLICATION,
@@ -30,7 +29,10 @@ typedef enum {
     INSTRUMENTR_VALUE,
     INSTRUMENTR_FRAME,
     INSTRUMENTR_CONTEXT,
-    INSTRUMENTR_EXEC_STATS
+    INSTRUMENTR_EXEC_STATS,
+    INSTRUMENTR_ALLOC_STATS,
+    /* NOTE: this has to be the last one always */
+    INSTRUMENTR_OBJECT
 } instrumentr_object_type_t;
 
 struct instrumentr_object_impl_t {
@@ -107,6 +109,8 @@ int instrumentr_object_acquire(void* object);
 
 /* mutator  */
 int instrumentr_object_release(void* object);
+
+int instrumentr_object_get_ref_count(void* object);
 
 /*******************************************************************************
  * time

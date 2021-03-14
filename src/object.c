@@ -132,6 +132,11 @@ int instrumentr_object_release(void* object) {
     return reference_count;
 }
 
+int instrumentr_object_get_ref_count(void* object) {
+    instrumentr_object_t obj = (instrumentr_object_t)(object);
+    return obj -> reference_count;
+}
+
 /*******************************************************************************
  * id
  *******************************************************************************/
