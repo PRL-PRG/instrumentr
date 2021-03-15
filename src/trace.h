@@ -1,6 +1,10 @@
 #ifndef INSTRUMENTR_TRACE_H
 #define INSTRUMENTR_TRACE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/Rincludes.h>
 
 SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment);
@@ -75,5 +79,9 @@ void instrumentr_trace_promise_force_entry(
 
 void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
                                           instrumentr_promise_t promise);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_TRACE_H */

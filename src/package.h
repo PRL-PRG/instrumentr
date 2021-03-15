@@ -1,12 +1,12 @@
 #ifndef INSTRUMENTR_PACKAGE_H
 #define INSTRUMENTR_PACKAGE_H
 
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
 
 /********************************************************************************
  * create

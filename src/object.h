@@ -1,12 +1,12 @@
 #ifndef INSTRUMENTR_OBJECT_H
 #define INSTRUMENTR_OBJECT_H
 
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
 
 typedef void (*instrumentr_object_finalizer_t)(instrumentr_object_t object);
 

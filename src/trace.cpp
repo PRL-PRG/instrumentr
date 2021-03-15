@@ -48,7 +48,8 @@
                                                                              \
         if (instrumentr_callback_has_c_function(callback)) {                 \
             NAME##_FUNCTION_T cfun =                                         \
-                instrumentr_callback_get_c_function(callback);               \
+                (NAME##_FUNCTION_T) instrumentr_callback_get_c_function(     \
+                    callback);                                               \
             CCALL;                                                           \
         } else {                                                             \
             SEXP r_callback = instrumentr_callback_wrap(callback);           \
@@ -71,9 +72,9 @@
     }                                                                        \
     FIN;
 
-#define UPDATE_EXEC_STATS(NAME, state, time)                   \
-    instrumentr_exec_stats_t exec_stats =                      \
-        instrumentr_state_get_exec_stats(state);               \
+#define UPDATE_EXEC_STATS(NAME, state, time)     \
+    instrumentr_exec_stats_t exec_stats =        \
+        instrumentr_state_get_exec_stats(state); \
     instrumentr_exec_stats_update(exec_stats, NAME, time);
 
 void initialize_callback_invocation(instrumentr_tracer_t tracer,
@@ -164,7 +165,7 @@ SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application) {
                     instrumentr_tracer_remove_application(tracer));
 
     SEXP r_result = PROTECT(instrumentr_state_as_list(state));
-    //TODO: fix and uncomment this
+    // TODO: fix and uncomment this
     // instrumentr_tracer_clear(tracer);
     UNPROTECT(1);
     return r_result;
@@ -369,7 +370,7 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
-                    instrumentr_frame_create_from_call(state, call);
+                        instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
@@ -444,7 +445,7 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
-                    instrumentr_frame_create_from_call(state, call);
+                        instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
@@ -519,7 +520,7 @@ void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                             r_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
-                    instrumentr_frame_create_from_call(state, call);
+                        instrumentr_frame_create_from_call(state, call);
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
@@ -736,9 +737,9 @@ void dyntrace_eval_exit(dyntracer_t* dyntracer,
 }
 
 void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
-
-    if(TYPEOF(r_object) == PROMSXP) {
-        instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+    if (TYPEOF(r_object) == PROMSXP) {
+        instrumentr_tracer_t tracer =
+            instrumentr_dyntracer_get_tracer(dyntracer);
         instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
         instrumentr_state_promise_table_create(state, r_object);
     }
@@ -777,7 +778,8 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
                     instrumentr_tracer_get_application(tracer);
                 SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
                 /* TODO: move the rest to trace_variable_definition */
-                instrumentr_state_function_table_update_name(state, r_symbol, r_value, r_rho);),
+                instrumentr_state_function_table_update_name(
+                    state, r_symbol, r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,
@@ -804,7 +806,8 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
                     instrumentr_tracer_get_application(tracer);
                 SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
                 /* TODO: move the rest to trace_variable_definition */
-                instrumentr_state_function_table_update_name(state, r_symbol, r_value, r_rho);),
+                instrumentr_state_function_table_update_name(
+                    state, r_symbol, r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,
@@ -876,18 +879,12 @@ void instrumentr_trace_promise_force_entry(instrumentr_tracer_t tracer,
                     INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY,
                     /* TRACER */
                     NOTRACE(instrumentr_application_t application =
-                            instrumentr_tracer_get_application(tracer)),
+                                instrumentr_tracer_get_application(tracer)),
                     /* INIT  */,
                     /* CCALL */
-                    cfun(tracer,
-                         callback,
-                         state,
-                         application,
-                         promise),
+                    cfun(tracer, callback, state, application, promise),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer);
-                            WRAP(application);
-                            WRAP(promise););
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(promise););
                     Rf_eval(Rf_lang6(r_name,
                                      r_tracer,
                                      r_callback,
@@ -898,13 +895,12 @@ void instrumentr_trace_promise_force_entry(instrumentr_tracer_t tracer,
                     UNPROTECT(3),
                     /* FIN */
                     instrumentr_frame_t frame =
-                    instrumentr_frame_create_from_promise(state, promise);
+                        instrumentr_frame_create_from_promise(state, promise);
                     instrumentr_call_stack_t call_stack =
-                    instrumentr_state_get_call_stack(state);
+                        instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
                     instrumentr_object_release(frame););
 }
-
 
 void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
                                           instrumentr_promise_t promise) {
@@ -912,18 +908,12 @@ void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
                     INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT,
                     /* TRACER */
                     NOTRACE(instrumentr_application_t application =
-                            instrumentr_tracer_get_application(tracer)),
+                                instrumentr_tracer_get_application(tracer)),
                     /* INIT  */,
                     /* CCALL */
-                    cfun(tracer,
-                         callback,
-                         state,
-                         application,
-                         promise),
+                    cfun(tracer, callback, state, application, promise),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer);
-                            WRAP(application);
-                            WRAP(promise););
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(promise););
                     Rf_eval(Rf_lang6(r_name,
                                      r_tracer,
                                      r_callback,
@@ -934,7 +924,7 @@ void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
                     UNPROTECT(3),
                     /* FIN */
                     instrumentr_call_stack_t call_stack =
-                    instrumentr_state_get_call_stack(state);
+                        instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_pop_frame(call_stack););
 }
 

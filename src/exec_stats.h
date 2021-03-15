@@ -1,13 +1,13 @@
 #ifndef INSTRUMENTR_EXEC_STATS_H
 #define INSTRUMENTR_EXEC_STATS_H
 
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-#include <time.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
+#include <time.h>
 
 /********************************************************************************
  * create

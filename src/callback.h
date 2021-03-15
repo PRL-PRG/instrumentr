@@ -46,9 +46,8 @@ instrumentr_event_t
 instrumentr_callback_get_event(instrumentr_callback_t callback);
 SEXP r_instrumentr_callback_get_event(SEXP r_callback);
 
-instrumentr_event_t
-instrumentr_callback_handles_event(instrumentr_callback_t callback,
-                                   instrumentr_event_t event);
+bool instrumentr_callback_handles_event(instrumentr_callback_t callback,
+                                        instrumentr_event_t event);
 SEXP r_instrumentr_callback_handles_event(SEXP r_callback, SEXP r_event);
 
 /********************************************************************************

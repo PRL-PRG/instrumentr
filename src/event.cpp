@@ -91,5 +91,5 @@ instrumentr_event_t instrumentr_event_unwrap(SEXP r_event) {
 
     instrumentr_log_error("cannot unwrap event %s", str);
     /* NOTE: never executed */
-    return -1;
+    return INSTRUMENTR_EVENT_COUNT;
 }

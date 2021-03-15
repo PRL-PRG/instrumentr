@@ -4,14 +4,14 @@
 SEXP object_class_table[INSTRUMENTR_EXEC_STATS + 1];
 
 SEXP create_class(const char* type_name) {
-    SEXP class = PROTECT(allocVector(STRSXP, 2));
+    SEXP klass = PROTECT(allocVector(STRSXP, 2));
 
-    SET_STRING_ELT(class, 0, mkChar(type_name));
-    SET_STRING_ELT(class, 1, mkChar("instrumentr_object"));
+    SET_STRING_ELT(klass, 0, mkChar(type_name));
+    SET_STRING_ELT(klass, 1, mkChar("instrumentr_object"));
 
     UNPROTECT(1);
 
-    return class;
+    return klass;
 }
 
 /*******************************************************************************

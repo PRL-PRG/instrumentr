@@ -1,6 +1,10 @@
 #ifndef INSTRUMENTR_INSTRUMENTR_INTERNALS_H
 #define INSTRUMENTR_INSTRUMENTR_INTERNALS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "tracer.h"
 
 const char* instrumentr_get_commit_hash();
@@ -35,5 +39,9 @@ SEXP r_instrumentr_initialize(SEXP r_package_environment,
                               SEXP r_state_environment);
 
 SEXP r_instrumentr_finalize();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INSTRUMENTR_INSTRUMENTR_INTERNALS_H */

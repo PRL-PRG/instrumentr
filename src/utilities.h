@@ -1,11 +1,11 @@
 #ifndef INSTRUMENTR_UTILITIES_H
 #define INSTRUMENTR_UTILITIES_H
 
-#include <instrumentr/Rincludes.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
 
 void instrumentr_initialize_utilities(SEXP r_package_environment,
                                       SEXP r_state_environment);

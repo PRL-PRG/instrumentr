@@ -71,24 +71,24 @@ int instrumentr_funtab_get_index(SEXP op) {
 }
 
 FUNTAB* get_funtab_entry(int index) {
-    FUNTAB* R_FunTab = dyntrace_get_funtab();
+    FUNTAB* R_FunTab = (FUNTAB*) dyntrace_get_funtab();
     return R_FunTab + index;
 }
 
 CCODE instrumentr_funtab_get_definition(FUNTAB* entry) {
-    return entry -> cfun;
+    return entry->cfun;
 }
 
 const char* instrumentr_funtab_get_name(FUNTAB* entry) {
-    return entry -> name;
+    return entry->name;
 }
 
 int instrumentr_funtab_get_parameter_count(FUNTAB* entry) {
-    return entry -> arity;
+    return entry->arity;
 }
 
 int instrumentr_funtab_is_internal(FUNTAB* entry) {
-    return ((entry -> eval % 100) / 10) == 1;
+    return ((entry->eval % 100) / 10) == 1;
 }
 
 int instrumentr_funtab_is_primitive(FUNTAB* entry) {
@@ -96,7 +96,7 @@ int instrumentr_funtab_is_primitive(FUNTAB* entry) {
 }
 
 int instrumentr_funtab_is_builtin(FUNTAB* entry) {
-    return (entry -> eval % 10) == 1;
+    return (entry->eval % 10) == 1;
 }
 
 int instrumentr_funtab_is_special(FUNTAB* entry) {
@@ -104,7 +104,7 @@ int instrumentr_funtab_is_special(FUNTAB* entry) {
 }
 
 int instrumentr_funtab_get_size() {
-    FUNTAB* R_FunTab = dyntrace_get_funtab();
+    FUNTAB* R_FunTab = (FUNTAB*) dyntrace_get_funtab();
     int size = 0;
     while (R_FunTab[size].name) {
         size++;
@@ -112,7 +112,8 @@ int instrumentr_funtab_get_size() {
     return size;
 }
 
-instrumentr_function_t instrumentr_funtab_create_function(instrumentr_state_t state, int index) {
+instrumentr_function_t
+instrumentr_funtab_create_function(instrumentr_state_t state, int index) {
     FUNTAB* entry = get_funtab_entry(index);
     int builtin = instrumentr_funtab_is_builtin(entry);
     const char* name = instrumentr_funtab_get_name(entry);
@@ -121,8 +122,10 @@ instrumentr_function_t instrumentr_funtab_create_function(instrumentr_state_t st
     CCODE ccode = instrumentr_funtab_get_definition(entry);
 
     if (builtin) {
-        return instrumentr_function_create_builtin(state, index, name, parameter_count, ccode, internal);
+        return instrumentr_function_create_builtin(
+            state, index, name, parameter_count, ccode, internal);
     } else {
-        return instrumentr_function_create_special(state, index, name, parameter_count, ccode, internal);
+        return instrumentr_function_create_special(
+            state, index, name, parameter_count, ccode, internal);
     }
 }

@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <instrumentr/api.h>
 #include "instrumentr_internals.h"
 #include "trace.h"
@@ -203,3 +207,7 @@ void R_init_instrumentr(DllInfo* dll) {
 
 void R_unload_instrumentr(DllInfo* info) {
 }
+
+#ifdef __cplusplus
+}
+#endif

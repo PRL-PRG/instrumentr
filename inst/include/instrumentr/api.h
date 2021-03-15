@@ -603,6 +603,10 @@
           instrumentr_exec_stats_t exec_stats,          \
           instrumentr_event_t event)
 
+#define INSTRUMENTR_CONTEXT_API_MAP(MACRO)                                     \
+    MACRO(                                                                     \
+        instrumentr_context_get_pointer, void*, instrumentr_context_t context) \
+    MACRO(r_instrumentr_context_get_pointer, SEXP, SEXP r_context)
 
 #define INSTRUMENTR_API_MAP(MACRO)         \
     INSTRUMENTR_INTEROP_API_MAP(MACRO)     \
@@ -619,7 +623,8 @@
     INSTRUMENTR_ARGUMENT_API_MAP(MACRO)    \
     INSTRUMENTR_VALUE_API_MAP(MACRO)       \
     INSTRUMENTR_PROMISE_API_MAP(MACRO)     \
-    INSTRUMENTR_EXEC_STATS_API_MAP(MACRO)
+    INSTRUMENTR_EXEC_STATS_API_MAP(MACRO)  \
+    INSTRUMENTR_CONTEXT_API_MAP(MACRO)
 
 #define INSTRUMENTR_API_DEFINER(FUNCTION, OUTPUT_TYPE, ...) \
     OUTPUT_TYPE (*FUNCTION)(__VA_ARGS__);

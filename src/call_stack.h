@@ -1,12 +1,12 @@
 #ifndef INSTRUMENTR_CALL_STACK_H
 #define INSTRUMENTR_CALL_STACK_H
 
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
 
 /********************************************************************************
  * create

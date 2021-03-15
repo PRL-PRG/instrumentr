@@ -155,7 +155,7 @@ SEXP r_instrumentr_callback_get_event(SEXP r_callback) {
     return instrumentr_event_wrap(event);
 }
 
-instrumentr_event_t
+bool
 instrumentr_callback_handles_event(instrumentr_callback_t callback, instrumentr_event_t event) {
     return instrumentr_callback_get_event(callback) == event;
 }

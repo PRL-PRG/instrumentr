@@ -21,8 +21,8 @@ double CLOCKS = CLOCKS_PER_SEC;
  *******************************************************************************/
 
 instrumentr_exec_stats_t instrumentr_exec_stats_create() {
-    instrumentr_exec_stats_t exec_stats =
-        calloc(1, sizeof(struct instrumentr_exec_stats_impl_t));
+    instrumentr_exec_stats_t exec_stats = (instrumentr_exec_stats_t) calloc(
+        1, sizeof(struct instrumentr_exec_stats_impl_t));
     return exec_stats;
 }
 
@@ -56,7 +56,7 @@ instrumentr_exec_stats_t instrumentr_exec_stats_unwrap(SEXP r_exec_stats) {
 double
 instrumentr_exec_stats_get_minimum_time(instrumentr_exec_stats_t exec_stats,
                                         instrumentr_event_t event) {
-    return exec_stats->minimum[(int)event] / CLOCKS;
+    return exec_stats->minimum[(int) event] / CLOCKS;
 }
 
 SEXP r_instrumentr_exec_stats_get_minimum_time(SEXP r_exec_stats,
@@ -76,13 +76,13 @@ SEXP r_instrumentr_exec_stats_get_minimum_time(SEXP r_exec_stats,
 double
 instrumentr_exec_stats_get_maximum_time(instrumentr_exec_stats_t exec_stats,
                                         instrumentr_event_t event) {
-    return exec_stats->maximum[(int)event] / CLOCKS;
+    return exec_stats->maximum[(int) event] / CLOCKS;
 }
 
-SEXP
-r_instrumentr_exec_stats_get_maximum_time(SEXP r_exec_stats,
-                                          SEXP r_event) {
-    instrumentr_exec_stats_t exec_stats = instrumentr_exec_stats_unwrap(r_exec_stats);
+SEXP r_instrumentr_exec_stats_get_maximum_time(SEXP r_exec_stats,
+                                               SEXP r_event) {
+    instrumentr_exec_stats_t exec_stats =
+        instrumentr_exec_stats_unwrap(r_exec_stats);
     instrumentr_event_t event = instrumentr_event_unwrap(r_event);
     double result = instrumentr_exec_stats_get_maximum_time(exec_stats, event);
     return instrumentr_c_double_to_r_double(result);
@@ -118,11 +118,10 @@ SEXP r_instrumentr_exec_stats_get_average_time(SEXP r_exec_stats,
 double
 instrumentr_exec_stats_get_total_time(instrumentr_exec_stats_t exec_stats,
                                       instrumentr_event_t event) {
-    return exec_stats->total[(int)event] / CLOCKS;
+    return exec_stats->total[(int) event] / CLOCKS;
 }
 
-SEXP r_instrumentr_exec_stats_get_total_time(SEXP r_exec_stats,
-                                             SEXP r_event) {
+SEXP r_instrumentr_exec_stats_get_total_time(SEXP r_exec_stats, SEXP r_event) {
     instrumentr_exec_stats_t exec_stats =
         instrumentr_exec_stats_unwrap(r_exec_stats);
     instrumentr_event_t event = instrumentr_event_unwrap(r_event);
@@ -136,9 +135,9 @@ SEXP r_instrumentr_exec_stats_get_total_time(SEXP r_exec_stats,
 
 /* accessor */
 int instrumentr_exec_stats_get_execution_count(
-                                               instrumentr_exec_stats_t exec_stats,
-                                               instrumentr_event_t event) {
-    return exec_stats->count[(int)event];
+    instrumentr_exec_stats_t exec_stats,
+    instrumentr_event_t event) {
+    return exec_stats->count[(int) event];
 }
 
 SEXP r_instrumentr_exec_stats_get_execution_count(SEXP r_exec_stats,
@@ -158,7 +157,7 @@ SEXP r_instrumentr_exec_stats_get_execution_count(SEXP r_exec_stats,
 void instrumentr_exec_stats_update(instrumentr_exec_stats_t exec_stats,
                                    instrumentr_event_t event,
                                    clock_t time) {
-    int index = (int)event;
+    int index = (int) event;
 
     ++exec_stats->count[index];
     exec_stats->total[index] += time;
@@ -204,7 +203,6 @@ void assign_exec_stats_fields(instrumentr_exec_stats_t exec_stats,
 }
 
 SEXP instrumentr_exec_stats_as_data_frame(instrumentr_exec_stats_t exec_stats) {
-
     int row_count = INSTRUMENTR_EVENT_COUNT + 1;
 
     SEXP r_event = PROTECT(allocVector(STRSXP, row_count));
@@ -217,19 +215,18 @@ SEXP instrumentr_exec_stats_as_data_frame(instrumentr_exec_stats_t exec_stats) {
     int index;
 
     for (index = 0; index < INSTRUMENTR_EVENT_COUNT; ++index) {
-        instrumentr_event_t event = (instrumentr_event_t)index;
+        instrumentr_event_t event = (instrumentr_event_t) index;
 
-        assign_exec_stats_fields(
-            exec_stats,
-            event,
-            instrumentr_event_to_string(event),
-            index,
-            r_event,
-            r_count,
-            r_minimum,
-            r_maximum,
-            r_average,
-            r_total);
+        assign_exec_stats_fields(exec_stats,
+                                 event,
+                                 instrumentr_event_to_string(event),
+                                 index,
+                                 r_event,
+                                 r_count,
+                                 r_minimum,
+                                 r_maximum,
+                                 r_average,
+                                 r_total);
     }
 
     assign_exec_stats_fields(exec_stats,

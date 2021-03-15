@@ -1,11 +1,11 @@
 #ifndef INSTRUMENTR_INTEROP_H
 #define INSTRUMENTR_INTEROP_H
 
-#include <instrumentr/Rincludes.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
 
 void instrumentr_log_error(const char* fmt, ...);
 
