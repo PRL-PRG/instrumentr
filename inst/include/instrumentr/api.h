@@ -36,10 +36,27 @@
  OBJECT API
  *******************************************************************************/
 
-#define INSTRUMENTR_OBJECT_API_MAP(MACRO)                            \
-    MACRO(instrumentr_object_acquire, int, void* object)             \
+#define INSTRUMENTR_OBJECT_API_MAP(MACRO)                \
+    MACRO(instrumentr_object_acquire, int, void* object) \
     MACRO(instrumentr_object_release, int, void* object)
 
+#define INSTRUMENTR_MODEL_API_MAP(MACRO)                           \
+    MACRO(instrumentr_model_get_id, instrumentr_id_t, void* model) \
+    MACRO(r_instrumentr_model_get_id, SEXP, SEXP r_model)          \
+    MACRO(instrumentr_model_get_birth_time, int, void* model)      \
+    MACRO(r_instrumentr_model_get_birth_time, SEXP, SEXP r_model)  \
+    MACRO(instrumentr_model_get_death_time, int, void* model)      \
+    MACRO(r_instrumentr_model_get_death_time, SEXP, SEXP r_model)  \
+    MACRO(instrumentr_model_get_life_time, int, void* model)       \
+    MACRO(r_instrumentr_model_get_life_time, SEXP, SEXP r_model)   \
+    MACRO(instrumentr_model_is_alive, int, void* model)            \
+    MACRO(r_instrumentr_model_is_alive, SEXP, SEXP r_model)        \
+    MACRO(instrumentr_model_is_dead, int, void* model)             \
+    MACRO(r_instrumentr_model_is_dead, SEXP, SEXP r_model)         \
+    MACRO(instrumentr_model_is_local, int, void* model)            \
+    MACRO(r_instrumentr_model_is_local, SEXP, SEXP r_model)        \
+    MACRO(instrumentr_model_is_foreign, int, void* model)          \
+    MACRO(r_instrumentr_model_is_foreign, SEXP, SEXP r_model)
 
 #define INSTRUMENTR_STATE_API_MAP(MACRO)                                       \
     MACRO(instrumentr_state_wrap, SEXP, instrumentr_state_t state)             \
@@ -610,6 +627,7 @@
 #define INSTRUMENTR_API_MAP(MACRO)         \
     INSTRUMENTR_INTEROP_API_MAP(MACRO)     \
     INSTRUMENTR_OBJECT_API_MAP(MACRO)      \
+    INSTRUMENTR_MODEL_API_MAP(MACRO)       \
     INSTRUMENTR_TRACER_API_MAP(MACRO)      \
     INSTRUMENTR_CALLBACK_API_MAP(MACRO)    \
     INSTRUMENTR_STATE_API_MAP(MACRO)       \
