@@ -1,15 +1,13 @@
 #include "function.h"
-#include "object.h"
 #include "interop.h"
 #include "utilities.h"
-#include "object.h"
 
 /********************************************************************************
  * definition
  *******************************************************************************/
 
 struct instrumentr_function_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     instrumentr_function_type_t type;
     int funtab_index;
     const char* name;
@@ -26,8 +24,8 @@ struct instrumentr_function_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_function_finalize(instrumentr_object_t object) {
-    instrumentr_function_t function = (instrumentr_function_t)(object);
+void instrumentr_function_finalize(instrumentr_model_t model) {
+    instrumentr_function_t function = (instrumentr_function_t)(model);
 
     free((char*) (function->name));
     function->name = NULL;
@@ -35,7 +33,7 @@ void instrumentr_function_finalize(instrumentr_object_t object) {
     function->definition.ccode = NULL;
 
     if (function->parent != NULL) {
-        instrumentr_object_release(function->parent);
+        instrumentr_model_release(function->parent);
         function->parent = NULL;
     }
 }
@@ -58,14 +56,14 @@ instrumentr_function_create(instrumentr_state_t state,
                             int internal) {
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
-    instrumentr_object_t object = instrumentr_object_create_and_initialize(
-        sizeof(struct instrumentr_function_impl_t),
-        state,
-        INSTRUMENTR_FUNCTION,
-        instrumentr_function_finalize,
-        INSTRUMENTR_ORIGIN_FOREIGN);
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_function_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_FUNCTION,
+                                 instrumentr_function_finalize,
+                                 INSTRUMENTR_ORIGIN_FOREIGN);
 
-    instrumentr_function_t function = (instrumentr_function_t)(object);
+    instrumentr_function_t function = (instrumentr_function_t)(model);
 
     function->type = type;
     function->funtab_index = funtab_index;
@@ -78,7 +76,7 @@ instrumentr_function_create(instrumentr_state_t state,
 
     function->parent = parent;
     if (parent != NULL) {
-        instrumentr_object_acquire(parent);
+        instrumentr_model_acquire(parent);
     }
 
     function->pub = pub;
@@ -164,15 +162,7 @@ instrumentr_function_create_closure(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_function_wrap(instrumentr_function_t function) {
-    return instrumentr_object_wrap((instrumentr_object_t)(function));
-}
-
-instrumentr_function_t instrumentr_function_unwrap(SEXP r_function) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_function, INSTRUMENTR_FUNCTION);
-    return (instrumentr_function_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(function, INSTRUMENTR_MODEL_TYPE_FUNCTION);
 
 /********************************************************************************
  * type

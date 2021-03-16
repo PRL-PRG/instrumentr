@@ -38,12 +38,81 @@ struct instrumentr_state_impl_t {
 
 void instrumentr_state_finalize(instrumentr_object_t object) {
     instrumentr_state_t state = (instrumentr_state_t)(object);
-    instrumentr_state_clear(state);
-    delete state->external;
-    state->external = nullptr;
 
-    instrumentr_object_kill(state->call_stack);
-    state->call_stack = NULL;
+    if (state->external != nullptr) {
+        instrumentr_state_clear(state);
+        delete state->external;
+        state->external = nullptr;
+    }
+
+    if (state->call_stack != nullptr) {
+        instrumentr_model_kill(state->call_stack);
+        state->call_stack = nullptr;
+    }
+
+    if (state->promise_table != nullptr) {
+        instrumentr_state_promise_table_clear(state);
+        delete state->promise_table;
+        state->promise_table = nullptr;
+    }
+
+    if (state->function_table != nullptr) {
+        instrumentr_state_function_table_clear(state);
+        delete state->function_table;
+        state->function_table = nullptr;
+    }
+
+    if (state->package_table != nullptr) {
+        instrumentr_state_package_table_clear(state);
+        delete state->package_table;
+        state->package_table = nullptr;
+    }
+
+    instrumentr_object_release(state->alloc_stats);
+    instrumentr_object_release(state->exec_stats);
+}
+
+/********************************************************************************
+ * create
+ *******************************************************************************/
+
+instrumentr_state_t instrumentr_state_create() {
+    instrumentr_state_t state = (instrumentr_state_t) instrumentr_object_create(
+        sizeof(instrumentr_state_impl_t),
+        INSTRUMENTR_OBJECT_TYPE_STATE,
+        instrumentr_state_finalize);
+
+    state->next_id = 0;
+    state->time = -1;
+
+    /* NOTE: stats should be created before model objects are allocated. */
+    state->alloc_stats = instrumentr_alloc_stats_create();
+
+    state->exec_stats = instrumentr_exec_stats_create();
+
+    state->external = new std::unordered_map<std::string, SEXP>();
+
+    state->promise_table =
+        new std::unordered_map<SEXP, instrumentr_promise_t>();
+
+    state->function_table =
+        new std::unordered_map<SEXP, instrumentr_function_t>();
+
+    state->package_table =
+        new std::unordered_map<std::string, instrumentr_package_t>();
+
+    state->call_stack = instrumentr_call_stack_create(state);
+
+    return state;
+}
+
+/********************************************************************************
+ * finalize tracing
+ *******************************************************************************/
+
+SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state) {
+    instrumentr_model_kill(state->call_stack);
+    state->call_stack = nullptr;
 
     instrumentr_state_promise_table_clear(state);
     delete state->promise_table;
@@ -57,58 +126,22 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
     delete state->package_table;
     state->package_table = nullptr;
 
-    instrumentr_alloc_stats_destroy(state->alloc_stats);
-    instrumentr_exec_stats_destroy(state->exec_stats);
-}
+    SEXP r_result = PROTECT(instrumentr_state_as_list(state));
 
-/********************************************************************************
- * create
- *******************************************************************************/
+    instrumentr_state_clear(state);
+    delete state->external;
+    state->external = nullptr;
 
-instrumentr_state_t instrumentr_state_create() {
-    instrumentr_state_t state = (instrumentr_state_t) instrumentr_object_create(
-        sizeof(instrumentr_state_impl_t));
+    UNPROTECT(1);
 
-    state->alloc_stats = instrumentr_alloc_stats_create();
-    state->exec_stats = instrumentr_exec_stats_create();
-
-    state->next_id = 0;
-    state->time = -1;
-    state->external = new std::unordered_map<std::string, SEXP>();
-
-    state->promise_table =
-        new std::unordered_map<SEXP, instrumentr_promise_t>();
-
-    state->function_table =
-        new std::unordered_map<SEXP, instrumentr_function_t>();
-
-    state->package_table =
-        new std::unordered_map<std::string, instrumentr_package_t>();
-
-    instrumentr_object_initialize((instrumentr_object_t) state,
-                                  state,
-                                  INSTRUMENTR_STATE,
-                                  instrumentr_state_finalize,
-                                  INSTRUMENTR_ORIGIN_FOREIGN);
-
-    state->call_stack = instrumentr_call_stack_create(state);
-
-    return state;
+    return r_result;
 }
 
 /********************************************************************************
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_state_wrap(instrumentr_state_t state) {
-    return instrumentr_object_wrap((instrumentr_object_t)(state));
-}
-
-instrumentr_state_t instrumentr_state_unwrap(SEXP r_state) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_state, INSTRUMENTR_STATE);
-    return (instrumentr_state_t)(object);
-}
+INSTRUMENTR_OBJECT_INTEROP_DEFINE_API(state, INSTRUMENTR_OBJECT_TYPE_STATE)
 
 /********************************************************************************
  * id
@@ -402,7 +435,7 @@ instrumentr_state_promise_table_create(instrumentr_state_t state,
         instrumentr_promise_create(state, r_promise);
     auto result = state->promise_table->insert({r_promise, promise});
     if (!result.second) {
-        instrumentr_object_kill(result.first->second);
+        instrumentr_model_kill(result.first->second);
         result.first->second = promise;
     }
 
@@ -413,7 +446,7 @@ void instrumentr_state_promise_table_remove(instrumentr_state_t state,
                                             SEXP r_promise) {
     auto result = state->promise_table->find(r_promise);
     if (result != state->promise_table->end()) {
-        instrumentr_object_kill(result->second);
+        instrumentr_model_kill(result->second);
         state->promise_table->erase(result);
     }
 }
@@ -440,7 +473,7 @@ void instrumentr_state_promise_table_clear(instrumentr_state_t state) {
     for (auto iter = state->promise_table->begin();
          iter != state->promise_table->end();
          ++iter) {
-        instrumentr_object_kill(iter->second);
+        instrumentr_model_kill(iter->second);
     }
     state->promise_table->clear();
 }
@@ -501,14 +534,16 @@ instrumentr_state_function_table_insert(instrumentr_state_t state,
     bool inserted = result.second;
 
     if (!inserted) {
-        instrumentr_object_release(result.first->second);
+        /* TODO: remove this from package as well */
+        instrumentr_model_kill(result.first->second);
         result.first->second = function;
-
         // TODO: uncommenting this causes errors. fix them!
         // instrumentr_log_error(
-        //    "unable to insert a new function object to function map, perhaps "
-        //    "the cache has not been cleaned of old objects?");
+        //    "unable to insert a new function object to function map,
+        //    perhaps " "the cache has not been cleaned of old objects?");
     }
+
+    instrumentr_model_acquire(function);
 
     return function;
 }
@@ -519,7 +554,7 @@ void instrumentr_state_function_table_remove(instrumentr_state_t state,
 
     /* this means the function is already present (it is not alien) */
     if (result != state->function_table->end()) {
-        instrumentr_object_release(result->second);
+        instrumentr_model_release(result->second);
         state->function_table->erase(r_closure);
     }
 }
@@ -577,7 +612,11 @@ instrumentr_state_function_table_add(instrumentr_state_t state,
                                                    alien,
                                                    parent*/);
 
-    return instrumentr_state_function_table_insert(state, function, r_closure);
+    instrumentr_state_function_table_insert(state, function, r_closure);
+
+    instrumentr_model_release(function);
+
+    return function;
 }
 
 void instrumentr_state_function_table_update_name(instrumentr_state_t state,
@@ -627,8 +666,8 @@ void instrumentr_state_function_table_update_name(instrumentr_state_t state,
         int alien = 1;
         instrumentr_function_t parent = NULL;
 
-        /* TODO: memory management - function will not be collected if insert
-         * fails. */
+        /* TODO: memory management - function will not be collected if
+         * insert fails. */
         function =
             instrumentr_function_create_closure(state,
                                                 name,
@@ -640,11 +679,14 @@ void instrumentr_state_function_table_update_name(instrumentr_state_t state,
                                                 0 /*, alien, parent*/);
 
         instrumentr_state_function_table_insert(state, function, r_closure);
+
+        instrumentr_model_release(function);
     }
 }
 
-/* NOTE: this function is called from package load hook for top level package
- * functions. It updates function properties and adds them to package */
+/* NOTE: this function is called from package load hook for top level
+ * package functions. It updates function properties and adds them to
+ * package */
 SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
                                                           SEXP r_package,
                                                           SEXP r_name,
@@ -676,8 +718,8 @@ SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
     }
     /* this means the function is alien */
     else {
-        /* TODO: memory management - function will not be collected if insert
-         * fails. */
+        /* TODO: memory management - function will not be collected if
+         * insert fails. */
         function =
             instrumentr_function_create_closure(state,
                                                 name,
@@ -689,6 +731,8 @@ SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
                                                 s3_method /*, alien, */);
 
         instrumentr_state_function_table_insert(state, function, r_closure);
+
+        instrumentr_model_release(function);
     }
 
     instrumentr_package_t package = instrumentr_package_unwrap(r_package);
@@ -704,7 +748,7 @@ void instrumentr_state_function_table_clear(instrumentr_state_t state) {
     for (auto iter = state->function_table->begin();
          iter != state->function_table->end();
          ++iter) {
-        instrumentr_object_kill(iter->second);
+        instrumentr_model_kill(iter->second);
     }
     state->function_table->clear();
 }
@@ -791,7 +835,7 @@ void instrumentr_state_add_package(instrumentr_state_t state,
         instrumentr_log_error("package '%s' already exists", name);
     }
 
-    instrumentr_object_acquire(package);
+    instrumentr_model_acquire(package);
 }
 
 /* mutator */
@@ -815,14 +859,14 @@ void instrumentr_state_remove_package(instrumentr_state_t state,
 
     state->package_table->erase(iter);
 
-    instrumentr_object_kill(package);
+    instrumentr_model_kill(package);
 }
 
 void instrumentr_state_package_table_clear(instrumentr_state_t state) {
     for (auto iter = state->package_table->begin();
          iter != state->package_table->end();
          ++iter) {
-        instrumentr_object_kill(iter->second);
+        instrumentr_model_kill(iter->second);
     }
     state->package_table->clear();
 }

@@ -1,6 +1,5 @@
 #include "package.h"
 #include "interop.h"
-#include "object.h"
 #include "vec.h"
 #include "utilities.h"
 #include "funtab.h"
@@ -13,7 +12,7 @@
 typedef vec_t(instrumentr_function_t) instrumentr_function_vector_t;
 
 struct instrumentr_package_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     const char* name;
     const char* directory;
     SEXP r_namespace;
@@ -26,21 +25,21 @@ struct instrumentr_package_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_package_finalize(instrumentr_object_t object) {
-    instrumentr_package_t package = (instrumentr_package_t)(object);
+void instrumentr_package_finalize(instrumentr_model_t model) {
+    instrumentr_package_t package = (instrumentr_package_t)(model);
 
-    free((char*)(package->name));
-    free((char*)(package->directory));
+    free((char*) (package->name));
+    free((char*) (package->directory));
 
     instrumentr_sexp_release(package->r_namespace);
 
-    /* free functions  */{
+    /* free functions  */ {
         int count = package->functions.length;
         instrumentr_function_t* functions = package->functions.data;
 
         for (int i = 0; i < count; ++i) {
             instrumentr_function_t function = functions[i];
-            instrumentr_object_release(function);
+            instrumentr_model_release(function);
         }
 
         vec_deinit(&package->functions);
@@ -50,9 +49,10 @@ void instrumentr_package_finalize(instrumentr_object_t object) {
         int count = package->basic_functions.length;
         instrumentr_function_t* functions = package->basic_functions.data;
 
+        /* base package owns basic functions */
         for (int i = 0; i < count; ++i) {
             instrumentr_function_t function = functions[i];
-            instrumentr_object_release(function);
+            instrumentr_model_kill(function);
         }
 
         vec_deinit(&package->basic_functions);
@@ -68,19 +68,19 @@ instrumentr_package_t instrumentr_package_create(instrumentr_state_t state,
                                                  const char* directory,
                                                  SEXP r_namespace,
                                                  int attached) {
-     const char* duplicate_name = instrumentr_duplicate_string(name);
+    const char* duplicate_name = instrumentr_duplicate_string(name);
 
     const char* duplicate_directory = instrumentr_duplicate_string(directory);
 
     /* TODO: make foreign for instrumentr package */
-    instrumentr_object_t object =
-        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_package_impl_t),
-                                                 state,
-                                                 INSTRUMENTR_PACKAGE,
-                                                 instrumentr_package_finalize,
-                                                 INSTRUMENTR_ORIGIN_LOCAL);
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_package_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_PACKAGE,
+                                 instrumentr_package_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_package_t package = (instrumentr_package_t)(object);
+    instrumentr_package_t package = (instrumentr_package_t)(model);
 
     package->name = duplicate_name;
     package->directory = duplicate_directory;
@@ -97,8 +97,9 @@ instrumentr_package_t instrumentr_package_create(instrumentr_state_t state,
     /* if base package, initialize the basic functions */
     if (strcmp(name, "base") == 0) {
         int funtab_size = instrumentr_funtab_get_size();
-        for(int i = 0; i < funtab_size; ++i) {
-            vec_push(&package->basic_functions, instrumentr_funtab_create_function(state, i));
+        for (int i = 0; i < funtab_size; ++i) {
+            vec_push(&package->basic_functions,
+                     instrumentr_funtab_create_function(state, i));
         }
     }
 
@@ -115,8 +116,8 @@ SEXP r_instrumentr_package_create(SEXP r_state,
     const char* directory = instrumentr_r_character_to_c_string(r_directory);
     int attached = instrumentr_r_logical_to_c_int(r_attached);
 
-    instrumentr_package_t package =
-        instrumentr_package_create(state, name, directory, r_namespace, attached);
+    instrumentr_package_t package = instrumentr_package_create(
+        state, name, directory, r_namespace, attached);
 
     return instrumentr_package_wrap(package);
 }
@@ -125,15 +126,7 @@ SEXP r_instrumentr_package_create(SEXP r_state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_package_wrap(instrumentr_package_t package) {
-    return instrumentr_object_wrap((instrumentr_object_t)(package));
-}
-
-instrumentr_package_t instrumentr_package_unwrap(SEXP r_package) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_package, INSTRUMENTR_PACKAGE);
-    return (instrumentr_package_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(package, INSTRUMENTR_MODEL_TYPE_PACKAGE);
 
 /********************************************************************************
  * name
@@ -325,7 +318,7 @@ void instrumentr_package_add_function(instrumentr_package_t package,
     vec_find(&package->functions, function, index);
     if (index == -1) {
         vec_push(&package->functions, function);
-        instrumentr_object_acquire(function);
+        instrumentr_model_acquire(function);
     } else {
         instrumentr_log_error("function '%s' already added to package %s",
                               instrumentr_function_get_name(function),
@@ -340,31 +333,31 @@ SEXP r_instrumentr_package_add_function(SEXP r_package, SEXP r_function) {
     return R_NilValue;
 }
 
-
 /*  mutator  */
 void instrumentr_package_remove_function(instrumentr_package_t package,
                                          instrumentr_function_t function) {
     vec_remove(&package->functions, function);
-    instrumentr_object_release(function);
+    instrumentr_model_release(function);
 }
 
 /* accessor  */
-int instrumentr_package_get_basic_function_count(instrumentr_package_t package) {
+int instrumentr_package_get_basic_function_count(
+    instrumentr_package_t package) {
     return package->basic_functions.length;
 }
 
 /* accessor  */
-instrumentr_function_t
-instrumentr_package_get_basic_function_by_position(instrumentr_package_t package,
-                                                   int position) {
+instrumentr_function_t instrumentr_package_get_basic_function_by_position(
+    instrumentr_package_t package,
+    int position) {
     int count = instrumentr_package_get_basic_function_count(package);
     if (position < count && position >= 0) {
         return package->basic_functions.data[position];
     } else {
-        instrumentr_log_error(
-            "attempt to access %d basic function of a package with %d basic functions",
-            position,
-            count);
+        instrumentr_log_error("attempt to access %d basic function of a "
+                              "package with %d basic functions",
+                              position,
+                              count);
         /* NOTE: not executed  */
         return NULL;
     }

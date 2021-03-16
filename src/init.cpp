@@ -51,8 +51,8 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_trace_package_attach, 3),
     DECLARE_BINDING(instrumentr_trace_package_detach, 3),
 
-    /* object */
-    DECLARE_BINDING(instrumentr_object_get_id, 1),
+    /* model */
+    // TODO
 
     /* tracer */
     DECLARE_BINDING(instrumentr_tracer_create, 0),
@@ -71,8 +71,8 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_tracer_remove_callback, 2),
 
     /* callback */
-    DECLARE_BINDING(instrumentr_callback_create_from_r_function, 3),
-    DECLARE_BINDING(instrumentr_callback_create_from_c_function, 3),
+    DECLARE_BINDING(instrumentr_callback_create_from_r_function, 2),
+    DECLARE_BINDING(instrumentr_callback_create_from_c_function, 2),
     DECLARE_BINDING(instrumentr_callback_get_event, 1),
     DECLARE_BINDING(instrumentr_callback_handles_event, 2),
     DECLARE_BINDING(instrumentr_callback_get_parameter_count, 1),

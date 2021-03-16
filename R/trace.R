@@ -55,20 +55,19 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         result <<- create_result(e, callback_type)
     })
 
+    remove_package_hooks(tracer, application)
+
     ##NOTE: all user callbacks are evaluated in tryCatch.
     ##      This code is tricky. If error has happened
     ##      previously, we do not execute user callback.
     ##      If user callback errors, we override the result
     ##      with the error object
     tryCatch({
-        remove_package_hooks(tracer, application)
-        ## NOTE: invoke callback if tracing does not error
+                ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
-        if (is_value(result) || get_source(get_error(result)) == "application") {
-            state <- .Call(C_instrumentr_trace_tracing_exit, tracer, application)
-            result <- set_state(result, state)
-        }
+        state <- .Call(C_instrumentr_trace_tracing_exit, tracer, application)
+        result <- set_state(result, state)
     },
     error = function(e) {
         print(e)

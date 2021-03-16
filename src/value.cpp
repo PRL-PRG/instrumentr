@@ -1,14 +1,13 @@
-#include "object.h"
+#include "value.h"
 #include "interop.h"
 #include "utilities.h"
-#include "value.h"
 
 /********************************************************************************
  * definition
  *******************************************************************************/
 
 struct instrumentr_value_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     SEXP r_sexp;
 };
 
@@ -16,8 +15,8 @@ struct instrumentr_value_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_value_finalize(instrumentr_object_t object) {
-    instrumentr_value_t value = (instrumentr_value_t)(object);
+void instrumentr_value_finalize(instrumentr_model_t model) {
+    instrumentr_value_t value = (instrumentr_value_t)(model);
 
     value->r_sexp = NULL;
 }
@@ -26,15 +25,16 @@ void instrumentr_value_finalize(instrumentr_object_t object) {
  * create
  *******************************************************************************/
 
-instrumentr_value_t instrumentr_value_create(instrumentr_state_t state, SEXP r_sexp) {
-    instrumentr_object_t object =
-        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_value_impl_t),
-                                                 state,
-                                                 INSTRUMENTR_VALUE,
-                                                 instrumentr_value_finalize,
-                                                 INSTRUMENTR_ORIGIN_LOCAL);
+instrumentr_value_t instrumentr_value_create(instrumentr_state_t state,
+                                             SEXP r_sexp) {
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_value_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_VALUE,
+                                 instrumentr_value_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_value_t value = (instrumentr_value_t)(object);
+    instrumentr_value_t value = (instrumentr_value_t)(model);
 
     value->r_sexp = r_sexp;
 
@@ -45,15 +45,7 @@ instrumentr_value_t instrumentr_value_create(instrumentr_state_t state, SEXP r_s
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_value_wrap(instrumentr_value_t value) {
-    return instrumentr_object_wrap((instrumentr_object_t)(value));
-}
-
-instrumentr_value_t instrumentr_value_unwrap(SEXP r_value) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_value, INSTRUMENTR_VALUE);
-    return (instrumentr_value_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(value, INSTRUMENTR_MODEL_TYPE_VALUE)
 
 /********************************************************************************
  * r_sexp
@@ -61,7 +53,7 @@ instrumentr_value_t instrumentr_value_unwrap(SEXP r_value) {
 
 /* accessor  */
 SEXP instrumentr_value_get_sexp(instrumentr_value_t value) {
-    return value -> r_sexp;
+    return value->r_sexp;
 }
 
 SEXP r_instrumentr_value_get_sexp(SEXP r_value) {
@@ -70,7 +62,7 @@ SEXP r_instrumentr_value_get_sexp(SEXP r_value) {
     SEXPTYPE type = instrumentr_value_get_sexp_type(value);
 
     /* NOTE: quote language and symbol to prevent them from evaluation */
-    if(type == LANGSXP || type == SYMSXP) {
+    if (type == LANGSXP || type == SYMSXP) {
         r_sexp = instrumentr_sexp_quote(r_sexp);
     }
 
@@ -89,7 +81,7 @@ SEXP r_instrumentr_value_get_sexp_address(SEXP r_value) {
 }
 
 SEXPTYPE instrumentr_value_get_sexp_type(instrumentr_value_t value) {
-    return TYPEOF(value -> r_sexp);
+    return TYPEOF(value->r_sexp);
 }
 
 SEXP r_instrumentr_value_get_sexp_type(SEXP r_value) {

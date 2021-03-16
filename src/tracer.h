@@ -8,6 +8,7 @@ extern "C" {
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 #include "event.h"
+#include "object.h"
 
 /********************************************************************************
  * create
@@ -16,6 +17,12 @@ extern "C" {
 instrumentr_tracer_t instrumentr_tracer_create();
 
 SEXP r_instrumentr_tracer_create();
+
+/********************************************************************************
+ * finalize tracing
+ *******************************************************************************/
+
+SEXP instrumentr_tracer_finalize_tracing(instrumentr_tracer_t tracer);
 
 /********************************************************************************
  * clear
@@ -27,9 +34,7 @@ void instrumentr_tracer_clear(instrumentr_tracer_t tracer);
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_tracer_wrap(instrumentr_tracer_t tracer);
-
-instrumentr_tracer_t instrumentr_tracer_unwrap(SEXP r_tracer);
+INSTRUMENTR_OBJECT_INTEROP_DECLARE_API(tracer, INSTRUMENTR_OBJECT_TYPE_TRACER)
 
 /********************************************************************************
  * reset

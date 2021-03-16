@@ -12,25 +12,30 @@ extern "C" {
 typedef SEXP (*CCODE)(SEXP, SEXP, SEXP, SEXP);
 
 typedef enum {
-    INSTRUMENTR_TRACER = 0,
-    INSTRUMENTR_CALLBACK,
-    INSTRUMENTR_STATE,
-    INSTRUMENTR_APPLICATION,
-    INSTRUMENTR_PACKAGE,
-    INSTRUMENTR_FUNCTION,
-    INSTRUMENTR_CALL,
-    INSTRUMENTR_CALL_STACK,
-    INSTRUMENTR_PARAMETER,
-    INSTRUMENTR_ARGUMENT,
-    INSTRUMENTR_PROMISE,
-    INSTRUMENTR_VALUE,
-    INSTRUMENTR_FRAME,
-    INSTRUMENTR_CONTEXT,
-    INSTRUMENTR_EXEC_STATS,
-    INSTRUMENTR_ALLOC_STATS,
+    INSTRUMENTR_OBJECT_TYPE_TRACER = 0,
+    INSTRUMENTR_OBJECT_TYPE_CALLBACK,
+    INSTRUMENTR_OBJECT_TYPE_STATE,
+    INSTRUMENTR_OBJECT_TYPE_EXEC_STATS,
+    INSTRUMENTR_OBJECT_TYPE_ALLOC_STATS,
     /* NOTE: this has to be the last one always */
-    INSTRUMENTR_OBJECT
+    INSTRUMENTR_OBJECT_TYPE_COUNT
 } instrumentr_object_type_t;
+
+typedef enum {
+    INSTRUMENTR_MODEL_TYPE_APPLICATION = 0,
+    INSTRUMENTR_MODEL_TYPE_PACKAGE,
+    INSTRUMENTR_MODEL_TYPE_FUNCTION,
+    INSTRUMENTR_MODEL_TYPE_CALL,
+    INSTRUMENTR_MODEL_TYPE_CALL_STACK,
+    INSTRUMENTR_MODEL_TYPE_PARAMETER,
+    INSTRUMENTR_MODEL_TYPE_ARGUMENT,
+    INSTRUMENTR_MODEL_TYPE_PROMISE,
+    INSTRUMENTR_MODEL_TYPE_VALUE,
+    INSTRUMENTR_MODEL_TYPE_FRAME,
+    INSTRUMENTR_MODEL_TYPE_CONTEXT,
+    /* NOTE: this has to be the last one always */
+    INSTRUMENTR_MODEL_TYPE_COUNT
+} instrumentr_model_type_t;
 
 typedef enum {
     INSTRUMENTR_ORIGIN_LOCAL,
@@ -83,13 +88,19 @@ typedef enum {
     INSTRUMENTR_EVENT_COUNT
 } instrumentr_event_t;
 
+typedef int instrumentr_id_t;
+
 /*******************************************************************************
  * object
  *******************************************************************************/
 
-typedef int instrumentr_id_t;
-
 typedef struct instrumentr_object_impl_t* instrumentr_object_t;
+
+/*******************************************************************************
+ * model
+ *******************************************************************************/
+
+typedef struct instrumentr_model_impl_t* instrumentr_model_t;
 
 /*******************************************************************************
  * state

@@ -49,7 +49,7 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
     }
 
     if (tracer->application != NULL) {
-        instrumentr_object_release(tracer->application);
+        instrumentr_model_kill(tracer->application);
         tracer->application = NULL;
     }
 
@@ -69,28 +69,14 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
 }
 
 /********************************************************************************
- * clear
- *******************************************************************************/
-
-void instrumentr_tracer_clear(instrumentr_tracer_t tracer) {
-    instrumentr_object_kill(tracer->state);
-    tracer->state = NULL;
-}
-
-
-/********************************************************************************
  * create
  *******************************************************************************/
 
 instrumentr_tracer_t instrumentr_tracer_create() {
-    instrumentr_state_t state = instrumentr_state_create();
-
     instrumentr_object_t object =
-        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_tracer_impl_t),
-                                                 state,
-                                                 INSTRUMENTR_TRACER,
-                                                 instrumentr_tracer_finalize,
-                                                 INSTRUMENTR_ORIGIN_FOREIGN);
+        instrumentr_object_create(sizeof(struct instrumentr_tracer_impl_t),
+                                  INSTRUMENTR_OBJECT_TYPE_TRACER,
+                                  instrumentr_tracer_finalize);
 
     instrumentr_tracer_t tracer = (instrumentr_tracer_t)(object);
 
@@ -101,7 +87,7 @@ instrumentr_tracer_t instrumentr_tracer_create() {
     */
     tracer->dyntracer = dyntracer;
 
-    tracer->state = state;
+    tracer->state = instrumentr_state_create();
 
     tracer->application = NULL;
 
@@ -128,18 +114,22 @@ SEXP r_instrumentr_tracer_create() {
 }
 
 /********************************************************************************
+ * finalize tracing
+ *******************************************************************************/
+
+SEXP instrumentr_tracer_finalize_tracing(instrumentr_tracer_t tracer) {
+    SEXP r_result = PROTECT(instrumentr_state_finalize_tracing(tracer->state));
+    instrumentr_object_release(tracer->state);
+    tracer->state = NULL;
+    UNPROTECT(1);
+    return r_result;
+}
+
+/********************************************************************************
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_tracer_wrap(instrumentr_tracer_t tracer) {
-    return instrumentr_object_wrap((instrumentr_object_t)(tracer));
-}
-
-instrumentr_tracer_t instrumentr_tracer_unwrap(SEXP r_tracer) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_tracer, INSTRUMENTR_TRACER);
-    return (instrumentr_tracer_t)(object);
-}
+INSTRUMENTR_OBJECT_INTEROP_DEFINE_API(tracer, INSTRUMENTR_OBJECT_TYPE_TRACER)
 
 /********************************************************************************
  * dyntracer
@@ -154,8 +144,7 @@ dyntracer_t* instrumentr_tracer_get_dyntracer(instrumentr_tracer_t tracer) {
  *******************************************************************************/
 
 /*  accessor  */
-instrumentr_state_t
-instrumentr_tracer_get_state(instrumentr_tracer_t tracer) {
+instrumentr_state_t instrumentr_tracer_get_state(instrumentr_tracer_t tracer) {
     return tracer->state;
 }
 
@@ -186,12 +175,12 @@ SEXP r_instrumentr_tracer_get_application(SEXP r_tracer) {
 void instrumentr_tracer_set_application(instrumentr_tracer_t tracer,
                                         instrumentr_application_t application) {
     tracer->application = application;
-    instrumentr_object_acquire(application);
+    instrumentr_model_acquire(application);
 }
 
-/*  mutator  */
+/*  mutator  */ // TODO remove this
 void instrumentr_tracer_remove_application(instrumentr_tracer_t tracer) {
-    instrumentr_object_kill(tracer->application);
+    instrumentr_model_kill(tracer->application);
     tracer->application = NULL;
 }
 
@@ -431,4 +420,3 @@ SEXP r_instrumentr_tracer_remove_callback(SEXP r_tracer, SEXP r_event) {
     instrumentr_tracer_remove_callback(tracer, event);
     return R_NilValue;
 }
-

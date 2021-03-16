@@ -7,35 +7,32 @@ extern "C" {
 
 #include <instrumentr/types.h>
 #include <instrumentr/Rincludes.h>
+#include "object.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
 instrumentr_callback_t
-instrumentr_callback_create_from_r_function(instrumentr_state_t state,
-                                            SEXP r_function,
+instrumentr_callback_create_from_r_function(SEXP r_function,
                                             instrumentr_event_t event);
 
-SEXP r_instrumentr_callback_create_from_r_function(SEXP r_state,
-                                                   SEXP r_event,
+SEXP r_instrumentr_callback_create_from_r_function(SEXP r_event,
                                                    SEXP r_function);
 
 instrumentr_callback_t
-instrumentr_callback_create_from_c_function(instrumentr_state_t state,
-                                            void* c_function,
+instrumentr_callback_create_from_c_function(void* c_function,
                                             instrumentr_event_t event);
 
-SEXP r_instrumentr_callback_create_from_c_function(SEXP r_state,
-                                                   SEXP r_c_function,
+SEXP r_instrumentr_callback_create_from_c_function(SEXP r_c_function,
                                                    SEXP r_event);
 
 /********************************************************************************
  * interop
  *******************************************************************************/
-SEXP instrumentr_callback_wrap(instrumentr_callback_t callback);
 
-instrumentr_callback_t instrumentr_callback_unwrap(SEXP r_callback);
+INSTRUMENTR_OBJECT_INTEROP_DECLARE_API(callback,
+                                       INSTRUMENTR_MODEL_TYPE_CALLBACK)
 
 /********************************************************************************
  * event

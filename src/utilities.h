@@ -1,11 +1,13 @@
 #ifndef INSTRUMENTR_UTILITIES_H
 #define INSTRUMENTR_UTILITIES_H
 
+#include <string>
+#include <vector>
+#include <instrumentr/Rincludes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <instrumentr/Rincludes.h>
 
 void instrumentr_initialize_utilities(SEXP r_package_environment,
                                       SEXP r_state_environment);
@@ -48,6 +50,8 @@ char* instrumentr_duplicate_string(const char* original);
 char* int_to_string(int value);
 
 char* address_to_string(void* ptr);
+
+SEXP create_class(const std::vector<std::string>& class_names);
 
 #ifdef __cplusplus
 }

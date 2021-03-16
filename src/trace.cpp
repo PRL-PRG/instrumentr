@@ -164,10 +164,7 @@ SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application) {
                     /* FIN */
                     instrumentr_tracer_remove_application(tracer));
 
-    SEXP r_result = PROTECT(instrumentr_state_as_list(state));
-    // TODO: fix and uncomment this
-    // instrumentr_tracer_clear(tracer);
-    UNPROTECT(1);
+    SEXP r_result = instrumentr_tracer_finalize_tracing(tracer);
     return r_result;
 }
 
@@ -374,7 +371,7 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
-                    instrumentr_object_release(frame););
+                    instrumentr_model_release(frame););
 }
 
 void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
@@ -449,7 +446,7 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
-                    instrumentr_object_release(frame););
+                    instrumentr_model_release(frame););
 }
 
 void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
@@ -524,7 +521,7 @@ void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
-                    instrumentr_object_release(frame););
+                    instrumentr_model_release(frame););
 }
 
 void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
@@ -899,7 +896,7 @@ void instrumentr_trace_promise_force_entry(instrumentr_tracer_t tracer,
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
                     instrumentr_call_stack_push_frame(call_stack, frame);
-                    instrumentr_object_release(frame););
+                    instrumentr_model_release(frame););
 }
 
 void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,

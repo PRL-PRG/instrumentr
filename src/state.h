@@ -3,6 +3,7 @@
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "object.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,12 +16,16 @@ extern "C" {
 instrumentr_state_t instrumentr_state_create();
 
 /********************************************************************************
+ * finalize tracing
+ *******************************************************************************/
+
+SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state);
+
+/********************************************************************************
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_state_wrap(instrumentr_state_t state);
-
-instrumentr_state_t instrumentr_state_unwrap(SEXP r_state);
+INSTRUMENTR_OBJECT_INTEROP_DECLARE_API(state, INSTRUMENTR_MODEL_TYPE_STATE)
 
 /********************************************************************************
  * id

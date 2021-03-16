@@ -4,6 +4,8 @@
 #include "interop.h"
 #include "tracer.h"
 #include "object.h"
+#include "object_type.h"
+#include "model_type.h"
 
 typedef vec_t(instrumentr_tracer_t) instrumentr_tracer_vector_t;
 
@@ -110,11 +112,12 @@ void instrumentr_initialize(SEXP r_package_environment,
     vec_init(&tracers);
     instrumentr_initialize_utilities(r_package_environment,
                                      r_state_environment);
-    instrumentr_object_class_initialize();
+    instrumentr_object_type_initialize();
+    instrumentr_model_type_initialize();
 }
 
 SEXP r_instrumentr_initialize(SEXP r_package_environment,
-                             SEXP r_state_environment) {
+                              SEXP r_state_environment) {
     instrumentr_initialize(r_package_environment, r_state_environment);
     return R_NilValue;
 }
@@ -122,7 +125,8 @@ SEXP r_instrumentr_initialize(SEXP r_package_environment,
 void instrumentr_finalize() {
     instrumentr_finalize_utilities();
     vec_deinit(&tracers);
-    instrumentr_object_class_finalize();
+    instrumentr_object_type_finalize();
+    instrumentr_model_type_finalize();
 }
 
 SEXP r_instrumentr_finalize() {

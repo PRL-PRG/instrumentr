@@ -7,6 +7,7 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "model.h"
 
 /********************************************************************************
  * create
@@ -28,9 +29,7 @@ SEXP r_instrumentr_package_create(SEXP r_state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_package_wrap(instrumentr_package_t package);
-
-instrumentr_package_t instrumentr_package_unwrap(SEXP r_package);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(package, INSTRUMENTR_MODEL_TYPE_PACKAGE)
 
 /********************************************************************************
  * name

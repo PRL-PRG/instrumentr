@@ -1,8 +1,6 @@
 #include "frame.h"
-#include "object.h"
 #include "interop.h"
 #include "utilities.h"
-#include "object.h"
 #include "promise.h"
 #include "call.h"
 #include "context.h"
@@ -12,23 +10,34 @@
  *******************************************************************************/
 
 struct instrumentr_frame_impl_t {
-    struct instrumentr_object_impl_t object;
-    instrumentr_object_t kernel;
+    struct instrumentr_model_impl_t model;
+    instrumentr_model_t kernel;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_frame_finalize(instrumentr_object_t object) {
-    instrumentr_frame_t frame = (instrumentr_frame_t)(object);
+void instrumentr_frame_finalize(instrumentr_model_t model) {
+    instrumentr_frame_t frame = (instrumentr_frame_t)(model);
 
     /* do not kill promise as it is owned by state */
-    if(frame->kernel->type == INSTRUMENTR_PROMISE) {
-        instrumentr_object_release(frame->kernel);
-    }
-    else {
-        instrumentr_object_kill(frame->kernel);
+    switch (instrumentr_model_get_type(frame->kernel)) {
+    case INSTRUMENTR_MODEL_TYPE_PROMISE:
+        instrumentr_model_release(frame->kernel);
+        break;
+
+    case INSTRUMENTR_MODEL_TYPE_CALL:
+        instrumentr_model_kill(frame->kernel);
+        break;
+
+    case INSTRUMENTR_MODEL_TYPE_CONTEXT:
+        instrumentr_model_kill(frame->kernel);
+        break;
+
+    default:
+        instrumentr_log_error("unsupported model type on frame");
+        break;
     }
 
     frame->kernel = NULL;
@@ -39,53 +48,44 @@ void instrumentr_frame_finalize(instrumentr_object_t object) {
  *******************************************************************************/
 
 instrumentr_frame_t instrumentr_frame_create(instrumentr_state_t state,
-                                             instrumentr_object_t kernel) {
-    instrumentr_object_t object =
-        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_frame_impl_t),
-                                                 state,
-                                                 INSTRUMENTR_FRAME,
-                                                 instrumentr_frame_finalize,
-                                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                             instrumentr_model_t kernel) {
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_frame_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_FRAME,
+                                 instrumentr_frame_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_frame_t frame = (instrumentr_frame_t)(object);
+    instrumentr_frame_t frame = (instrumentr_frame_t)(model);
 
-    instrumentr_object_acquire(kernel);
     frame->kernel = kernel;
-
+    instrumentr_model_acquire(frame->kernel);
     return frame;
 }
 
 instrumentr_frame_t
 instrumentr_frame_create_from_call(instrumentr_state_t state,
                                    instrumentr_call_t call) {
-    return instrumentr_frame_create(state, (instrumentr_object_t) call);
+    return instrumentr_frame_create(state, (instrumentr_model_t) call);
 }
 
 instrumentr_frame_t
 instrumentr_frame_create_from_promise(instrumentr_state_t state,
                                       instrumentr_promise_t promise) {
-    return instrumentr_frame_create(state, (instrumentr_object_t) promise);
+    return instrumentr_frame_create(state, (instrumentr_model_t) promise);
 }
 
 instrumentr_frame_t
 instrumentr_frame_create_from_context(instrumentr_state_t state,
                                       instrumentr_context_t context) {
-    return instrumentr_frame_create(state, (instrumentr_object_t) context);
+    return instrumentr_frame_create(state, (instrumentr_model_t) context);
 }
 
 /********************************************************************************
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_frame_wrap(instrumentr_frame_t frame) {
-    return instrumentr_object_wrap((instrumentr_object_t)(frame));
-}
-
-instrumentr_frame_t instrumentr_frame_unwrap(SEXP r_frame) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_frame, INSTRUMENTR_FRAME);
-    return (instrumentr_frame_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(frame, INSTRUMENTR_MODEL_TYPE_FRAME)
 
 /********************************************************************************
  * call
@@ -93,7 +93,8 @@ instrumentr_frame_t instrumentr_frame_unwrap(SEXP r_frame) {
 
 /* accessor  */
 int instrumentr_frame_is_call(instrumentr_frame_t frame) {
-    return frame->kernel->type == INSTRUMENTR_CALL;
+    return instrumentr_model_get_type(frame->kernel) ==
+           INSTRUMENTR_MODEL_TYPE_CALL;
 }
 
 SEXP r_instrumentr_frame_is_call(SEXP r_frame) {
@@ -124,7 +125,8 @@ SEXP r_instrumentr_frame_as_call(SEXP r_frame) {
 
 /* accessor  */
 int instrumentr_frame_is_promise(instrumentr_frame_t frame) {
-    return frame->kernel->type == INSTRUMENTR_PROMISE;
+    return instrumentr_model_get_type(frame->kernel) ==
+           INSTRUMENTR_MODEL_TYPE_PROMISE;
 }
 
 SEXP r_instrumentr_frame_is_promise(SEXP r_frame) {
@@ -155,7 +157,8 @@ SEXP r_instrumentr_frame_as_promise(SEXP r_frame) {
 
 /* accessor  */
 int instrumentr_frame_is_context(instrumentr_frame_t frame) {
-    return frame->kernel->type == INSTRUMENTR_CONTEXT;
+    return instrumentr_model_get_type(frame->kernel) ==
+           INSTRUMENTR_MODEL_TYPE_CONTEXT;
 }
 
 SEXP r_instrumentr_frame_is_context(SEXP r_frame) {

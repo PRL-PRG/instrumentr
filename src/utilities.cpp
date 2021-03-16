@@ -94,7 +94,15 @@ SEXP Rf_lang8(SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
     return q;
 }
 
-SEXP Rf_lang9(SEXP p, SEXP q, SEXP r, SEXP s, SEXP t, SEXP u, SEXP v, SEXP w, SEXP x) {
+SEXP Rf_lang9(SEXP p,
+              SEXP q,
+              SEXP r,
+              SEXP s,
+              SEXP t,
+              SEXP u,
+              SEXP v,
+              SEXP w,
+              SEXP x) {
     PROTECT(p);
     p = LCONS(p, Rf_list8(q, r, s, t, u, v, w, x));
     UNPROTECT(1);
@@ -119,7 +127,6 @@ SEXP instrumentr_sexp_quote(SEXP r_sexp) {
     return Rf_lang2(QuoteSymbol, r_sexp);
 }
 
-
 char* instrumentr_duplicate_string(const char* original) {
     if (original == NULL) {
         return NULL;
@@ -140,3 +147,16 @@ char* address_to_string(void* ptr) {
     return buffer;
 }
 
+SEXP create_class(const std::vector<std::string>& class_names) {
+    int size = class_names.size();
+
+    SEXP klass = PROTECT(allocVector(STRSXP, size));
+
+    for (int i = 0; i < size; ++i) {
+        SET_STRING_ELT(klass, i, mkChar(class_names[i].c_str()));
+    }
+
+    UNPROTECT(1);
+
+    return klass;
+}

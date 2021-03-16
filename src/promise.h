@@ -7,6 +7,7 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "model.h"
 
 /********************************************************************************
  * create
@@ -19,9 +20,7 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_promise_wrap(instrumentr_promise_t promise);
-
-instrumentr_promise_t instrumentr_promise_unwrap(SEXP r_promise);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(promise, INSTRUMENTR_MODEL_TYPE_PROMISE)
 
 /********************************************************************************
  * forced

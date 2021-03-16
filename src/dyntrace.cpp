@@ -101,7 +101,7 @@ void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
     }
 
     /* NOTE: release call here because it is now owned by the stack frame */
-    instrumentr_object_release(call);
+    instrumentr_model_release(call);
 }
 
 void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
@@ -189,7 +189,7 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
         tracer, application, package, function, call);
 
     /* NOTE: release call here because it is now owned by the stack frame */
-    instrumentr_object_release(call);
+    instrumentr_model_release(call);
 }
 
 void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
@@ -249,7 +249,7 @@ void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
     instrumentr_context_t context = instrumentr_context_create(state, pointer);
 
     instrumentr_frame_t frame = instrumentr_frame_create_from_context(state, context);
-    instrumentr_object_release(context);
+    instrumentr_model_release(context);
 
     // fprintf(stderr, "++ %p\n", pointer);
 
@@ -257,7 +257,7 @@ void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
         instrumentr_state_get_call_stack(state);
 
     instrumentr_call_stack_push_frame(call_stack, frame);
-    instrumentr_object_release(frame);
+    instrumentr_model_release(frame);
 
     instrumentr_trace_context_entry(tracer, application, context);
 }

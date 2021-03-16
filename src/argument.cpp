@@ -1,8 +1,6 @@
 #include "argument.h"
-#include "object.h"
 #include "interop.h"
 #include "utilities.h"
-#include "object.h"
 #include "promise.h"
 #include "value.h"
 
@@ -11,27 +9,33 @@
  *******************************************************************************/
 
 struct instrumentr_argument_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     const char* name;
-    instrumentr_object_t promise_or_value;
+    instrumentr_model_t promise_or_value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_argument_finalize(instrumentr_object_t object) {
-    instrumentr_argument_t argument = (instrumentr_argument_t)(object);
+void instrumentr_argument_finalize(instrumentr_model_t model) {
+    instrumentr_argument_t argument = (instrumentr_argument_t)(model);
 
-    free((char*)(argument->name));
+    free((char*) (argument->name));
 
+    /* argument is the primary owner of value but a secondary owner of promise
+     */
+    switch (instrumentr_model_get_type(argument->promise_or_value)) {
+    case INSTRUMENTR_MODEL_TYPE_VALUE:
+        instrumentr_model_kill(argument->promise_or_value);
+        break;
 
-    /* argument is the primary owner of value but a secondary owner of promise */
-    if(argument -> promise_or_value -> type == INSTRUMENTR_VALUE) {
-        instrumentr_object_kill(argument->promise_or_value);
-    }
-    else {
-        instrumentr_object_release(argument->promise_or_value);
+    case INSTRUMENTR_MODEL_TYPE_PROMISE:
+        instrumentr_model_release(argument->promise_or_value);
+        break;
+
+    default:
+        instrumentr_log_error("unexpected argument kernel type");
     }
 
     argument->promise_or_value = NULL;
@@ -44,23 +48,22 @@ void instrumentr_argument_finalize(instrumentr_object_t object) {
 instrumentr_argument_t
 instrumentr_argument_create(instrumentr_state_t state,
                             const char* name,
-                            instrumentr_object_t promise_or_value) {
+                            instrumentr_model_t promise_or_value) {
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
-    instrumentr_object_t object =
-        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_argument_impl_t),
-                                                 state,
-                                                 INSTRUMENTR_ARGUMENT,
-                                                 instrumentr_argument_finalize,
-                                                 INSTRUMENTR_ORIGIN_LOCAL);
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_argument_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_ARGUMENT,
+                                 instrumentr_argument_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_argument_t argument = (instrumentr_argument_t)(object);
+    instrumentr_argument_t argument = (instrumentr_argument_t)(model);
 
     argument->name = duplicate_name;
 
-    instrumentr_object_acquire(promise_or_value);
+    instrumentr_model_acquire(promise_or_value);
     argument->promise_or_value = promise_or_value;
-
     return argument;
 }
 
@@ -68,29 +71,23 @@ instrumentr_argument_t
 instrumentr_argument_create_from_promise(instrumentr_state_t state,
                                          const char* name,
                                          instrumentr_promise_t promise) {
-    return instrumentr_argument_create(state, name, (instrumentr_object_t)promise);
+    return instrumentr_argument_create(
+        state, name, (instrumentr_model_t) promise);
 }
 
 instrumentr_argument_t
 instrumentr_argument_create_from_value(instrumentr_state_t state,
                                        const char* name,
                                        instrumentr_value_t value) {
-    return instrumentr_argument_create(state, name, (instrumentr_object_t) value);
+    return instrumentr_argument_create(
+        state, name, (instrumentr_model_t) value);
 }
 
 /********************************************************************************
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_argument_wrap(instrumentr_argument_t argument) {
-    return instrumentr_object_wrap((instrumentr_object_t)(argument));
-}
-
-instrumentr_argument_t instrumentr_argument_unwrap(SEXP r_argument) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_argument, INSTRUMENTR_ARGUMENT);
-    return (instrumentr_argument_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(argument, INSTRUMENTR_MODEL_TYPE_ARGUMENT)
 
 /********************************************************************************
  * name
@@ -130,7 +127,7 @@ SEXP r_instrumentr_argument_get_name(SEXP r_argument) {
 
 /* accessor  */
 int instrumentr_argument_is_promise(instrumentr_argument_t argument) {
-    return argument->promise_or_value->type == INSTRUMENTR_PROMISE;
+    return argument->promise_or_value->type == INSTRUMENTR_MODEL_TYPE_PROMISE;
 }
 
 SEXP r_instrumentr_argument_is_promise(SEXP r_argument) {
@@ -156,14 +153,13 @@ SEXP r_instrumentr_argument_as_promise(SEXP r_argument) {
     return instrumentr_promise_wrap(promise);
 }
 
-
 /********************************************************************************
  * value
  *******************************************************************************/
 
 /* accessor  */
 int instrumentr_argument_is_value(instrumentr_argument_t argument) {
-    return argument->promise_or_value->type == INSTRUMENTR_VALUE;
+    return argument->promise_or_value->type == INSTRUMENTR_MODEL_TYPE_VALUE;
 }
 
 SEXP r_instrumentr_argument_is_value(SEXP r_argument) {

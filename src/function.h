@@ -7,6 +7,7 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "model.h"
 
 /********************************************************************************
  * create
@@ -50,9 +51,8 @@ SEXP r_instrumentr_function_create_closure(SEXP r_state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_function_wrap(instrumentr_function_t function);
-
-instrumentr_function_t instrumentr_function_unwrap(SEXP r_function);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(function,
+                                      INSTRUMENTR_MODEL_TYPE_FUNCTION)
 
 /********************************************************************************
  * type

@@ -7,20 +7,21 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "model.h"
 
 /********************************************************************************
  * create
  *******************************************************************************/
 
-instrumentr_call_stack_t instrumentr_call_stack_create(instrumentr_state_t state);
+instrumentr_call_stack_t
+instrumentr_call_stack_create(instrumentr_state_t state);
 
 /********************************************************************************
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_call_stack_wrap(instrumentr_call_stack_t call_stack);
-
-instrumentr_call_stack_t instrumentr_call_stack_unwrap(SEXP r_call_stack);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(call_stack,
+                                      INSTRUMENTR_MODEL_TYPE_CALL_STACK)
 
 /********************************************************************************
  * size

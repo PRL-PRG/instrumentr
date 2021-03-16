@@ -315,7 +315,7 @@ as_promise <- function(object) {
 }
 
 #' @export
-create_callback <- function(object, state, event) {
+create_callback <- function(object, event) {
     UseMethod("create_callback")
 }
 

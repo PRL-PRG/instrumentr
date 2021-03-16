@@ -21,18 +21,18 @@ instrumentr_alloc_stats_t instrumentr_alloc_stats_create();
 void instrumentr_alloc_stats_destroy(instrumentr_alloc_stats_t alloc_stats);
 
 /********************************************************************************
- * object_size
+ * model_size
  *******************************************************************************/
 /* accessor */
-int instrumentr_alloc_stats_get_object_size(
+int instrumentr_alloc_stats_get_model_size(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type);
+    instrumentr_model_type_t model_type);
 
 /* mutator */
-void instrumentr_alloc_stats_set_object_size(
+void instrumentr_alloc_stats_set_model_size(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type,
-    int object_size);
+    instrumentr_model_type_t model_type,
+    int model_size);
 
 /********************************************************************************
  * alive_count
@@ -41,12 +41,12 @@ void instrumentr_alloc_stats_set_object_size(
 /* accessor */
 int instrumentr_alloc_stats_get_alive_count(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type);
+    instrumentr_model_type_t model_type);
 
 /* mutator */
 void instrumentr_alloc_stats_increment_alive_count(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type);
+    instrumentr_model_type_t model_type);
 
 /********************************************************************************
  * dead_count
@@ -55,12 +55,12 @@ void instrumentr_alloc_stats_increment_alive_count(
 /* accessor */
 int instrumentr_alloc_stats_get_dead_count(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type);
+    instrumentr_model_type_t model_type);
 
 /* mutator */
 void instrumentr_alloc_stats_increment_dead_count(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type);
+    instrumentr_model_type_t model_type);
 
 /********************************************************************************
  * zombie_count
@@ -69,12 +69,12 @@ void instrumentr_alloc_stats_increment_dead_count(
 /* accessor */
 int instrumentr_alloc_stats_get_zombie_count(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type);
+    instrumentr_model_type_t model_type);
 
 /* accessor */
 void instrumentr_alloc_stats_increment_zombie_count(
     instrumentr_alloc_stats_t alloc_stats,
-    instrumentr_object_type_t object_type);
+    instrumentr_model_type_t model_type);
 
 /********************************************************************************
  * data frame

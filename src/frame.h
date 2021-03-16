@@ -3,6 +3,7 @@
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "model.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,8 +29,7 @@ instrumentr_frame_create_from_context(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_frame_wrap(instrumentr_frame_t frame);
-instrumentr_frame_t instrumentr_frame_unwrap(SEXP r_frame);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(frame, INSTRUMENTR_MODEL_TYPE_FRAME)
 
 /********************************************************************************
  * call

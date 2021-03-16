@@ -1,4 +1,3 @@
-#include "object.h"
 #include "parameter.h"
 #include "interop.h"
 #include "utilities.h"
@@ -13,7 +12,7 @@ typedef vec_t(instrumentr_argument_t) instrumentr_argument_vector_t;
  *******************************************************************************/
 
 struct instrumentr_parameter_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     const char* name;
     int position;
     SEXP r_default_argument;
@@ -24,17 +23,17 @@ struct instrumentr_parameter_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_parameter_finalize(instrumentr_object_t object) {
-    instrumentr_parameter_t parameter = (instrumentr_parameter_t)(object);
+void instrumentr_parameter_finalize(instrumentr_model_t model) {
+    instrumentr_parameter_t parameter = (instrumentr_parameter_t)(model);
 
-    free((char*)(parameter->name));
+    free((char*) (parameter->name));
 
     int count = parameter->arguments.length;
     instrumentr_argument_t* arguments = parameter->arguments.data;
 
     for (int i = 0; i < count; ++i) {
         instrumentr_argument_t argument = arguments[i];
-        instrumentr_object_kill(argument);
+        instrumentr_model_kill(argument);
     }
 
     vec_deinit(&parameter->arguments);
@@ -50,14 +49,14 @@ instrumentr_parameter_t instrumentr_parameter_create(instrumentr_state_t state,
                                                      SEXP r_default_argument) {
     const char* duplicate_name = instrumentr_duplicate_string(name);
 
-    instrumentr_object_t object =
-        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_parameter_impl_t),
-                                                 state,
-                                                 INSTRUMENTR_PARAMETER,
-                                                 instrumentr_parameter_finalize,
-                                                 INSTRUMENTR_ORIGIN_LOCAL);
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_parameter_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_PARAMETER,
+                                 instrumentr_parameter_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_parameter_t parameter = (instrumentr_parameter_t)(object);
+    instrumentr_parameter_t parameter = (instrumentr_parameter_t)(model);
 
     parameter->name = duplicate_name;
     parameter->position = position;
@@ -73,15 +72,8 @@ instrumentr_parameter_t instrumentr_parameter_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_parameter_wrap(instrumentr_parameter_t parameter) {
-    return instrumentr_object_wrap((instrumentr_object_t)(parameter));
-}
-
-instrumentr_parameter_t instrumentr_parameter_unwrap(SEXP r_parameter) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_parameter, INSTRUMENTR_PARAMETER);
-    return (instrumentr_parameter_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(parameter,
+                                     INSTRUMENTR_MODEL_TYPE_PARAMETER)
 
 /********************************************************************************
  * name
@@ -168,8 +160,7 @@ SEXP r_instrumentr_parameter_get_argument_count(SEXP r_parameter) {
 
 /* accessor  */
 int instrumentr_parameter_is_missing(instrumentr_parameter_t parameter) {
-    int count =
-        instrumentr_parameter_get_argument_count(parameter);
+    int count = instrumentr_parameter_get_argument_count(parameter);
     return count == 0;
 }
 
@@ -265,7 +256,7 @@ SEXP r_instrumentr_parameter_get_arguments(SEXP r_parameter) {
     for (int i = 0; i < count; ++i) {
         instrumentr_argument_t argument = arguments[i];
         const char* name = NULL;
-        if(instrumentr_argument_has_name(argument)) {
+        if (instrumentr_argument_has_name(argument)) {
             name = instrumentr_argument_get_name(argument);
         }
         SET_VECTOR_ELT(r_arguments, i, instrumentr_argument_wrap(argument));
@@ -281,5 +272,5 @@ SEXP r_instrumentr_parameter_get_arguments(SEXP r_parameter) {
 void instrumentr_parameter_append_argument(instrumentr_parameter_t parameter,
                                            instrumentr_argument_t argument) {
     vec_push(&parameter->arguments, argument);
-    instrumentr_object_acquire(argument);
+    instrumentr_model_acquire(argument);
 }

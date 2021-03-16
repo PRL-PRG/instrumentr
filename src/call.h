@@ -1,12 +1,13 @@
 #ifndef INSTRUMENTR_CALL_H
 #define INSTRUMENTR_CALL_H
 
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/types.h>
+#include "model.h"
 
 /********************************************************************************
  * create
@@ -22,8 +23,7 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_call_wrap(instrumentr_call_t call);
-instrumentr_call_t instrumentr_call_unwrap(SEXP r_call);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(call, INSTRUMENTR_MODEL_TYPE_CALL)
 
 /********************************************************************************
  * function

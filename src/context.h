@@ -7,6 +7,7 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "model.h"
 
 /********************************************************************************
  * create
@@ -19,8 +20,7 @@ instrumentr_context_t instrumentr_context_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_context_wrap(instrumentr_context_t context);
-instrumentr_context_t instrumentr_context_unwrap(SEXP r_context);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(context, INSTRUMENTR_MODEL_TYPE_CONTEXT)
 
 /********************************************************************************
  * pointer

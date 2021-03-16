@@ -1,4 +1,3 @@
-#include "object.h"
 #include "application.h"
 #include "interop.h"
 #include "utilities.h"
@@ -9,7 +8,7 @@
  *******************************************************************************/
 
 struct instrumentr_application_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     const char* name;
     const char* directory;
     SEXP r_code;
@@ -21,8 +20,8 @@ struct instrumentr_application_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_application_finalize(instrumentr_object_t object) {
-    instrumentr_application_t application = (instrumentr_application_t)(object);
+void instrumentr_application_finalize(instrumentr_model_t model) {
+    instrumentr_application_t application = (instrumentr_application_t)(model);
 
     free((char*) (application->name));
 
@@ -52,14 +51,14 @@ instrumentr_application_create(instrumentr_state_t state,
 
     const char* duplicate_directory = instrumentr_duplicate_string(directory);
 
-    instrumentr_object_t object = instrumentr_object_create_and_initialize(
-        sizeof(struct instrumentr_application_impl_t),
-        state,
-        INSTRUMENTR_APPLICATION,
-        instrumentr_application_finalize,
-        INSTRUMENTR_ORIGIN_FOREIGN);
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_application_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_APPLICATION,
+                                 instrumentr_application_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_application_t application = (instrumentr_application_t)(object);
+    instrumentr_application_t application = (instrumentr_application_t)(model);
 
     application->name = duplicate_name;
     application->directory = duplicate_directory;
@@ -89,7 +88,7 @@ SEXP r_instrumentr_application_create(SEXP r_state,
     instrumentr_application_t application = instrumentr_application_create(
         state, name, directory, r_code, r_environment, frame_position);
     SEXP r_application = instrumentr_application_wrap(application);
-    instrumentr_object_release(application);
+    instrumentr_model_release(application);
     return r_application;
 }
 
@@ -97,15 +96,8 @@ SEXP r_instrumentr_application_create(SEXP r_state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_application_wrap(instrumentr_application_t application) {
-    return instrumentr_object_wrap((instrumentr_object_t)(application));
-}
-
-instrumentr_application_t instrumentr_application_unwrap(SEXP r_application) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_application, INSTRUMENTR_APPLICATION);
-    return (instrumentr_application_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(application,
+                                     INSTRUMENTR_MODEL_TYPE_APPLICATION);
 
 /*******************************************************************************
  * name

@@ -4,7 +4,6 @@
 #include "vec.h"
 #include "interop.h"
 #include "utilities.h"
-#include "object.h"
 #include "state.h"
 #include "promise.h"
 #include "value.h"
@@ -17,7 +16,7 @@
 typedef vec_t(instrumentr_parameter_t) instrumentr_parameter_vector_t;
 
 struct instrumentr_call_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     instrumentr_function_t function;
     SEXP r_expression;
     SEXP r_environment;
@@ -31,10 +30,10 @@ struct instrumentr_call_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_call_finalize(instrumentr_object_t object) {
-    instrumentr_call_t call = (instrumentr_call_t)(object);
+void instrumentr_call_finalize(instrumentr_model_t model) {
+    instrumentr_call_t call = (instrumentr_call_t)(model);
 
-    instrumentr_object_release(call->function);
+    instrumentr_model_release(call->function);
 
     call->r_expression = NULL;
     call->r_environment = NULL;
@@ -45,7 +44,7 @@ void instrumentr_call_finalize(instrumentr_object_t object) {
 
     for (int i = 0; i < count; ++i) {
         instrumentr_parameter_t parameter = parameters[i];
-        instrumentr_object_kill(parameter);
+        instrumentr_model_kill(parameter);
     }
 
     vec_deinit(&call->parameters);
@@ -73,31 +72,31 @@ void process_promise_argument(instrumentr_state_t state,
     instrumentr_promise_t promise =
         instrumentr_state_promise_table_lookup(state, r_argument_value, 1);
 
-    instrumentr_argument_t argument =
-        instrumentr_argument_create_from_promise(state, unwrap_name(r_argument_name), promise);
+    instrumentr_argument_t argument = instrumentr_argument_create_from_promise(
+        state, unwrap_name(r_argument_name), promise);
 
     instrumentr_parameter_append_argument(parameter, argument);
     /* NOTE: argument is owned by parameter now */
-    instrumentr_object_release(argument);
+    instrumentr_model_release(argument);
 
     instrumentr_promise_set_argument(promise, call, parameter, argument);
 }
-
 
 void process_value_argument(instrumentr_state_t state,
                             instrumentr_parameter_t parameter,
                             SEXP r_argument_name,
                             SEXP r_argument_value) {
-    instrumentr_value_t value = instrumentr_value_create(state, r_argument_value);
+    instrumentr_value_t value =
+        instrumentr_value_create(state, r_argument_value);
 
-    instrumentr_argument_t argument = instrumentr_argument_create_from_value(state,
-                                                                             unwrap_name(r_argument_name), value);
+    instrumentr_argument_t argument = instrumentr_argument_create_from_value(
+        state, unwrap_name(r_argument_name), value);
     /* NOTE: value is owned by argument now */
-    instrumentr_object_release(value);
+    instrumentr_model_release(value);
 
     instrumentr_parameter_append_argument(parameter, argument);
     /* NOTE: argument is owned by parameter now */
-    instrumentr_object_release(argument);
+    instrumentr_model_release(argument);
 }
 
 void process_vararg_argument(instrumentr_state_t state,
@@ -107,13 +106,12 @@ void process_vararg_argument(instrumentr_state_t state,
     for (SEXP r_dot_argument_pointer = r_argument_value;
          r_dot_argument_pointer != R_NilValue;
          r_dot_argument_pointer = CDR(r_dot_argument_pointer)) {
-
         SEXP r_dot_argument_name = TAG(r_dot_argument_pointer);
 
         SEXP r_dot_argument_value = CAR(r_dot_argument_pointer);
 
         /* promise value */
-        if(TYPEOF(r_dot_argument_value) == PROMSXP) {
+        if (TYPEOF(r_dot_argument_value) == PROMSXP) {
             process_promise_argument(state,
                                      call,
                                      parameter,
@@ -122,10 +120,8 @@ void process_vararg_argument(instrumentr_state_t state,
         }
         /* non promise value */
         else {
-            process_value_argument(state,
-                                   parameter,
-                                   r_dot_argument_name,
-                                   r_dot_argument_value);
+            process_value_argument(
+                state, parameter, r_dot_argument_name, r_dot_argument_value);
         }
     }
 }
@@ -136,18 +132,15 @@ void process_parameter(instrumentr_state_t state,
                        SEXP r_argument_value,
                        SEXP r_default_argument,
                        int position) {
-
     const char* argument_name = unwrap_name(r_argument_name);
 
-    instrumentr_parameter_t parameter = instrumentr_parameter_create(state,
-                                                                     argument_name,
-                                                                     position,
-                                                                     r_default_argument);
+    instrumentr_parameter_t parameter = instrumentr_parameter_create(
+        state, argument_name, position, r_default_argument);
 
     instrumentr_call_append_parameter(call, parameter);
 
     /* NOTE: parameter owned by call now */
-    instrumentr_object_release(parameter);
+    instrumentr_model_release(parameter);
 
     /* missing argument */
     if (r_argument_value == R_UnboundValue ||
@@ -160,7 +153,8 @@ void process_parameter(instrumentr_state_t state,
     }
     /* promise  */
     else if (TYPEOF(r_argument_value) == PROMSXP) {
-        process_promise_argument(state, call, parameter, R_NilValue, r_argument_value);
+        process_promise_argument(
+            state, call, parameter, R_NilValue, r_argument_value);
     }
     /* non promise  */
     else {
@@ -189,15 +183,16 @@ void process_closure_parameters(instrumentr_state_t state,
 
         process_parameter(state,
                           call,
-                         r_argument_name,
-                         r_argument_value,
-                         r_default_argument,
-                         position);
+                          r_argument_name,
+                          r_argument_value,
+                          r_default_argument,
+                          position);
     }
 }
 
 void process_non_closure_parameters(instrumentr_state_t state,
-                                    instrumentr_call_t call, SEXP r_args) {
+                                    instrumentr_call_t call,
+                                    SEXP r_args) {
     for (int position = 0; r_args != R_NilValue;
          ++position, r_args = CDR(r_args)) {
         SEXP r_argument_name = TAG(r_args);
@@ -209,10 +204,10 @@ void process_non_closure_parameters(instrumentr_state_t state,
 
         process_parameter(state,
                           call,
-                         r_argument_name,
-                         r_argument_value,
-                         r_default_argument,
-                         position);
+                          r_argument_name,
+                          r_argument_value,
+                          r_default_argument,
+                          position);
     }
 }
 
@@ -221,17 +216,17 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
                                            SEXP r_expression,
                                            SEXP r_environment,
                                            int frame_position) {
-    instrumentr_object_t object =
-        instrumentr_object_create_and_initialize(sizeof(struct instrumentr_call_impl_t),
-                                                 state,
-                                                 INSTRUMENTR_CALL,
-                                                 instrumentr_call_finalize,
-                                                 INSTRUMENTR_ORIGIN_LOCAL);
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_call_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_CALL,
+                                 instrumentr_call_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_call_t call = (instrumentr_call_t)(object);
+    instrumentr_call_t call = (instrumentr_call_t)(model);
 
     call->function = function;
-    instrumentr_object_acquire(call->function);
+    instrumentr_model_acquire(call->function);
 
     call->r_expression = r_expression;
 
@@ -241,10 +236,9 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
 
     vec_init(&call->parameters);
 
-    if(instrumentr_function_is_closure(function)) {
+    if (instrumentr_function_is_closure(function)) {
         process_closure_parameters(state, call, function, r_environment);
-    }
-    else {
+    } else {
         process_non_closure_parameters(state, call, CDR(r_expression));
     }
 
@@ -255,15 +249,7 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_call_wrap(instrumentr_call_t call) {
-    return instrumentr_object_wrap((instrumentr_object_t)(call));
-}
-
-instrumentr_call_t instrumentr_call_unwrap(SEXP r_call) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_call, INSTRUMENTR_CALL);
-    return (instrumentr_call_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(call, INSTRUMENTR_MODEL_TYPE_CALL)
 
 /********************************************************************************
  * function
@@ -441,8 +427,7 @@ instrumentr_call_get_parameter_by_name(instrumentr_call_t call,
     }
 
     instrumentr_log_error(
-        "parameter with name '%s' does not exist for this call",
-        name);
+        "parameter with name '%s' does not exist for this call", name);
     /* NOTE: never executed*/
     return NULL;
 }
@@ -480,5 +465,5 @@ SEXP r_instrumentr_call_get_parameters(SEXP r_call) {
 void instrumentr_call_append_parameter(instrumentr_call_t call,
                                        instrumentr_parameter_t parameter) {
     vec_push(&call->parameters, parameter);
-    instrumentr_object_acquire(parameter);
+    instrumentr_model_acquire(parameter);
 }

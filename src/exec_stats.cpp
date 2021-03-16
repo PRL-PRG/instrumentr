@@ -8,6 +8,8 @@
  *******************************************************************************/
 
 struct instrumentr_exec_stats_impl_t {
+    struct instrumentr_object_impl_t object;
+
     clock_t minimum[INSTRUMENTR_EVENT_COUNT + 1];
     clock_t maximum[INSTRUMENTR_EVENT_COUNT + 1];
     clock_t total[INSTRUMENTR_EVENT_COUNT + 1];
@@ -17,36 +19,32 @@ struct instrumentr_exec_stats_impl_t {
 double CLOCKS = CLOCKS_PER_SEC;
 
 /********************************************************************************
+ * finalize
+ *******************************************************************************/
+
+void instrumentr_exec_stats_finalize(instrumentr_object_t object) {
+    /* NOTE: nothing to do here because fields are statically allocated */
+}
+
+/********************************************************************************
  * create
  *******************************************************************************/
 
 instrumentr_exec_stats_t instrumentr_exec_stats_create() {
-    instrumentr_exec_stats_t exec_stats = (instrumentr_exec_stats_t) calloc(
-        1, sizeof(struct instrumentr_exec_stats_impl_t));
+    instrumentr_exec_stats_t exec_stats =
+        (instrumentr_exec_stats_t) instrumentr_object_create(
+            sizeof(instrumentr_exec_stats_impl_t),
+            INSTRUMENTR_OBJECT_TYPE_EXEC_STATS,
+            instrumentr_exec_stats_finalize);
     return exec_stats;
-}
-
-/********************************************************************************
- * destroy
- *******************************************************************************/
-
-void instrumentr_exec_stats_destroy(instrumentr_exec_stats_t exec_stats) {
-    free(exec_stats);
 }
 
 /********************************************************************************
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_exec_stats_wrap(instrumentr_exec_stats_t exec_stats) {
-    return instrumentr_object_wrap((instrumentr_object_t)(exec_stats));
-}
-
-instrumentr_exec_stats_t instrumentr_exec_stats_unwrap(SEXP r_exec_stats) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_exec_stats, INSTRUMENTR_EXEC_STATS);
-    return (instrumentr_exec_stats_t)(object);
-}
+INSTRUMENTR_OBJECT_INTEROP_DEFINE_API(exec_stats,
+                                      INSTRUMENTR_OBJECT_TYPE_EXEC_STATS)
 
 /********************************************************************************
  * minimum

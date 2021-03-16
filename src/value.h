@@ -7,6 +7,7 @@ extern "C" {
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
+#include "model.h"
 
 /********************************************************************************
  * create
@@ -19,9 +20,7 @@ instrumentr_value_t instrumentr_value_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_value_wrap(instrumentr_value_t value);
-
-instrumentr_value_t instrumentr_value_unwrap(SEXP r_value);
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(value, INSTRUMENTR_MODEL_TYPE_VALUE)
 
 /********************************************************************************
  * r_sexp

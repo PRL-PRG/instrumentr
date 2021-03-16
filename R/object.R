@@ -19,13 +19,5 @@
 #' @name object
 NULL
 
-#' @export
-#' @rdname object
-get_id <- function(object) {
-    UseMethod("get_id")
-}
 
-#' @export
-get_id.instrumentr_object <- function(object) {
-    .Call(C_instrumentr_object_get_id, object)
-}
+## TODO - add object api

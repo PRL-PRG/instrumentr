@@ -1,8 +1,6 @@
 #include "promise.h"
-#include "object.h"
 #include "interop.h"
 #include "utilities.h"
-#include "object.h"
 #include "argument.h"
 #include "parameter.h"
 #include "call.h"
@@ -12,7 +10,7 @@
  *******************************************************************************/
 
 struct instrumentr_promise_impl_t {
-    struct instrumentr_object_impl_t object;
+    struct instrumentr_model_impl_t model;
     SEXP r_promise;
     instrumentr_promise_type_t type;
     instrumentr_argument_t argument;
@@ -24,23 +22,23 @@ struct instrumentr_promise_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_promise_finalize(instrumentr_object_t object) {
-    instrumentr_promise_t promise = (instrumentr_promise_t)(object);
+void instrumentr_promise_finalize(instrumentr_model_t model) {
+    instrumentr_promise_t promise = (instrumentr_promise_t)(model);
 
     promise->r_promise = NULL;
 
     switch (promise->type) {
     case INSTRUMENTR_PROMISE_TYPE_ARGUMENT:
-        instrumentr_object_release(promise->argument);
-        instrumentr_object_release(promise->parameter);
-        instrumentr_object_release(promise->call);
+        instrumentr_model_release(promise->argument);
+        instrumentr_model_release(promise->parameter);
+        instrumentr_model_release(promise->call);
         break;
     case INSTRUMENTR_PROMISE_TYPE_LAZY_LOAD:
-        instrumentr_object_release(promise->call);
+        instrumentr_model_release(promise->call);
         break;
 
     case INSTRUMENTR_PROMISE_TYPE_DELAYED_ASSIGN:
-        instrumentr_object_release(promise->call);
+        instrumentr_model_release(promise->call);
         break;
 
     case INSTRUMENTR_PROMISE_TYPE_UNKNOWN:
@@ -54,14 +52,14 @@ void instrumentr_promise_finalize(instrumentr_object_t object) {
 
 instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
                                                  SEXP r_promise) {
-    instrumentr_object_t object = instrumentr_object_create_and_initialize(
-        sizeof(struct instrumentr_promise_impl_t),
-        state,
-        INSTRUMENTR_PROMISE,
-        instrumentr_promise_finalize,
-        INSTRUMENTR_ORIGIN_LOCAL);
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 sizeof(struct instrumentr_promise_impl_t),
+                                 INSTRUMENTR_MODEL_TYPE_PROMISE,
+                                 instrumentr_promise_finalize,
+                                 INSTRUMENTR_ORIGIN_LOCAL);
 
-    instrumentr_promise_t promise = (instrumentr_promise_t)(object);
+    instrumentr_promise_t promise = (instrumentr_promise_t)(model);
 
     promise->r_promise = r_promise;
 
@@ -77,15 +75,7 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-SEXP instrumentr_promise_wrap(instrumentr_promise_t promise) {
-    return instrumentr_object_wrap((instrumentr_object_t)(promise));
-}
-
-instrumentr_promise_t instrumentr_promise_unwrap(SEXP r_promise) {
-    instrumentr_object_t object =
-        instrumentr_object_unwrap(r_promise, INSTRUMENTR_PROMISE);
-    return (instrumentr_promise_t)(object);
-}
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(promise, INSTRUMENTR_MODEL_TYPE_PROMISE)
 
 /********************************************************************************
  * r_promise
@@ -188,13 +178,13 @@ void instrumentr_promise_set_argument(instrumentr_promise_t promise,
     promise->type = INSTRUMENTR_PROMISE_TYPE_ARGUMENT;
 
     promise->call = call;
-    instrumentr_object_acquire(call);
+    instrumentr_model_acquire(call);
 
     promise->parameter = parameter;
-    instrumentr_object_acquire(parameter);
+    instrumentr_model_acquire(parameter);
 
     promise->argument = argument;
-    instrumentr_object_acquire(argument);
+    instrumentr_model_acquire(argument);
 }
 
 /* accessor  */
