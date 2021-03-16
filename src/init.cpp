@@ -21,6 +21,7 @@ extern "C" {
 #include "promise.h"
 #include "value.h"
 #include "exec_stats.h"
+#include "frame.h"
 
 #include <R_ext/Rdynload.h>
 
@@ -110,6 +111,8 @@ const R_CallMethodDef CallEntries[] = {
     /* call_stack */
     DECLARE_BINDING(instrumentr_call_stack_get_size, 1),
     DECLARE_BINDING(instrumentr_call_stack_peek_frame, 2),
+
+    // FRAME API: TODO
 
     /* package */
     DECLARE_BINDING(instrumentr_package_create, 5),

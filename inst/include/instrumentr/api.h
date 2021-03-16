@@ -292,13 +292,37 @@
           void,                                                       \
           instrumentr_call_stack_t call_stack)                        \
     MACRO(instrumentr_call_stack_peek_frame,                          \
-          instrumentr_call_t,                                         \
+          instrumentr_frame_t,                                        \
           instrumentr_call_stack_t call_stack,                        \
           int index)                                                  \
     MACRO(r_instrumentr_call_stack_peek_frame,                        \
           SEXP,                                                       \
           SEXP r_call_stack,                                          \
           SEXP r_index)
+
+/********************************************************************************
+ FRAME API
+*******************************************************************************/
+
+#define INSTRUMENTR_FRAME_API_MAP(MACRO)                                \
+    MACRO(instrumentr_frame_is_call, int, instrumentr_frame_t frame)    \
+    MACRO(r_instrumentr_frame_is_call, SEXP, SEXP r_frame)              \
+    MACRO(instrumentr_frame_as_call,                                    \
+          instrumentr_call_t,                                           \
+          instrumentr_frame_t frame)                                    \
+    MACRO(r_instrumentr_frame_as_call, SEXP, SEXP r_frame)              \
+    MACRO(instrumentr_frame_is_promise, int, instrumentr_frame_t frame) \
+    MACRO(r_instrumentr_frame_is_promise, SEXP, SEXP r_frame)           \
+    MACRO(instrumentr_frame_as_promise,                                 \
+          instrumentr_promise_t,                                        \
+          instrumentr_frame_t frame)                                    \
+    MACRO(r_instrumentr_frame_as_promise, SEXP, SEXP r_frame)           \
+    MACRO(instrumentr_frame_is_context, int, instrumentr_frame_t frame) \
+    MACRO(r_instrumentr_frame_is_context, SEXP, SEXP r_frame)           \
+    MACRO(instrumentr_frame_as_context,                                 \
+          instrumentr_context_t,                                        \
+          instrumentr_frame_t frame)                                    \
+    MACRO(r_instrumentr_frame_as_context, SEXP, SEXP r_frame)
 
 /********************************************************************************
  PARAMETER API
@@ -633,6 +657,7 @@
     INSTRUMENTR_STATE_API_MAP(MACRO)       \
     INSTRUMENTR_APPLICATION_API_MAP(MACRO) \
     INSTRUMENTR_CALL_STACK_API_MAP(MACRO)  \
+    INSTRUMENTR_FRAME_API_MAP(MACRO)       \
     INSTRUMENTR_PACKAGE_API_MAP(MACRO)     \
     INSTRUMENTR_FUNCTION_API_MAP(MACRO)    \
     INSTRUMENTR_CALL_API_MAP(MACRO)        \
