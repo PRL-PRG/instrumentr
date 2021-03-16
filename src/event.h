@@ -31,6 +31,7 @@ extern "C" {
 #define INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY_FUNCTION_T promise_force_entry_function_t
 #define INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT_FUNCTION_T  promise_force_exit_function_t
 #define INSTRUMENTR_EVENT_PROMISE_VALUE_LOOKUP_FUNCTION_T promise_value_lookup_function_t
+#define INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE_FUNCTION_T  promise_substitute_function_t
 
 int instrumentr_event_get_parameter_count(instrumentr_event_t event);
 

@@ -949,6 +949,30 @@ void instrumentr_trace_promise_value_lookup(instrumentr_tracer_t tracer,
     );
 }
 
+void instrumentr_trace_promise_substitute(instrumentr_tracer_t tracer,
+                                          instrumentr_promise_t promise) {
+    INVOKE_CALLBACK(/* NAME  */
+                    INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE,
+                    /* TRACER */
+                    NOTRACE(instrumentr_application_t application =
+                                instrumentr_tracer_get_application(tracer)),
+                    /* INIT  */,
+                    /* CCALL */
+                    cfun(tracer, callback, state, application, promise),
+                    /* RCALL */
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(promise););
+                    Rf_eval(Rf_lang6(r_name,
+                                     r_tracer,
+                                     r_callback,
+                                     r_state,
+                                     r_application,
+                                     r_promise),
+                            r_environment);
+                    UNPROTECT(3),
+                    /* FIN */
+    );
+}
+
 #undef INVOKE_CALLBACK
 #undef UNWRAP
 #undef WRAP

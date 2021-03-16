@@ -85,6 +85,7 @@ typedef enum {
     INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY,
     INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT,
     INSTRUMENTR_EVENT_PROMISE_VALUE_LOOKUP,
+    INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE,
     /* NOTE: this has to be the last event */
     INSTRUMENTR_EVENT_COUNT
 } instrumentr_event_t;
@@ -370,6 +371,13 @@ typedef void (*promise_force_exit_function_t)(
     instrumentr_promise_t promise);
 
 typedef void (*promise_value_lookup_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_promise_t promise);
+
+typedef void (*promise_substitute_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_state_t state,

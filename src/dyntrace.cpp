@@ -36,6 +36,9 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
 
     dyntracer_set_promise_value_lookup_callback(dyntracer,
                                                 dyntrace_promise_value_lookup);
+    dyntracer_set_promise_substitute_callback(dyntracer,
+                                              dyntrace_promise_substitute);
+
     dyntracer_set_environment_variable_define_callback(
         dyntracer, dyntrace_variable_definition);
     dyntracer_set_environment_variable_assign_callback(
@@ -406,3 +409,13 @@ void dyntrace_promise_value_lookup(dyntracer_t* dyntracer, SEXP r_promise) {
     instrumentr_trace_promise_value_lookup(tracer, promise);
 }
 
+void dyntrace_promise_substitute(dyntracer_t* dyntracer, SEXP r_promise) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+
+    instrumentr_promise_t promise =
+        instrumentr_state_promise_table_lookup(state, r_promise, 1);
+
+    instrumentr_trace_promise_substitute(tracer, promise);
+}

@@ -82,6 +82,9 @@ void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
 void instrumentr_trace_promise_value_lookup(instrumentr_tracer_t tracer,
                                             instrumentr_promise_t promise);
 
+void instrumentr_trace_promise_substitute(instrumentr_tracer_t tracer,
+                                          instrumentr_promise_t promise);
+
 #ifdef __cplusplus
 }
 #endif

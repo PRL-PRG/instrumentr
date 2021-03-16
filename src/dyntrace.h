@@ -89,6 +89,8 @@ void dyntrace_promise_force_exit(dyntracer_t* dyntracer, SEXP r_promise);
 
 void dyntrace_promise_value_lookup(dyntracer_t* dyntracer, SEXP r_promise);
 
+void dyntrace_promise_substitute(dyntracer_t* dyntracer, SEXP r_promise);
+
 #ifdef __cplusplus
 }
 #endif
