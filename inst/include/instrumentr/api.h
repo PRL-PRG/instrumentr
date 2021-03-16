@@ -202,6 +202,9 @@
     MACRO(instrumentr_function_wrap, SEXP, instrumentr_function_t function)   \
     MACRO(                                                                    \
         instrumentr_function_unwrap, instrumentr_function_t, SEXP r_function) \
+    MACRO(instrumentr_function_get_type,                                      \
+          instrumentr_function_type_t,                                        \
+          instrumentr_function_t function)                                    \
     MACRO(instrumentr_function_get_name,                                      \
           const char*,                                                        \
           instrumentr_function_t function)                                    \
