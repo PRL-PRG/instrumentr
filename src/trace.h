@@ -73,12 +73,14 @@ void instrumentr_trace_context_exit(instrumentr_tracer_t tracer,
                                     instrumentr_application_t application,
                                     instrumentr_context_t context);
 
-void instrumentr_trace_promise_force_entry(
-    instrumentr_tracer_t tracer,
-    instrumentr_promise_t promise);
+void instrumentr_trace_promise_force_entry(instrumentr_tracer_t tracer,
+                                           instrumentr_promise_t promise);
 
 void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
                                           instrumentr_promise_t promise);
+
+void instrumentr_trace_promise_value_lookup(instrumentr_tracer_t tracer,
+                                            instrumentr_promise_t promise);
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@ typedef struct {
     int parameter_count;
 } event_info_t;
 
-event_info_t table[] = {
+event_info_t table[INSTRUMENTR_EVENT_COUNT] = {
     {INSTRUMENTR_EVENT_TRACING_ENTRY, "tracing_entry", 4},
     {INSTRUMENTR_EVENT_TRACING_EXIT, "tracing_exit", 4},
     {INSTRUMENTR_EVENT_PACKAGE_LOAD, "package_load", 5},
@@ -30,7 +30,8 @@ event_info_t table[] = {
     {INSTRUMENTR_EVENT_CONTEXT_ENTRY, "context_entry", 5},
     {INSTRUMENTR_EVENT_CONTEXT_EXIT, "context_exit", 5},
     {INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY, "promise_force_entry", 5},
-    {INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT, "promise_force_exit", 5}};
+    {INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT, "promise_force_exit", 5},
+    {INSTRUMENTR_EVENT_PROMISE_VALUE_LOOKUP, "promise_value_lookup", 5},
 
 int instrumentr_event_get_parameter_count(instrumentr_event_t event) {
     int index = (int) (event);
