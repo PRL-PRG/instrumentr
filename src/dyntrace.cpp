@@ -71,14 +71,12 @@ void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
                                dyntrace_dispatch_t dispatch) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
-    instrumentr_state_t state =
-        instrumentr_tracer_get_state(tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
-    instrumentr_package_t package =
-        instrumentr_state_get_base_package(state);
+    instrumentr_package_t package = instrumentr_state_get_base_package(state);
 
     int index = instrumentr_funtab_get_index(r_op);
 
@@ -113,8 +111,7 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
                               SEXP r_result) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
-    instrumentr_state_t state =
-        instrumentr_tracer_get_state(tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
@@ -130,6 +127,7 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
     }
 
     instrumentr_call_t call = instrumentr_frame_as_call(frame);
+    instrumentr_call_set_result(call, r_result);
 
     instrumentr_function_t function = instrumentr_call_get_function(call);
 
@@ -140,8 +138,7 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
             "call on stack does not match the call being exited");
     }
 
-    instrumentr_package_t package =
-        instrumentr_state_get_base_package(state);
+    instrumentr_package_t package = instrumentr_state_get_base_package(state);
 
     /* TODO attach result to call */
     if (!strcmp(instrumentr_function_get_name(function), "function") &&
@@ -172,8 +169,7 @@ void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
         instrumentr_tracer_get_application(tracer);
 
     /* fix package */
-    instrumentr_package_t package =
-        instrumentr_state_get_base_package(state);
+    instrumentr_package_t package = instrumentr_state_get_base_package(state);
 
     instrumentr_function_t function =
         instrumentr_state_function_table_lookup(state, r_op, r_call);
@@ -201,8 +197,7 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
                                 SEXP r_result) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
-    instrumentr_state_t state =
-        instrumentr_tracer_get_state(tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
@@ -219,6 +214,8 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
 
     instrumentr_call_t call = instrumentr_frame_as_call(frame);
 
+    instrumentr_call_set_result(call, r_result);
+
     instrumentr_function_t function = instrumentr_call_get_function(call);
 
     /* TODO: add op check here as well */
@@ -230,8 +227,7 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
     }
 
     /* TODO: fix package  */
-    instrumentr_package_t package =
-        instrumentr_state_get_base_package(state);
+    instrumentr_package_t package = instrumentr_state_get_base_package(state);
 
     instrumentr_trace_closure_call_exit(
         tracer, application, package, function, call);
@@ -240,15 +236,15 @@ void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
 void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
-    instrumentr_state_t state =
-        instrumentr_tracer_get_state(tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
     instrumentr_context_t context = instrumentr_context_create(state, pointer);
 
-    instrumentr_frame_t frame = instrumentr_frame_create_from_context(state, context);
+    instrumentr_frame_t frame =
+        instrumentr_frame_create_from_context(state, context);
     instrumentr_model_release(context);
 
     // fprintf(stderr, "++ %p\n", pointer);
@@ -265,8 +261,7 @@ void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
 void dyntrace_context_exit(dyntracer_t* dyntracer, void* pointer) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
-    instrumentr_state_t state =
-        instrumentr_tracer_get_state(tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
@@ -302,8 +297,7 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
                            int restart) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
-    instrumentr_state_t state =
-        instrumentr_tracer_get_state(tracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
