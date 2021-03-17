@@ -32,7 +32,7 @@ instrumentr_model_create(instrumentr_state_t state,
 
     instrumentr_alloc_stats_t alloc_stats =
         instrumentr_state_get_alloc_stats(state);
-    instrumentr_alloc_stats_increment_alive_count(alloc_stats, model->type);
+    instrumentr_alloc_stats_increment_allocated_count(alloc_stats, model->type);
     instrumentr_alloc_stats_set_model_size(alloc_stats, model->type, size);
 
     return model;
@@ -55,7 +55,7 @@ void instrumentr_model_finalize(void* model) {
 
     instrumentr_alloc_stats_t alloc_stats =
         instrumentr_state_get_alloc_stats(mod->state);
-    instrumentr_alloc_stats_increment_zombie_count(alloc_stats, mod->type);
+    instrumentr_alloc_stats_increment_finalized_count(alloc_stats, mod->type);
 }
 
 /*******************************************************************************
@@ -70,7 +70,8 @@ void instrumentr_model_destroy(instrumentr_model_t model) {
 
     instrumentr_alloc_stats_t alloc_stats =
         instrumentr_state_get_alloc_stats(model->state);
-    instrumentr_alloc_stats_increment_dead_count(alloc_stats, model->type);
+    instrumentr_alloc_stats_increment_deallocated_count(alloc_stats,
+                                                        model->type);
     instrumentr_object_release(model->state);
     model->state = NULL;
     free(model);
@@ -145,6 +146,11 @@ int instrumentr_model_kill(void* model) {
     /* this means the model is not destroyed  */
     if (reference_count != 0) {
         instrumentr_model_finalize(model);
+
+        instrumentr_model_t mod = (instrumentr_model_t)(model);
+        instrumentr_alloc_stats_t alloc_stats =
+            instrumentr_state_get_alloc_stats(mod->state);
+        instrumentr_alloc_stats_increment_zombie_count(alloc_stats, mod->type);
     }
 
     return reference_count;
