@@ -44,6 +44,10 @@ void instrumentr_promise_finalize(instrumentr_model_t model) {
     case INSTRUMENTR_PROMISE_TYPE_UNKNOWN:
         break;
     }
+
+    promise->argument = NULL;
+    promise->parameter = NULL;
+    promise->call = NULL;
 }
 
 /********************************************************************************
