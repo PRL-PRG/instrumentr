@@ -435,6 +435,8 @@ instrumentr_state_promise_table_create(instrumentr_state_t state,
         instrumentr_promise_create(state, r_promise);
     auto result = state->promise_table->insert({r_promise, promise});
     if (!result.second) {
+        /* TODO: this means the object was deallocated when tracing was
+         * disabled. */
         instrumentr_model_kill(result.first->second);
         result.first->second = promise;
     }
@@ -457,8 +459,6 @@ instrumentr_state_promise_table_lookup(instrumentr_state_t state,
                                        int create) {
     auto result = state->promise_table->find(r_promise);
     if (result != state->promise_table->end()) {
-        // fprintf(stderr, "ref count on lookup: %d\n",
-        //        instrumentr_object_get_ref_count(result->second));
         return result->second;
     } else if (create) {
         return instrumentr_state_promise_table_create(state, r_promise);
@@ -534,13 +534,10 @@ instrumentr_state_function_table_insert(instrumentr_state_t state,
     bool inserted = result.second;
 
     if (!inserted) {
-        /* TODO: remove this from package as well */
+        /* TODO: this means the object was deallocated when tracing was
+         * disabled. */
         instrumentr_model_kill(result.first->second);
         result.first->second = function;
-        // TODO: uncommenting this causes errors. fix them!
-        // instrumentr_log_error(
-        //    "unable to insert a new function object to function map,
-        //    perhaps " "the cache has not been cleaned of old objects?");
     }
 
     instrumentr_model_acquire(function);
@@ -554,7 +551,7 @@ void instrumentr_state_function_table_remove(instrumentr_state_t state,
 
     /* this means the function is already present (it is not alien) */
     if (result != state->function_table->end()) {
-        instrumentr_model_release(result->second);
+        instrumentr_model_kill(result->second);
         state->function_table->erase(r_closure);
     }
 }
