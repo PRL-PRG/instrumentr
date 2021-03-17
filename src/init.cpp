@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <instrumentr/api.h>
 #include "instrumentr_internals.h"
 #include "trace.h"
@@ -27,7 +23,12 @@ extern "C" {
 
 #include <stdio.h>
 
-#define DECLARE_BINDING(NAME, PARAMETERS) {#NAME, (DL_FUNC) &r_##NAME, PARAMETERS}
+#define DECLARE_BINDING(NAME, PARAMETERS) \
+    { #NAME, (DL_FUNC) &r_##NAME, PARAMETERS }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 const R_CallMethodDef CallEntries[] = {
 
@@ -180,8 +181,6 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_promise_is_delayed_assign, 1),
     DECLARE_BINDING(instrumentr_promise_is_lazy_load, 1),
     DECLARE_BINDING(instrumentr_promise_is_unknown, 1),
-    DECLARE_BINDING(instrumentr_promise_get_argument, 1),
-    DECLARE_BINDING(instrumentr_promise_get_parameter, 1),
     DECLARE_BINDING(instrumentr_promise_get_call, 1),
 
     /* value */

@@ -79,7 +79,7 @@ void process_promise_argument(instrumentr_state_t state,
     /* NOTE: argument is owned by parameter now */
     instrumentr_model_release(argument);
 
-    instrumentr_promise_set_argument(promise, call, parameter, argument);
+    instrumentr_promise_add_call(promise, call, parameter, argument);
 }
 
 void process_value_argument(instrumentr_state_t state,

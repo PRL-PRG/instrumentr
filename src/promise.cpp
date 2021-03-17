@@ -4,6 +4,7 @@
 #include "argument.h"
 #include "parameter.h"
 #include "call.h"
+#include <vector>
 
 /********************************************************************************
  * definition
@@ -13,8 +14,7 @@ struct instrumentr_promise_impl_t {
     struct instrumentr_model_impl_t model;
     SEXP r_promise;
     instrumentr_promise_type_t type;
-    instrumentr_argument_t argument;
-    instrumentr_parameter_t parameter;
+    std::vector<instrumentr_promise_call_info_t>* call_info_seq;
     instrumentr_call_t call;
 };
 
@@ -29,25 +29,28 @@ void instrumentr_promise_finalize(instrumentr_model_t model) {
 
     switch (promise->type) {
     case INSTRUMENTR_PROMISE_TYPE_ARGUMENT:
-        instrumentr_model_release(promise->argument);
-        instrumentr_model_release(promise->parameter);
-        instrumentr_model_release(promise->call);
+        for (int i = 0; i < promise->call_info_seq->size(); ++i) {
+            auto& call_info = promise->call_info_seq->at(i);
+            instrumentr_model_release(call_info.argument);
+            instrumentr_model_release(call_info.parameter);
+            instrumentr_model_release(call_info.call);
+        }
+        delete promise->call_info_seq;
+        promise->call_info_seq = NULL;
         break;
     case INSTRUMENTR_PROMISE_TYPE_LAZY_LOAD:
         instrumentr_model_release(promise->call);
+        promise->call = NULL;
         break;
 
     case INSTRUMENTR_PROMISE_TYPE_DELAYED_ASSIGN:
         instrumentr_model_release(promise->call);
+        promise->call = NULL;
         break;
 
     case INSTRUMENTR_PROMISE_TYPE_UNKNOWN:
         break;
     }
-
-    promise->argument = NULL;
-    promise->parameter = NULL;
-    promise->call = NULL;
 }
 
 /********************************************************************************
@@ -68,8 +71,7 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
     promise->r_promise = r_promise;
 
     promise->type = INSTRUMENTR_PROMISE_TYPE_UNKNOWN;
-    promise->argument = nullptr;
-    promise->parameter = nullptr;
+    promise->call_info_seq = new std::vector<instrumentr_promise_call_info_t>();
     promise->call = nullptr;
 
     return promise;
@@ -175,19 +177,23 @@ SEXP r_instrumentr_promise_is_argument(SEXP r_promise) {
 }
 
 /* mutator */
-void instrumentr_promise_set_argument(instrumentr_promise_t promise,
-                                      instrumentr_call_t call,
-                                      instrumentr_parameter_t parameter,
-                                      instrumentr_argument_t argument) {
+void instrumentr_promise_add_call(instrumentr_promise_t promise,
+                                  instrumentr_call_t call,
+                                  instrumentr_parameter_t parameter,
+                                  instrumentr_argument_t argument) {
+    /* if promis is already an argument promise then warn and release the
+     * current call */
     promise->type = INSTRUMENTR_PROMISE_TYPE_ARGUMENT;
 
-    promise->call = call;
+    instrumentr_promise_call_info_t call_info;
+    call_info.call = call;
+    call_info.parameter = parameter;
+    call_info.argument = argument;
+
+    promise->call_info_seq->push_back(call_info);
+
     instrumentr_model_acquire(call);
-
-    promise->parameter = parameter;
     instrumentr_model_acquire(parameter);
-
-    promise->argument = argument;
     instrumentr_model_acquire(argument);
 }
 
@@ -225,48 +231,12 @@ SEXP r_instrumentr_promise_is_unknown(SEXP r_promise) {
 }
 
 /********************************************************************************
- * argument
+ * call_info_seq
  *******************************************************************************/
 
-/* accessor  */
-instrumentr_argument_t
-instrumentr_promise_get_argument(instrumentr_promise_t promise) {
-    if (promise->type == INSTRUMENTR_PROMISE_TYPE_ARGUMENT) {
-        return promise->argument;
-    }
-    instrumentr_log_error(
-        "attempt to get argument from a non argument promise");
-    /* NOTE: not executed */
-    return NULL;
-}
-
-SEXP r_instrumentr_promise_get_argument(SEXP r_promise) {
-    instrumentr_promise_t promise = instrumentr_promise_unwrap(r_promise);
-    instrumentr_argument_t argument = instrumentr_promise_get_argument(promise);
-    return instrumentr_argument_wrap(argument);
-}
-
-/********************************************************************************
- * parameter
- *******************************************************************************/
-
-/* accessor  */
-instrumentr_parameter_t
-instrumentr_promise_get_parameter(instrumentr_promise_t promise) {
-    if (promise->type == INSTRUMENTR_PROMISE_TYPE_ARGUMENT) {
-        return promise->parameter;
-    }
-    instrumentr_log_error(
-        "attempt to get parameter from a non parameter promise");
-    /* NOTE: not executed */
-    return NULL;
-}
-
-SEXP r_instrumentr_promise_get_parameter(SEXP r_promise) {
-    instrumentr_promise_t promise = instrumentr_promise_unwrap(r_promise);
-    instrumentr_parameter_t parameter =
-        instrumentr_promise_get_parameter(promise);
-    return instrumentr_parameter_wrap(parameter);
+const std::vector<instrumentr_promise_call_info_t>&
+instrumentr_promise_get_call_info(instrumentr_promise_t promise) {
+    return *promise->call_info_seq;
 }
 
 /********************************************************************************
@@ -275,9 +245,10 @@ SEXP r_instrumentr_promise_get_parameter(SEXP r_promise) {
 
 /* accessor  */
 instrumentr_call_t instrumentr_promise_get_call(instrumentr_promise_t promise) {
-    if (promise->type == INSTRUMENTR_PROMISE_TYPE_UNKNOWN) {
+    if (promise->type == INSTRUMENTR_PROMISE_TYPE_UNKNOWN ||
+        promise->type == INSTRUMENTR_PROMISE_TYPE_ARGUMENT) {
         instrumentr_log_error(
-            "attempt to get call from a promise with unknown type");
+            "attempt to get call from an unknown or argument promise");
         /* NOTE: not executed */
         return NULL;
     }

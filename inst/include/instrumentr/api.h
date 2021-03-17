@@ -2,6 +2,7 @@
 #define INSTRUMENTR_API_H
 
 #include <instrumentr/types.h>
+#include <vector>
 
 /********************************************************************************
  interop
@@ -429,23 +430,14 @@
           instrumentr_promise_type_t,                                          \
           instrumentr_promise_t promise)                                       \
     MACRO(instrumentr_promise_is_argument, int, instrumentr_promise_t promise) \
-    MACRO(instrumentr_promise_set_argument,                                    \
-          void,                                                                \
-          instrumentr_promise_t promise,                                       \
-          instrumentr_call_t call,                                             \
-          instrumentr_parameter_t parameter,                                   \
-          instrumentr_argument_t argument)                                     \
     MACRO(instrumentr_promise_is_delayed_assign,                               \
           int,                                                                 \
           instrumentr_promise_t promise)                                       \
     MACRO(                                                                     \
         instrumentr_promise_is_lazy_load, int, instrumentr_promise_t promise)  \
     MACRO(instrumentr_promise_is_unknown, int, instrumentr_promise_t promise)  \
-    MACRO(instrumentr_promise_get_argument,                                    \
-          instrumentr_argument_t,                                              \
-          instrumentr_promise_t promise)                                       \
-    MACRO(instrumentr_promise_get_parameter,                                   \
-          instrumentr_parameter_t,                                             \
+    MACRO(instrumentr_promise_get_call_info,                                   \
+          const std::vector<instrumentr_promise_call_info_t>&,                 \
           instrumentr_promise_t promise)                                       \
     MACRO(instrumentr_promise_get_call,                                        \
           instrumentr_call_t,                                                  \

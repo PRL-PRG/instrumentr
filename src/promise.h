@@ -1,13 +1,14 @@
 #ifndef INSTRUMENTR_PROMISE_H
 #define INSTRUMENTR_PROMISE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include <vector>
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 #include "model.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /********************************************************************************
  * create
@@ -60,10 +61,10 @@ int instrumentr_promise_is_argument(instrumentr_promise_t promise);
 SEXP r_instrumentr_promise_is_argument(SEXP r_promise);
 
 /* mutator */
-void instrumentr_promise_set_argument(instrumentr_promise_t promise,
-                                      instrumentr_call_t call,
-                                      instrumentr_parameter_t parameter,
-                                      instrumentr_argument_t argument);
+void instrumentr_promise_add_call(instrumentr_promise_t promise,
+                                  instrumentr_call_t call,
+                                  instrumentr_parameter_t parameter,
+                                  instrumentr_argument_t argument);
 
 /* accessor  */
 int instrumentr_promise_is_delayed_assign(instrumentr_promise_t promise);
@@ -78,22 +79,11 @@ int instrumentr_promise_is_unknown(instrumentr_promise_t promise);
 SEXP r_instrumentr_promise_is_unknown(SEXP r_promise);
 
 /********************************************************************************
- * argument
+ * call_info_seq
  *******************************************************************************/
 
-/* accessor  */
-instrumentr_argument_t
-instrumentr_promise_get_argument(instrumentr_promise_t promise);
-SEXP r_instrumentr_promise_get_argument(SEXP r_promise);
-
-/********************************************************************************
- * parameter
- *******************************************************************************/
-
-/* accessor  */
-instrumentr_parameter_t
-instrumentr_promise_get_parameter(instrumentr_promise_t promise);
-SEXP r_instrumentr_promise_get_parameter(SEXP r_promise);
+const std::vector<instrumentr_promise_call_info_t>&
+instrumentr_promise_get_call_info(instrumentr_promise_t promise);
 
 /********************************************************************************
  * call
