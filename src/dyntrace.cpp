@@ -28,7 +28,7 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_eval_entry_callback(dyntracer, dyntrace_eval_entry);
     dyntracer_set_eval_exit_callback(dyntracer, dyntrace_eval_exit);
     dyntracer_set_gc_allocate_callback(dyntracer, dyntrace_gc_allocation);
-    dyntracer_set_gc_unmark_callback(dyntracer, dyntrace_gc_unmark);
+    dyntracer_set_gc_deallocate_callback(dyntracer, dyntrace_gc_deallocate);
     dyntracer_set_promise_force_entry_callback(dyntracer,
                                                dyntrace_promise_force_entry);
     dyntracer_set_promise_force_exit_callback(dyntracer,
@@ -361,7 +361,7 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
     }
 }
 
-void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object) {
+void dyntrace_gc_deallocate(dyntracer_t* dyntracer, SEXP r_object) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
     instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
@@ -369,9 +369,9 @@ void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object) {
     if (TYPEOF(r_object) == CLOSXP) {
         instrumentr_application_t application =
             instrumentr_tracer_get_application(tracer);
-
         instrumentr_state_function_table_remove(state, r_object);
-    } else if (TYPEOF(r_object) == PROMSXP) {
+    }
+    else if (TYPEOF(r_object) == PROMSXP) {
         instrumentr_state_promise_table_remove(state, r_object);
     }
 }

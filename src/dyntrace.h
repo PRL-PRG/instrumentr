@@ -81,7 +81,7 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
                               const SEXP r_value,
                               const SEXP r_rho);
 
-void dyntrace_gc_unmark(dyntracer_t* dyntracer, SEXP r_object);
+void dyntrace_gc_deallocate(dyntracer_t* dyntracer, SEXP r_object);
 
 void dyntrace_promise_force_entry(dyntracer_t* dyntracer, SEXP r_promise);
 

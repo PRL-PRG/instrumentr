@@ -3,6 +3,8 @@
 
 #include <instrumentr/types.h>
 #include <vector>
+#include <string>
+#include <utility>
 
 /********************************************************************************
  interop
@@ -31,7 +33,17 @@
     MACRO(instrumentr_r_externalptr_to_c_pointer, void*, SEXP r_pointer)      \
     MACRO(instrumentr_r_externalptr_clear, void, SEXP r_externalptr)          \
     MACRO(instrumentr_create_list, SEXP, int column_count, ...)               \
-    MACRO(instrumentr_create_data_frame, SEXP, int column_count, ...)
+    MACRO(instrumentr_create_data_frame, SEXP, int column_count, ...)         \
+    MACRO(instrumentr_sexp_to_string,                                         \
+          std::vector<std::string>,                                           \
+          SEXP r_expr,                                                        \
+          bool collapse)                                                      \
+    MACRO(instrumentr_string_encode, std::string, const std::string& src)     \
+    MACRO(r_instrumentr_string_encode, SEXP, SEXP r_src)                      \
+    MACRO(instrumentr_string_decode, std::string, const std::string& src)     \
+    MACRO(r_instrumentr_string_decode, SEXP, SEXP r_src)                      \
+    MACRO(instrumentr_compute_hash, std::string, const std::string& src)      \
+    MACRO(r_instrumentr_compute_hash, SEXP, SEXP r_src, SEXP r_collapse)
 
 /********************************************************************************
  OBJECT API
@@ -39,7 +51,9 @@
 
 #define INSTRUMENTR_OBJECT_API_MAP(MACRO)                \
     MACRO(instrumentr_object_acquire, int, void* object) \
-    MACRO(instrumentr_object_release, int, void* object)
+    MACRO(instrumentr_object_release, int, void* object) \
+    MACRO(instrumentr_object_get_reference_count, int, void* object) // \
+    //MACRO(r_instrumentr_object_get_reference_count, int, void* object)
 
 #define INSTRUMENTR_MODEL_API_MAP(MACRO)                           \
     MACRO(instrumentr_model_get_id, instrumentr_id_t, void* model) \

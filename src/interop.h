@@ -1,11 +1,14 @@
 #ifndef INSTRUMENTR_INTEROP_H
 #define INSTRUMENTR_INTEROP_H
 
+#include <instrumentr/Rincludes.h>
+#include <utility>
+#include <string>
+#include <vector>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <instrumentr/Rincludes.h>
 
 void instrumentr_log_error(const char* fmt, ...);
 
@@ -44,6 +47,17 @@ SEXP r_instrumentr_get_object_details(SEXP r_value,
                                       SEXP r_variable,
                                       SEXP r_environment,
                                       SEXP r_peek);
+
+std::vector<std::string> instrumentr_sexp_to_string(SEXP r_expr, bool collapse);
+
+std::string instrumentr_string_encode(const std::string& src);
+SEXP r_instrumentr_string_encode(SEXP r_src);
+
+std::string instrumentr_string_decode(const std::string& src);
+SEXP r_instrumentr_string_decode(SEXP r_src);
+
+std::string instrumentr_compute_hash(const std::string& src);
+SEXP r_instrumentr_compute_hash(SEXP r_src, SEXP r_collapse);
 
 #ifdef __cplusplus
 }
