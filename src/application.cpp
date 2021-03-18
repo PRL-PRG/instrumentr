@@ -97,7 +97,7 @@ SEXP r_instrumentr_application_create(SEXP r_state,
  *******************************************************************************/
 
 INSTRUMENTR_MODEL_INTEROP_DEFINE_API(application,
-                                     INSTRUMENTR_MODEL_TYPE_APPLICATION);
+                                     INSTRUMENTR_MODEL_TYPE_APPLICATION)
 
 /*******************************************************************************
  * name

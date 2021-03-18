@@ -162,7 +162,7 @@ instrumentr_function_create_closure(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(function, INSTRUMENTR_MODEL_TYPE_FUNCTION);
+INSTRUMENTR_MODEL_INTEROP_DEFINE_API(function, INSTRUMENTR_MODEL_TYPE_FUNCTION)
 
 /********************************************************************************
  * type

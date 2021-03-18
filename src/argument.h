@@ -28,7 +28,7 @@ instrumentr_argument_create_from_value(instrumentr_state_t state,
  *******************************************************************************/
 
 INSTRUMENTR_MODEL_INTEROP_DECLARE_API(argument,
-                                      INSTRUMENTR_MODEL_TYPE_ARGUMENT);
+                                      INSTRUMENTR_MODEL_TYPE_ARGUMENT)
 
 /********************************************************************************
  * name
