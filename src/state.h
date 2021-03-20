@@ -4,6 +4,7 @@
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/types.h>
 #include "object.h"
+#include <vector>
 
 #ifdef __cplusplus
 extern "C" {
@@ -157,69 +158,60 @@ void instrumentr_state_promise_table_clear(instrumentr_state_t state);
  *******************************************************************************/
 
 instrumentr_function_t
-instrumentr_state_function_table_lookup(instrumentr_state_t state,
-                                        SEXP r_closure,
-                                        SEXP r_call);
-
-instrumentr_function_t
-instrumentr_state_function_table_insert(instrumentr_state_t state,
-                                        instrumentr_function_t function,
-                                        SEXP r_closure);
+instrumentr_state_function_table_create(instrumentr_state_t state,
+                                        SEXP r_function);
 
 void instrumentr_state_function_table_remove(instrumentr_state_t state,
-                                             SEXP r_closure);
+                                             SEXP r_function);
 
 instrumentr_function_t
-instrumentr_state_function_table_add(instrumentr_state_t state, SEXP r_closure);
-
-void instrumentr_state_function_table_update_name(instrumentr_state_t state,
-                                                  SEXP r_symbol,
-                                                  SEXP r_value,
-                                                  SEXP r_rho);
-
-SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
-                                                          SEXP r_package,
-                                                          SEXP r_name,
-                                                          SEXP r_closure,
-                                                          SEXP r_rho,
-                                                          SEXP r_pub,
-                                                          SEXP r_s3_generic,
-                                                          SEXP r_s3_method);
+instrumentr_state_function_table_lookup(instrumentr_state_t state,
+                                        SEXP r_function,
+                                        int create);
 
 void instrumentr_state_function_table_clear(instrumentr_state_t state);
 
 /*******************************************************************************
- * package_table
+ * environment_table
  *******************************************************************************/
 
-/* accessor */
-int instrumentr_state_get_package_count(instrumentr_state_t state);
+void instrumentr_state_environment_table_initialize(instrumentr_state_t state);
 
-SEXP r_instrumentr_state_get_package_count(SEXP r_application);
+instrumentr_environment_t
+instrumentr_state_environment_table_create(instrumentr_state_t state,
+                                           SEXP r_environment);
 
-/* accessor */
-instrumentr_package_t instrumentr_state_get_package(instrumentr_state_t state,
-                                                    const char* name);
-SEXP r_instrumentr_state_get_package(SEXP r_state, SEXP r_name);
+void instrumentr_state_environment_table_remove(instrumentr_state_t state,
+                                                SEXP r_environment);
 
-/* accessor */
-instrumentr_package_t
-instrumentr_state_get_base_package(instrumentr_state_t state);
-SEXP r_instrumentr_state_get_base_package(SEXP r_state);
+instrumentr_environment_t
+instrumentr_state_environment_table_lookup(instrumentr_state_t state,
+                                           SEXP r_environment,
+                                           int create);
 
-/* mutator  */
-void instrumentr_state_add_package(instrumentr_state_t state,
-                                   instrumentr_package_t package);
-SEXP r_instrumentr_state_add_package(SEXP r_state, SEXP r_package);
+void instrumentr_state_environment_table_clear(instrumentr_state_t state);
 
-/* mutator  */
-void instrumentr_state_remove_package(instrumentr_state_t state,
-                                      instrumentr_package_t package);
+instrumentr_environment_t
+instrumentr_state_environment_table_lookup_package(instrumentr_state_t state,
+                                                   const char* package_name);
 
-/* accessor */
-SEXP r_instrumentr_state_get_packages(SEXP r_application);
+instrumentr_environment_t
+instrumentr_state_environment_table_lookup_namespace(instrumentr_state_t state,
+                                                     const char* package_name);
 
-void instrumentr_state_package_table_clear(instrumentr_state_t state);
+instrumentr_environment_t
+instrumentr_state_environment_table_update_namespace(instrumentr_state_t state,
+                                                     const char* name);
+
+std::vector<instrumentr_environment_t>
+instrumentr_state_get_packages(instrumentr_state_t state);
+
+SEXP r_instrumentr_state_get_packages(SEXP r_state);
+
+std::vector<instrumentr_environment_t>
+instrumentr_state_get_namespaces(instrumentr_state_t state);
+
+SEXP r_instrumentr_state_get_namespaces(SEXP r_state);
 
 #ifdef __cplusplus
 }

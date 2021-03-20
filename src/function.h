@@ -13,46 +13,14 @@ extern "C" {
  * create
  *******************************************************************************/
 
-instrumentr_function_t
-instrumentr_function_create_builtin(instrumentr_state_t state,
-                                    int funtab_index,
-                                    const char* name,
-                                    int parameter_count,
-                                    CCODE ccode,
-                                    int internal);
-
-instrumentr_function_t
-instrumentr_function_create_special(instrumentr_state_t state,
-                                    int funtab_index,
-                                    const char* name,
-                                    int parameter_count,
-                                    CCODE ccode,
-                                    int internal);
-
-instrumentr_function_t
-instrumentr_function_create_closure(instrumentr_state_t state,
-                                    const char* name,
-                                    int parameter_count,
-                                    SEXP sexp,
-                                    instrumentr_function_t parent,
-                                    int pub,
-                                    int s3_generic,
-                                    int s3_method);
-
-SEXP r_instrumentr_function_create_closure(SEXP r_state,
-                                           SEXP r_name,
-                                           SEXP r_parameter_count,
-                                           SEXP r_definition,
-                                           SEXP r_public,
-                                           SEXP r_s3_generic,
-                                           SEXP r_s3_method);
+instrumentr_function_t instrumentr_function_create(instrumentr_state_t state,
+                                                   SEXP r_function);
 
 /********************************************************************************
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(function,
-                                      INSTRUMENTR_MODEL_TYPE_FUNCTION)
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(function, INSTRUMENTR_MODEL_TYPE_FUNCTION)
 
 /********************************************************************************
  * type
@@ -90,9 +58,17 @@ void instrumentr_function_set_name(instrumentr_function_t function,
  *******************************************************************************/
 
 /* accessor  */
-instrumentr_function_definition_t
-instrumentr_function_get_definition(instrumentr_function_t function);
+SEXP instrumentr_function_get_definition(instrumentr_function_t function);
 SEXP r_instrumentr_function_get_definition(SEXP r_function);
+
+/********************************************************************************
+ * environment
+ *******************************************************************************/
+
+/* accessor  */
+instrumentr_environment_t
+instrumentr_function_get_environment(instrumentr_function_t function);
+SEXP r_instrumentr_function_get_environment(SEXP r_function);
 
 /********************************************************************************
  * parent
@@ -118,14 +94,14 @@ int instrumentr_function_get_parameter_count(instrumentr_function_t function);
 SEXP r_instrumentr_function_get_parameter_count(SEXP r_function);
 
 /********************************************************************************
- * pub
+ * exported
  *******************************************************************************/
 
 /* accessor  */
-int instrumentr_function_is_public(instrumentr_function_t function);
-SEXP r_instrumentr_function_is_public(SEXP r_function);
+int instrumentr_function_is_exported(instrumentr_function_t function);
+SEXP r_instrumentr_function_is_exported(SEXP r_function);
 /* mutator */
-void instrumentr_function_set_public(instrumentr_function_t function, int pub);
+void instrumentr_function_set_exported(instrumentr_function_t function);
 
 /********************************************************************************
  * s3_generic
@@ -134,9 +110,6 @@ void instrumentr_function_set_public(instrumentr_function_t function, int pub);
 /* accessor  */
 int instrumentr_function_is_s3_generic(instrumentr_function_t function);
 SEXP r_instrumentr_function_is_s3_generic(SEXP r_function);
-/* mutator */
-void instrumentr_function_set_s3_generic(instrumentr_function_t function,
-                                         int s3_generic);
 
 /********************************************************************************
  * s3_method
@@ -145,9 +118,38 @@ void instrumentr_function_set_s3_generic(instrumentr_function_t function,
 /* accessor  */
 int instrumentr_function_is_s3_method(instrumentr_function_t function);
 SEXP r_instrumentr_function_is_s3_method(SEXP r_function);
+
+/********************************************************************************
+ * object_class
+ *******************************************************************************/
+
 /* mutator */
-void instrumentr_function_set_s3_method(instrumentr_function_t function,
-                                        int s3_method);
+void instrumentr_function_set_object_class(instrumentr_function_t function,
+                                           const char* object_class);
+
+/********************************************************************************
+ * generic_name
+ *******************************************************************************/
+
+/* mutator */
+void instrumentr_function_set_generic_name(instrumentr_function_t function,
+                                           const char* generic_name);
+
+/********************************************************************************
+ * internal
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_function_is_internal(instrumentr_function_t function);
+SEXP r_instrumentr_function_is_internal(SEXP r_function);
+
+/********************************************************************************
+ * primitive
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_function_is_primitive(instrumentr_function_t function);
+SEXP r_instrumentr_function_is_primitive(SEXP r_function);
 
 #ifdef __cplusplus
 }

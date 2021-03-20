@@ -1,7 +1,5 @@
 #include "funtab.h"
 #include "r_internals.h"
-#include "function.h"
-#include "object.h"
 
 /* Information for Deparsing Expressions */
 typedef enum {
@@ -66,43 +64,6 @@ typedef struct {
     PPinfo gram; /* pretty-print info */
 } FUNTAB;
 
-int instrumentr_funtab_get_index(SEXP op) {
-    return op->u.primsxp.offset;
-}
-
-FUNTAB* get_funtab_entry(int index) {
-    FUNTAB* R_FunTab = (FUNTAB*) dyntrace_get_funtab();
-    return R_FunTab + index;
-}
-
-CCODE instrumentr_funtab_get_definition(FUNTAB* entry) {
-    return entry->cfun;
-}
-
-const char* instrumentr_funtab_get_name(FUNTAB* entry) {
-    return entry->name;
-}
-
-int instrumentr_funtab_get_parameter_count(FUNTAB* entry) {
-    return entry->arity;
-}
-
-int instrumentr_funtab_is_internal(FUNTAB* entry) {
-    return ((entry->eval % 100) / 10) == 1;
-}
-
-int instrumentr_funtab_is_primitive(FUNTAB* entry) {
-    return !instrumentr_funtab_is_internal(entry);
-}
-
-int instrumentr_funtab_is_builtin(FUNTAB* entry) {
-    return (entry->eval % 10) == 1;
-}
-
-int instrumentr_funtab_is_special(FUNTAB* entry) {
-    return !instrumentr_funtab_is_builtin(entry);
-}
-
 int instrumentr_funtab_get_size() {
     FUNTAB* R_FunTab = (FUNTAB*) dyntrace_get_funtab();
     int size = 0;
@@ -112,20 +73,44 @@ int instrumentr_funtab_get_size() {
     return size;
 }
 
-instrumentr_function_t
-instrumentr_funtab_create_function(instrumentr_state_t state, int index) {
-    FUNTAB* entry = get_funtab_entry(index);
-    int builtin = instrumentr_funtab_is_builtin(entry);
-    const char* name = instrumentr_funtab_get_name(entry);
-    int parameter_count = instrumentr_funtab_get_parameter_count(entry);
-    int internal = instrumentr_funtab_is_internal(entry);
-    CCODE ccode = instrumentr_funtab_get_definition(entry);
+int instrumentr_funtab_get_index(SEXP op) {
+    return op->u.primsxp.offset;
+}
 
-    if (builtin) {
-        return instrumentr_function_create_builtin(
-            state, index, name, parameter_count, ccode, internal);
-    } else {
-        return instrumentr_function_create_special(
-            state, index, name, parameter_count, ccode, internal);
-    }
+FUNTAB* get_funtab_entry(int index) {
+    FUNTAB* R_FunTab = (FUNTAB*) dyntrace_get_funtab();
+    return R_FunTab + index;
+}
+
+CCODE instrumentr_funtab_get_definition(int index) {
+    FUNTAB* entry = get_funtab_entry(index);
+    return entry->cfun;
+}
+
+const char* instrumentr_funtab_get_name(int index) {
+    FUNTAB* entry = get_funtab_entry(index);
+    return entry->name;
+}
+
+int instrumentr_funtab_get_parameter_count(int index) {
+    FUNTAB* entry = get_funtab_entry(index);
+    return entry->arity;
+}
+
+int instrumentr_funtab_is_internal(int index) {
+    FUNTAB* entry = get_funtab_entry(index);
+    return ((entry->eval % 100) / 10) == 1;
+}
+
+int instrumentr_funtab_is_primitive(int index) {
+    return !instrumentr_funtab_is_internal(index);
+}
+
+int instrumentr_funtab_is_builtin(int index) {
+    FUNTAB* entry = get_funtab_entry(index);
+    return (entry->eval % 10) == 1;
+}
+
+int instrumentr_funtab_is_special(int index) {
+    return !instrumentr_funtab_is_builtin(index);
 }

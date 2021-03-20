@@ -92,6 +92,10 @@ void r_instrumentr_model_release(SEXP r_model) {
 }
 
 SEXP instrumentr_model_wrap(instrumentr_model_t model) {
+    if (model == NULL) {
+        instrumentr_log_error("cannot wrap NULL model object");
+    }
+
     SEXP r_model = instrumentr_c_pointer_to_r_externalptr(
         model, R_NilValue, R_NilValue, r_instrumentr_model_release);
     PROTECT(r_model);

@@ -29,7 +29,7 @@ void instrumentr_promise_finalize(instrumentr_model_t model) {
 
     switch (promise->type) {
     case INSTRUMENTR_PROMISE_TYPE_ARGUMENT:
-        for (int i = 0; i < promise->call_info_seq->size(); ++i) {
+        for (std::size_t i = 0; i < promise->call_info_seq->size(); ++i) {
             auto& call_info = promise->call_info_seq->at(i);
             instrumentr_model_release(call_info.argument);
             instrumentr_model_release(call_info.parameter);

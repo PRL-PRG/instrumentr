@@ -39,8 +39,8 @@ get_parent.instrumentr_function <- function(object, ...) { # nolint
 
 #' @export
 #' @rdname function
-is_public.instrumentr_function <- function(object, ...) {
-    .Call(C_instrumentr_function_is_public, object)
+is_exported.instrumentr_function <- function(object, ...) {
+    .Call(C_instrumentr_function_is_exported, object)
 }
 
 #' @export

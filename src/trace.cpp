@@ -6,7 +6,7 @@
 #include "callback.h"
 #include "application.h"
 #include "function.h"
-#include "package.h"
+#include "environment.h"
 #include "call.h"
 #include "parameter.h"
 #include "argument.h"
@@ -33,43 +33,44 @@
     CODE;                               \
     instrumentr_tracer_reinstate(tracer);
 
-#define INVOKE_CALLBACK(NAME, TRACER, INIT, CCALL, RCALL, FIN)               \
-    TRACER;                                                                  \
-    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);        \
-    INIT;                                                                    \
-    instrumentr_state_increment_time(state);                                 \
-    if (instrumentr_tracer_has_callback(tracer, NAME)) {                     \
-        instrumentr_callback_t callback =                                    \
-            instrumentr_tracer_get_callback(tracer, NAME);                   \
-                                                                             \
-        clock_t begin = clock();                                             \
-                                                                             \
-        initialize_callback_invocation(tracer, callback);                    \
-                                                                             \
-        if (instrumentr_callback_has_c_function(callback)) {                 \
-            NAME##_FUNCTION_T cfun =                                         \
-                (NAME##_FUNCTION_T) instrumentr_callback_get_c_function(     \
-                    callback);                                               \
-            CCALL;                                                           \
-        } else {                                                             \
-            SEXP r_callback = instrumentr_callback_wrap(callback);           \
-            SEXP r_state = instrumentr_state_wrap(state);                    \
-            instrumentr_event_t event =                                      \
-                instrumentr_callback_get_event(callback);                    \
-            const char* name = instrumentr_event_to_string(event);           \
-            SEXP r_name = Rf_install(name);                                  \
-            SEXP r_environment = instrumentr_tracer_get_environment(tracer); \
-            RCALL;                                                           \
-        }                                                                    \
-                                                                             \
-        finalize_callback_invocation(tracer);                                \
-                                                                             \
-        clock_t end = clock();                                               \
-                                                                             \
-        clock_t diff = end - begin;                                          \
-                                                                             \
-        UPDATE_EXEC_STATS(NAME, state, diff);                                \
-    }                                                                        \
+#define INVOKE_CALLBACK(NAME, TRACER, INIT, CCALL, RCALL, FIN)           \
+    TRACER;                                                              \
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);    \
+    INIT;                                                                \
+    instrumentr_state_increment_time(state);                             \
+    if (instrumentr_tracer_has_callback(tracer, NAME)) {                 \
+        instrumentr_callback_t callback =                                \
+            instrumentr_tracer_get_callback(tracer, NAME);               \
+                                                                         \
+        clock_t begin = clock();                                         \
+                                                                         \
+        initialize_callback_invocation(tracer, callback);                \
+                                                                         \
+        if (instrumentr_callback_has_c_function(callback)) {             \
+            NAME##_FUNCTION_T cfun =                                     \
+                (NAME##_FUNCTION_T) instrumentr_callback_get_c_function( \
+                    callback);                                           \
+            CCALL;                                                       \
+        } else {                                                         \
+            SEXP r_callback = instrumentr_callback_wrap(callback);       \
+            SEXP r_state = instrumentr_state_wrap(state);                \
+            instrumentr_event_t event =                                  \
+                instrumentr_callback_get_event(callback);                \
+            const char* name = instrumentr_event_to_string(event);       \
+            SEXP r_name = Rf_install(name);                              \
+            SEXP r_callback_environment =                                \
+                instrumentr_tracer_get_environment(tracer);              \
+            RCALL;                                                       \
+        }                                                                \
+                                                                         \
+        finalize_callback_invocation(tracer);                            \
+                                                                         \
+        clock_t end = clock();                                           \
+                                                                         \
+        clock_t diff = end - begin;                                      \
+                                                                         \
+        UPDATE_EXEC_STATS(NAME, state, diff);                            \
+    }                                                                    \
     FIN;
 
 #define UPDATE_EXEC_STATS(NAME, state, time)     \
@@ -100,6 +101,7 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
 
     SEXP r_result = R_NilValue;
 
+    instrumentr_tracer_enable(tracer);
 #ifdef USING_DYNTRACE
     r_result = dyntrace_trace_code(instrumentr_tracer_get_dyntracer(tracer),
                                    r_code,
@@ -108,6 +110,7 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
 #else
     r_result = Rf_eval(r_code, r_environment);
 #endif /* USING_DYNTRACE */
+    instrumentr_tracer_disable(tracer);
 
     clock_t end = clock();
 
@@ -120,157 +123,218 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
     return r_result;
 }
 
-SEXP r_instrumentr_trace_tracing_entry(SEXP r_tracer, SEXP r_application) {
+SEXP r_instrumentr_trace_tracing_entry(SEXP r_tracer,
+                                       SEXP r_workdir,
+                                       SEXP r_code,
+                                       SEXP r_appenv) {
     INVOKE_CALLBACK(/* NAME */
                     INSTRUMENTR_EVENT_TRACING_ENTRY,
                     /* TRACER  */
                     UNWRAP(tracer),
                     // instrumentr_tracer_enable(tracer),
                     /* INIT */
-                    NOTRACE(UNWRAP(application));
-                    instrumentr_tracer_set_application(tracer, application),
+                    NOTRACE(instrumentr_tracer_initialize_tracing(
+                                tracer,
+                                CHAR(STRING_ELT(r_workdir, 0)),
+                                r_code,
+                                r_appenv);
+                            instrumentr_application_t application =
+                                instrumentr_tracer_get_application(tracer));
+                    ,
                     /* CCALL */
                     NOTRACE(cfun(tracer, callback, state, application)),
                     /* RCALL */
+                    WRAP(application);
                     Rf_eval(Rf_lang5(r_name,
                                      r_tracer,
                                      r_callback,
                                      r_state,
                                      r_application),
-                            r_environment),
+                            r_callback_environment);
+                    UNPROTECT(1);
+                    ,
                     /* FIN */
     );
 
     return R_NilValue;
 }
 
-SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application) {
+SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer) {
     INVOKE_CALLBACK(/* NAME */
                     INSTRUMENTR_EVENT_TRACING_EXIT,
                     /* TRACER  */
                     UNWRAP(tracer),
                     /* INIT */
-                    ,
+                    instrumentr_application_t application =
+                        instrumentr_tracer_get_application(tracer),
                     /* CCALL */
-                    NOTRACE(UNWRAP(application);
-                            cfun(tracer, callback, state, application)),
+                    cfun(tracer, callback, state, application),
                     /* RCALL */
+                    WRAP(application);
                     Rf_eval(Rf_lang5(r_name,
                                      r_tracer,
                                      r_callback,
                                      r_state,
                                      r_application),
-                            r_environment),
+                            r_callback_environment);
+                    UNPROTECT(1);
+                    ,
                     /* FIN */
-                    instrumentr_tracer_remove_application(tracer));
+    );
 
     SEXP r_result = instrumentr_tracer_finalize_tracing(tracer);
     return r_result;
 }
 
-SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
-                                      SEXP r_application,
-                                      SEXP r_package) {
+SEXP r_instrumentr_trace_package_load(SEXP r_tracer, SEXP r_package_name) {
+    const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
+    instrumentr_environment_t environment = NULL;
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+    {
+        instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+        environment = instrumentr_state_environment_table_update_namespace(
+            state, package_name);
+    }
+
+    instrumentr_application_t application =
+        instrumentr_tracer_get_application(tracer);
+
     INVOKE_CALLBACK(
         /* NAME */
         INSTRUMENTR_EVENT_PACKAGE_LOAD,
         /* TRACER */
-        UNWRAP(tracer),
+        ,
         /* INIT */
-        NOTRACE(UNWRAP(application); UNWRAP(package);
-                instrumentr_state_add_package(state, package)),
+        ,
         /* CCALL */
-        cfun(tracer, callback, state, application, package),
+        cfun(tracer, callback, state, application, environment),
         /* RCALL */
+        NOTRACE(WRAP(application); WRAP(environment););
         Rf_eval(Rf_lang6(r_name,
                          r_tracer,
                          r_callback,
                          r_state,
                          r_application,
-                         r_package),
-                r_environment),
+                         r_environment),
+                r_callback_environment);
+        UNPROTECT(2);
+        ,
         /* FIN */
     );
 
     return R_NilValue;
 }
 
-SEXP r_instrumentr_trace_package_unload(SEXP r_tracer,
-                                        SEXP r_application,
-                                        SEXP r_package) {
+SEXP r_instrumentr_trace_package_unload(SEXP r_tracer, SEXP r_package_name) {
+    const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+    instrumentr_environment_t environment = NULL;
+    {
+        instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+        environment = instrumentr_state_environment_table_lookup_namespace(
+            state, package_name);
+    }
+
+    instrumentr_application_t application =
+        instrumentr_tracer_get_application(tracer);
+
     INVOKE_CALLBACK(
         /* NAME */
         INSTRUMENTR_EVENT_PACKAGE_UNLOAD,
         /* TRACER */
-        UNWRAP(tracer),
+        ,
         /* INIT  */
-        NOTRACE(UNWRAP(application); UNWRAP(package)),
+        ,
         /* CCALL */
-        cfun(tracer, callback, state, application, package),
+        cfun(tracer, callback, state, application, environment),
         /* RCALL */
+        NOTRACE(WRAP(application); WRAP(environment););
         Rf_eval(Rf_lang6(r_name,
                          r_tracer,
                          r_callback,
                          r_state,
                          r_application,
-                         r_package),
-                r_environment),
-        /* FIN */
-        NOTRACE(instrumentr_state_remove_package(state, package)));
-
-    return R_NilValue;
-}
-
-SEXP r_instrumentr_trace_package_attach(SEXP r_tracer,
-                                        SEXP r_application,
-                                        SEXP r_package) {
-    INVOKE_CALLBACK(
-        /* NAME */
-        INSTRUMENTR_EVENT_PACKAGE_ATTACH,
-        /* TRACER */
-        UNWRAP(tracer),
-        /* INIT */
-        NOTRACE(UNWRAP(package); instrumentr_package_attach(package)),
-        /* CCALL */
-        NOTRACE(UNWRAP(application);
-                cfun(tracer, callback, state, application, package)),
-        /* RCALL */
-        Rf_eval(Rf_lang6(r_name,
-                         r_tracer,
-                         r_callback,
-                         r_state,
-                         r_application,
-                         r_package),
-                r_environment),
+                         r_environment),
+                r_callback_environment);
+        UNPROTECT(2),
         /* FIN */
     );
 
     return R_NilValue;
 }
 
-SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
-                                        SEXP r_application,
-                                        SEXP r_package) {
+SEXP r_instrumentr_trace_package_attach(SEXP r_tracer, SEXP r_package_name) {
+    const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+    instrumentr_environment_t environment = NULL;
+    {
+        instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+        environment = instrumentr_state_environment_table_lookup_package(
+            state, package_name);
+    }
+
+    instrumentr_application_t application =
+        instrumentr_tracer_get_application(tracer);
+
     INVOKE_CALLBACK(
         /* NAME */
-        INSTRUMENTR_EVENT_PACKAGE_DETACH,
+        INSTRUMENTR_EVENT_PACKAGE_ATTACH,
         /* TRACER */
-        UNWRAP(tracer),
+        ,
         /* INIT */
-        NOTRACE(UNWRAP(package)),
-        /* CCALL  */
-        NOTRACE(UNWRAP(application);
-                cfun(tracer, callback, state, application, package)),
+        ,
+        /* CCALL */
+        NOTRACE(cfun(tracer, callback, state, application, environment)),
         /* RCALL */
+        NOTRACE(WRAP(application); WRAP(environment););
         Rf_eval(Rf_lang6(r_name,
                          r_tracer,
                          r_callback,
                          r_state,
                          r_application,
-                         r_package),
-                r_environment),
+                         r_environment),
+                r_callback_environment);
+        UNPROTECT(2),
         /* FIN */
-        NOTRACE(instrumentr_package_detach(package)));
+    );
+
+    return R_NilValue;
+}
+
+SEXP r_instrumentr_trace_package_detach(SEXP r_tracer, SEXP r_package_name) {
+    const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
+    instrumentr_environment_t environment = NULL;
+    {
+        instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+        environment = instrumentr_state_environment_table_lookup_package(
+            state, package_name);
+    }
+
+    instrumentr_application_t application =
+        instrumentr_tracer_get_application(tracer);
+
+    INVOKE_CALLBACK(
+        /* NAME */
+        INSTRUMENTR_EVENT_PACKAGE_DETACH,
+        /* TRACER */
+        ,
+        /* INIT */
+        ,
+        /* CCALL  */
+        NOTRACE(cfun(tracer, callback, state, application, environment)),
+        /* RCALL */
+        NOTRACE(WRAP(application); WRAP(environment););
+        Rf_eval(Rf_lang6(r_name,
+                         r_tracer,
+                         r_callback,
+                         r_state,
+                         r_application,
+                         r_environment),
+                r_callback_environment);
+        UNPROTECT(2),
+        /* FIN */
+    );
 
     return R_NilValue;
 }
@@ -302,7 +366,7 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
                                          r_op,                          \
                                          r_args,                        \
                                          r_rho),                        \
-                                r_environment);                         \
+                                r_callback_environment);                \
                         UNPROTECT(2), );
 
 #    define INVOKE_CALL_EXIT_CALLBACK(NAME)                             \
@@ -332,12 +396,12 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
                                          r_args,                        \
                                          r_rho,                         \
                                          r_result),                     \
-                                r_environment);                         \
+                                r_callback_environment);                \
                         UNPROTECT(2), );
 
 void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_application_t application,
-                                          instrumentr_package_t package,
+                                          instrumentr_environment_t environment,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
@@ -349,11 +413,11 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                          callback,
                          state,
                          application,
-                         package,
+                         environment,
                          function,
                          call),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(package);
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(environment);
                             WRAP(function);
                             WRAP(call););
                     Rf_eval(Rf_lang8(r_name,
@@ -361,10 +425,10 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                                      r_callback,
                                      r_state,
                                      r_application,
-                                     r_package,
+                                     r_environment,
                                      r_function,
                                      r_call),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
                         instrumentr_frame_create_from_call(state, call);
@@ -376,7 +440,7 @@ void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
 
 void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_application_t application,
-                                         instrumentr_package_t package,
+                                         instrumentr_environment_t environment,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
@@ -388,11 +452,11 @@ void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
                          callback,
                          state,
                          application,
-                         package,
+                         environment,
                          function,
                          call),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(package);
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(environment);
                             WRAP(function);
                             WRAP(call););
                     Rf_eval(Rf_lang8(r_name,
@@ -400,10 +464,10 @@ void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
                                      r_callback,
                                      r_state,
                                      r_application,
-                                     r_package,
+                                     r_environment,
                                      r_function,
                                      r_call),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
@@ -412,7 +476,7 @@ void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
 
 void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_application_t application,
-                                          instrumentr_package_t package,
+                                          instrumentr_environment_t environment,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
@@ -424,11 +488,11 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                          callback,
                          state,
                          application,
-                         package,
+                         environment,
                          function,
                          call),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(package);
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(environment);
                             WRAP(function);
                             WRAP(call););
                     Rf_eval(Rf_lang8(r_name,
@@ -436,10 +500,10 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                                      r_callback,
                                      r_state,
                                      r_application,
-                                     r_package,
+                                     r_environment,
                                      r_function,
                                      r_call),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
                         instrumentr_frame_create_from_call(state, call);
@@ -451,7 +515,7 @@ void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
 
 void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_application_t application,
-                                         instrumentr_package_t package,
+                                         instrumentr_environment_t environment,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
@@ -463,11 +527,11 @@ void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
                          callback,
                          state,
                          application,
-                         package,
+                         environment,
                          function,
                          call),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(package);
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(environment);
                             WRAP(function);
                             WRAP(call););
                     Rf_eval(Rf_lang8(r_name,
@@ -475,10 +539,10 @@ void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
                                      r_callback,
                                      r_state,
                                      r_application,
-                                     r_package,
+                                     r_environment,
                                      r_function,
                                      r_call),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
@@ -487,7 +551,7 @@ void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
 
 void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_application_t application,
-                                          instrumentr_package_t package,
+                                          instrumentr_environment_t environment,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
@@ -499,11 +563,11 @@ void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                          callback,
                          state,
                          application,
-                         package,
+                         environment,
                          function,
                          call),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(package);
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(environment);
                             WRAP(function);
                             WRAP(call););
                     Rf_eval(Rf_lang8(r_name,
@@ -511,10 +575,10 @@ void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                                      r_callback,
                                      r_state,
                                      r_application,
-                                     r_package,
+                                     r_environment,
                                      r_function,
                                      r_call),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(5),
                     instrumentr_frame_t frame =
                         instrumentr_frame_create_from_call(state, call);
@@ -526,7 +590,7 @@ void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
 
 void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_application_t application,
-                                         instrumentr_package_t package,
+                                         instrumentr_environment_t environment,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call) {
     INVOKE_CALLBACK(/* NAME  */
@@ -538,11 +602,11 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
                          callback,
                          state,
                          application,
-                         package,
+                         environment,
                          function,
                          call),
                     /* RCALL */
-                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(package);
+                    NOTRACE(WRAP(tracer); WRAP(application); WRAP(environment);
                             WRAP(function);
                             WRAP(call););
                     Rf_eval(Rf_lang8(r_name,
@@ -550,10 +614,10 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
                                      r_callback,
                                      r_state,
                                      r_application,
-                                     r_package,
+                                     r_environment,
                                      r_function,
                                      r_call),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(5),
                     instrumentr_call_stack_t call_stack =
                         instrumentr_state_get_call_stack(state);
@@ -569,13 +633,14 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
 //    int builtin = instrumentr_function_is_builtin(function);
 //    CCODE ccode = instrumentr_function_get_definition(function).ccode;
 //
-//    instrumentr_package_t package = NULL;
+//    instrumentr_environment_t environment = NULL;
 //    instrumentr_call_t call = NULL;
 //    int tracer_count = instrumentr_get_tracer_count();
 //
 //    if (tracer_count != 0) {
-//        package =
-//            instrumentr_application_get_package_by_name(application, "base");
+//        environment =
+//            instrumentr_application_get_environment_by_name(application,
+//            "base");
 //        /* TODO  */
 //        call = instrumentr_call_create_non_closure(function);
 //    }
@@ -591,10 +656,10 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
 //
 //        if (builtin) {
 //            instrumentr_trace_builtin_call_entry(
-//                tracer, application, package, function, call);
+//                tracer, application, environment, function, call);
 //        } else {
 //            instrumentr_trace_special_call_entry(
-//                tracer, application, package, function, call);
+//                tracer, application, environment, function, call);
 //        }
 //    }
 //
@@ -613,10 +678,10 @@ void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
 //        instrumentr_call_stack_pop(call_stack);
 //        if (builtin) {
 //            instrumentr_trace_builtin_call_exit(
-//                tracer, application, package, function, call);
+//                tracer, application, environment, function, call);
 //        } else {
 //            instrumentr_trace_special_call_exit(
-//                tracer, application, package, function, call);
+//                tracer, application, environment, function, call);
 //        }
 //    }
 //
@@ -644,7 +709,7 @@ void instrumentr_trace_context_entry(instrumentr_tracer_t tracer,
                                      r_state,
                                      r_application,
                                      r_context),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(3), );
 }
 
@@ -665,7 +730,7 @@ void instrumentr_trace_context_exit(instrumentr_tracer_t tracer,
                                      r_state,
                                      r_application,
                                      r_context),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(3), );
 }
 
@@ -692,7 +757,7 @@ void dyntrace_eval_entry(dyntracer_t* dyntracer,
                          r_application,
                          r_expression,
                          r_rho),
-                r_environment);
+                r_callback_environment);
         UNPROTECT(2),
         /* FIN */);
 }
@@ -728,17 +793,33 @@ void dyntrace_eval_exit(dyntracer_t* dyntracer,
                          r_expression,
                          r_rho,
                          r_result),
-                r_environment);
+                r_callback_environment);
         UNPROTECT(2),
         /* FIN */);
 }
 
 void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
-    if (TYPEOF(r_object) == PROMSXP) {
+    /* Fix INVOKE_CALLBACK to merge this better */ {
         instrumentr_tracer_t tracer =
             instrumentr_dyntracer_get_tracer(dyntracer);
         instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
-        instrumentr_state_promise_table_create(state, r_object);
+        switch (TYPEOF(r_object)) {
+        case PROMSXP:
+            instrumentr_state_promise_table_create(state, r_object);
+            break;
+        case CLOSXP:
+            instrumentr_state_function_table_create(state, r_object);
+            break;
+        case SPECIALSXP:
+            instrumentr_state_function_table_create(state, r_object);
+            break;
+        case BUILTINSXP:
+            instrumentr_state_function_table_create(state, r_object);
+            break;
+        case ENVSXP:
+            instrumentr_state_environment_table_create(state, r_object);
+            break;
+        }
     }
 
     INVOKE_CALLBACK(
@@ -757,7 +838,7 @@ void dyntrace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
         Rf_eval(
             Rf_lang6(
                 r_name, r_tracer, r_callback, r_state, r_application, r_object),
-            r_environment);
+            r_callback_environment);
         UNPROTECT(2),
         /* FIN */
     );
@@ -773,10 +854,11 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
             instrumentr_dyntracer_get_tracer(dyntracer),
         NOTRACE(instrumentr_application_t application =
                     instrumentr_tracer_get_application(tracer);
-                SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
-                /* TODO: move the rest to trace_variable_definition */
-                instrumentr_state_function_table_update_name(
-                    state, r_symbol, r_value, r_rho);),
+                SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))))),
+        /* TODO: move the rest to trace_variable_definition */
+        // TODO: add back this line:
+        // instrumentr_state_function_table_update_name(state, r_symbol,
+        // r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,
@@ -787,7 +869,7 @@ void dyntrace_variable_definition(dyntracer_t* dyntracer,
                          r_variable,
                          r_value,
                          r_rho),
-                r_environment);
+                r_callback_environment);
         UNPROTECT(2), UNPROTECT(1));
 }
 
@@ -801,10 +883,12 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
             instrumentr_dyntracer_get_tracer(dyntracer),
         NOTRACE(instrumentr_application_t application =
                     instrumentr_tracer_get_application(tracer);
-                SEXP r_variable = PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));
-                /* TODO: move the rest to trace_variable_definition */
-                instrumentr_state_function_table_update_name(
-                    state, r_symbol, r_value, r_rho);),
+                SEXP r_variable =
+                    PROTECT(mkString(CHAR(PRINTNAME(r_symbol))));),
+        /* TODO: move the rest to trace_variable_definition */
+        // TODO: add back this line
+        // instrumentr_state_function_table_update_name(state, r_symbol,
+        // r_value, r_rho);),
         cfun(tracer, callback, state, application, r_variable, r_value, r_rho),
         NOTRACE(WRAP(tracer); WRAP(application));
         Rf_eval(Rf_lang8(r_name,
@@ -815,7 +899,7 @@ void dyntrace_variable_assignment(dyntracer_t* dyntracer,
                          r_variable,
                          r_value,
                          r_rho),
-                r_environment);
+                r_callback_environment);
         UNPROTECT(2), UNPROTECT(1));
 }
 
@@ -839,7 +923,7 @@ void dyntrace_variable_removal(dyntracer_t* dyntracer,
                          r_application,
                          r_variable,
                          r_rho),
-                r_environment);
+                r_callback_environment);
         UNPROTECT(2), UNPROTECT(1));
 }
 
@@ -864,7 +948,7 @@ void dyntrace_variable_lookup(dyntracer_t* dyntracer,
                          r_variable,
                          r_value,
                          r_rho),
-                r_environment);
+                r_callback_environment);
         UNPROTECT(2), UNPROTECT(1));
 }
 
@@ -888,7 +972,7 @@ void instrumentr_trace_promise_force_entry(instrumentr_tracer_t tracer,
                                      r_state,
                                      r_application,
                                      r_promise),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(3),
                     /* FIN */
                     instrumentr_frame_t frame =
@@ -917,7 +1001,7 @@ void instrumentr_trace_promise_force_exit(instrumentr_tracer_t tracer,
                                      r_state,
                                      r_application,
                                      r_promise),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(3),
                     /* FIN */
                     instrumentr_call_stack_t call_stack =
@@ -943,7 +1027,7 @@ void instrumentr_trace_promise_value_lookup(instrumentr_tracer_t tracer,
                                      r_state,
                                      r_application,
                                      r_promise),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(3),
                     /* FIN */
     );
@@ -967,7 +1051,7 @@ void instrumentr_trace_promise_substitute(instrumentr_tracer_t tracer,
                                      r_state,
                                      r_application,
                                      r_promise),
-                            r_environment);
+                            r_callback_environment);
                     UNPROTECT(3),
                     /* FIN */
     );

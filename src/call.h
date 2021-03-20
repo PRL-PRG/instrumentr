@@ -46,7 +46,8 @@ SEXP r_instrumentr_call_get_expression(SEXP r_call);
  *******************************************************************************/
 
 /* accessor  */
-SEXP instrumentr_call_get_environment(instrumentr_call_t call);
+instrumentr_environment_t
+instrumentr_call_get_environment(instrumentr_call_t call);
 SEXP r_instrumentr_call_get_environment(SEXP r_call);
 
 /********************************************************************************

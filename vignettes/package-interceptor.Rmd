@@ -20,20 +20,20 @@ library(instrumentr)
 
 ```{r create-context}
 
-package_load_callback <- function(tracer, callback, state, application, package) {
-    cat("Loaded", get_name(package), "\n")
+package_load_callback <- function(tracer, callback, state, application, environment) {
+    cat("Loaded", get_name(environment), "\n")
 }
 
-package_unload_callback <- function(tracer, callback, state, application, package) {
-    cat("Unloaded", get_name(package), "\n")
+package_unload_callback <- function(tracer, callback, state, application, environment) {
+    cat("Unloaded", get_name(environment), "\n")
 }
 
-package_attach_callback <- function(tracer, callback, state, application, package) {
-    cat("Attached", get_name(package), "\n")
+package_attach_callback <- function(tracer, callback, state, application, environment) {
+    cat("Attached", get_name(environment), "\n")
 }
 
-package_detach_callback <- function(tracer, callback, state, application, package) {
-    cat("Detached", get_name(package), "\n")
+package_detach_callback <- function(tracer, callback, state, application, environment) {
+    cat("Detached", get_name(environment), "\n")
 }
 
 tracing_entry_callback <- function(tracer, callback, state, application) {
@@ -43,7 +43,7 @@ tracing_entry_callback <- function(tracer, callback, state, application) {
 tracing_exit_callback <- function(tracer, callback, state, application) {
     cat("Trace Exit")
     print(search())
-    print(names(get_packages(application)))
+    print(names(get_packages(state)))
 }
 
 tracer <- create_tracer(tracing_entry = tracing_entry_callback,
@@ -82,5 +82,5 @@ result <- trace_code(tracer, {
       unloadNamespace("dplyr")
 })
 
-print(get_value(result))
+print(result)
 ```

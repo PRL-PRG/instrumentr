@@ -9,6 +9,7 @@
 #include "dyntrace.h"
 #include "dyntrace.h"
 #include "state.h"
+#include "application.h"
 
 /********************************************************************************
  * definition
@@ -114,10 +115,26 @@ SEXP r_instrumentr_tracer_create() {
 }
 
 /********************************************************************************
- * finalize tracing
+ * tracing
  *******************************************************************************/
 
+void instrumentr_tracer_initialize_tracing(instrumentr_tracer_t tracer,
+                                           const char* working_directory,
+                                           SEXP r_code,
+                                           SEXP r_environment) {
+    instrumentr_environment_t environment =
+        instrumentr_state_environment_table_lookup(
+            tracer->state, r_environment, 1);
+
+    tracer->application = instrumentr_application_create(
+        tracer->state, working_directory, r_code, environment);
+
+    instrumentr_state_environment_table_initialize(tracer->state);
+}
+
 SEXP instrumentr_tracer_finalize_tracing(instrumentr_tracer_t tracer) {
+    instrumentr_model_kill(tracer->application);
+    tracer->application = NULL;
     SEXP r_result = PROTECT(instrumentr_state_finalize_tracing(tracer->state));
     instrumentr_object_release(tracer->state);
     tracer->state = NULL;
@@ -169,19 +186,6 @@ SEXP r_instrumentr_tracer_get_application(SEXP r_tracer) {
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
     return instrumentr_application_wrap(application);
-}
-
-/*  mutator  */
-void instrumentr_tracer_set_application(instrumentr_tracer_t tracer,
-                                        instrumentr_application_t application) {
-    tracer->application = application;
-    instrumentr_model_acquire(application);
-}
-
-/*  mutator  */ // TODO remove this
-void instrumentr_tracer_remove_application(instrumentr_tracer_t tracer) {
-    instrumentr_model_kill(tracer->application);
-    tracer->application = NULL;
 }
 
 /********************************************************************************
@@ -292,7 +296,8 @@ SEXP r_instrumentr_tracer_disable(SEXP r_tracer) {
 /* mutator  */
 void instrumentr_tracer_reinstate(instrumentr_tracer_t tracer) {
     if (tracer->status.length != 0) {
-        int result = vec_pop(&tracer->status);
+        /* TODO modify the return value to return current tracer status */
+        vec_pop(&tracer->status);
     }
 #ifdef USING_DYNTRACE
     if (instrumentr_tracer_is_enabled(tracer)) {

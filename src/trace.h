@@ -9,59 +9,54 @@ extern "C" {
 
 SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment);
 
-SEXP r_instrumentr_trace_tracing_entry(SEXP r_tracer, SEXP r_application);
+SEXP r_instrumentr_trace_tracing_entry(SEXP r_tracer,
+                                       SEXP r_workdir,
+                                       SEXP r_code,
+                                       SEXP r_appenv);
 
-SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer, SEXP r_application);
+SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer);
 
-SEXP r_instrumentr_trace_package_load(SEXP r_tracer,
-                                      SEXP r_application,
-                                      SEXP r_package);
+SEXP r_instrumentr_trace_package_load(SEXP r_tracer, SEXP r_package_name);
 
-SEXP r_instrumentr_trace_package_unload(SEXP r_tracer,
-                                        SEXP r_application,
-                                        SEXP r_package);
+SEXP r_instrumentr_trace_package_unload(SEXP r_tracer, SEXP r_package_name);
 
-SEXP r_instrumentr_trace_package_attach(SEXP r_tracer,
-                                        SEXP r_application,
-                                        SEXP r_package);
+SEXP r_instrumentr_trace_package_attach(SEXP r_tracer, SEXP r_package_name);
 
-SEXP r_instrumentr_trace_package_detach(SEXP r_tracer,
-                                        SEXP r_application,
-                                        SEXP r_package);
+SEXP r_instrumentr_trace_package_detach(SEXP r_tracer, SEXP r_package_name);
 
 void instrumentr_trace_builtin_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_application_t application,
-                                          instrumentr_package_t package,
+                                          instrumentr_environment_t environment,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call);
 
 void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_application_t application,
-                                         instrumentr_package_t package,
+                                         instrumentr_environment_t environment,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call);
 
 void instrumentr_trace_special_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_application_t application,
-                                          instrumentr_package_t package,
+                                          instrumentr_environment_t environment,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call);
 
 void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_application_t application,
-                                         instrumentr_package_t package,
+                                         instrumentr_environment_t environment,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call);
 
 void instrumentr_trace_closure_call_entry(instrumentr_tracer_t tracer,
                                           instrumentr_application_t application,
-                                          instrumentr_package_t package,
+                                          instrumentr_environment_t environment,
                                           instrumentr_function_t function,
                                           instrumentr_call_t call);
 
 void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
                                          instrumentr_application_t application,
-                                         instrumentr_package_t package,
+                                         instrumentr_environment_t environment,
                                          instrumentr_function_t function,
                                          instrumentr_call_t call);
 

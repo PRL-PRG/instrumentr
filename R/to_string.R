@@ -90,7 +90,7 @@ to_string.instrumentr_function <- function(object, ...) {
                               get_name(object),
                               get_parameter_count(object),
                               to_string(get_definition(object)),
-                              logical_to_string(is_public(object)),
+                              logical_to_string(is_exported(object)),
                               logical_to_string(is_s3_generic(object)),
                               logical_to_string(is_s3_method(object)))
 

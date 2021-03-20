@@ -8,7 +8,7 @@
 #include "promise.h"
 #include "value.h"
 #include "function.h"
-
+#include "environment.h"
 /********************************************************************************
  * definition
  *******************************************************************************/
@@ -19,7 +19,7 @@ struct instrumentr_call_impl_t {
     struct instrumentr_model_impl_t model;
     instrumentr_function_t function;
     SEXP r_expression;
-    SEXP r_environment;
+    instrumentr_environment_t environment;
     int frame_position;
     int active;
     SEXP r_result;
@@ -36,7 +36,10 @@ void instrumentr_call_finalize(instrumentr_model_t model) {
     instrumentr_model_release(call->function);
 
     call->r_expression = NULL;
-    call->r_environment = NULL;
+
+    instrumentr_model_release(call->environment);
+    call->environment = NULL;
+
     call->r_result = NULL;
 
     int count = call->parameters.length;
@@ -167,10 +170,9 @@ void process_closure_parameters(instrumentr_state_t state,
                                 instrumentr_function_t function,
                                 SEXP r_environment) {
     /* TODO - process calls to special and builtin */
-    instrumentr_function_definition_t function_definition =
-        instrumentr_function_get_definition(function);
+    SEXP r_definition = instrumentr_function_get_definition(function);
 
-    SEXP r_parameter_list = FORMALS(function_definition.sexp);
+    SEXP r_parameter_list = FORMALS(r_definition);
 
     for (int position = 0; r_parameter_list != R_NilValue;
          ++position, r_parameter_list = CDR(r_parameter_list)) {
@@ -230,7 +232,9 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
 
     call->r_expression = r_expression;
 
-    call->r_environment = r_environment;
+    call->environment =
+        instrumentr_state_environment_table_lookup(state, r_environment, 1);
+    instrumentr_model_acquire(call->environment);
 
     call->frame_position = frame_position;
 
@@ -285,13 +289,16 @@ SEXP r_instrumentr_call_get_expression(SEXP r_call) {
  *******************************************************************************/
 
 /* accessor  */
-SEXP instrumentr_call_get_environment(instrumentr_call_t call) {
-    return call->r_environment;
+instrumentr_environment_t
+instrumentr_call_get_environment(instrumentr_call_t call) {
+    return call->environment;
 }
 
 SEXP r_instrumentr_call_get_environment(SEXP r_call) {
     instrumentr_call_t call = instrumentr_call_unwrap(r_call);
-    return instrumentr_call_get_environment(call);
+    instrumentr_environment_t environment =
+        instrumentr_call_get_environment(call);
+    return instrumentr_environment_wrap(environment);
 }
 
 /********************************************************************************

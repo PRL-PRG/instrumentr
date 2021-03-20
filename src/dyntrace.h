@@ -14,35 +14,20 @@ void instrumentr_dyntracer_destroy(dyntracer_t* dyntracer);
 
 instrumentr_tracer_t instrumentr_dyntracer_get_tracer(dyntracer_t* dyntracer);
 
-void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
-                               SEXP r_call,
-                               SEXP r_op,
-                               SEXP r_args,
-                               SEXP r_rho,
-                               dyntrace_dispatch_t dispatch);
+void dyntrace_call_entry(dyntracer_t* dyntracer,
+                         SEXP r_call,
+                         SEXP r_op,
+                         SEXP r_args,
+                         SEXP r_rho,
+                         dyntrace_dispatch_t dispatch);
 
-void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
-                              SEXP r_call,
-                              SEXP r_op,
-                              SEXP r_args,
-                              SEXP r_rho,
-                              dyntrace_dispatch_t dispatch,
-                              SEXP r_result);
-
-void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
-                                 SEXP r_call,
-                                 SEXP r_op,
-                                 SEXP r_args,
-                                 SEXP r_rho,
-                                 dyntrace_dispatch_t dispatch);
-
-void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
-                                SEXP r_call,
-                                SEXP r_op,
-                                SEXP r_args,
-                                SEXP r_rho,
-                                dyntrace_dispatch_t dispatch,
-                                SEXP r_result);
+void dyntrace_call_exit(dyntracer_t* dyntracer,
+                        SEXP r_call,
+                        SEXP r_op,
+                        SEXP r_args,
+                        SEXP r_rho,
+                        dyntrace_dispatch_t dispatch,
+                        SEXP r_result);
 
 void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer);
 

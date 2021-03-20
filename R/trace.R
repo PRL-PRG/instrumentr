@@ -24,24 +24,9 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
     .Call(C_instrumentr_initialize_tracing, tracer)
 
     tryCatch({
-        ## nolint NOTE: we manually account for the following four stack frames
-        ## nolint introduced by tryCatch in excess of the existing frames:
-        ## nolint - tryCatch({ <all code> })
-        ## nolint - tryCatchList(expr, classes, parentenv, handlers)
-        ## nolint - tryCatchOne(expr, names, parentenv, handlers[[1L]])
-        ## nolint - doTryCatch(return(expr), name, parentenv, handler)
-        frame_position <- (function() sys.nframe())()
+        insert_package_hooks(tracer)
 
-        application <- create_application(get_state(tracer),
-                                          infer_application_name(),
-                                          getwd(),
-                                          substitute(code),
-                                          environment,
-                                          frame_position)
-
-        insert_package_hooks(tracer, application, get_state(tracer))
-
-        .Call(C_instrumentr_trace_tracing_entry, tracer, application)
+        .Call(C_instrumentr_trace_tracing_entry, tracer, getwd(), 1, environment)
 
         value <- .Call(C_instrumentr_trace_code, tracer, code, environment)
 
@@ -55,7 +40,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         result <<- create_result(e, callback_type)
     })
 
-    remove_package_hooks(tracer, application)
+    remove_package_hooks()
 
     ##NOTE: all user callbacks are evaluated in tryCatch.
     ##      This code is tricky. If error has happened
@@ -66,7 +51,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
                 ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
-        state <- .Call(C_instrumentr_trace_tracing_exit, tracer, application)
+        state <- .Call(C_instrumentr_trace_tracing_exit, tracer)
         result <- set_state(result, state)
     },
     error = function(e) {

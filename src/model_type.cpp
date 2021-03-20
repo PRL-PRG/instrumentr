@@ -12,7 +12,7 @@ typedef struct {
 
 model_type_info_t model_type_info_table[INSTRUMENTR_MODEL_TYPE_COUNT] = {
     {INSTRUMENTR_MODEL_TYPE_APPLICATION, "application", NULL},
-    {INSTRUMENTR_MODEL_TYPE_PACKAGE, "package", NULL},
+    {INSTRUMENTR_MODEL_TYPE_ENVIRONMENT, "environment", NULL},
     {INSTRUMENTR_MODEL_TYPE_FUNCTION, "function", NULL},
     {INSTRUMENTR_MODEL_TYPE_CALL, "call", NULL},
     {INSTRUMENTR_MODEL_TYPE_CALL_STACK, "call_stack", NULL},

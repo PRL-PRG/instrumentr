@@ -11,8 +11,8 @@ extern "C" {
 #endif
 
 void instrumentr_log_error(const char* fmt, ...);
-
 void instrumentr_log_warning(const char* fmt, ...);
+void instrumentr_log_message(const char* fmt, ...);
 
 void instrumentr_sexp_acquire(SEXP r_object);
 void instrumentr_sexp_release(SEXP r_object);

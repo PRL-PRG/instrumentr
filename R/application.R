@@ -46,15 +46,12 @@
 #' @examples
 #' tracer <- create_tracer(tracing_entry =
 #'     function(tracer, callback, state, application) {
-#'         cat("Name           : ", get_name(application), "\n")
 #'         cat("Directory      : ", get_directory(application), "\n")
 #'         cat("Code           : ", deparse(get_code(application)), "\n")
-#'         cat("Frame Position : ", get_frame_position(application), "\n")
 #'         cat("Packages       : ", length(get_packages(application)), "\n")
 #'         print(get_environment(application))
 #'         print(get_call_stack(application))
-#'         print(get_package(application, 1))
-#'         print(get_package(application, "base"))
+#'         print(get_packages(state))
 #'     }
 #' )
 #'
@@ -63,12 +60,6 @@
 #' @name application
 NULL
 
-
-#' @export
-#' @rdname application
-get_name.instrumentr_application <- function(object) { # nolint
-    .Call(C_instrumentr_application_get_name, object)
-}
 
 
 #' @export
@@ -89,21 +80,4 @@ get_code.instrumentr_application <- function(object) { # nolint
 #' @rdname application
 get_environment.instrumentr_application <- function(object) { # nolint
     .Call(C_instrumentr_application_get_environment, object)
-}
-
-#' @export
-#' @rdname application
-get_frame_position.instrumentr_application <- function(object) { # nolint
-    .Call(C_instrumentr_application_get_frame_position, object)
-}
-
-
-create_application <- function(state, name, directory, code, environment, frame_position) {
-    stopifnot(is_scalar_character(name))
-    stopifnot(is_scalar_character(directory))
-    stopifnot(is_language(code))
-    stopifnot(is_environment(environment))
-    stopifnot(is_scalar_integer(frame_position))
-
-    .Call(C_instrumentr_application_create, state, name, directory, code, environment, frame_position)
 }

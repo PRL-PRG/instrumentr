@@ -9,7 +9,7 @@
 #include "call_stack.h"
 #include "frame.h"
 #include "call.h"
-#include "package.h"
+#include "environment.h"
 #include "alloc_stats.h"
 #include "exec_stats.h"
 
@@ -29,7 +29,7 @@ struct instrumentr_state_impl_t {
     instrumentr_call_stack_t call_stack;
     std::unordered_map<SEXP, instrumentr_promise_t>* promise_table;
     std::unordered_map<SEXP, instrumentr_function_t>* function_table;
-    std::unordered_map<std::string, instrumentr_package_t>* package_table;
+    std::unordered_map<SEXP, instrumentr_environment_t>* environment_table;
 };
 
 /********************************************************************************
@@ -62,10 +62,10 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
         state->function_table = nullptr;
     }
 
-    if (state->package_table != nullptr) {
-        instrumentr_state_package_table_clear(state);
-        delete state->package_table;
-        state->package_table = nullptr;
+    if (state->environment_table != nullptr) {
+        instrumentr_state_environment_table_clear(state);
+        delete state->environment_table;
+        state->environment_table = nullptr;
     }
 
     instrumentr_object_release(state->alloc_stats);
@@ -98,8 +98,8 @@ instrumentr_state_t instrumentr_state_create() {
     state->function_table =
         new std::unordered_map<SEXP, instrumentr_function_t>();
 
-    state->package_table =
-        new std::unordered_map<std::string, instrumentr_package_t>();
+    state->environment_table =
+        new std::unordered_map<SEXP, instrumentr_environment_t>();
 
     state->call_stack = instrumentr_call_stack_create(state);
 
@@ -122,9 +122,9 @@ SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state) {
     delete state->function_table;
     state->function_table = nullptr;
 
-    instrumentr_state_package_table_clear(state);
-    delete state->package_table;
-    state->package_table = nullptr;
+    instrumentr_state_environment_table_clear(state);
+    delete state->environment_table;
+    state->environment_table = nullptr;
 
     SEXP r_result = PROTECT(instrumentr_state_as_list(state));
 
@@ -295,6 +295,7 @@ SEXP instrumentr_state_stats_as_list(instrumentr_state_t state) {
         r_values, 1, instrumentr_exec_stats_as_data_frame(state->exec_stats));
 
     Rf_setAttrib(r_values, R_NamesSymbol, r_keys);
+
     UNPROTECT(2);
 
     return r_values;
@@ -483,262 +484,46 @@ void instrumentr_state_promise_table_clear(instrumentr_state_t state) {
  *******************************************************************************/
 
 instrumentr_function_t
-instrumentr_state_function_table_lookup(instrumentr_state_t state,
-                                        SEXP r_closure,
-                                        SEXP r_call) {
-    instrumentr_function_t function = NULL;
+instrumentr_state_function_table_create(instrumentr_state_t state,
+                                        SEXP r_function) {
+    instrumentr_function_t function =
+        instrumentr_function_create(state, r_function);
 
-    auto result = state->function_table->find(r_closure);
+    auto result = state->function_table->insert({r_function, function});
 
-    /* the function is already present */
-    if (result != state->function_table->end()) {
-        function = result->second;
-    }
-    /* create the function and add to cache if function is not present */
-    else {
-        function = instrumentr_state_function_table_add(state, r_closure);
-    }
-
-    /* the function does not have a name */
-    if (!instrumentr_function_has_name(function)) {
-        SEXP r_call_name = CAR(r_call);
-
-        /* the call has a name which could be function's canonical name */
-        if (TYPEOF(r_call_name) == SYMSXP) {
-            SEXP r_lexenv = CLOENV(r_closure);
-            SEXP r_result = Rf_findVarInFrame(r_lexenv, r_call_name);
-
-            int is_bound = r_result == r_closure;
-            is_bound =
-                is_bound ||
-                TYPEOF(r_result) == PROMSXP &&
-                    (dyntrace_get_promise_value(r_result) == r_closure ||
-                     dyntrace_get_promise_expression(r_result) == r_closure);
-
-            if (is_bound) {
-                instrumentr_function_set_name(function,
-                                              CHAR(PRINTNAME(r_call_name)));
-            }
-        }
-    }
-
-    return function;
-}
-
-instrumentr_function_t
-instrumentr_state_function_table_insert(instrumentr_state_t state,
-                                        instrumentr_function_t function,
-                                        SEXP r_closure) {
-    auto result = state->function_table->insert({r_closure, function});
-
-    bool inserted = result.second;
-
-    if (!inserted) {
+    if (!result.second) {
         /* TODO: this means the object was deallocated when tracing was
          * disabled. */
         instrumentr_model_kill(result.first->second);
         result.first->second = function;
     }
 
-    instrumentr_model_acquire(function);
-
     return function;
 }
 
 void instrumentr_state_function_table_remove(instrumentr_state_t state,
-                                             SEXP r_closure) {
-    auto result = state->function_table->find(r_closure);
-
-    /* this means the function is already present (it is not alien) */
+                                             SEXP r_function) {
+    auto result = state->function_table->find(r_function);
     if (result != state->function_table->end()) {
         instrumentr_model_kill(result->second);
-        state->function_table->erase(r_closure);
+        state->function_table->erase(result);
     }
 }
 
 instrumentr_function_t
-instrumentr_state_function_table_add(instrumentr_state_t state,
-                                     SEXP r_closure) {
-    int alien = 0;
-    instrumentr_function_t parent = NULL;
-    instrumentr_function_t function = NULL;
-    const char* function_name = NULL;
-
-    SEXP r_lexenv = CLOENV(r_closure);
-
-    SEXP r_env_name = R_PackageEnvName(r_lexenv);
-
-    if (r_env_name != R_NilValue) {
-    }
-
-    /* if the function is not a package function */
-    if (r_env_name == R_NilValue) {
-        instrumentr_call_stack_t call_stack =
-            instrumentr_state_get_call_stack(state);
-        int size = instrumentr_call_stack_get_size(call_stack);
-
-        for (int i = size - 1; i >= 0; --i) {
-            instrumentr_frame_t frame =
-                instrumentr_call_stack_get_frame(call_stack, i);
-            if (!instrumentr_frame_is_call(frame)) {
-                continue;
-            }
-            instrumentr_call_t call = instrumentr_frame_as_call(frame);
-            instrumentr_function_t call_fun =
-                instrumentr_call_get_function(call);
-
-            /* call's environment is function's lexical environment */
-            if (instrumentr_function_is_closure(call_fun) &&
-                instrumentr_call_get_environment(call) == r_lexenv) {
-                parent = call_fun;
-                break;
-            }
-        }
-    }
-    /* TODO: memory management - function will not be collected if insert
-     * fails. */
-    function = instrumentr_function_create_closure(state,
-                                                   function_name,
-                                                   Rf_length(CAR(r_closure)),
-                                                   r_closure,
-                                                   parent,
-                                                   0,
-                                                   0,
-                                                   0
-                                                   /*,
-                                                   alien,
-                                                   parent*/);
-
-    instrumentr_state_function_table_insert(state, function, r_closure);
-
-    instrumentr_model_release(function);
-
-    return function;
-}
-
-void instrumentr_state_function_table_update_name(instrumentr_state_t state,
-                                                  SEXP r_symbol,
-                                                  SEXP r_value,
-                                                  SEXP r_rho) {
-    SEXP r_closure = NULL;
-
-    if (TYPEOF(r_value) == CLOSXP) {
-        r_closure = r_value;
-    } else if (TYPEOF(r_value) == PROMSXP) {
-        SEXP r_promval = dyntrace_get_promise_value(r_value);
-
-        if (TYPEOF(r_promval) == CLOSXP) {
-            r_closure = r_promval;
-        } else {
-            SEXP r_promexpr = dyntrace_get_promise_expression(r_value);
-            if (TYPEOF(r_promexpr) == CLOSXP) {
-                r_closure = r_promexpr;
-            }
-        }
-    }
-
-    if (r_closure == NULL) {
-        return;
-    }
-
-    SEXP r_lexenv = CLOENV(r_closure);
-
-    bool in_scope = r_lexenv == r_rho;
-
-    const char* name = in_scope ? CHAR(PRINTNAME(r_symbol)) : NULL;
-
-    instrumentr_function_t function = NULL;
-
-    auto result = state->function_table->find(r_closure);
-
-    /* this means the function is already present (it is not alien) */
+instrumentr_state_function_table_lookup(instrumentr_state_t state,
+                                        SEXP r_function,
+                                        int create) {
+    auto result = state->function_table->find(r_function);
     if (result != state->function_table->end()) {
-        function = result->second;
-        if (!instrumentr_function_has_name(function)) {
-            instrumentr_function_set_name(function, name);
-        }
+        return result->second;
+    } else if (create) {
+        return instrumentr_state_function_table_create(state, r_function);
+    } else {
+        instrumentr_log_error("function %p not present in function table",
+                              r_function);
+        return NULL;
     }
-    /* this means the function is alien */
-    else {
-        int alien = 1;
-        instrumentr_function_t parent = NULL;
-
-        /* TODO: memory management - function will not be collected if
-         * insert fails. */
-        function =
-            instrumentr_function_create_closure(state,
-                                                name,
-                                                Rf_length(CAR(r_closure)),
-                                                r_closure,
-                                                parent,
-                                                0,
-                                                0,
-                                                0 /*, alien, parent*/);
-
-        instrumentr_state_function_table_insert(state, function, r_closure);
-
-        instrumentr_model_release(function);
-    }
-}
-
-/* NOTE: this function is called from package load hook for top level
- * package functions. It updates function properties and adds them to
- * package */
-SEXP r_instrumentr_state_function_table_update_properties(SEXP r_state,
-                                                          SEXP r_package,
-                                                          SEXP r_name,
-                                                          SEXP r_closure,
-                                                          SEXP r_rho,
-                                                          SEXP r_pub,
-                                                          SEXP r_s3_generic,
-                                                          SEXP r_s3_method) {
-    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
-
-    instrumentr_function_t parent = NULL;
-    int pub = asLogical(r_pub);
-    int s3_generic = asLogical(r_s3_generic);
-    int s3_method = asLogical(r_s3_method);
-
-    const char* name = CHAR(STRING_ELT(r_name, 0));
-
-    instrumentr_function_t function = NULL;
-
-    auto result = state->function_table->find(r_closure);
-
-    /* this means the function is already present (it is not alien) */
-    if (result != state->function_table->end()) {
-        function = result->second;
-        instrumentr_function_set_name(function, name);
-        instrumentr_function_set_public(function, pub);
-        instrumentr_function_set_s3_generic(function, s3_generic);
-        instrumentr_function_set_s3_method(function, s3_method);
-    }
-    /* this means the function is alien */
-    else {
-        /* TODO: memory management - function will not be collected if
-         * insert fails. */
-        function =
-            instrumentr_function_create_closure(state,
-                                                name,
-                                                Rf_length(CAR(r_closure)),
-                                                r_closure,
-                                                parent,
-                                                pub,
-                                                s3_generic,
-                                                s3_method /*, alien, */);
-
-        instrumentr_state_function_table_insert(state, function, r_closure);
-
-        instrumentr_model_release(function);
-    }
-
-    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
-
-    if (!instrumentr_package_has_function(package, name)) {
-        instrumentr_package_add_function(package, function);
-    }
-
-    return R_NilValue;
 }
 
 void instrumentr_state_function_table_clear(instrumentr_state_t state) {
@@ -751,119 +536,347 @@ void instrumentr_state_function_table_clear(instrumentr_state_t state) {
 }
 
 /*******************************************************************************
- * package_table
+ * environment_table
  *******************************************************************************/
 
-/* accessor  */
-int instrumentr_state_get_package_count(instrumentr_state_t state) {
-    return state->package_table->size();
-}
+void instrumentr_state_environment_table_initialize(instrumentr_state_t state) {
+    SEXP r_names = PROTECT(R_lsInternal(R_NamespaceRegistry, TRUE));
 
-SEXP r_instrumentr_state_get_package_count(SEXP r_state) {
-    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
-    int count = instrumentr_state_get_package_count(state);
-    return instrumentr_c_int_to_r_integer(count);
-}
-
-/* accessor  */
-instrumentr_package_t instrumentr_state_get_package(instrumentr_state_t state,
-                                                    const char* name) {
-    auto iter = state->package_table->find(std::string(name));
-
-    if (iter == state->package_table->end()) {
-        instrumentr_log_error("package '%s' does not exist", name);
+    for (int i = 0; i < Rf_length(r_names); ++i) {
+        const char* name = CHAR(STRING_ELT(r_names, i));
+        instrumentr_state_environment_table_update_namespace(state, name);
     }
 
-    return iter->second;
-}
+    UNPROTECT(1);
 
-SEXP r_instrumentr_state_get_package(SEXP r_state, SEXP r_name) {
-    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
-    const char* name = instrumentr_r_character_to_c_string(r_name);
-    instrumentr_package_t package = instrumentr_state_get_package(state, name);
-    return instrumentr_package_wrap(package);
-}
-
-/* accessor */
-instrumentr_package_t
-instrumentr_state_get_base_package(instrumentr_state_t state) {
-    return instrumentr_state_get_package(state, "base");
-}
-
-SEXP r_instrumentr_state_get_base_package(SEXP r_state) {
-    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
-    instrumentr_package_t package = instrumentr_state_get_base_package(state);
-    return instrumentr_package_wrap(package);
-}
-
-/* accessor */
-SEXP r_instrumentr_state_get_packages(SEXP r_state) {
-    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
-
-    int count = instrumentr_state_get_package_count(state);
-
-    SEXP r_packages = PROTECT(allocVector(VECSXP, count));
-    SEXP r_names = PROTECT(allocVector(STRSXP, count));
-
-    int index = 0;
-
-    for (auto iter = state->package_table->begin();
-         iter != state->package_table->end();
-         ++iter, ++index) {
-        instrumentr_package_t package = iter->second;
-        const char* name = instrumentr_package_get_name(package);
-        SET_VECTOR_ELT(r_packages, index, instrumentr_package_wrap(package));
-        SET_STRING_ELT(r_names, index, name == NULL ? NA_STRING : mkChar(name));
+    for (SEXP r_package = ENCLOS(R_GlobalEnv); r_package != R_EmptyEnv;
+         r_package = ENCLOS(r_package)) {
+        instrumentr_state_environment_table_lookup(state, r_package, 1);
     }
-
-    Rf_setAttrib(r_packages, R_NamesSymbol, r_names);
-    UNPROTECT(2);
-    return r_packages;
 }
 
-/* mutator */
-void instrumentr_state_add_package(instrumentr_state_t state,
-                                   instrumentr_package_t package) {
-    const char* name = instrumentr_package_get_name(package);
-
-    auto result = state->package_table->insert({name, package});
-
+instrumentr_environment_t
+instrumentr_state_environment_table_create(instrumentr_state_t state,
+                                           SEXP r_environment) {
+    /* TODO: set environment birth time */
+    /* TODO: set names of package/namespace/environmentNames environments. */
+    instrumentr_environment_t environment =
+        instrumentr_environment_create(state, r_environment);
+    auto result =
+        state->environment_table->insert({r_environment, environment});
     if (!result.second) {
-        instrumentr_log_error("package '%s' already exists", name);
+        /* TODO: this means the object was deallocated when tracing was
+         * disabled. */
+        instrumentr_model_kill(result.first->second);
+        result.first->second = environment;
     }
 
-    instrumentr_model_acquire(package);
+    return environment;
 }
 
-/* mutator */
-SEXP r_instrumentr_state_add_package(SEXP r_state, SEXP r_package) {
-    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
-    instrumentr_package_t package = instrumentr_package_unwrap(r_package);
-    instrumentr_state_add_package(state, package);
-    return R_NilValue;
-}
-
-/* mutator */
-void instrumentr_state_remove_package(instrumentr_state_t state,
-                                      instrumentr_package_t package) {
-    const char* name = instrumentr_package_get_name(package);
-
-    auto iter = state->package_table->find(name);
-
-    if (iter == state->package_table->end()) {
-        instrumentr_log_error("package '%s' cannot be removed", name);
+void instrumentr_state_environment_table_remove(instrumentr_state_t state,
+                                                SEXP r_environment) {
+    auto result = state->environment_table->find(r_environment);
+    if (result != state->environment_table->end()) {
+        instrumentr_model_kill(result->second);
+        state->environment_table->erase(result);
     }
-
-    state->package_table->erase(iter);
-
-    instrumentr_model_kill(package);
 }
 
-void instrumentr_state_package_table_clear(instrumentr_state_t state) {
-    for (auto iter = state->package_table->begin();
-         iter != state->package_table->end();
+instrumentr_environment_t
+instrumentr_state_environment_table_lookup(instrumentr_state_t state,
+                                           SEXP r_environment,
+                                           int create) {
+    auto result = state->environment_table->find(r_environment);
+    if (result != state->environment_table->end()) {
+        return result->second;
+    } else if (create) {
+        return instrumentr_state_environment_table_create(state, r_environment);
+    } else {
+        instrumentr_log_error("environment %p not present in environment table",
+                              r_environment);
+        return NULL;
+    }
+}
+
+void instrumentr_state_environment_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->environment_table->begin();
+         iter != state->environment_table->end();
          ++iter) {
         instrumentr_model_kill(iter->second);
     }
-    state->package_table->clear();
+    state->environment_table->clear();
+}
+
+/********************************************************************************
+ * namespace
+ *******************************************************************************/
+
+int instrumentr_state_update_namespace_function_names(
+    instrumentr_state_t state,
+    SEXP r_namespace,
+    instrumentr_environment_t environment) {
+    SEXP r_names = PROTECT(R_lsInternal(r_namespace, TRUE));
+
+    int counter = 0;
+
+    for (int i = 0; i < Rf_length(r_names); ++i) {
+        const char* name = CHAR(STRING_ELT(r_names, i));
+        SEXP r_value = Rf_findVarInFrame(r_namespace, Rf_install(name));
+
+        if (TYPEOF(r_value) == PROMSXP) {
+            r_value = Rf_eval(r_value, r_namespace);
+        }
+
+        if (TYPEOF(r_value) != CLOSXP) {
+            continue;
+        }
+
+        instrumentr_function_t function =
+            instrumentr_state_function_table_lookup(state, r_value, true);
+
+        SEXP r_value_env = CLOENV(r_value);
+
+        /* only set function name if it the namespace under consideration
+         * happens to be it's scope */
+        if (r_value_env == r_namespace) {
+            instrumentr_function_set_name(function, name);
+        }
+        ++counter;
+        /* environment contains all function bindings */
+        instrumentr_environment_insert(environment, name, function);
+    }
+
+    UNPROTECT(1);
+
+    return counter;
+}
+
+void instrumentr_state_update_namespace_exports(
+    instrumentr_state_t state,
+    SEXP r_ns_inner,
+    instrumentr_environment_t environment) {
+    SEXP r_ns_exports = Rf_findVarInFrame(r_ns_inner, Rf_install("exports"));
+
+    if (r_ns_exports == R_UnboundValue || TYPEOF(r_ns_exports) != ENVSXP) {
+        return;
+    }
+
+    SEXP r_ns_exports_keys = R_lsInternal(r_ns_exports, TRUE);
+
+    for (int i = 0; i < Rf_length(r_ns_exports_keys); ++i) {
+        const char* key = CHAR(STRING_ELT(r_ns_exports_keys, i));
+
+        /* TODO: value can be invalid (R_UnboundValue) */
+        /* TODO: handle functions exported by pacakge A but defined by package
+           B. graphics exports plot function defined in base package */
+        if (instrumentr_environment_contains(environment, key)) {
+            instrumentr_function_t function =
+                instrumentr_environment_lookup(environment, key);
+
+            instrumentr_function_set_exported(function);
+        }
+    }
+}
+
+void instrumentr_state_update_namespace_s3_methods(
+    instrumentr_state_t state,
+    SEXP r_ns_inner,
+    instrumentr_environment_t environment) {
+    SEXP r_s3_methods = Rf_findVarInFrame(r_ns_inner, Rf_install("S3methods"));
+
+    if (r_s3_methods == R_UnboundValue || TYPEOF(r_s3_methods) != STRSXP) {
+        return;
+    }
+
+    SEXP r_dims = Rf_getAttrib(r_s3_methods, R_DimNamesSymbol);
+
+    if (r_dims != R_UnboundValue && TYPEOF(r_dims) == INTSXP &&
+        Rf_length(r_dims) == 2) {
+        int nrows = INTEGER(r_dims)[0];
+        int ncols = INTEGER(r_dims)[0];
+
+        if (ncols == 3) {
+            for (int row_index = 0; row_index < nrows; ++row_index) {
+                const char* generic_name =
+                    CHAR(STRING_ELT(r_s3_methods, 0 * nrows + row_index));
+                const char* object_class =
+                    CHAR(STRING_ELT(r_s3_methods, 1 * nrows + row_index));
+                const char* specific_name =
+                    CHAR(STRING_ELT(r_s3_methods, 2 * nrows + row_index));
+
+                /* TODO: value can be invalid (R_UnboundValue) */
+                instrumentr_function_t function =
+                    instrumentr_environment_lookup(environment, specific_name);
+
+                instrumentr_function_set_object_class(function, object_class);
+                instrumentr_function_set_generic_name(function, generic_name);
+            }
+        }
+    }
+}
+
+instrumentr_environment_t
+instrumentr_state_environment_table_update_namespace(instrumentr_state_t state,
+                                                     const char* name) {
+    SEXP r_namespace = Rf_findVarInFrame(R_NamespaceRegistry, Rf_install(name));
+
+    if (r_namespace == R_UnboundValue || TYPEOF(r_namespace) != ENVSXP) {
+        instrumentr_log_error(
+            "unable to find environment for namespace '%s' in registry", name);
+    }
+
+    instrumentr_environment_t environment =
+        instrumentr_state_environment_table_lookup(state, r_namespace, 1);
+
+    instrumentr_environment_set_name(environment, name);
+
+    SEXP r_ns_inner =
+        Rf_findVarInFrame(r_namespace, Rf_install(".__NAMESPACE__."));
+
+    if (r_ns_inner == R_UnboundValue) {
+        instrumentr_log_message("cannot accesss inner namespace "
+                                "'.__NAMESPACE__.' from namespace "
+                                "environment %p for %\n",
+                                r_namespace,
+                                name);
+
+        /* TODO: handle non inner ns cases */
+        return environment;
+    }
+
+    int count = instrumentr_state_update_namespace_function_names(
+        state, r_namespace, environment);
+    instrumentr_state_update_namespace_exports(state, r_ns_inner, environment);
+    instrumentr_state_update_namespace_s3_methods(
+        state, r_ns_inner, environment);
+
+    instrumentr_log_message("Added %d values to %s\n", count, name);
+
+    return environment;
+}
+
+instrumentr_environment_t
+instrumentr_state_environment_table_lookup_package(instrumentr_state_t state,
+                                                   const char* package_name) {
+    SEXP r_env = R_EmptyEnv;
+    const char* name;
+
+    for (r_env = R_GlobalEnv; r_env != R_EmptyEnv; r_env = ENCLOS(r_env)) {
+        name = NULL;
+
+        if (r_env == R_BaseEnv) {
+            name = "base";
+        } else if (R_IsPackageEnv(r_env)) {
+            name = CHAR(STRING_ELT(R_PackageEnvName(r_env), 0)) +
+                   strlen("package:");
+        }
+
+        if (name != NULL && !strcmp(name, package_name)) {
+            break;
+        }
+    }
+
+    if (r_env == R_EmptyEnv) {
+        instrumentr_log_error("cannot find environment for package %s",
+                              package_name);
+    }
+
+    instrumentr_environment_t environment =
+        instrumentr_state_environment_table_lookup(state, r_env, 1);
+
+    instrumentr_environment_set_name(environment, name);
+
+    return environment;
+}
+
+instrumentr_environment_t
+instrumentr_state_environment_table_lookup_namespace(instrumentr_state_t state,
+                                                     const char* package_name) {
+    SEXP r_namespace =
+        Rf_findVarInFrame(R_NamespaceRegistry, Rf_install(package_name));
+
+    if (r_namespace == R_UnboundValue || TYPEOF(r_namespace) != ENVSXP) {
+        instrumentr_log_error("cannot find namespace for package %s",
+                              package_name);
+    }
+
+    return instrumentr_state_environment_table_lookup(state, r_namespace, 1);
+}
+
+std::vector<instrumentr_environment_t>
+instrumentr_state_get_packages(instrumentr_state_t state) {
+    std::vector<instrumentr_environment_t> packages;
+
+    for (SEXP r_package = ENCLOS(R_GlobalEnv); r_package != R_EmptyEnv;
+         r_package = ENCLOS(r_package)) {
+        if (R_IsPackageEnv(r_package)) {
+            packages.push_back(instrumentr_state_environment_table_lookup(
+                state, r_package, 0));
+        }
+    }
+    return packages;
+}
+
+SEXP r_instrumentr_state_get_packages(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+
+    std::vector<instrumentr_environment_t> packages =
+        instrumentr_state_get_packages(state);
+
+    SEXP r_packages = PROTECT(allocVector(VECSXP, packages.size()));
+    SEXP r_names = PROTECT(allocVector(STRSXP, packages.size()));
+
+    for (std::size_t i = 0; i < packages.size(); ++i) {
+        instrumentr_environment_t environment = packages[i];
+        const char* name = instrumentr_environment_get_name(environment);
+        SET_VECTOR_ELT(
+            r_packages, i, instrumentr_environment_wrap(environment));
+        SET_STRING_ELT(r_names, i, name == NULL ? NA_STRING : mkChar(name));
+    }
+
+    Rf_setAttrib(r_packages, R_NamesSymbol, r_names);
+
+    UNPROTECT(2);
+
+    return r_packages;
+}
+
+std::vector<instrumentr_environment_t>
+instrumentr_state_get_namespaces(instrumentr_state_t state) {
+    SEXP r_names = R_lsInternal(R_NamespaceRegistry, TRUE);
+    std::vector<instrumentr_environment_t> namespaces;
+
+    for (int i = 0; i < Rf_length(r_names); ++i) {
+        const char* name = CHAR(STRING_ELT(r_names, i));
+        SEXP r_namespace =
+            Rf_findVarInFrame(R_NamespaceRegistry, Rf_install(name));
+        namespaces.push_back(
+            instrumentr_state_environment_table_lookup(state, r_namespace, 0));
+    }
+    return namespaces;
+}
+
+SEXP r_instrumentr_state_get_namespaces(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+
+    std::vector<instrumentr_environment_t> namespaces =
+        instrumentr_state_get_namespaces(state);
+
+    SEXP r_namespaces = PROTECT(allocVector(VECSXP, namespaces.size()));
+    SEXP r_names = PROTECT(allocVector(STRSXP, namespaces.size()));
+
+    for (std::size_t i = 0; i < namespaces.size(); ++i) {
+        instrumentr_environment_t environment = namespaces[i];
+        const char* name = instrumentr_environment_get_name(environment);
+        SET_VECTOR_ELT(
+            r_namespaces, i, instrumentr_environment_wrap(environment));
+        SET_STRING_ELT(r_names, i, name == NULL ? NA_STRING : mkChar(name));
+    }
+
+    Rf_setAttrib(r_namespaces, R_NamesSymbol, r_names);
+
+    UNPROTECT(2);
+
+    return r_namespaces;
 }

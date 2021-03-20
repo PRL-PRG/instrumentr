@@ -7,7 +7,7 @@
 #include "trace.h"
 #include "funtab.h"
 #include "state.h"
-#include "package.h"
+#include "environment.h"
 #include "function.h"
 #include "call.h"
 #include "context.h"
@@ -15,20 +15,19 @@
 dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_t* dyntracer = dyntracer_create(NULL);
 
-    dyntracer_set_builtin_entry_callback(dyntracer, dyntrace_basic_call_entry);
-    dyntracer_set_builtin_exit_callback(dyntracer, dyntrace_basic_call_exit);
-    dyntracer_set_special_entry_callback(dyntracer, dyntrace_basic_call_entry);
-    dyntracer_set_special_exit_callback(dyntracer, dyntrace_basic_call_exit);
-    dyntracer_set_closure_entry_callback(dyntracer,
-                                         dyntrace_closure_call_entry);
-    dyntracer_set_closure_exit_callback(dyntracer, dyntrace_closure_call_exit);
+    dyntracer_set_builtin_entry_callback(dyntracer, dyntrace_call_entry);
+    dyntracer_set_builtin_exit_callback(dyntracer, dyntrace_call_exit);
+    dyntracer_set_special_entry_callback(dyntracer, dyntrace_call_entry);
+    dyntracer_set_special_exit_callback(dyntracer, dyntrace_call_exit);
+    dyntracer_set_closure_entry_callback(dyntracer, dyntrace_call_entry);
+    dyntracer_set_closure_exit_callback(dyntracer, dyntrace_call_exit);
     dyntracer_set_context_entry_callback(dyntracer, dyntrace_context_entry);
     dyntracer_set_context_exit_callback(dyntracer, dyntrace_context_exit);
     dyntracer_set_context_jump_callback(dyntracer, dyntrace_context_jump);
     dyntracer_set_eval_entry_callback(dyntracer, dyntrace_eval_entry);
     dyntracer_set_eval_exit_callback(dyntracer, dyntrace_eval_exit);
     dyntracer_set_gc_allocate_callback(dyntracer, dyntrace_gc_allocation);
-    dyntracer_set_gc_deallocate_callback(dyntracer, dyntrace_gc_deallocate);
+    dyntracer_set_gc_unmark_callback(dyntracer, dyntrace_gc_deallocate);
     dyntracer_set_promise_force_entry_callback(dyntracer,
                                                dyntrace_promise_force_entry);
     dyntracer_set_promise_force_exit_callback(dyntracer,
@@ -69,12 +68,12 @@ instrumentr_tracer_t instrumentr_dyntracer_get_tracer(dyntracer_t* dyntracer) {
     return tracer;
 }
 
-void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
-                               SEXP r_call,
-                               SEXP r_op,
-                               SEXP r_args,
-                               SEXP r_rho,
-                               dyntrace_dispatch_t dispatch) {
+void dyntrace_call_entry(dyntracer_t* dyntracer,
+                         SEXP r_call,
+                         SEXP r_op,
+                         SEXP r_args,
+                         SEXP r_rho,
+                         dyntrace_dispatch_t dispatch) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
     instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
@@ -82,12 +81,11 @@ void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
     instrumentr_application_t application =
         instrumentr_tracer_get_application(tracer);
 
-    instrumentr_package_t package = instrumentr_state_get_base_package(state);
-
-    int index = instrumentr_funtab_get_index(r_op);
-
     instrumentr_function_t function =
-        instrumentr_package_get_basic_function_by_position(package, index);
+        instrumentr_state_function_table_lookup(state, r_op, 1); //, r_call);
+
+    instrumentr_environment_t environment =
+        instrumentr_function_get_environment(function);
 
     instrumentr_call_t call =
         instrumentr_call_create(state,
@@ -98,23 +96,26 @@ void dyntrace_basic_call_entry(dyntracer_t* dyntracer,
 
     if (instrumentr_function_is_builtin(function)) {
         instrumentr_trace_builtin_call_entry(
-            tracer, application, package, function, call);
-    } else {
+            tracer, application, environment, function, call);
+    } else if (instrumentr_function_is_special(function)) {
         instrumentr_trace_special_call_entry(
-            tracer, application, package, function, call);
+            tracer, application, environment, function, call);
+    } else {
+        instrumentr_trace_closure_call_entry(
+            tracer, application, environment, function, call);
     }
 
     /* NOTE: release call here because it is now owned by the stack frame */
     instrumentr_model_release(call);
 }
 
-void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
-                              SEXP r_call,
-                              SEXP r_op,
-                              SEXP r_args,
-                              SEXP r_rho,
-                              dyntrace_dispatch_t dispatch,
-                              SEXP r_result) {
+void dyntrace_call_exit(dyntracer_t* dyntracer,
+                        SEXP r_call,
+                        SEXP r_op,
+                        SEXP r_args,
+                        SEXP r_rho,
+                        dyntrace_dispatch_t dispatch,
+                        SEXP r_result) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
     instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
@@ -133,110 +134,40 @@ void dyntrace_basic_call_exit(dyntracer_t* dyntracer,
     }
 
     instrumentr_call_t call = instrumentr_frame_as_call(frame);
+
     instrumentr_call_set_result(call, r_result);
 
     instrumentr_function_t function = instrumentr_call_get_function(call);
 
+    instrumentr_environment_t environment =
+        instrumentr_function_get_environment(function);
+
+    instrumentr_environment_t call_env = instrumentr_call_get_environment(call);
+
     /* TODO: add op check here as well */
-    if (instrumentr_call_get_environment(call) != r_rho ||
+    if (instrumentr_environment_get_environment(call_env) != r_rho ||
         instrumentr_call_get_expression(call) != r_call) {
         instrumentr_log_error(
             "call on stack does not match the call being exited");
     }
 
-    instrumentr_package_t package = instrumentr_state_get_base_package(state);
-
     /* TODO attach result to call */
-    if (!strcmp(instrumentr_function_get_name(function), "function") &&
+    if (instrumentr_function_get_name(function) != NULL &&
+        !strcmp(instrumentr_function_get_name(function), "function") &&
         TYPEOF(r_result) == CLOSXP) {
-        instrumentr_state_function_table_add(state, r_result);
+        instrumentr_state_function_table_create(state, r_result);
     }
 
     if (instrumentr_function_is_builtin(function)) {
         instrumentr_trace_builtin_call_exit(
-            tracer, application, package, function, call);
-    } else {
+            tracer, application, environment, function, call);
+    } else if (instrumentr_function_is_special(function)) {
         instrumentr_trace_special_call_exit(
-            tracer, application, package, function, call);
+            tracer, application, environment, function, call);
+    } else {
+        instrumentr_trace_closure_call_exit(
+            tracer, application, environment, function, call);
     }
-}
-
-void dyntrace_closure_call_entry(dyntracer_t* dyntracer,
-                                 SEXP r_call,
-                                 SEXP r_op,
-                                 SEXP r_args,
-                                 SEXP r_rho,
-                                 dyntrace_dispatch_t dispatch) {
-    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
-
-    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
-
-    instrumentr_application_t application =
-        instrumentr_tracer_get_application(tracer);
-
-    /* fix package */
-    instrumentr_package_t package = instrumentr_state_get_base_package(state);
-
-    instrumentr_function_t function =
-        instrumentr_state_function_table_lookup(state, r_op, r_call);
-
-    instrumentr_call_t call =
-        instrumentr_call_create(state,
-                                function,
-                                r_call,
-                                r_rho,
-                                /* TODO: fix frame position */ 0);
-
-    instrumentr_trace_closure_call_entry(
-        tracer, application, package, function, call);
-
-    /* NOTE: release call here because it is now owned by the stack frame */
-    instrumentr_model_release(call);
-}
-
-void dyntrace_closure_call_exit(dyntracer_t* dyntracer,
-                                SEXP r_call,
-                                SEXP r_op,
-                                SEXP r_args,
-                                SEXP r_rho,
-                                dyntrace_dispatch_t dispatch,
-                                SEXP r_result) {
-    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
-
-    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
-
-    instrumentr_application_t application =
-        instrumentr_tracer_get_application(tracer);
-
-    instrumentr_call_stack_t call_stack =
-        instrumentr_state_get_call_stack(state);
-
-    instrumentr_frame_t frame =
-        instrumentr_call_stack_peek_frame(call_stack, 0);
-
-    if (!instrumentr_frame_is_call(frame)) {
-        instrumentr_log_error("expected call on stack");
-    }
-
-    instrumentr_call_t call = instrumentr_frame_as_call(frame);
-
-    instrumentr_call_set_result(call, r_result);
-
-    instrumentr_function_t function = instrumentr_call_get_function(call);
-
-    /* TODO: add op check here as well */
-    if (instrumentr_call_get_environment(call) != r_rho ||
-        instrumentr_call_get_expression(call) != r_call ||
-        instrumentr_function_get_definition(function).sexp != r_op) {
-        instrumentr_log_error(
-            "call on stack does not match the call being exited");
-    }
-
-    /* TODO: fix package  */
-    instrumentr_package_t package = instrumentr_state_get_base_package(state);
-
-    instrumentr_trace_closure_call_exit(
-        tracer, application, package, function, call);
 }
 
 void dyntrace_context_entry(dyntracer_t* dyntracer, void* pointer) {
@@ -323,8 +254,10 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
             instrumentr_call_stack_peek_frame(call_stack, 0);
         /* context */
         if (instrumentr_frame_is_context(frame)) {
-            instrumentr_context_t context = instrumentr_frame_as_context(frame);
             instrumentr_call_stack_pop_frame(call_stack);
+            // TODO: add this hook
+            // instrumentr_context_t context =
+            // instrumentr_frame_as_context(frame);
             // instrumentr_trace_context_exit(tracer, application, context);
         }
         /* call */
@@ -333,23 +266,24 @@ void dyntrace_context_jump(dyntracer_t* dyntracer,
             instrumentr_call_t call = instrumentr_frame_as_call(frame);
             instrumentr_function_t function =
                 instrumentr_call_get_function(call);
-            instrumentr_package_t package =
-                instrumentr_state_get_base_package(state);
+            instrumentr_environment_t environment =
+                instrumentr_state_environment_table_lookup(
+                    state, R_BaseNamespace, 0);
 
             /* builtin */
             if (instrumentr_function_is_builtin(function)) {
                 instrumentr_trace_builtin_call_exit(
-                    tracer, application, package, function, call);
+                    tracer, application, environment, function, call);
             }
             /* special */
             else if (instrumentr_function_is_special(function)) {
                 instrumentr_trace_special_call_exit(
-                    tracer, application, package, function, call);
+                    tracer, application, environment, function, call);
             }
             /* closure */
             else if (instrumentr_function_is_closure(function)) {
                 instrumentr_trace_closure_call_exit(
-                    tracer, application, package, function, call);
+                    tracer, application, environment, function, call);
             }
         }
         /* promise */
@@ -366,13 +300,22 @@ void dyntrace_gc_deallocate(dyntracer_t* dyntracer, SEXP r_object) {
 
     instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
 
-    if (TYPEOF(r_object) == CLOSXP) {
-        instrumentr_application_t application =
-            instrumentr_tracer_get_application(tracer);
+    switch (TYPEOF(r_object)) {
+    case CLOSXP:
         instrumentr_state_function_table_remove(state, r_object);
-    }
-    else if (TYPEOF(r_object) == PROMSXP) {
+        break;
+    case SPECIALSXP:
+        instrumentr_state_function_table_remove(state, r_object);
+        break;
+    case BUILTINSXP:
+        instrumentr_state_function_table_remove(state, r_object);
+        break;
+    case PROMSXP:
         instrumentr_state_promise_table_remove(state, r_object);
+        break;
+    case ENVSXP:
+        instrumentr_state_environment_table_remove(state, r_object);
+        break;
     }
 }
 

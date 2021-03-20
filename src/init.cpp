@@ -4,7 +4,7 @@
 #include "object.h"
 #include "tracer.h"
 #include "application.h"
-#include "package.h"
+#include "environment.h"
 #include "function.h"
 #include "call.h"
 #include "parameter.h"
@@ -46,12 +46,12 @@ const R_CallMethodDef CallEntries[] = {
 
     /* trace */
     DECLARE_BINDING(instrumentr_trace_code, 3),
-    DECLARE_BINDING(instrumentr_trace_tracing_entry, 2),
-    DECLARE_BINDING(instrumentr_trace_tracing_exit, 2),
-    DECLARE_BINDING(instrumentr_trace_package_load, 3),
-    DECLARE_BINDING(instrumentr_trace_package_unload, 3),
-    DECLARE_BINDING(instrumentr_trace_package_attach, 3),
-    DECLARE_BINDING(instrumentr_trace_package_detach, 3),
+    DECLARE_BINDING(instrumentr_trace_tracing_entry, 4),
+    DECLARE_BINDING(instrumentr_trace_tracing_exit, 1),
+    DECLARE_BINDING(instrumentr_trace_package_load, 2),
+    DECLARE_BINDING(instrumentr_trace_package_unload, 2),
+    DECLARE_BINDING(instrumentr_trace_package_attach, 2),
+    DECLARE_BINDING(instrumentr_trace_package_detach, 2),
 
     /* model */
     // TODO
@@ -95,19 +95,13 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_state_insert, 4),
     DECLARE_BINDING(instrumentr_state_erase, 3),
     DECLARE_BINDING(instrumentr_state_get_call_stack, 1),
-    DECLARE_BINDING(instrumentr_state_function_table_update_properties, 8),
-    DECLARE_BINDING(instrumentr_state_get_package_count, 1),
-    DECLARE_BINDING(instrumentr_state_get_package, 2),
     DECLARE_BINDING(instrumentr_state_get_packages, 1),
-    DECLARE_BINDING(instrumentr_state_add_package, 2),
+    DECLARE_BINDING(instrumentr_state_get_namespaces, 1),
 
     /* application */
-    DECLARE_BINDING(instrumentr_application_create, 6),
-    DECLARE_BINDING(instrumentr_application_get_name, 1),
     DECLARE_BINDING(instrumentr_application_get_directory, 1),
     DECLARE_BINDING(instrumentr_application_get_code, 1),
     DECLARE_BINDING(instrumentr_application_get_environment, 1),
-    DECLARE_BINDING(instrumentr_application_get_frame_position, 1),
 
     /* call_stack */
     DECLARE_BINDING(instrumentr_call_stack_get_size, 1),
@@ -115,18 +109,13 @@ const R_CallMethodDef CallEntries[] = {
 
     // FRAME API: TODO
 
-    /* package */
-    DECLARE_BINDING(instrumentr_package_create, 5),
-    DECLARE_BINDING(instrumentr_package_add_function, 2),
-    DECLARE_BINDING(instrumentr_package_get_name, 1),
-    DECLARE_BINDING(instrumentr_package_get_directory, 1),
-    DECLARE_BINDING(instrumentr_package_get_namespace, 1),
-    DECLARE_BINDING(instrumentr_package_is_attached, 1),
-    DECLARE_BINDING(instrumentr_package_get_function_count, 1),
-    DECLARE_BINDING(instrumentr_package_has_function, 2),
-    DECLARE_BINDING(instrumentr_package_get_function_by_name, 2),
-    DECLARE_BINDING(instrumentr_package_get_function_by_position, 2),
-    DECLARE_BINDING(instrumentr_package_get_functions, 1),
+    /* environment */
+    DECLARE_BINDING(instrumentr_environment_get_name, 1),
+    DECLARE_BINDING(instrumentr_environment_get_environment, 1),
+    DECLARE_BINDING(instrumentr_environment_get_size, 1),
+    DECLARE_BINDING(instrumentr_environment_contains, 2),
+    DECLARE_BINDING(instrumentr_environment_lookup, 2),
+    DECLARE_BINDING(instrumentr_environment_get_bindings, 1),
 
     /* function */
     DECLARE_BINDING(instrumentr_function_has_name, 1),
@@ -135,7 +124,7 @@ const R_CallMethodDef CallEntries[] = {
     DECLARE_BINDING(instrumentr_function_get_definition, 1),
     DECLARE_BINDING(instrumentr_function_is_inner, 1),
     DECLARE_BINDING(instrumentr_function_get_parent, 1),
-    DECLARE_BINDING(instrumentr_function_is_public, 1),
+    DECLARE_BINDING(instrumentr_function_is_exported, 1),
     DECLARE_BINDING(instrumentr_function_is_s3_generic, 1),
     DECLARE_BINDING(instrumentr_function_is_s3_method, 1),
 

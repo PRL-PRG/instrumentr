@@ -12,12 +12,11 @@ extern "C" {
  * create
  *******************************************************************************/
 
-SEXP r_instrumentr_application_create(SEXP r_state,
-                                      SEXP r_name,
-                                      SEXP r_directory,
-                                      SEXP r_code,
-                                      SEXP r_environment,
-                                      SEXP r_frame_position);
+instrumentr_application_t
+instrumentr_application_create(instrumentr_state_t state,
+                               const char* const directory,
+                               SEXP r_code,
+                               instrumentr_environment_t environment);
 
 /********************************************************************************
  * interop
@@ -25,15 +24,6 @@ SEXP r_instrumentr_application_create(SEXP r_state,
 
 INSTRUMENTR_MODEL_INTEROP_DECLARE_API(application,
                                       INSTRUMENTR_MODEL_TYPE_APPLICATION)
-
-/*******************************************************************************
- * name
- *******************************************************************************/
-
-/* accessor */
-const char*
-instrumentr_application_get_name(instrumentr_application_t application);
-SEXP r_instrumentr_application_get_name(SEXP r_application);
 
 /*******************************************************************************
  * directory
@@ -57,18 +47,9 @@ SEXP r_instrumentr_application_get_code(SEXP r_application);
  *******************************************************************************/
 
 /* accessor */
-SEXP instrumentr_application_get_environment(
-    instrumentr_application_t application);
+instrumentr_environment_t
+instrumentr_application_get_environment(instrumentr_application_t application);
 SEXP r_instrumentr_application_get_environment(SEXP r_application);
-
-/*******************************************************************************
- * frame_position
- *******************************************************************************/
-
-/* accessor */
-int instrumentr_application_get_frame_position(
-    instrumentr_application_t application);
-SEXP r_instrumentr_application_get_frame_position(SEXP r_application);
 
 #ifdef __cplusplus
 }

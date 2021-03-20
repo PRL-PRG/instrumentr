@@ -10,11 +10,6 @@ get_application <- function(object) { # nolint
 }
 
 #' @export
-get_package_count <- function(object) { # nolint
-    UseMethod("get_package_count")
-}
-
-#' @export
 get_code <- function(object) {
     UseMethod("get_code")
 }
@@ -40,13 +35,13 @@ get_name <- function(object) {
 }
 
 #' @export
-get_package <- function(application, name_or_position) {
-    UseMethod("get_package")
+get_environment <- function(application, name_or_position) {
+    UseMethod("get_environment")
 }
 
 #' @export
-get_packages <- function(application) {
-    UseMethod("get_packages")
+get_environments <- function(application) {
+    UseMethod("get_environments")
 }
 
 #' @export
@@ -220,7 +215,7 @@ is_missing <- function(object, ...) {
 }
 
 #' @export
-is_public <- function(object, ...) {
+is_exported <- function(object, ...) {
     UseMethod("is_public")
 }
 
@@ -516,6 +511,24 @@ get_call <- function(object) {
     UseMethod("get_call")
 }
 
-add_package <- function(object, package, ...) {
-    UseMethod("add_package")
+compute_hash <- function(input, collapse = FALSE, algorithm = 'sha512') {
+    UseMethod("compute_hash")
+}
+
+encode <- function(input, collapse = FALSE, algorithm = 'base64') {
+    UseMethod("encode")
+}
+
+decode <- function(input, collapse = FALSE, algorithm = 'base64') {
+    UseMethod("decode")
+}
+
+#' @export
+get_packages <- function(object, ...) {
+    UseMethod("get_packages")
+}
+
+#' @export
+get_namespaces <- function(object, ...) {
+    UseMethod("get_namespaces")
 }

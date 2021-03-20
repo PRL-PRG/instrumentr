@@ -30,6 +30,15 @@ void instrumentr_log_warning(const char* fmt, ...) {
     Rf_warning(buffer);
 }
 
+void instrumentr_log_message(const char* fmt, ...) {
+    char* buffer = get_message_buffer();
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(buffer, fmt, args);
+    va_end(args);
+    Rprintf(buffer);
+}
+
 void instrumentr_sexp_acquire(SEXP r_object) {
     if (r_object != NULL) {
         R_PreserveObject(r_object);
@@ -93,7 +102,14 @@ SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer,
 }
 
 SEXP instrumentr_c_string_to_r_character(const char* string) {
-    return mkString(string);
+    if (string == NULL) {
+        SEXP r_string = PROTECT(allocVector(STRSXP, 1));
+        SET_STRING_ELT(r_string, 0, NA_STRING);
+        UNPROTECT(1);
+        return r_string;
+    } else {
+        return mkString(string);
+    }
 }
 
 const char* instrumentr_r_character_to_c_string(SEXP r_character) {
@@ -115,7 +131,8 @@ SEXP create_list(int column_count, va_list columns) {
 
     /* NOTE: protect all arguments before allocating memory */
     for (int i = 0; i < column_count; ++i) {
-        const char* name = va_arg(protection, const char*);
+        /* read the column name to advance to the next va_arg */
+        va_arg(protection, const char*);
         SEXP column = va_arg(protection, SEXP);
         PROTECT(column);
     }

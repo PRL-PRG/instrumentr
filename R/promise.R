@@ -57,18 +57,6 @@ is_unknown.instrumentr_promise <- function(object) {
 
 #' @export
 #' @rdname promise
-get_argument.instrumentr_promise <- function(object) {
-    .Call(C_instrumentr_promise_get_argument, object)
-}
-
-#' @export
-#' @rdname promise
-get_parameter.instrumentr_promise <- function(object) {
-    .Call(C_instrumentr_promise_get_parameter, object)
-}
-
-#' @export
-#' @rdname promise
 get_call.instrumentr_promise <- function(object) {
     .Call(C_instrumentr_promise_get_call, object)
 }

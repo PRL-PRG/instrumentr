@@ -45,31 +45,21 @@ get_call_stack.instrumentr_state <- function(object) { # nolint
     .Call(C_instrumentr_state_get_call_stack, object)
 }
 
-add_package.instrumentr_state <- function(object, package, ...) {
-    .Call(C_instrumentr_state_add_package, object, package)
-}
-
-#' @export
-#' @rdname state
-get_package_count.instrumentr_state <- function(object) { # nolint
-    .Call(C_instrumentr_state_get_package_count, object)
-}
-
-#' @export
-#' @rdname state
-get_package.instrumentr_state <- function(state, name) { # nolint
-    .Call(C_instrumentr_state_get_package, state, name)
-}
-
-
-#' @export
-#' @rdname state
-get_packages.instrumentr_state <- function(state) { # nolint
-    .Call(C_instrumentr_state_get_packages, state)
-}
-
 #' @export
 #' @rdname state
 get_exec_stats.instrumentr_state <- function(object, ...) {
     .Call(C_instrumentr_state_get_exec_stats, object)
 }
+
+#' @export
+#' @rdname state
+get_packages.instrumentr_state <- function(object, ...) {
+    .Call(C_instrumentr_state_get_packages, object)
+}
+
+#' @export
+#' @rdname state
+get_namespaces.instrumentr_state <- function(object, ...) {
+    .Call(C_instrumentr_state_get_namespaces, object)
+}
+

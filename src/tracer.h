@@ -19,8 +19,12 @@ instrumentr_tracer_t instrumentr_tracer_create();
 SEXP r_instrumentr_tracer_create();
 
 /********************************************************************************
- * finalize tracing
+ * tracing
  *******************************************************************************/
+void instrumentr_tracer_initialize_tracing(instrumentr_tracer_t tracer,
+                                           const char* working_directory,
+                                           SEXP r_code,
+                                           SEXP r_environment);
 
 SEXP instrumentr_tracer_finalize_tracing(instrumentr_tracer_t tracer);
 
@@ -64,13 +68,6 @@ SEXP r_instrumentr_tracer_get_state(SEXP r_tracer);
 instrumentr_application_t
 instrumentr_tracer_get_application(instrumentr_tracer_t tracer);
 SEXP r_instrumentr_tracer_get_application(SEXP r_tracer);
-
-/*  mutator  */
-void instrumentr_tracer_set_application(instrumentr_tracer_t tracer,
-                                        instrumentr_application_t application);
-
-/*  mutator  */
-void instrumentr_tracer_remove_application(instrumentr_tracer_t tracer);
 
 /********************************************************************************
  * r_environment
