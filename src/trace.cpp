@@ -789,6 +789,10 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
         instrumentr_state_integer_table_create(state, r_object);
     }
 
+    else if (TYPEOF(r_object) == REALSXP) {
+        instrumentr_state_real_table_create(state, r_object);
+    }
+
     else {
         instrumentr_state_miscellaneous_table_create(state, r_object);
     }
@@ -828,6 +832,10 @@ void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     else if (TYPEOF(r_object) == INTSXP) {
         instrumentr_state_integer_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == REALSXP) {
+        instrumentr_state_real_table_remove(state, r_object);
     }
 
     else {

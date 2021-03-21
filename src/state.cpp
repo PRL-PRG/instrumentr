@@ -14,6 +14,7 @@
 #include "exec_stats.h"
 #include "miscellaneous.h"
 #include "integer.h"
+#include "real.h"
 
 /********************************************************************************
  * definition
@@ -34,6 +35,7 @@ struct instrumentr_state_impl_t {
     std::unordered_map<SEXP, instrumentr_environment_t>* environment_table;
     std::unordered_map<SEXP, instrumentr_miscellaneous_t>* miscellaneous_table;
     std::unordered_map<SEXP, instrumentr_integer_t>* integer_table;
+    std::unordered_map<SEXP, instrumentr_real_t>* real_table;
 };
 
 /********************************************************************************
@@ -84,6 +86,12 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
         state->integer_table = nullptr;
     }
 
+    if (state->real_table != nullptr) {
+        instrumentr_state_real_table_clear(state);
+        delete state->real_table;
+        state->real_table = nullptr;
+    }
+
     instrumentr_object_release(state->alloc_stats);
     instrumentr_object_release(state->exec_stats);
 }
@@ -128,6 +136,9 @@ instrumentr_state_t instrumentr_state_create() {
         new std::unordered_map<SEXP, instrumentr_integer_t>();
     state->integer_table->reserve(250000);
 
+    state->real_table = new std::unordered_map<SEXP, instrumentr_real_t>();
+    state->real_table->reserve(250000);
+
     state->call_stack = instrumentr_call_stack_create(state);
 
     return state;
@@ -160,6 +171,10 @@ SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state) {
     instrumentr_state_integer_table_clear(state);
     delete state->integer_table;
     state->integer_table = nullptr;
+
+    instrumentr_state_real_table_clear(state);
+    delete state->real_table;
+    state->real_table = nullptr;
 
     SEXP r_result = PROTECT(instrumentr_state_as_list(state));
 
@@ -999,5 +1014,46 @@ void instrumentr_state_integer_table_clear(instrumentr_state_t state) {
         instrumentr_model_kill(iter->second);
     }
     state->integer_table->clear();
+}
+
+/********************************************************************************
+ * real_table
+ *******************************************************************************/
+
+instrumentr_real_t
+instrumentr_state_real_table_create(instrumentr_state_t state,
+                                       SEXP r_real) {
+    /* TODO: set real birth time */
+    /* TODO: set names of package/namespace/realNames reals.
+     */
+    instrumentr_real_t real =
+        instrumentr_real_create(state, r_real);
+    auto result = state->real_table->insert({r_real, real});
+    if (!result.second) {
+        /* TODO: this means the object was deallocated when tracing was
+         * disabled. */
+        instrumentr_model_kill(result.first->second);
+        result.first->second = real;
+    }
+
+    return real;
+}
+
+void instrumentr_state_real_table_remove(instrumentr_state_t state,
+                                            SEXP r_real) {
+    auto result = state->real_table->find(r_real);
+    if (result != state->real_table->end()) {
+        instrumentr_model_kill(result->second);
+        state->real_table->erase(result);
+    }
+}
+
+void instrumentr_state_real_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->real_table->begin();
+         iter != state->real_table->end();
+         ++iter) {
+        instrumentr_model_kill(iter->second);
+    }
+    state->real_table->clear();
 }
 

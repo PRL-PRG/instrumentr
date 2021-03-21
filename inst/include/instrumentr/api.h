@@ -463,6 +463,29 @@
     INSTRUMENTR_INTEGER_R_API_MAP(MACRO)
 
 /********************************************************************************
+ REAL API
+ *******************************************************************************/
+
+#define INSTRUMENTR_REAL_C_API_MAP(MACRO)                           \
+    MACRO(instrumentr_real_get_sexp, SEXP, instrumentr_real_t real) \
+    MACRO(instrumentr_real_get_size, int, instrumentr_real_t real)  \
+    MACRO(instrumentr_real_get_element,                             \
+          double,                                                   \
+          instrumentr_real_t real,                                  \
+          int index)                                                \
+    MACRO(instrumentr_real_is_na, bool, instrumentr_real_t real, int index)
+
+#define INSTRUMENTR_REAL_R_API_MAP(MACRO)                                  \
+    MACRO(r_instrumentr_real_get_sexp, SEXP, SEXP r_real)                  \
+    MACRO(r_instrumentr_real_get_size, SEXP, SEXP r_real)                  \
+    MACRO(r_instrumentr_real_get_element, SEXP, SEXP r_real, SEXP r_index) \
+    MACRO(r_instrumentr_real_is_na, SEXP, SEXP r_real, SEXP r_index)
+
+#define INSTRUMENTR_REAL_API_MAP(MACRO) \
+    INSTRUMENTR_REAL_C_API_MAP(MACRO)   \
+    INSTRUMENTR_REAL_R_API_MAP(MACRO)
+
+/********************************************************************************
  ENVIRONMENT API
  *******************************************************************************/
 
@@ -893,6 +916,8 @@
     INSTRUMENTR_STATE_API_MAP(MACRO)         \
     INSTRUMENTR_MODEL_API_MAP(MACRO)         \
     INSTRUMENTR_APPLICATION_API_MAP(MACRO)   \
+    INSTRUMENTR_INTEGER_API_MAP(MACRO)       \
+    INSTRUMENTR_REAL_API_MAP(MACRO)          \
     INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_API_MAP(MACRO)          \
@@ -915,6 +940,8 @@
     INSTRUMENTR_STATE_R_API_MAP(MACRO)         \
     INSTRUMENTR_MODEL_R_API_MAP(MACRO)         \
     INSTRUMENTR_APPLICATION_R_API_MAP(MACRO)   \
+    INSTRUMENTR_INTEGER_R_API_MAP(MACRO)       \
+    INSTRUMENTR_REAL_R_API_MAP(MACRO)          \
     INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_R_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_R_API_MAP(MACRO)          \

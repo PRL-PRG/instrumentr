@@ -21,6 +21,7 @@
 #include "utilities.h"
 #include "alloc_stats.h"
 #include "integer.h"
+#include "real.h"
 
 #include <R_ext/Rdynload.h>
 
