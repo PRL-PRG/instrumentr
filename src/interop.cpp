@@ -98,6 +98,14 @@ Rcomplex instrumentr_r_complex_to_c_complex(SEXP r_value) {
     return COMPLEX_ELT(r_value, 0);
 }
 
+SEXP instrumentr_c_raw_to_r_raw(Rbyte value) {
+    return ScalarRaw(value);
+}
+
+Rbyte instrumentr_r_raw_to_c_raw(SEXP r_value) {
+    return RAW_ELT(r_value, 0);
+}
+
 SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer,
                                             SEXP r_tag,
                                             SEXP r_prot,

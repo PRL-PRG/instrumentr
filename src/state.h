@@ -169,6 +169,17 @@ void instrumentr_state_complex_table_remove(instrumentr_state_t state,
 
 void instrumentr_state_complex_table_clear(instrumentr_state_t state);
 
+/*******************************************************************************
+ * raw_table
+ *******************************************************************************/
+
+instrumentr_raw_t instrumentr_state_raw_table_create(instrumentr_state_t state,
+                                                     SEXP r_raw);
+
+void instrumentr_state_raw_table_remove(instrumentr_state_t state, SEXP r_raw);
+
+void instrumentr_state_raw_table_clear(instrumentr_state_t state);
+
 INSTRUMENTR_STATE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

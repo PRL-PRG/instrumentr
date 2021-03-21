@@ -17,6 +17,7 @@
 #include "real.h"
 #include "logical.h"
 #include "complex.h"
+#include "raw.h"
 
 /********************************************************************************
  * definition
@@ -40,6 +41,7 @@ struct instrumentr_state_impl_t {
     std::unordered_map<SEXP, instrumentr_real_t>* real_table;
     std::unordered_map<SEXP, instrumentr_logical_t>* logical_table;
     std::unordered_map<SEXP, instrumentr_complex_t>* complex_table;
+    std::unordered_map<SEXP, instrumentr_raw_t>* raw_table;
 };
 
 /********************************************************************************
@@ -108,6 +110,12 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
         state->complex_table = nullptr;
     }
 
+    if (state->raw_table != nullptr) {
+        instrumentr_state_raw_table_clear(state);
+        delete state->raw_table;
+        state->raw_table = nullptr;
+    }
+
     instrumentr_object_release(state->alloc_stats);
     instrumentr_object_release(state->exec_stats);
 }
@@ -163,6 +171,9 @@ instrumentr_state_t instrumentr_state_create() {
         new std::unordered_map<SEXP, instrumentr_complex_t>();
     state->complex_table->reserve(250000);
 
+    state->raw_table = new std::unordered_map<SEXP, instrumentr_raw_t>();
+    state->raw_table->reserve(250000);
+
     state->call_stack = instrumentr_call_stack_create(state);
 
     return state;
@@ -207,6 +218,10 @@ SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state) {
     instrumentr_state_complex_table_clear(state);
     delete state->complex_table;
     state->complex_table = nullptr;
+
+    instrumentr_state_raw_table_clear(state);
+    delete state->raw_table;
+    state->raw_table = nullptr;
 
     SEXP r_result = PROTECT(instrumentr_state_as_list(state));
 
@@ -1170,4 +1185,46 @@ void instrumentr_state_complex_table_clear(instrumentr_state_t state) {
     }
     state->complex_table->clear();
 }
+
+/********************************************************************************
+ * raw_table
+ *******************************************************************************/
+
+instrumentr_raw_t
+instrumentr_state_raw_table_create(instrumentr_state_t state,
+                                       SEXP r_raw) {
+    /* TODO: set raw birth time */
+    /* TODO: set names of package/namespace/rawNames raws.
+     */
+    instrumentr_raw_t raw =
+        instrumentr_raw_create(state, r_raw);
+    auto result = state->raw_table->insert({r_raw, raw});
+    if (!result.second) {
+        /* TODO: this means the object was deallocated when tracing was
+         * disabled. */
+        instrumentr_model_kill(result.first->second);
+        result.first->second = raw;
+    }
+
+    return raw;
+}
+
+void instrumentr_state_raw_table_remove(instrumentr_state_t state,
+                                            SEXP r_raw) {
+    auto result = state->raw_table->find(r_raw);
+    if (result != state->raw_table->end()) {
+        instrumentr_model_kill(result->second);
+        state->raw_table->erase(result);
+    }
+}
+
+void instrumentr_state_raw_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->raw_table->begin();
+         iter != state->raw_table->end();
+         ++iter) {
+        instrumentr_model_kill(iter->second);
+    }
+    state->raw_table->clear();
+}
+
 

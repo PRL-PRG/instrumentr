@@ -24,13 +24,14 @@
 #include "real.h"
 #include "logical.h"
 #include "complex.h"
+#include "raw.h"
 
 #include <R_ext/Rdynload.h>
 
 #include <stdio.h>
 
 #define DECLARE_BINDING(NAME, PARAMETERS) \
-    {#NAME, (DL_FUNC) &NAME, PARAMETERS}
+    { #NAME, (DL_FUNC) &NAME, PARAMETERS }
 
 #define DECLARE_API_BINDING(NAME, OUTPUT_TYPE, ...) \
     {#NAME, (DL_FUNC) &NAME, PP_NARG(__VA_ARGS__)},

@@ -801,6 +801,10 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
         instrumentr_state_complex_table_create(state, r_object);
     }
 
+    else if (TYPEOF(r_object) == RAWSXP) {
+        instrumentr_state_raw_table_create(state, r_object);
+    }
+
     else {
         instrumentr_state_miscellaneous_table_create(state, r_object);
     }
@@ -852,6 +856,10 @@ void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     else if (TYPEOF(r_object) == CPLXSXP) {
         instrumentr_state_complex_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == RAWSXP) {
+        instrumentr_state_raw_table_remove(state, r_object);
     }
 
     else {
