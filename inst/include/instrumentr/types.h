@@ -192,6 +192,7 @@ typedef enum {
     INSTRUMENTR_EVENT_EVAL_ENTRY,
     INSTRUMENTR_EVENT_EVAL_EXIT,
     INSTRUMENTR_EVENT_GC_ALLOCATION,
+    INSTRUMENTR_EVENT_GC_DEALLOCATION,
     INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
     INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
     INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
@@ -255,7 +256,6 @@ typedef void (*builtin_call_entry_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_environment_t environment,
     instrumentr_function_t function,
     instrumentr_call_t call);
 
@@ -264,7 +264,6 @@ typedef void (*builtin_call_exit_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_environment_t environment,
     instrumentr_function_t function,
     instrumentr_call_t call);
 
@@ -273,7 +272,6 @@ typedef void (*special_call_entry_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_environment_t environment,
     instrumentr_function_t function,
     instrumentr_call_t call);
 
@@ -282,7 +280,6 @@ typedef void (*special_call_exit_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_environment_t environment,
     instrumentr_function_t function,
     instrumentr_call_t call);
 
@@ -291,7 +288,6 @@ typedef void (*closure_call_entry_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_environment_t environment,
     instrumentr_function_t function,
     instrumentr_call_t call);
 
@@ -300,7 +296,6 @@ typedef void (*closure_call_exit_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_environment_t environment,
     instrumentr_function_t function,
     instrumentr_call_t call);
 

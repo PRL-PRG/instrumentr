@@ -26,7 +26,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
     tryCatch({
         insert_package_hooks(tracer)
 
-        .Call(C_instrumentr_trace_tracing_entry, tracer, getwd(), 1, environment)
+        .Call(C_instrumentr_trace_tracing_entry, tracer, getwd(), code, environment)
 
         value <- .Call(C_instrumentr_trace_code, tracer, code, environment)
 
