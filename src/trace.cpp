@@ -765,7 +765,47 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     TRACING_INITIALIZE(event)
 
-    if (TYPEOF(r_object) == PROMSXP) {
+    if (r_object == R_UnboundValue) {
+        instrumentr_state_unbound_table_create(state, r_object);
+    }
+
+    else if (r_object == R_MissingArg) {
+        instrumentr_state_missing_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == NILSXP) {
+        instrumentr_state_null_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == EXTPTRSXP) {
+        instrumentr_state_externalptr_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == WEAKREFSXP) {
+        instrumentr_state_weakref_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == BCODESXP) {
+        instrumentr_state_bytecode_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == S4SXP) {
+        instrumentr_state_s4_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == CHARSXP) {
+        instrumentr_state_char_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == SYMSXP) {
+        instrumentr_state_symbol_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == STRSXP) {
+        instrumentr_state_character_table_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == PROMSXP) {
         instrumentr_state_promise_table_create(state, r_object);
     }
 
@@ -822,7 +862,47 @@ void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     TRACING_INITIALIZE(event)
 
-    if (TYPEOF(r_object) == PROMSXP) {
+    if (r_object == R_UnboundValue) {
+        instrumentr_state_unbound_table_remove(state, r_object);
+    }
+
+    else if (r_object == R_MissingArg) {
+        instrumentr_state_missing_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == NILSXP) {
+        instrumentr_state_null_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == EXTPTRSXP) {
+        instrumentr_state_externalptr_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == WEAKREFSXP) {
+        instrumentr_state_weakref_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == BCODESXP) {
+        instrumentr_state_bytecode_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == S4SXP) {
+        instrumentr_state_s4_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == CHARSXP) {
+        instrumentr_state_char_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == SYMSXP) {
+        instrumentr_state_symbol_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == STRSXP) {
+        instrumentr_state_character_table_remove(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == PROMSXP) {
         instrumentr_state_promise_table_remove(state, r_object);
     }
 

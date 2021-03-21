@@ -124,6 +124,66 @@ typedef struct instrumentr_alloc_stats_impl_t* instrumentr_alloc_stats_t;
 typedef struct instrumentr_miscellaneous_impl_t* instrumentr_miscellaneous_t;
 
 /********************************************************************************
+ * unbound
+ *******************************************************************************/
+
+typedef struct instrumentr_unbound_impl_t* instrumentr_unbound_t;
+
+/********************************************************************************
+ * missing
+ *******************************************************************************/
+
+typedef struct instrumentr_missing_impl_t* instrumentr_missing_t;
+
+/********************************************************************************
+ * null
+ *******************************************************************************/
+
+typedef struct instrumentr_null_impl_t* instrumentr_null_t;
+
+/********************************************************************************
+ * externalptr
+ *******************************************************************************/
+
+typedef struct instrumentr_externalptr_impl_t* instrumentr_externalptr_t;
+
+/********************************************************************************
+ * weakref
+ *******************************************************************************/
+
+typedef struct instrumentr_weakref_impl_t* instrumentr_weakref_t;
+
+/********************************************************************************
+ * bytecode
+ *******************************************************************************/
+
+typedef struct instrumentr_bytecode_impl_t* instrumentr_bytecode_t;
+
+/********************************************************************************
+ * s4
+ *******************************************************************************/
+
+typedef struct instrumentr_s4_impl_t* instrumentr_s4_t;
+
+/********************************************************************************
+ * char
+ *******************************************************************************/
+
+typedef struct instrumentr_char_impl_t* instrumentr_char_t;
+
+/********************************************************************************
+ * symbol
+ *******************************************************************************/
+
+typedef struct instrumentr_symbol_impl_t* instrumentr_symbol_t;
+
+/********************************************************************************
+ * character
+ *******************************************************************************/
+
+typedef struct instrumentr_character_impl_t* instrumentr_character_t;
+
+/********************************************************************************
  * integer
  *******************************************************************************/
 
@@ -169,6 +229,16 @@ typedef enum {
 
 typedef enum {
     INSTRUMENTR_MODEL_TYPE_APPLICATION = 0,
+    INSTRUMENTR_MODEL_TYPE_UNBOUND,
+    INSTRUMENTR_MODEL_TYPE_MISSING,
+    INSTRUMENTR_MODEL_TYPE_NULL,
+    INSTRUMENTR_MODEL_TYPE_EXTERNALPTR,
+    INSTRUMENTR_MODEL_TYPE_WEAKREF,
+    INSTRUMENTR_MODEL_TYPE_BYTECODE,
+    INSTRUMENTR_MODEL_TYPE_S4,
+    INSTRUMENTR_MODEL_TYPE_CHAR,
+    INSTRUMENTR_MODEL_TYPE_SYMBOL,
+    INSTRUMENTR_MODEL_TYPE_CHARACTER,
     INSTRUMENTR_MODEL_TYPE_INTEGER,
     INSTRUMENTR_MODEL_TYPE_REAL,
     INSTRUMENTR_MODEL_TYPE_LOGICAL,

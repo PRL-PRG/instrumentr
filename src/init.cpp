@@ -24,7 +24,17 @@
 #include "real.h"
 #include "logical.h"
 #include "complex.h"
+#include "unbound.h"
+#include "missing.h"
+#include "null.h"
+#include "externalptr.h"
+#include "weakref.h"
+#include "bytecode.h"
+#include "s4.h"
 #include "raw.h"
+#include "char.h"
+#include "symbol.h"
+#include "character.h"
 
 #include <R_ext/Rdynload.h>
 

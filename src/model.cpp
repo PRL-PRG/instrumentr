@@ -305,3 +305,13 @@ SEXP r_instrumentr_model_is_foreign(SEXP r_model) {
     int result = instrumentr_model_is_foreign(model);
     return instrumentr_c_int_to_r_logical(result);
 }
+
+/*******************************************************************************
+ * state
+ *******************************************************************************/
+
+/* accessor */
+instrumentr_state_t instrumentr_model_get_state(void* model) {
+    instrumentr_model_t mod = (instrumentr_model_t)(model);
+    return mod->state;
+}

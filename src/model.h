@@ -53,24 +53,31 @@ instrumentr_model_t instrumentr_model_unwrap(SEXP r_model,
 
 #define INSTRUMENTR_MODEL_INTEROP_DECLARE_API(MODEL_NAME, MODEL_TYPE) \
     SEXP instrumentr_##MODEL_NAME##_wrap(                             \
-        instrumentr_##MODEL_NAME##_t MODEL_NAME);                     \
+        instrumentr_##MODEL_NAME##_t MODEL_NAME##_var);               \
     instrumentr_##MODEL_NAME##_t instrumentr_##MODEL_NAME##_unwrap(   \
         SEXP r_##MODEL_NAME);
 
-#define INSTRUMENTR_MODEL_INTEROP_DEFINE_API(MODEL_NAME, MODEL_TYPE)      \
-    SEXP instrumentr_##MODEL_NAME##_wrap(                                 \
-        instrumentr_##MODEL_NAME##_t MODEL_NAME) {                        \
-        return instrumentr_model_wrap((instrumentr_model_t)(MODEL_NAME)); \
-    }                                                                     \
-                                                                          \
-    instrumentr_##MODEL_NAME##_t instrumentr_##MODEL_NAME##_unwrap(       \
-        SEXP r_##MODEL_NAME) {                                            \
-        instrumentr_model_t model =                                       \
-            instrumentr_model_unwrap(r_##MODEL_NAME, MODEL_TYPE);         \
-        return (instrumentr_##MODEL_NAME##_t)(model);                     \
+#define INSTRUMENTR_MODEL_INTEROP_DEFINE_API(MODEL_NAME, MODEL_TYPE) \
+    SEXP instrumentr_##MODEL_NAME##_wrap(                            \
+        instrumentr_##MODEL_NAME##_t MODEL_NAME##_var) {             \
+        return instrumentr_model_wrap(                               \
+            (instrumentr_model_t)(MODEL_NAME##_var));                \
+    }                                                                \
+                                                                     \
+    instrumentr_##MODEL_NAME##_t instrumentr_##MODEL_NAME##_unwrap(  \
+        SEXP r_##MODEL_NAME) {                                       \
+        instrumentr_model_t model =                                  \
+            instrumentr_model_unwrap(r_##MODEL_NAME, MODEL_TYPE);    \
+        return (instrumentr_##MODEL_NAME##_t)(model);                \
     }
 
 INSTRUMENTR_MODEL_API_MAP(INSTRUMENTR_API_INCLUDER)
+
+/*******************************************************************************
+ * state
+ *******************************************************************************/
+
+instrumentr_state_t instrumentr_model_get_state(void* model);
 
 #ifdef __cplusplus
 }

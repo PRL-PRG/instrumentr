@@ -119,6 +119,162 @@ void instrumentr_state_miscellaneous_table_remove(instrumentr_state_t state,
 void instrumentr_state_miscellaneous_table_clear(instrumentr_state_t state);
 
 /*******************************************************************************
+ * unbound_table
+ *******************************************************************************/
+
+instrumentr_unbound_t
+instrumentr_state_unbound_table_create(instrumentr_state_t state,
+                                       SEXP r_unbound);
+
+void instrumentr_state_unbound_table_remove(instrumentr_state_t state,
+                                            SEXP r_unbound);
+instrumentr_unbound_t
+instrumentr_state_unbound_table_lookup(instrumentr_state_t state,
+                                       SEXP r_unbound,
+                                       int create);
+
+void instrumentr_state_unbound_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * missing_table
+ *******************************************************************************/
+
+instrumentr_missing_t
+instrumentr_state_missing_table_create(instrumentr_state_t state,
+                                       SEXP r_missing);
+
+void instrumentr_state_missing_table_remove(instrumentr_state_t state,
+                                            SEXP r_missing);
+instrumentr_missing_t
+instrumentr_state_missing_table_lookup(instrumentr_state_t state,
+                                       SEXP r_missing,
+                                       int create);
+
+void instrumentr_state_missing_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * null_table
+ *******************************************************************************/
+
+instrumentr_null_t
+instrumentr_state_null_table_create(instrumentr_state_t state, SEXP r_null);
+
+void instrumentr_state_null_table_remove(instrumentr_state_t state,
+                                         SEXP r_null);
+instrumentr_null_t
+instrumentr_state_null_table_lookup(instrumentr_state_t state,
+                                    SEXP r_null,
+                                    int create);
+
+void instrumentr_state_null_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * externalptr_table
+ *******************************************************************************/
+
+instrumentr_externalptr_t
+instrumentr_state_externalptr_table_create(instrumentr_state_t state,
+                                           SEXP r_externalptr);
+
+void instrumentr_state_externalptr_table_remove(instrumentr_state_t state,
+                                                SEXP r_externalptr);
+instrumentr_externalptr_t
+instrumentr_state_externalptr_table_lookup(instrumentr_state_t state,
+                                           SEXP r_externalptr,
+                                           int create);
+
+void instrumentr_state_externalptr_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * weakref_table
+ *******************************************************************************/
+
+instrumentr_weakref_t
+instrumentr_state_weakref_table_create(instrumentr_state_t state,
+                                       SEXP r_weakref);
+
+void instrumentr_state_weakref_table_remove(instrumentr_state_t state,
+                                            SEXP r_weakref);
+instrumentr_weakref_t
+instrumentr_state_weakref_table_lookup(instrumentr_state_t state,
+                                       SEXP r_weakref,
+                                       int create);
+
+void instrumentr_state_weakref_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * bytecode_table
+ *******************************************************************************/
+
+instrumentr_bytecode_t
+instrumentr_state_bytecode_table_create(instrumentr_state_t state,
+                                        SEXP r_bytecode);
+
+void instrumentr_state_bytecode_table_remove(instrumentr_state_t state,
+                                             SEXP r_bytecode);
+instrumentr_bytecode_t
+instrumentr_state_bytecode_table_lookup(instrumentr_state_t state,
+                                        SEXP r_bytecode,
+                                        int create);
+
+void instrumentr_state_bytecode_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * s4_table
+ *******************************************************************************/
+
+instrumentr_s4_t instrumentr_state_s4_table_create(instrumentr_state_t state,
+                                                   SEXP r_s4);
+
+void instrumentr_state_s4_table_remove(instrumentr_state_t state, SEXP r_s4);
+instrumentr_s4_t instrumentr_state_s4_table_lookup(instrumentr_state_t state,
+                                                   SEXP r_s4,
+                                                   int create);
+
+void instrumentr_state_s4_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * char_table
+ *******************************************************************************/
+
+instrumentr_char_t
+instrumentr_state_char_table_create(instrumentr_state_t state, SEXP r_char);
+
+void instrumentr_state_char_table_remove(instrumentr_state_t state,
+                                         SEXP r_char);
+instrumentr_char_t
+instrumentr_state_char_table_lookup(instrumentr_state_t state,
+                                    SEXP r_char,
+                                    int create);
+
+void instrumentr_state_char_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * symbol_table
+ *******************************************************************************/
+
+instrumentr_symbol_t
+instrumentr_state_symbol_table_create(instrumentr_state_t state, SEXP r_symbol);
+
+void instrumentr_state_symbol_table_remove(instrumentr_state_t state,
+                                           SEXP r_symbol);
+
+void instrumentr_state_symbol_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
+ * character_table
+ *******************************************************************************/
+
+instrumentr_character_t
+instrumentr_state_character_table_create(instrumentr_state_t state,
+                                         SEXP r_character);
+
+void instrumentr_state_character_table_remove(instrumentr_state_t state,
+                                              SEXP r_character);
+
+void instrumentr_state_character_table_clear(instrumentr_state_t state);
+
+/*******************************************************************************
  * integer_table
  *******************************************************************************/
 
