@@ -94,12 +94,15 @@ instrumentr_state_t instrumentr_state_create() {
 
     state->promise_table =
         new std::unordered_map<SEXP, instrumentr_promise_t>();
+    state->promise_table -> reserve(250000);
 
     state->function_table =
         new std::unordered_map<SEXP, instrumentr_function_t>();
+    state->function_table -> reserve(250000);
 
     state->environment_table =
         new std::unordered_map<SEXP, instrumentr_environment_t>();
+    state->environment_table -> reserve(250000);
 
     state->call_stack = instrumentr_call_stack_create(state);
 
