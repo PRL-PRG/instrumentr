@@ -23,6 +23,7 @@
 #include "integer.h"
 #include "real.h"
 #include "logical.h"
+#include "complex.h"
 
 #include <R_ext/Rdynload.h>
 

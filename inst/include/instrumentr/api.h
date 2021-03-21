@@ -23,6 +23,8 @@
     MACRO(instrumentr_r_integer_to_c_int, int, SEXP r_value)                  \
     MACRO(instrumentr_c_double_to_r_double, SEXP, double value)               \
     MACRO(instrumentr_r_double_to_c_double, double, SEXP r_value)             \
+    MACRO(instrumentr_c_complex_to_r_complex, SEXP, Rcomplex value)           \
+    MACRO(instrumentr_r_complex_to_c_complex, Rcomplex, SEXP r_value)         \
     MACRO(instrumentr_c_string_to_r_character, SEXP, const char* string)      \
     MACRO(instrumentr_r_character_to_c_string, const char*, SEXP r_character) \
     MACRO(instrumentr_c_pointer_to_r_externalptr,                             \
@@ -513,6 +515,33 @@
     INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)
 
 /********************************************************************************
+ COMPLEX API
+ *******************************************************************************/
+
+#define INSTRUMENTR_COMPLEX_C_API_MAP(MACRO)                                 \
+    MACRO(instrumentr_complex_get_sexp, SEXP, instrumentr_complex_t complex) \
+    MACRO(instrumentr_complex_get_size, int, instrumentr_complex_t complex)  \
+    MACRO(instrumentr_complex_get_element,                                   \
+          Rcomplex,                                                          \
+          instrumentr_complex_t complex,                                     \
+          int index)                                                         \
+    MACRO(instrumentr_complex_is_na,                                         \
+          bool,                                                              \
+          instrumentr_complex_t complex,                                     \
+          int index)
+
+#define INSTRUMENTR_COMPLEX_R_API_MAP(MACRO)                                   \
+    MACRO(r_instrumentr_complex_get_sexp, SEXP, SEXP r_complex)                \
+    MACRO(r_instrumentr_complex_get_size, SEXP, SEXP r_complex)                \
+    MACRO(                                                                     \
+        r_instrumentr_complex_get_element, SEXP, SEXP r_complex, SEXP r_index) \
+    MACRO(r_instrumentr_complex_is_na, SEXP, SEXP r_complex, SEXP r_index)
+
+#define INSTRUMENTR_COMPLEX_API_MAP(MACRO) \
+    INSTRUMENTR_COMPLEX_C_API_MAP(MACRO)   \
+    INSTRUMENTR_COMPLEX_R_API_MAP(MACRO)
+
+/********************************************************************************
  ENVIRONMENT API
  *******************************************************************************/
 
@@ -946,6 +975,7 @@
     INSTRUMENTR_INTEGER_API_MAP(MACRO)       \
     INSTRUMENTR_REAL_API_MAP(MACRO)          \
     INSTRUMENTR_LOGICAL_API_MAP(MACRO)       \
+    INSTRUMENTR_COMPLEX_API_MAP(MACRO)       \
     INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_API_MAP(MACRO)          \
@@ -971,6 +1001,7 @@
     INSTRUMENTR_INTEGER_R_API_MAP(MACRO)       \
     INSTRUMENTR_REAL_R_API_MAP(MACRO)          \
     INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)       \
+    INSTRUMENTR_COMPLEX_R_API_MAP(MACRO)       \
     INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_R_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_R_API_MAP(MACRO)          \

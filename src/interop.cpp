@@ -90,6 +90,14 @@ double instrumentr_r_double_to_c_double(SEXP r_value) {
     return asReal(r_value);
 }
 
+SEXP instrumentr_c_complex_to_r_complex(Rcomplex value) {
+    return ScalarComplex(value);
+}
+
+Rcomplex instrumentr_r_complex_to_c_complex(SEXP r_value) {
+    return COMPLEX_ELT(r_value, 0);
+}
+
 SEXP instrumentr_c_pointer_to_r_externalptr(void* pointer,
                                             SEXP r_tag,
                                             SEXP r_prot,

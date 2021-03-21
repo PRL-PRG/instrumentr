@@ -156,6 +156,19 @@ void instrumentr_state_logical_table_remove(instrumentr_state_t state,
 
 void instrumentr_state_logical_table_clear(instrumentr_state_t state);
 
+/*******************************************************************************
+ * complex_table
+ *******************************************************************************/
+
+instrumentr_complex_t
+instrumentr_state_complex_table_create(instrumentr_state_t state,
+                                       SEXP r_complex);
+
+void instrumentr_state_complex_table_remove(instrumentr_state_t state,
+                                            SEXP r_complex);
+
+void instrumentr_state_complex_table_clear(instrumentr_state_t state);
+
 INSTRUMENTR_STATE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus
