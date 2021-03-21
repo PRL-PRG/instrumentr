@@ -12,6 +12,7 @@
 #include "environment.h"
 #include "alloc_stats.h"
 #include "exec_stats.h"
+#include "miscellaneous.h"
 
 /********************************************************************************
  * definition
@@ -30,6 +31,7 @@ struct instrumentr_state_impl_t {
     std::unordered_map<SEXP, instrumentr_promise_t>* promise_table;
     std::unordered_map<SEXP, instrumentr_function_t>* function_table;
     std::unordered_map<SEXP, instrumentr_environment_t>* environment_table;
+    std::unordered_map<SEXP, instrumentr_miscellaneous_t>* miscellaneous_table;
 };
 
 /********************************************************************************
@@ -68,6 +70,12 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
         state->environment_table = nullptr;
     }
 
+    if (state->miscellaneous_table != nullptr) {
+        instrumentr_state_miscellaneous_table_clear(state);
+        delete state->miscellaneous_table;
+        state->miscellaneous_table = nullptr;
+    }
+
     instrumentr_object_release(state->alloc_stats);
     instrumentr_object_release(state->exec_stats);
 }
@@ -94,15 +102,19 @@ instrumentr_state_t instrumentr_state_create() {
 
     state->promise_table =
         new std::unordered_map<SEXP, instrumentr_promise_t>();
-    state->promise_table -> reserve(250000);
+    state->promise_table->reserve(250000);
 
     state->function_table =
         new std::unordered_map<SEXP, instrumentr_function_t>();
-    state->function_table -> reserve(250000);
+    state->function_table->reserve(250000);
 
     state->environment_table =
         new std::unordered_map<SEXP, instrumentr_environment_t>();
-    state->environment_table -> reserve(250000);
+    state->environment_table->reserve(250000);
+
+    state->miscellaneous_table =
+        new std::unordered_map<SEXP, instrumentr_miscellaneous_t>();
+    state->miscellaneous_table->reserve(250000);
 
     state->call_stack = instrumentr_call_stack_create(state);
 
@@ -128,6 +140,10 @@ SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state) {
     instrumentr_state_environment_table_clear(state);
     delete state->environment_table;
     state->environment_table = nullptr;
+
+    instrumentr_state_miscellaneous_table_clear(state);
+    delete state->miscellaneous_table;
+    state->miscellaneous_table = nullptr;
 
     SEXP r_result = PROTECT(instrumentr_state_as_list(state));
 
@@ -888,4 +904,42 @@ SEXP r_instrumentr_state_get_namespaces(SEXP r_state) {
     UNPROTECT(2);
 
     return r_namespaces;
+}
+
+instrumentr_miscellaneous_t
+instrumentr_state_miscellaneous_table_create(instrumentr_state_t state,
+                                             SEXP r_miscellaneous) {
+    /* TODO: set miscellaneous birth time */
+    /* TODO: set names of package/namespace/miscellaneousNames miscellaneouss.
+     */
+    instrumentr_miscellaneous_t miscellaneous =
+        instrumentr_miscellaneous_create(state, r_miscellaneous);
+    auto result =
+        state->miscellaneous_table->insert({r_miscellaneous, miscellaneous});
+    if (!result.second) {
+        /* TODO: this means the object was deallocated when tracing was
+         * disabled. */
+        instrumentr_model_kill(result.first->second);
+        result.first->second = miscellaneous;
+    }
+
+    return miscellaneous;
+}
+
+void instrumentr_state_miscellaneous_table_remove(instrumentr_state_t state,
+                                                  SEXP r_miscellaneous) {
+    auto result = state->miscellaneous_table->find(r_miscellaneous);
+    if (result != state->miscellaneous_table->end()) {
+        instrumentr_model_kill(result->second);
+        state->miscellaneous_table->erase(result);
+    }
+}
+
+void instrumentr_state_miscellaneous_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->miscellaneous_table->begin();
+         iter != state->miscellaneous_table->end();
+         ++iter) {
+        instrumentr_model_kill(iter->second);
+    }
+    state->miscellaneous_table->clear();
 }

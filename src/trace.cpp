@@ -22,6 +22,7 @@
 #include "promise.h"
 #include "exec_stats.h"
 #include "event.h"
+#include "miscellaneous.h"
 
 #define TRACING_INITIALIZE(EVENT)                                     \
     instrumentr_tracer_disable(tracer);                               \
@@ -784,6 +785,10 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
         instrumentr_state_environment_table_create(state, r_object);
     }
 
+    else {
+        instrumentr_state_miscellaneous_table_create(state, r_object);
+    }
+
     /* TODO: add this after adding value */
     // TRACING_INVOKE_CALLBACK(event, gc_allocation_function_t, value);
 
@@ -815,6 +820,10 @@ void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     else if (TYPEOF(r_object) == ENVSXP) {
         instrumentr_state_environment_table_remove(state, r_object);
+    }
+
+    else {
+        instrumentr_state_miscellaneous_table_remove(state, r_object);
     }
 
     /* TODO: add this after adding value */

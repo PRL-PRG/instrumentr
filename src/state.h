@@ -105,6 +105,19 @@ instrumentr_environment_t
 instrumentr_state_environment_table_update_namespace(instrumentr_state_t state,
                                                      const char* name);
 
+/*******************************************************************************
+ * miscellaneous_table
+ *******************************************************************************/
+
+instrumentr_miscellaneous_t
+instrumentr_state_miscellaneous_table_create(instrumentr_state_t state,
+                                             SEXP r_miscellaneous);
+
+void instrumentr_state_miscellaneous_table_remove(instrumentr_state_t state,
+                                                  SEXP r_miscellaneous);
+
+void instrumentr_state_miscellaneous_table_clear(instrumentr_state_t state);
+
 INSTRUMENTR_STATE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

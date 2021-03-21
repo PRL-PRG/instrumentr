@@ -21,7 +21,8 @@ model_type_info_t model_type_info_table[INSTRUMENTR_MODEL_TYPE_COUNT] = {
     {INSTRUMENTR_MODEL_TYPE_PROMISE, "promise", NULL},
     {INSTRUMENTR_MODEL_TYPE_VALUE, "value", NULL},
     {INSTRUMENTR_MODEL_TYPE_FRAME, "frame", NULL},
-    {INSTRUMENTR_MODEL_TYPE_CONTEXT, "context", NULL}};
+    {INSTRUMENTR_MODEL_TYPE_CONTEXT, "context", NULL},
+    {INSTRUMENTR_MODEL_TYPE_MISCELLANEOUS, "miscellaneous", NULL}};
 
 /*******************************************************************************
  * initialize

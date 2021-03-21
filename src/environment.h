@@ -23,8 +23,6 @@ instrumentr_environment_create(instrumentr_state_t state, SEXP r_environment);
 INSTRUMENTR_MODEL_INTEROP_DECLARE_API(environment,
                                       INSTRUMENTR_MODEL_TYPE_ENVIRONMENT)
 
-INSTRUMENTR_ENVIRONMENT_API_MAP(INSTRUMENTR_API_INCLUDER)
-
 /********************************************************************************
  * type
  *******************************************************************************/

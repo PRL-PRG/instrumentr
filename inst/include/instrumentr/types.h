@@ -117,6 +117,12 @@ typedef struct instrumentr_exec_stats_impl_t* instrumentr_exec_stats_t;
 
 typedef struct instrumentr_alloc_stats_impl_t* instrumentr_alloc_stats_t;
 
+/********************************************************************************
+ * miscellaneous
+ *******************************************************************************/
+
+typedef struct instrumentr_miscellaneous_impl_t* instrumentr_miscellaneous_t;
+
 /* The type of the do_xxxx functions. */
 /* These are the built-in R functions. */
 typedef SEXP (*CCODE)(SEXP, SEXP, SEXP, SEXP);
@@ -143,6 +149,7 @@ typedef enum {
     INSTRUMENTR_MODEL_TYPE_VALUE,
     INSTRUMENTR_MODEL_TYPE_FRAME,
     INSTRUMENTR_MODEL_TYPE_CONTEXT,
+    INSTRUMENTR_MODEL_TYPE_MISCELLANEOUS,
     /* NOTE: this has to be the last one always */
     INSTRUMENTR_MODEL_TYPE_COUNT
 } instrumentr_model_type_t;
