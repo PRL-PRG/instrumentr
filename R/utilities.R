@@ -223,5 +223,5 @@ get_object_details <- function(value, variable, envir = parent.frame(), peek = T
         value <- NULL
     }
 
-    .Call(C_instrumentr_get_object_details, value, variable, envir, peek)
+    .Call(r_instrumentr_get_object_details, value, variable, envir, peek)
 }

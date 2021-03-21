@@ -10,6 +10,7 @@
 #include "dyntrace.h"
 #include "state.h"
 #include "application.h"
+#include "event.h"
 
 /********************************************************************************
  * definition

@@ -2,19 +2,19 @@
 insert_package_hooks <- function(tracer_ptr) {
 
     handle_package_on_load <- function(package_name, ...) {
-        .Call(C_instrumentr_trace_package_load, tracer_ptr, package_name)
+        .Call(r_instrumentr_trace_package_load, tracer_ptr, package_name)
     }
 
     handle_package_attach <- function(package_name, ...) {
-        .Call(C_instrumentr_trace_package_attach, tracer_ptr, package_name)
+        .Call(r_instrumentr_trace_package_attach, tracer_ptr, package_name)
     }
 
     handle_package_detach <- function(package_name, ...) {
-        .Call(C_instrumentr_trace_package_detach, tracer_ptr, package_name)
+        .Call(r_instrumentr_trace_package_detach, tracer_ptr, package_name)
     }
 
     handle_package_on_unload <- function(package_name, ...) {
-        .Call(C_instrumentr_trace_package_unload, tracer_ptr, package_name)
+        .Call(r_instrumentr_trace_package_unload, tracer_ptr, package_name)
     }
 
     future_packages <- setdiff(unname(installed.packages()[,1]), loadedNamespaces())

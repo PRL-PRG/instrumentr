@@ -65,19 +65,19 @@ NULL
 #' @export
 #' @rdname application
 get_directory.instrumentr_application <- function(object) { # nolint
-    .Call(C_instrumentr_application_get_directory, object)
+    .Call(r_instrumentr_application_get_directory, object)
 }
 
 
 #' @export
 #' @rdname application
 get_code.instrumentr_application <- function(object) { # nolint
-    .Call(C_instrumentr_application_get_code, object)
+    .Call(r_instrumentr_application_get_code, object)
 }
 
 
 #' @export
 #' @rdname application
 get_environment.instrumentr_application <- function(object) { # nolint
-    .Call(C_instrumentr_application_get_environment, object)
+    .Call(r_instrumentr_application_get_environment, object)
 }

@@ -159,6 +159,12 @@ int instrumentr_state_get_time(instrumentr_state_t state) {
     return state->time;
 }
 
+SEXP r_instrumentr_state_get_time(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    int time = instrumentr_state_get_time(state);
+    return instrumentr_c_int_to_r_integer(time);
+}
+
 void instrumentr_state_increment_time(instrumentr_state_t state) {
     ++state->time;
 }

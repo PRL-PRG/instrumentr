@@ -21,14 +21,14 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
 
     result <- NULL
 
-    .Call(C_instrumentr_initialize_tracing, tracer)
+    .Call(r_instrumentr_initialize_tracing, tracer)
 
     tryCatch({
         insert_package_hooks(tracer)
 
-        .Call(C_instrumentr_trace_tracing_entry, tracer, getwd(), code, environment)
+        .Call(r_instrumentr_trace_tracing_entry, tracer, getwd(), code, environment)
 
-        value <- .Call(C_instrumentr_trace_code, tracer, code, environment)
+        value <- .Call(r_instrumentr_trace_code, tracer, code, environment)
 
         result <- create_result(value)
     },
@@ -36,7 +36,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         print(e)
 
         # TODO
-        callback_type <- "don't know"#.Call(C_instrumentr_tracer_get_callback_current_type, tracer)
+        callback_type <- "don't know"#.Call(r_instrumentr_tracer_get_callback_current_type, tracer)
         result <<- create_result(e, callback_type)
     })
 
@@ -51,17 +51,17 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
                 ## NOTE: invoke callback if tracing does not error
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
-        state <- .Call(C_instrumentr_trace_tracing_exit, tracer)
+        state <- .Call(r_instrumentr_trace_tracing_exit, tracer)
         result <- set_state(result, state)
     },
     error = function(e) {
         print(e)
 
-        callback_type <- "don't know"#.Call(C_instrumentr_tracer_get_callback_current_type, tracer)
+        callback_type <- "don't know"#.Call(r_instrumentr_tracer_get_callback_current_type, tracer)
         result <<- create_result(e, callback_type)
     },
     finally = {
-        .Call(C_instrumentr_finalize_tracing, tracer)
+        .Call(r_instrumentr_finalize_tracing, tracer)
     })
 
     result
@@ -97,9 +97,9 @@ trace_text.instrumentr_tracer <- function(tracer, text, environment = .GlobalEnv
 #' @rdname trace
 with_tracing_disabled <- function(tracer, code) {
 
-    .Call(C_instrumentr_tracer_disable, tracer)
+    .Call(r_instrumentr_tracer_disable, tracer)
 
-    on.exit(.Call(C_instrumentr_tracer_reinstate, tracer))
+    on.exit(.Call(r_instrumentr_tracer_reinstate, tracer))
 
     code
 }
@@ -108,9 +108,9 @@ with_tracing_disabled <- function(tracer, code) {
 #' @rdname trace
 with_tracing_enabled <- function(tracer, code) {
 
-    on.exit(.Call(C_instrumentr_tracer_reinstate, tracer))
+    on.exit(.Call(r_instrumentr_tracer_reinstate, tracer))
 
-    .Call(C_instrumentr_tracer_enable, tracer)
+    .Call(r_instrumentr_tracer_enable, tracer)
 
     code
 }

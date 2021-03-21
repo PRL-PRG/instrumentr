@@ -1,13 +1,12 @@
 #ifndef INSTRUMENTR_CONTEXT_H
 #define INSTRUMENTR_CONTEXT_H
 
+#include <instrumentr/api.h>
+#include "model.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-#include "model.h"
 
 /********************************************************************************
  * create
@@ -22,13 +21,7 @@ instrumentr_context_t instrumentr_context_create(instrumentr_state_t state,
 
 INSTRUMENTR_MODEL_INTEROP_DECLARE_API(context, INSTRUMENTR_MODEL_TYPE_CONTEXT)
 
-/********************************************************************************
- * pointer
- *******************************************************************************/
-
-/* accessor  */
-void* instrumentr_context_get_pointer(instrumentr_context_t context);
-SEXP r_instrumentr_context_get_pointer(SEXP r_context);
+INSTRUMENTR_CONTEXT_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus
 }

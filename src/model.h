@@ -1,12 +1,11 @@
 #ifndef INSTRUMENTR_MODEL_H
 #define INSTRUMENTR_MODEL_H
 
+#include <instrumentr/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
 
 typedef void (*instrumentr_model_finalizer_t)(instrumentr_model_t model);
 
@@ -36,73 +35,13 @@ instrumentr_model_create(instrumentr_state_t state,
                          instrumentr_model_finalizer_t finalizer,
                          instrumentr_origin_t origin);
 
-/*******************************************************************************
- * id
- *******************************************************************************/
-
-/* accessor */
-instrumentr_id_t instrumentr_model_get_id(void* model);
-SEXP r_instrumentr_model_get_id(SEXP r_model);
-
-/*******************************************************************************
- * type
- *******************************************************************************/
-
 instrumentr_model_type_t instrumentr_model_get_type(void* model);
 
-/*******************************************************************************
- * reference_count
- *******************************************************************************/
-
-/* mutator  */
 int instrumentr_model_acquire(void* model);
 
-/* mutator  */
 int instrumentr_model_release(void* model);
 
-int instrumentr_model_get_reference_count(void* model);
-
 int instrumentr_model_kill(void* model);
-
-/*******************************************************************************
- * time
- *******************************************************************************/
-
-/* accessor */
-int instrumentr_model_get_birth_time(void* model);
-SEXP r_instrumentr_model_get_birth_time(SEXP r_model);
-
-/* accessor */
-int instrumentr_model_get_death_time(void* model);
-SEXP r_instrumentr_model_get_death_time(SEXP r_model);
-
-/* accessor */
-int instrumentr_model_get_life_time(void* model);
-SEXP r_instrumentr_model_get_life_time(SEXP r_model);
-
-/*******************************************************************************
- * lifetime
- *******************************************************************************/
-
-/* accessor */
-int instrumentr_model_is_alive(void* model);
-SEXP r_instrumentr_model_is_alive(SEXP r_model);
-
-/* accessor */
-int instrumentr_model_is_dead(void* model);
-SEXP r_instrumentr_model_is_dead(SEXP r_model);
-
-/*******************************************************************************
- * origin
- *******************************************************************************/
-
-/* accessor */
-int instrumentr_model_is_local(void* model);
-SEXP r_instrumentr_model_is_local(SEXP r_model);
-
-/* accessor */
-int instrumentr_model_is_foreign(void* model);
-SEXP r_instrumentr_model_is_foreign(SEXP r_model);
 
 /*******************************************************************************
  * interop
@@ -130,6 +69,8 @@ instrumentr_model_t instrumentr_model_unwrap(SEXP r_model,
             instrumentr_model_unwrap(r_##MODEL_NAME, MODEL_TYPE);         \
         return (instrumentr_##MODEL_NAME##_t)(model);                     \
     }
+
+INSTRUMENTR_MODEL_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus
 }

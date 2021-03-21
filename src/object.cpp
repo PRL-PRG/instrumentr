@@ -104,3 +104,12 @@ int instrumentr_object_get_reference_count(void* object) {
     instrumentr_object_t obj = (instrumentr_object_t)(object);
     return obj->reference_count;
 }
+
+SEXP r_instrumentr_object_get_reference_count(SEXP r_object) {
+    instrumentr_object_t object =
+        instrumentr_object_unwrap(r_object, INSTRUMENTR_OBJECT_TYPE_COUNT);
+
+    int reference_count = instrumentr_object_get_reference_count(object);
+
+    return instrumentr_c_int_to_r_integer(reference_count);
+}

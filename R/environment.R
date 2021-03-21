@@ -54,35 +54,35 @@ NULL
 #' @export
 #' @rdname environment
 get_name.instrumentr_environment <- function(object) {
-    .Call(C_instrumentr_environment_get_name, object)
+    .Call(r_instrumentr_environment_get_name, object)
 }
 
 #' @export
 #' @rdname environment
 get_environment.instrumentr_environment <- function(object) { # nolint
-    .Call(C_instrumentr_environment_get_environment, object)
+    .Call(r_instrumentr_environment_get_environment, object)
 }
 
 #' @export
 #' @rdname environment
 get_size.instrumentr_environment <- function(object) {
-    .Call(C_instrumentr_environment_get_size, object)
+    .Call(r_instrumentr_environment_get_size, object)
 }
 
 #' @export
 #' @rdname environment
 lookup.instrumentr_environment <- function(object, name) { # nolint
-    .Call(C_instrumentr_environment_lookup, object, name)
+    .Call(r_instrumentr_environment_lookup, object, name)
 }
 
 #' @export
 #' @rdname environment
 contains.instrumentr_environment <- function(object, name) { # nolint
-    .Call(C_instrumentr_environment_contains, object, name)
+    .Call(r_instrumentr_environment_contains, object, name)
 }
 
 #' @export
 #' @rdname environment
 get_bindings.instrumentr_environment <- function(object) { # nolint
-    .Call(C_instrumentr_environment_get_bindings, object)
+    .Call(r_instrumentr_environment_get_bindings, object)
 }

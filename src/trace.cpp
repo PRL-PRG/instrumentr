@@ -21,6 +21,7 @@
 #include "call_stack.h"
 #include "promise.h"
 #include "exec_stats.h"
+#include "event.h"
 
 #define TRACING_INITIALIZE(EVENT)                                     \
     instrumentr_tracer_disable(tracer);                               \

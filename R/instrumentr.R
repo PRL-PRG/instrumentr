@@ -1,4 +1,4 @@
-#' @useDynLib instrumentr, .registration = TRUE, .fixes = "C_"
+#' @useDynLib instrumentr, .registration = TRUE, .fixes = ""
 NULL
 
 .default_return_value <- new.env(parent=emptyenv())

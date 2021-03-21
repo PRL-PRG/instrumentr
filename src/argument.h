@@ -1,13 +1,12 @@
 #ifndef INSTRUMENTR_ARGUMENT_H
 #define INSTRUMENTR_ARGUMENT_H
 
+#include <instrumentr/api.h>
+#include "model.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
-#include "model.h"
 
 /********************************************************************************
  * create
@@ -27,44 +26,9 @@ instrumentr_argument_create_from_value(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(argument,
-                                      INSTRUMENTR_MODEL_TYPE_ARGUMENT)
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(argument, INSTRUMENTR_MODEL_TYPE_ARGUMENT)
 
-/********************************************************************************
- * name
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_argument_has_name(instrumentr_argument_t argument);
-SEXP r_instrumentr_argument_has_name(SEXP r_argument);
-
-/* accessor  */
-const char* instrumentr_argument_get_name(instrumentr_argument_t argument);
-SEXP r_instrumentr_argument_get_name(SEXP r_argument);
-
-/********************************************************************************
- * promise
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_argument_is_promise(instrumentr_argument_t argument);
-SEXP r_instrumentr_argument_is_promise(SEXP r_argument);
-
-instrumentr_promise_t
-instrumentr_argument_as_promise(instrumentr_argument_t argument);
-SEXP r_instrumentr_argument_as_promise(SEXP r_argument);
-
-/********************************************************************************
- * value
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_argument_is_value(instrumentr_argument_t argument);
-SEXP r_instrumentr_argument_is_value(SEXP r_argument);
-
-instrumentr_value_t
-instrumentr_argument_as_value(instrumentr_argument_t argument);
-SEXP r_instrumentr_argument_as_value(SEXP r_argument);
+INSTRUMENTR_ARGUMENT_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus
 }

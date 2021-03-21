@@ -165,6 +165,13 @@ int instrumentr_model_get_reference_count(void* model) {
     return obj->reference_count;
 }
 
+SEXP r_instrumentr_model_get_reference_count(SEXP r_model) {
+    instrumentr_model_t model =
+        instrumentr_model_unwrap(r_model, INSTRUMENTR_MODEL_TYPE_COUNT);
+    int reference_count = instrumentr_model_get_reference_count(model);
+    return instrumentr_c_int_to_r_integer(reference_count);
+}
+
 /*******************************************************************************
  * id
  *******************************************************************************/

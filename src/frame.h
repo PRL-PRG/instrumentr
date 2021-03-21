@@ -1,8 +1,7 @@
 #ifndef INSTRUMENTR_FRAME_H
 #define INSTRUMENTR_FRAME_H
 
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
+#include <instrumentr/api.h>
 #include "model.h"
 
 #ifdef __cplusplus
@@ -31,38 +30,7 @@ instrumentr_frame_create_from_context(instrumentr_state_t state,
 
 INSTRUMENTR_MODEL_INTEROP_DECLARE_API(frame, INSTRUMENTR_MODEL_TYPE_FRAME)
 
-/********************************************************************************
- * call
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_frame_is_call(instrumentr_frame_t frame);
-SEXP r_instrumentr_frame_is_call(SEXP r_frame);
-
-instrumentr_call_t instrumentr_frame_as_call(instrumentr_frame_t frame);
-SEXP r_instrumentr_frame_as_call(SEXP r_frame);
-
-/********************************************************************************
- * promise
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_frame_is_promise(instrumentr_frame_t frame);
-SEXP r_instrumentr_frame_is_promise(SEXP r_frame);
-
-instrumentr_promise_t instrumentr_frame_as_promise(instrumentr_frame_t frame);
-SEXP r_instrumentr_frame_as_promise(SEXP r_frame);
-
-/********************************************************************************
- * context
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_frame_is_context(instrumentr_frame_t frame);
-SEXP r_instrumentr_frame_is_context(SEXP r_frame);
-
-instrumentr_context_t instrumentr_frame_as_context(instrumentr_frame_t frame);
-SEXP r_instrumentr_frame_as_context(SEXP r_frame);
+INSTRUMENTR_FRAME_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus
 }

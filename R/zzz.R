@@ -1,5 +1,5 @@
 get_commit_hash <- function() {
-    .Call(C_instrumentr_get_commit_hash)
+    .Call(r_instrumentr_get_commit_hash)
 }
 
 #' @importFrom utils packageVersion
@@ -97,7 +97,7 @@ show_setup_info <- function(version_info) {
 
 .onLoad <- function(libname, pkgname) { # nolint
 
-    .Call(C_instrumentr_initialize, parent.env(environment()), .state_env)
+    .Call(r_instrumentr_initialize, parent.env(environment()), .state_env)
 
     version_info <- get_version_information()
 
@@ -107,6 +107,6 @@ show_setup_info <- function(version_info) {
 
 .onUnload <- function(libpath) { # nolint
 
-    .Call(C_instrumentr_finalize)
+    .Call(r_instrumentr_finalize)
 
 }

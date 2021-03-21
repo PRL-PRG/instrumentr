@@ -1,11 +1,11 @@
 #ifndef INSTRUMENTR_INSTRUMENTR_INTERNALS_H
 #define INSTRUMENTR_INSTRUMENTR_INTERNALS_H
 
+#include "tracer.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "tracer.h"
 
 const char* instrumentr_get_commit_hash();
 SEXP r_instrumentr_get_commit_hash();

@@ -10,13 +10,13 @@ NULL
 #' @export
 #' @rdname call
 get_environment.instrumentr_call <- function(object, ...) { # nolint
-    .Call(C_instrumentr_call_get_environment, object)
+    .Call(r_instrumentr_call_get_environment, object)
 }
 
 #' @export
 #' @rdname call
 get_frame_position.instrumentr_call <- function(object, ...) { # nolint
-    .Call(C_instrumentr_call_get_frame_position, object)
+    .Call(r_instrumentr_call_get_frame_position, object)
 }
 
 #' @export
@@ -88,36 +88,36 @@ get_caller.instrumentr_call <- function(object, ...) { # nolint
 #' @export
 #' @rdname call
 get_expression.instrumentr_call <- function(object, ...) { # nolint
-    .Call(C_instrumentr_call_get_expression, object)
+    .Call(r_instrumentr_call_get_expression, object)
 }
 
 #' @export
 #' @rdname call
 get_function.instrumentr_call <- function(object, ...) {
-    .Call(C_instrumentr_call_get_function, object)
+    .Call(r_instrumentr_call_get_function, object)
 }
 
 
 #' @export
 #' @rdname call
 get_parameter_count.instrumentr_call <- function(object) { # nolint
-    .Call(C_instrumentr_call_get_parameter_count, object)
+    .Call(r_instrumentr_call_get_parameter_count, object)
 }
 
 #' @export
 #' @rdname call
 get_parameter.instrumentr_call <- function(object, position_or_name) { # nolint
     if (is_scalar_character(position_or_name)) {
-        .Call(C_instrumentr_call_get_parameter_by_name, object, position_or_name)
+        .Call(r_instrumentr_call_get_parameter_by_name, object, position_or_name)
     }
 
     else if (is_scalar_integer(position_or_name)) {
-        .Call(C_instrumentr_call_get_parameter_by_position, object, position_or_name)
+        .Call(r_instrumentr_call_get_parameter_by_position, object, position_or_name)
     }
 
     else if (is_scalar_real(position_or_name)) {
         position_or_name <- as.integer(position_or_name)
-        .Call(C_instrumentr_call_get_parameter_by_position, object, position_or_name)
+        .Call(r_instrumentr_call_get_parameter_by_position, object, position_or_name)
     }
 
     else {
@@ -129,23 +129,23 @@ get_parameter.instrumentr_call <- function(object, position_or_name) { # nolint
 #' @export
 #' @rdname call
 get_parameters.instrumentr_call <- function(call, ...) { # nolint
-    .Call(C_instrumentr_call_get_parameters, call)
+    .Call(r_instrumentr_call_get_parameters, call)
 }
 
 #' @export
 #' @rdname call
 get_result.instrumentr_call <- function(object, ...) {
-    .Call(C_instrumentr_call_get_result, object)
+    .Call(r_instrumentr_call_get_result, object)
 }
 
 #' @export
 #' @rdname call
 has_result.instrumentr_call <- function(object, ...) {
-    .Call(C_instrumentr_call_has_result, object)
+    .Call(r_instrumentr_call_has_result, object)
 }
 
 #' @export
 #' @rdname call
 is_active.instrumentr_call <- function(object) {
-    .Call(C_instrumentr_call_is_active, object)
+    .Call(r_instrumentr_call_is_active, object)
 }
