@@ -436,6 +436,33 @@
     INSTRUMENTR_APPLICATION_R_API_MAP(MACRO)
 
 /********************************************************************************
+ INTEGER API
+ *******************************************************************************/
+
+#define INSTRUMENTR_INTEGER_C_API_MAP(MACRO)                                 \
+    MACRO(instrumentr_integer_get_sexp, SEXP, instrumentr_integer_t integer) \
+    MACRO(instrumentr_integer_get_size, int, instrumentr_integer_t integer)  \
+    MACRO(instrumentr_integer_get_element,                                   \
+          int,                                                               \
+          instrumentr_integer_t integer,                                     \
+          int index)                                                         \
+    MACRO(instrumentr_integer_is_na,                                         \
+          bool,                                                              \
+          instrumentr_integer_t integer,                                     \
+          int index)
+
+#define INSTRUMENTR_INTEGER_R_API_MAP(MACRO)                                   \
+    MACRO(r_instrumentr_integer_get_sexp, SEXP, SEXP r_integer)                \
+    MACRO(r_instrumentr_integer_get_size, SEXP, SEXP r_integer)                \
+    MACRO(                                                                     \
+        r_instrumentr_integer_get_element, SEXP, SEXP r_integer, SEXP r_index) \
+    MACRO(r_instrumentr_integer_is_na, SEXP, SEXP r_integer, SEXP r_index)
+
+#define INSTRUMENTR_INTEGER_API_MAP(MACRO) \
+    INSTRUMENTR_INTEGER_C_API_MAP(MACRO)   \
+    INSTRUMENTR_INTEGER_R_API_MAP(MACRO)
+
+/********************************************************************************
  ENVIRONMENT API
  *******************************************************************************/
 

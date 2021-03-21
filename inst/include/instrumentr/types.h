@@ -123,6 +123,12 @@ typedef struct instrumentr_alloc_stats_impl_t* instrumentr_alloc_stats_t;
 
 typedef struct instrumentr_miscellaneous_impl_t* instrumentr_miscellaneous_t;
 
+/********************************************************************************
+ * integer
+ *******************************************************************************/
+
+typedef struct instrumentr_integer_impl_t* instrumentr_integer_t;
+
 /* The type of the do_xxxx functions. */
 /* These are the built-in R functions. */
 typedef SEXP (*CCODE)(SEXP, SEXP, SEXP, SEXP);

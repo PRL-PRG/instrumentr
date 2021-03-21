@@ -13,6 +13,7 @@
 #include "alloc_stats.h"
 #include "exec_stats.h"
 #include "miscellaneous.h"
+#include "integer.h"
 
 /********************************************************************************
  * definition
@@ -32,6 +33,7 @@ struct instrumentr_state_impl_t {
     std::unordered_map<SEXP, instrumentr_function_t>* function_table;
     std::unordered_map<SEXP, instrumentr_environment_t>* environment_table;
     std::unordered_map<SEXP, instrumentr_miscellaneous_t>* miscellaneous_table;
+    std::unordered_map<SEXP, instrumentr_integer_t>* integer_table;
 };
 
 /********************************************************************************
@@ -76,6 +78,12 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
         state->miscellaneous_table = nullptr;
     }
 
+    if (state->integer_table != nullptr) {
+        instrumentr_state_integer_table_clear(state);
+        delete state->integer_table;
+        state->integer_table = nullptr;
+    }
+
     instrumentr_object_release(state->alloc_stats);
     instrumentr_object_release(state->exec_stats);
 }
@@ -116,6 +124,10 @@ instrumentr_state_t instrumentr_state_create() {
         new std::unordered_map<SEXP, instrumentr_miscellaneous_t>();
     state->miscellaneous_table->reserve(250000);
 
+    state->integer_table =
+        new std::unordered_map<SEXP, instrumentr_integer_t>();
+    state->integer_table->reserve(250000);
+
     state->call_stack = instrumentr_call_stack_create(state);
 
     return state;
@@ -144,6 +156,10 @@ SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state) {
     instrumentr_state_miscellaneous_table_clear(state);
     delete state->miscellaneous_table;
     state->miscellaneous_table = nullptr;
+
+    instrumentr_state_integer_table_clear(state);
+    delete state->integer_table;
+    state->integer_table = nullptr;
 
     SEXP r_result = PROTECT(instrumentr_state_as_list(state));
 
@@ -943,3 +959,45 @@ void instrumentr_state_miscellaneous_table_clear(instrumentr_state_t state) {
     }
     state->miscellaneous_table->clear();
 }
+
+/********************************************************************************
+ * integer_table
+ *******************************************************************************/
+
+instrumentr_integer_t
+instrumentr_state_integer_table_create(instrumentr_state_t state,
+                                       SEXP r_integer) {
+    /* TODO: set integer birth time */
+    /* TODO: set names of package/namespace/integerNames integers.
+     */
+    instrumentr_integer_t integer =
+        instrumentr_integer_create(state, r_integer);
+    auto result = state->integer_table->insert({r_integer, integer});
+    if (!result.second) {
+        /* TODO: this means the object was deallocated when tracing was
+         * disabled. */
+        instrumentr_model_kill(result.first->second);
+        result.first->second = integer;
+    }
+
+    return integer;
+}
+
+void instrumentr_state_integer_table_remove(instrumentr_state_t state,
+                                            SEXP r_integer) {
+    auto result = state->integer_table->find(r_integer);
+    if (result != state->integer_table->end()) {
+        instrumentr_model_kill(result->second);
+        state->integer_table->erase(result);
+    }
+}
+
+void instrumentr_state_integer_table_clear(instrumentr_state_t state) {
+    for (auto iter = state->integer_table->begin();
+         iter != state->integer_table->end();
+         ++iter) {
+        instrumentr_model_kill(iter->second);
+    }
+    state->integer_table->clear();
+}
+
