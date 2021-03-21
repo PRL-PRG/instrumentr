@@ -143,6 +143,19 @@ void instrumentr_state_real_table_remove(instrumentr_state_t state,
 
 void instrumentr_state_real_table_clear(instrumentr_state_t state);
 
+/*******************************************************************************
+ * logical_table
+ *******************************************************************************/
+
+instrumentr_logical_t
+instrumentr_state_logical_table_create(instrumentr_state_t state,
+                                       SEXP r_logical);
+
+void instrumentr_state_logical_table_remove(instrumentr_state_t state,
+                                            SEXP r_logical);
+
+void instrumentr_state_logical_table_clear(instrumentr_state_t state);
+
 INSTRUMENTR_STATE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

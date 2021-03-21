@@ -486,6 +486,33 @@
     INSTRUMENTR_REAL_R_API_MAP(MACRO)
 
 /********************************************************************************
+ LOGICAL API
+ *******************************************************************************/
+
+#define INSTRUMENTR_LOGICAL_C_API_MAP(MACRO)                                 \
+    MACRO(instrumentr_logical_get_sexp, SEXP, instrumentr_logical_t logical) \
+    MACRO(instrumentr_logical_get_size, int, instrumentr_logical_t logical)  \
+    MACRO(instrumentr_logical_get_element,                                   \
+          int,                                                               \
+          instrumentr_logical_t logical,                                     \
+          int index)                                                         \
+    MACRO(instrumentr_logical_is_na,                                         \
+          bool,                                                              \
+          instrumentr_logical_t logical,                                     \
+          int index)
+
+#define INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)                                   \
+    MACRO(r_instrumentr_logical_get_sexp, SEXP, SEXP r_logical)                \
+    MACRO(r_instrumentr_logical_get_size, SEXP, SEXP r_logical)                \
+    MACRO(                                                                     \
+        r_instrumentr_logical_get_element, SEXP, SEXP r_logical, SEXP r_index) \
+    MACRO(r_instrumentr_logical_is_na, SEXP, SEXP r_logical, SEXP r_index)
+
+#define INSTRUMENTR_LOGICAL_API_MAP(MACRO) \
+    INSTRUMENTR_LOGICAL_C_API_MAP(MACRO)   \
+    INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)
+
+/********************************************************************************
  ENVIRONMENT API
  *******************************************************************************/
 
@@ -918,6 +945,7 @@
     INSTRUMENTR_APPLICATION_API_MAP(MACRO)   \
     INSTRUMENTR_INTEGER_API_MAP(MACRO)       \
     INSTRUMENTR_REAL_API_MAP(MACRO)          \
+    INSTRUMENTR_LOGICAL_API_MAP(MACRO)       \
     INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_API_MAP(MACRO)          \
@@ -942,6 +970,7 @@
     INSTRUMENTR_APPLICATION_R_API_MAP(MACRO)   \
     INSTRUMENTR_INTEGER_R_API_MAP(MACRO)       \
     INSTRUMENTR_REAL_R_API_MAP(MACRO)          \
+    INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)       \
     INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_R_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_R_API_MAP(MACRO)          \

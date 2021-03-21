@@ -135,6 +135,12 @@ typedef struct instrumentr_integer_impl_t* instrumentr_integer_t;
 
 typedef struct instrumentr_real_impl_t* instrumentr_real_t;
 
+/********************************************************************************
+ * logical
+ *******************************************************************************/
+
+typedef struct instrumentr_logical_impl_t* instrumentr_logical_t;
+
 /* The type of the do_xxxx functions. */
 /* These are the built-in R functions. */
 typedef SEXP (*CCODE)(SEXP, SEXP, SEXP, SEXP);
@@ -153,6 +159,7 @@ typedef enum {
     INSTRUMENTR_MODEL_TYPE_APPLICATION = 0,
     INSTRUMENTR_MODEL_TYPE_INTEGER,
     INSTRUMENTR_MODEL_TYPE_REAL,
+    INSTRUMENTR_MODEL_TYPE_LOGICAL,
     INSTRUMENTR_MODEL_TYPE_ENVIRONMENT,
     INSTRUMENTR_MODEL_TYPE_FUNCTION,
     INSTRUMENTR_MODEL_TYPE_CALL,
