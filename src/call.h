@@ -13,10 +13,9 @@ extern "C" {
  *******************************************************************************/
 
 instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
-                                           instrumentr_function_t function,
+                                           instrumentr_value_t function,
                                            SEXP r_expression,
-                                           SEXP r_environment,
-                                           int frame_position);
+                                           SEXP r_environment);
 
 /********************************************************************************
  * interop

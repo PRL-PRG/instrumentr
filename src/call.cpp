@@ -3,7 +3,6 @@
 #include "utilities.h"
 #include "state.h"
 #include "value.h"
-#include "function.h"
 #include "environment.h"
 
 /********************************************************************************
@@ -12,10 +11,9 @@
 
 struct instrumentr_call_impl_t {
     struct instrumentr_model_impl_t model;
-    instrumentr_function_t function;
+    instrumentr_value_t function;
     SEXP r_expression;
     instrumentr_environment_t environment;
-    int frame_position;
     int active;
     SEXP r_result;
 };
@@ -27,8 +25,8 @@ struct instrumentr_call_impl_t {
 void instrumentr_call_finalize(instrumentr_model_t model) {
     instrumentr_call_t call = (instrumentr_call_t)(model);
 
-    instrumentr_model_release(call->function);
-    call->function = NULL;
+    instrumentr_model_release(call->function.model);
+    call->function.model = NULL;
 
     call->r_expression = NULL;
 
@@ -202,10 +200,9 @@ const char* unwrap_name(SEXP r_name) {
 //}
 
 instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
-                                           instrumentr_function_t function,
+                                           instrumentr_value_t function,
                                            SEXP r_expression,
-                                           SEXP r_environment,
-                                           int frame_position) {
+                                           SEXP r_environment) {
     instrumentr_model_t model =
         instrumentr_model_create(state,
                                  sizeof(struct instrumentr_call_impl_t),
@@ -216,7 +213,7 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
     instrumentr_call_t call = (instrumentr_call_t)(model);
 
     call->function = function;
-    instrumentr_model_acquire(call->function);
+    instrumentr_model_acquire(call->function.model);
 
     call->r_expression = r_expression;
 
@@ -224,8 +221,6 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
         state, r_environment, 1);
 
     instrumentr_model_acquire(call->environment);
-
-    call->frame_position = frame_position;
 
     return call;
 }
@@ -241,14 +236,14 @@ INSTRUMENTR_MODEL_INTEROP_DEFINE_API(call, INSTRUMENTR_MODEL_TYPE_CALL)
  *******************************************************************************/
 
 /* accessor  */
-instrumentr_function_t instrumentr_call_get_function(instrumentr_call_t call) {
+instrumentr_value_t instrumentr_call_get_function(instrumentr_call_t call) {
     return call->function;
 }
 
 SEXP r_instrumentr_call_get_function(SEXP r_call) {
     instrumentr_call_t call = instrumentr_call_unwrap(r_call);
-    instrumentr_function_t function = instrumentr_call_get_function(call);
-    return instrumentr_function_wrap(function);
+    instrumentr_value_t function = instrumentr_call_get_function(call);
+    return instrumentr_model_wrap(function.model);
 }
 
 /********************************************************************************
@@ -280,21 +275,6 @@ SEXP r_instrumentr_call_get_environment(SEXP r_call) {
     instrumentr_environment_t environment =
         instrumentr_call_get_environment(call);
     return instrumentr_environment_wrap(environment);
-}
-
-/********************************************************************************
- * frame_position
- *******************************************************************************/
-
-/* accessor  */
-int instrumentr_call_get_frame_position(instrumentr_call_t call) {
-    return call->frame_position;
-}
-
-SEXP r_instrumentr_call_get_frame_position(SEXP r_call) {
-    instrumentr_call_t call = instrumentr_call_unwrap(r_call);
-    int frame_position = instrumentr_call_get_frame_position(call);
-    return instrumentr_c_int_to_r_integer(frame_position);
 }
 
 /********************************************************************************

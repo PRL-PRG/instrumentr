@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include "promise.h"
-#include "function.h"
+#include "closure.h"
 #include "call_stack.h"
 #include "frame.h"
 #include "call.h"
@@ -467,19 +467,19 @@ instrumentr_state_value_table_lookup(instrumentr_state_t state,
     }
 }
 
-instrumentr_function_t
-instrumentr_state_value_table_lookup_function(instrumentr_state_t state,
-                                              SEXP r_value,
-                                              int create) {
+instrumentr_closure_t
+instrumentr_state_value_table_lookup_closure(instrumentr_state_t state,
+                                             SEXP r_value,
+                                             int create) {
     instrumentr_value_t value =
         instrumentr_state_value_table_lookup(state, r_value, create);
-    if (!instrumentr_value_is_function(value)) {
+    if (!instrumentr_value_is_closure(value)) {
         instrumentr_state_value_table_insert(state, r_value);
-        return instrumentr_state_value_table_lookup_function(
+        return instrumentr_state_value_table_lookup_closure(
             state, r_value, create);
     }
 
-    return instrumentr_value_as_function(value);
+    return instrumentr_value_as_closure(value);
 }
 
 instrumentr_environment_t
@@ -526,7 +526,7 @@ void instrumentr_state_value_table_clear(instrumentr_state_t state) {
  * namespace
  *******************************************************************************/
 
-int instrumentr_state_update_namespace_function_names(
+int instrumentr_state_update_namespace_closure_names(
     instrumentr_state_t state,
     SEXP r_namespace,
     instrumentr_environment_t environment) {
@@ -546,19 +546,19 @@ int instrumentr_state_update_namespace_function_names(
             continue;
         }
 
-        instrumentr_function_t function =
-            instrumentr_state_value_table_lookup_function(state, r_value, true);
+        instrumentr_closure_t closure =
+            instrumentr_state_value_table_lookup_closure(state, r_value, true);
 
         SEXP r_value_env = CLOENV(r_value);
 
-        /* only set function name if it the namespace under consideration
+        /* only set closure name if it the namespace under consideration
          * happens to be it's scope */
         if (r_value_env == r_namespace) {
-            instrumentr_function_set_name(function, name);
+            instrumentr_closure_set_name(closure, name);
         }
         ++counter;
-        /* environment contains all function bindings */
-        instrumentr_environment_insert(environment, name, function);
+        /* environment contains all closure bindings */
+        instrumentr_environment_insert(environment, name, closure);
     }
 
     UNPROTECT(1);
@@ -582,13 +582,13 @@ void instrumentr_state_update_namespace_exports(
         const char* key = CHAR(STRING_ELT(r_ns_exports_keys, i));
 
         /* TODO: value can be invalid (R_UnboundValue) */
-        /* TODO: handle functions exported by pacakge A but defined by package
-           B. graphics exports plot function defined in base package */
+        /* TODO: handle closures exported by pacakge A but defined by package
+           B. graphics exports plot closure defined in base package */
         if (instrumentr_environment_contains(environment, key)) {
-            instrumentr_function_t function =
+            instrumentr_closure_t closure =
                 instrumentr_environment_lookup(environment, key);
 
-            instrumentr_function_set_exported(function);
+            instrumentr_closure_set_exported(closure);
         }
     }
 }
@@ -620,11 +620,11 @@ void instrumentr_state_update_namespace_s3_methods(
                     CHAR(STRING_ELT(r_s3_methods, 2 * nrows + row_index));
 
                 /* TODO: value can be invalid (R_UnboundValue) */
-                instrumentr_function_t function =
+                instrumentr_closure_t closure =
                     instrumentr_environment_lookup(environment, specific_name);
 
-                instrumentr_function_set_object_class(function, object_class);
-                instrumentr_function_set_generic_name(function, generic_name);
+                instrumentr_closure_set_object_class(closure, object_class);
+                instrumentr_closure_set_generic_name(closure, generic_name);
             }
         }
     }
@@ -659,7 +659,7 @@ instrumentr_state_value_table_update_namespace(instrumentr_state_t state,
         return environment;
     }
 
-    int count = instrumentr_state_update_namespace_function_names(
+    int count = instrumentr_state_update_namespace_closure_names(
         state, r_namespace, environment);
     instrumentr_state_update_namespace_exports(state, r_ns_inner, environment);
     instrumentr_state_update_namespace_s3_methods(

@@ -5,7 +5,7 @@
 #include "tracer.h"
 #include "callback.h"
 #include "application.h"
-#include "function.h"
+#include "closure.h"
 #include "environment.h"
 #include "call.h"
 #include "trace.h"
@@ -21,6 +21,10 @@
 #include "exec_stats.h"
 #include "event.h"
 #include "miscellaneous.h"
+#include "value.h"
+#include "builtin.h"
+#include "special.h"
+#include "environment.h"
 
 #define TRACING_INITIALIZE(EVENT)                                     \
     instrumentr_tracer_disable(tracer);                               \
@@ -257,38 +261,12 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer, SEXP r_package_name) {
     return R_NilValue;
 }
 
-void instrumentr_trace_call_entry(dyntracer_t* dyntracer,
-                                  SEXP r_call,
-                                  SEXP r_op,
-                                  SEXP r_args,
-                                  SEXP r_rho,
-                                  dyntrace_dispatch_t dispatch) {
-    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
-
-    instrumentr_event_t event;
-
-    if (TYPEOF(r_op) == CLOSXP) {
-        event = INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY;
-    } else if (TYPEOF(r_op) == BUILTINSXP) {
-        event = INSTRUMENTR_EVENT_BUILTIN_CALL_ENTRY;
-    } else {
-        event = INSTRUMENTR_EVENT_SPECIAL_CALL_ENTRY;
-    }
-
-    TRACING_INITIALIZE(event)
-
-    instrumentr_function_t function =
-        instrumentr_state_value_table_lookup_function(state, r_op, 1);
-
-    instrumentr_environment_t environment =
-        instrumentr_function_get_environment(function);
-
+instrumentr_call_t instrumentr_trace_call_entry(instrumentr_state_t state,
+                                                instrumentr_value_t function,
+                                                SEXP r_call,
+                                                SEXP r_rho) {
     instrumentr_call_t call =
-        instrumentr_call_create(state,
-                                function,
-                                r_call,
-                                r_rho,
-                                /* TODO: fix frame position */ 0);
+        instrumentr_call_create(state, function, r_call, r_rho);
 
     instrumentr_frame_t frame = instrumentr_frame_create_from_call(state, call);
     /* NOTE: release call here because it is now owned by the stack frame */
@@ -296,77 +274,99 @@ void instrumentr_trace_call_entry(dyntracer_t* dyntracer,
 
     instrumentr_call_stack_t call_stack =
         instrumentr_state_get_call_stack(state);
+
     instrumentr_call_stack_push_frame(call_stack, frame);
+
     instrumentr_model_release(frame);
 
-    if (event == INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY) {
-        TRACING_INVOKE_CALLBACK(
-            event, closure_call_entry_function_t, function, call);
-    } else if (event == INSTRUMENTR_EVENT_BUILTIN_CALL_ENTRY) {
-        TRACING_INVOKE_CALLBACK(
-            event, builtin_call_entry_function_t, function, call);
-    } else {
-        TRACING_INVOKE_CALLBACK(
-            event, special_call_entry_function_t, function, call);
-    }
+    return call;
+}
+
+void instrumentr_trace_builtin_call_entry(dyntracer_t* dyntracer,
+                                          SEXP r_call,
+                                          SEXP r_op,
+                                          SEXP r_args,
+                                          SEXP r_rho,
+                                          dyntrace_dispatch_t dispatch) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_BUILTIN_CALL_ENTRY;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t function =
+        instrumentr_state_value_table_lookup(state, r_op, 1);
+
+    instrumentr_builtin_t builtin = instrumentr_value_as_builtin(function);
+
+    instrumentr_call_t call =
+        instrumentr_trace_call_entry(state, function, r_call, r_rho);
+
+    TRACING_INVOKE_CALLBACK(
+        event, builtin_call_entry_function_t, builtin, call);
 
     TRACING_FINALIZE(event)
 }
 
-void instrumentr_trace_builtin_call_exit(instrumentr_tracer_t tracer,
-                                         instrumentr_state_t state,
-                                         instrumentr_application_t application,
-                                         instrumentr_function_t function,
-                                         instrumentr_call_t call) {
-    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT,
-                            builtin_call_exit_function_t,
-                            function,
-                            call);
-}
-
-void instrumentr_trace_special_call_exit(instrumentr_tracer_t tracer,
-                                         instrumentr_state_t state,
-                                         instrumentr_application_t application,
-                                         instrumentr_function_t function,
-                                         instrumentr_call_t call) {
-    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
-                            special_call_exit_function_t,
-                            function,
-                            call);
-}
-
-void instrumentr_trace_closure_call_exit(instrumentr_tracer_t tracer,
-                                         instrumentr_state_t state,
-                                         instrumentr_application_t application,
-                                         instrumentr_function_t function,
-                                         instrumentr_call_t call) {
-    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT,
-                            closure_call_exit_function_t,
-                            function,
-                            call);
-}
-
-void instrumentr_trace_call_exit(dyntracer_t* dyntracer,
-                                 SEXP r_call,
-                                 SEXP r_op,
-                                 SEXP r_args,
-                                 SEXP r_rho,
-                                 dyntrace_dispatch_t dispatch,
-                                 SEXP r_result) {
+void instrumentr_trace_special_call_entry(dyntracer_t* dyntracer,
+                                          SEXP r_call,
+                                          SEXP r_op,
+                                          SEXP r_args,
+                                          SEXP r_rho,
+                                          dyntrace_dispatch_t dispatch) {
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
 
-    instrumentr_event_t event;
-
-    if (TYPEOF(r_op) == BUILTINSXP) {
-        event = INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT;
-    } else if (TYPEOF(r_op) == SPECIALSXP) {
-        event = INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT;
-    } else {
-        event = INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT;
-    }
+    instrumentr_event_t event = INSTRUMENTR_EVENT_SPECIAL_CALL_ENTRY;
 
     TRACING_INITIALIZE(event)
 
+    instrumentr_value_t function =
+        instrumentr_state_value_table_lookup(state, r_op, 1);
+
+    instrumentr_special_t special = instrumentr_value_as_special(function);
+
+    instrumentr_call_t call =
+        instrumentr_trace_call_entry(state, function, r_call, r_rho);
+
+    TRACING_INVOKE_CALLBACK(
+        event, special_call_entry_function_t, special, call);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_closure_call_entry(dyntracer_t* dyntracer,
+                                          SEXP r_call,
+                                          SEXP r_op,
+                                          SEXP r_args,
+                                          SEXP r_rho,
+                                          dyntrace_dispatch_t dispatch) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t function =
+        instrumentr_state_value_table_lookup(state, r_op, 1);
+
+    instrumentr_closure_t closure = instrumentr_value_as_closure(function);
+
+    instrumentr_environment_t environment =
+        instrumentr_closure_get_environment(closure);
+
+    instrumentr_call_t call =
+        instrumentr_trace_call_entry(state, function, r_call, r_rho);
+
+    TRACING_INVOKE_CALLBACK(
+        event, closure_call_entry_function_t, closure, call);
+
+    TRACING_FINALIZE(event)
+}
+
+instrumentr_call_t instrumentr_trace_call_exit(instrumentr_state_t state,
+                                               SEXP r_call,
+                                               SEXP r_rho,
+                                               SEXP r_result) {
     instrumentr_call_stack_t call_stack =
         instrumentr_state_get_call_stack(state);
 
@@ -379,34 +379,113 @@ void instrumentr_trace_call_exit(dyntracer_t* dyntracer,
 
     instrumentr_call_t call = instrumentr_frame_as_call(frame);
 
-    instrumentr_call_set_result(call, r_result);
-
-    instrumentr_function_t function = instrumentr_call_get_function(call);
-
     instrumentr_environment_t environment =
-        instrumentr_function_get_environment(function);
+        instrumentr_call_get_environment(call);
 
-    instrumentr_environment_t call_env = instrumentr_call_get_environment(call);
-
-    /* TODO: add op check here as well */
-    if (instrumentr_environment_get_environment(call_env) != r_rho ||
-        instrumentr_call_get_expression(call) != r_call) {
+    if (instrumentr_call_get_expression(call) != r_call ||
+        instrumentr_environment_get_sexp(environment) != r_rho) {
         instrumentr_log_error(
             "call on stack does not match the call being exited");
     }
 
-    if (event == INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT) {
-        instrumentr_trace_builtin_call_exit(
-            tracer, state, application, function, call);
+    instrumentr_call_set_result(call, r_result);
 
-    } else if (event == INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT) {
-        instrumentr_trace_special_call_exit(
-            tracer, state, application, function, call);
+    return call;
+}
 
-    } else {
-        instrumentr_trace_closure_call_exit(
-            tracer, state, application, function, call);
-    }
+void instrumentr_trace_builtin_call_exit(dyntracer_t* dyntracer,
+                                         SEXP r_call,
+                                         SEXP r_op,
+                                         SEXP r_args,
+                                         SEXP r_rho,
+                                         dyntrace_dispatch_t dispatch,
+                                         SEXP r_result) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_call_t call =
+        instrumentr_trace_call_exit(state, r_call, r_rho, r_result);
+
+    instrumentr_value_t function = instrumentr_call_get_function(call);
+
+    instrumentr_builtin_t builtin = instrumentr_value_as_builtin(function);
+
+    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT,
+                            builtin_call_exit_function_t,
+                            builtin,
+                            call);
+
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
+
+    instrumentr_call_stack_pop_frame(call_stack);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_special_call_exit(dyntracer_t* dyntracer,
+                                         SEXP r_call,
+                                         SEXP r_op,
+                                         SEXP r_args,
+                                         SEXP r_rho,
+                                         dyntrace_dispatch_t dispatch,
+                                         SEXP r_result) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_call_t call =
+        instrumentr_trace_call_exit(state, r_call, r_rho, r_result);
+
+    instrumentr_value_t function = instrumentr_call_get_function(call);
+
+    instrumentr_special_t special = instrumentr_value_as_special(function);
+
+    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
+                            special_call_exit_function_t,
+                            special,
+                            call);
+
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
+
+    instrumentr_call_stack_pop_frame(call_stack);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_closure_call_exit(dyntracer_t* dyntracer,
+                                         SEXP r_call,
+                                         SEXP r_op,
+                                         SEXP r_args,
+                                         SEXP r_rho,
+                                         dyntrace_dispatch_t dispatch,
+                                         SEXP r_result) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_call_t call =
+        instrumentr_trace_call_exit(state, r_call, r_rho, r_result);
+
+    instrumentr_value_t function = instrumentr_call_get_function(call);
+
+    instrumentr_closure_t closure = instrumentr_value_as_closure(function);
+
+    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT,
+                            closure_call_exit_function_t,
+                            closure,
+                            call);
+
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
 
     instrumentr_call_stack_pop_frame(call_stack);
 
@@ -518,30 +597,38 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
             /*TODO: set call as interrupted */
             instrumentr_call_t call = instrumentr_frame_as_call(frame);
 
-            instrumentr_function_t function =
-                instrumentr_call_get_function(call);
+            instrumentr_value_t function = instrumentr_call_get_function(call);
 
             /* builtin */
-            if (instrumentr_function_is_builtin(function)) {
+            if (instrumentr_value_is_builtin(function)) {
+                instrumentr_builtin_t builtin =
+                    instrumentr_value_as_builtin(function);
+
                 TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT,
                                         builtin_call_exit_function_t,
-                                        function,
+                                        builtin,
                                         call);
 
             }
             /* special */
-            else if (instrumentr_function_is_special(function)) {
+            else if (instrumentr_value_is_special(function)) {
+                instrumentr_special_t special =
+                    instrumentr_value_as_special(function);
+
                 TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
                                         special_call_exit_function_t,
-                                        function,
+                                        special,
                                         call);
 
             }
             /* closure */
-            else if (instrumentr_function_is_closure(function)) {
+            else if (instrumentr_value_is_closure(function)) {
+                instrumentr_closure_t closure =
+                    instrumentr_value_as_closure(function);
+
                 TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT,
                                         closure_call_exit_function_t,
-                                        function,
+                                        closure,
                                         call);
             }
         }

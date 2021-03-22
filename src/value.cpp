@@ -16,7 +16,9 @@
 #include "logical.h"
 #include "complex.h"
 #include "raw.h"
-#include "function.h"
+#include "builtin.h"
+#include "special.h"
+#include "closure.h"
 #include "environment.h"
 #include "miscellaneous.h"
 #include "promise.h"
@@ -25,14 +27,6 @@
 #include "pairlist.h"
 #include "list.h"
 #include "expression.h"
-
-/********************************************************************************
- * definition
- *******************************************************************************/
-
-// struct instrumentr_value_t {
-//    instrumentr_model_t model;
-//};
 
 /********************************************************************************
  * create
@@ -96,17 +90,17 @@ instrumentr_value_t instrumentr_value_create(instrumentr_state_t state,
 
     else if (TYPEOF(r_object) == CLOSXP) {
         model =
-            (instrumentr_model_t) instrumentr_function_create(state, r_object);
+            (instrumentr_model_t) instrumentr_closure_create(state, r_object);
     }
 
     else if (TYPEOF(r_object) == SPECIALSXP) {
         model =
-            (instrumentr_model_t) instrumentr_function_create(state, r_object);
+            (instrumentr_model_t) instrumentr_special_create(state, r_object);
     }
 
     else if (TYPEOF(r_object) == BUILTINSXP) {
         model =
-            (instrumentr_model_t) instrumentr_function_create(state, r_object);
+            (instrumentr_model_t) instrumentr_builtin_create(state, r_object);
     }
 
     else if (TYPEOF(r_object) == ENVSXP) {
@@ -205,5 +199,7 @@ INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_LOGICAL, logical)
 INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_COMPLEX, complex)
 INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_RAW, raw)
 INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_ENVIRONMENT, environment)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_FUNCTION, function)
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_BUILTIN, builtin)
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_SPECIAL, special)
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_CLOSURE, closure)
 INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_PROMISE, promise)

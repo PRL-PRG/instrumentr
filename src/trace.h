@@ -24,20 +24,50 @@ SEXP r_instrumentr_trace_package_attach(SEXP r_tracer, SEXP r_package_name);
 
 SEXP r_instrumentr_trace_package_detach(SEXP r_tracer, SEXP r_package_name);
 
-void instrumentr_trace_call_entry(dyntracer_t* dyntracer,
-                                  SEXP r_call,
-                                  SEXP r_op,
-                                  SEXP r_args,
-                                  SEXP r_rho,
-                                  dyntrace_dispatch_t dispatch);
+void instrumentr_trace_builtin_call_entry(dyntracer_t* dyntracer,
+                                          SEXP r_call,
+                                          SEXP r_op,
+                                          SEXP r_args,
+                                          SEXP r_rho,
+                                          dyntrace_dispatch_t dispatch);
 
-void instrumentr_trace_call_exit(dyntracer_t* dyntracer,
-                                 SEXP r_call,
-                                 SEXP r_op,
-                                 SEXP r_args,
-                                 SEXP r_rho,
-                                 dyntrace_dispatch_t dispatch,
-                                 SEXP r_result);
+void instrumentr_trace_builtin_call_exit(dyntracer_t* dyntracer,
+                                         SEXP r_call,
+                                         SEXP r_op,
+                                         SEXP r_args,
+                                         SEXP r_rho,
+                                         dyntrace_dispatch_t dispatch,
+                                         SEXP r_result);
+
+void instrumentr_trace_special_call_entry(dyntracer_t* dyntracer,
+                                          SEXP r_call,
+                                          SEXP r_op,
+                                          SEXP r_args,
+                                          SEXP r_rho,
+                                          dyntrace_dispatch_t dispatch);
+
+void instrumentr_trace_special_call_exit(dyntracer_t* dyntracer,
+                                         SEXP r_call,
+                                         SEXP r_op,
+                                         SEXP r_args,
+                                         SEXP r_rho,
+                                         dyntrace_dispatch_t dispatch,
+                                         SEXP r_result);
+
+void instrumentr_trace_closure_call_entry(dyntracer_t* dyntracer,
+                                          SEXP r_call,
+                                          SEXP r_op,
+                                          SEXP r_args,
+                                          SEXP r_rho,
+                                          dyntrace_dispatch_t dispatch);
+
+void instrumentr_trace_closure_call_exit(dyntracer_t* dyntracer,
+                                         SEXP r_call,
+                                         SEXP r_op,
+                                         SEXP r_args,
+                                         SEXP r_rho,
+                                         dyntrace_dispatch_t dispatch,
+                                         SEXP r_result);
 
 void instrumentr_trace_context_entry(dyntracer_t* dyntracer, void* pointer);
 

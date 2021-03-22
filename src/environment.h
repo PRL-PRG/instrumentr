@@ -40,9 +40,9 @@ void instrumentr_environment_set_name(instrumentr_environment_t environment,
 
 void instrumentr_environment_insert(instrumentr_environment_t environment,
                                     const char* name,
-                                    instrumentr_function_t function);
+                                    instrumentr_closure_t closure);
 
-const std::unordered_map<std::string, instrumentr_function_t>&
+const std::unordered_map<std::string, instrumentr_closure_t>&
 instrumentr_environment_get_bindings(instrumentr_environment_t environment);
 
 void instrumentr_environment_clear(instrumentr_environment_t environment);

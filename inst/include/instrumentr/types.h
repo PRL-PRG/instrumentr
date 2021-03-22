@@ -46,10 +46,22 @@ typedef struct instrumentr_call_stack_impl_t* instrumentr_call_stack_t;
 typedef struct instrumentr_environment_impl_t* instrumentr_environment_t;
 
 /********************************************************************************
- * function
+ * builtin
  *******************************************************************************/
 
-typedef struct instrumentr_function_impl_t* instrumentr_function_t;
+typedef struct instrumentr_builtin_impl_t* instrumentr_builtin_t;
+
+/********************************************************************************
+ * special
+ *******************************************************************************/
+
+typedef struct instrumentr_special_impl_t* instrumentr_special_t;
+
+/********************************************************************************
+ * closure
+ *******************************************************************************/
+
+typedef struct instrumentr_closure_impl_t* instrumentr_closure_t;
 
 /********************************************************************************
  * call
@@ -282,7 +294,9 @@ typedef enum {
     INSTRUMENTR_MODEL_TYPE_COMPLEX,
     INSTRUMENTR_MODEL_TYPE_RAW,
     INSTRUMENTR_MODEL_TYPE_ENVIRONMENT,
-    INSTRUMENTR_MODEL_TYPE_FUNCTION,
+    INSTRUMENTR_MODEL_TYPE_BUILTIN,
+    INSTRUMENTR_MODEL_TYPE_SPECIAL,
+    INSTRUMENTR_MODEL_TYPE_CLOSURE,
     INSTRUMENTR_MODEL_TYPE_CALL,
     INSTRUMENTR_MODEL_TYPE_CALL_STACK,
     INSTRUMENTR_MODEL_TYPE_PARAMETER,
@@ -299,12 +313,6 @@ typedef enum {
     INSTRUMENTR_ORIGIN_LOCAL,
     INSTRUMENTR_ORIGIN_FOREIGN
 } instrumentr_origin_t;
-
-typedef enum {
-    INSTRUMENTR_FUNCTION_BUILTIN = 0,
-    INSTRUMENTR_FUNCTION_CLOSURE,
-    INSTRUMENTR_FUNCTION_SPECIAL
-} instrumentr_function_type_t;
 
 typedef enum {
     INSTRUMENTR_PROMISE_TYPE_ARGUMENT,
@@ -398,7 +406,7 @@ typedef void (*builtin_call_entry_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_function_t function,
+    instrumentr_builtin_t builtin,
     instrumentr_call_t call);
 
 typedef void (*builtin_call_exit_function_t)(
@@ -406,7 +414,7 @@ typedef void (*builtin_call_exit_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_function_t function,
+    instrumentr_builtin_t builtin,
     instrumentr_call_t call);
 
 typedef void (*special_call_entry_function_t)(
@@ -414,7 +422,7 @@ typedef void (*special_call_entry_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_function_t function,
+    instrumentr_special_t special,
     instrumentr_call_t call);
 
 typedef void (*special_call_exit_function_t)(
@@ -422,7 +430,7 @@ typedef void (*special_call_exit_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_function_t function,
+    instrumentr_special_t special,
     instrumentr_call_t call);
 
 typedef void (*closure_call_entry_function_t)(
@@ -430,7 +438,7 @@ typedef void (*closure_call_entry_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_function_t function,
+    instrumentr_closure_t closure,
     instrumentr_call_t call);
 
 typedef void (*closure_call_exit_function_t)(
@@ -438,7 +446,7 @@ typedef void (*closure_call_exit_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    instrumentr_function_t function,
+    instrumentr_closure_t closure,
     instrumentr_call_t call);
 
 typedef void (*eval_entry_function_t)(instrumentr_tracer_t tracer,
