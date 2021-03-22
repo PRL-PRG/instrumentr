@@ -1,0 +1,30 @@
+#ifndef INSTRUMENTR_PAIRLIST_H
+#define INSTRUMENTR_PAIRLIST_H
+
+#include <instrumentr/api.h>
+#include "model.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/********************************************************************************
+ * create
+ *******************************************************************************/
+
+instrumentr_pairlist_t instrumentr_pairlist_create(instrumentr_state_t state,
+                                                   SEXP r_pairlist);
+
+/********************************************************************************
+ * interop
+ *******************************************************************************/
+
+INSTRUMENTR_MODEL_INTEROP_DECLARE_API(pairlist, INSTRUMENTR_MODEL_TYPE_PAIRLIST)
+
+INSTRUMENTR_PAIRLIST_API_MAP(INSTRUMENTR_API_INCLUDER)
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* INSTRUMENTR_PAIRLIST_H */
