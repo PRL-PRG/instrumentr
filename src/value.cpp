@@ -20,6 +20,11 @@
 #include "environment.h"
 #include "miscellaneous.h"
 #include "promise.h"
+#include "language.h"
+#include "dot.h"
+#include "pairlist.h"
+#include "list.h"
+#include "expression.h"
 
 /********************************************************************************
  * definition
@@ -130,6 +135,29 @@ instrumentr_value_t instrumentr_value_create(instrumentr_state_t state,
 
     else if (TYPEOF(r_object) == RAWSXP) {
         model = (instrumentr_model_t) instrumentr_raw_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == LANGSXP) {
+        model =
+            (instrumentr_model_t) instrumentr_language_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == DOTSXP) {
+        model = (instrumentr_model_t) instrumentr_dot_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == LISTSXP) {
+        model =
+            (instrumentr_model_t) instrumentr_pairlist_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == VECSXP) {
+        model = (instrumentr_model_t) instrumentr_list_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == EXPRSXP) {
+        model = (instrumentr_model_t) instrumentr_expression_create(state,
+                                                                    r_object);
     }
 
     else {

@@ -172,6 +172,36 @@ typedef struct instrumentr_char_impl_t* instrumentr_char_t;
 typedef struct instrumentr_symbol_impl_t* instrumentr_symbol_t;
 
 /********************************************************************************
+ * language
+ *******************************************************************************/
+
+typedef struct instrumentr_language_impl_t* instrumentr_language_t;
+
+/********************************************************************************
+ * dot
+ *******************************************************************************/
+
+typedef struct instrumentr_dot_impl_t* instrumentr_dot_t;
+
+/********************************************************************************
+ * pairlist
+ *******************************************************************************/
+
+typedef struct instrumentr_pairlist_impl_t* instrumentr_pairlist_t;
+
+/********************************************************************************
+ * list
+ *******************************************************************************/
+
+typedef struct instrumentr_list_impl_t* instrumentr_list_t;
+
+/********************************************************************************
+ * expression
+ *******************************************************************************/
+
+typedef struct instrumentr_expression_impl_t* instrumentr_expression_t;
+
+/********************************************************************************
  * character
  *******************************************************************************/
 
@@ -240,6 +270,11 @@ typedef enum {
     INSTRUMENTR_MODEL_TYPE_S4,
     INSTRUMENTR_MODEL_TYPE_CHAR,
     INSTRUMENTR_MODEL_TYPE_SYMBOL,
+    INSTRUMENTR_MODEL_TYPE_LANGUAGE,
+    INSTRUMENTR_MODEL_TYPE_DOT,
+    INSTRUMENTR_MODEL_TYPE_PAIRLIST,
+    INSTRUMENTR_MODEL_TYPE_LIST,
+    INSTRUMENTR_MODEL_TYPE_EXPRESSION,
     INSTRUMENTR_MODEL_TYPE_CHARACTER,
     INSTRUMENTR_MODEL_TYPE_INTEGER,
     INSTRUMENTR_MODEL_TYPE_REAL,

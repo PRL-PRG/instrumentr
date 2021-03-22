@@ -33,6 +33,11 @@
 #include "char.h"
 #include "symbol.h"
 #include "character.h"
+#include "language.h"
+#include "dot.h"
+#include "pairlist.h"
+#include "list.h"
+#include "expression.h"
 
 #include <R_ext/Rdynload.h>
 

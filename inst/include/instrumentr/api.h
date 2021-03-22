@@ -578,6 +578,125 @@
     INSTRUMENTR_SYMBOL_R_API_MAP(MACRO)
 
 /********************************************************************************
+ LANGUAGE API
+*******************************************************************************/
+
+#define INSTRUMENTR_LANGUAGE_C_API_MAP(MACRO)                                  \
+    MACRO(                                                                     \
+        instrumentr_language_get_sexp, SEXP, instrumentr_language_t language)  \
+    MACRO(                                                                     \
+        instrumentr_language_get_length, int, instrumentr_language_t language) \
+    MACRO(instrumentr_language_get_car,                                        \
+          instrumentr_value_t,                                                 \
+          instrumentr_language_t language)                                     \
+    MACRO(instrumentr_language_get_cdr,                                        \
+          instrumentr_value_t,                                                 \
+          instrumentr_language_t language)                                     \
+    MACRO(instrumentr_language_get_tag,                                        \
+          instrumentr_value_t,                                                 \
+          instrumentr_language_t language)                                     \
+    MACRO(instrumentr_language_get_element,                                    \
+          instrumentr_value_t,                                                 \
+          instrumentr_language_t language,                                     \
+          int index)
+
+#define INSTRUMENTR_LANGUAGE_R_API_MAP(MACRO)
+
+#define INSTRUMENTR_LANGUAGE_API_MAP(MACRO) \
+    INSTRUMENTR_LANGUAGE_C_API_MAP(MACRO)   \
+    INSTRUMENTR_LANGUAGE_R_API_MAP(MACRO)
+
+/********************************************************************************
+ DOT API
+*******************************************************************************/
+
+#define INSTRUMENTR_DOT_C_API_MAP(MACRO)                                       \
+    MACRO(instrumentr_dot_get_sexp, SEXP, instrumentr_dot_t dot)               \
+    MACRO(instrumentr_dot_get_length, int, instrumentr_dot_t dot)              \
+    MACRO(instrumentr_dot_get_car, instrumentr_value_t, instrumentr_dot_t dot) \
+    MACRO(instrumentr_dot_get_cdr, instrumentr_value_t, instrumentr_dot_t dot) \
+    MACRO(instrumentr_dot_get_tag, instrumentr_value_t, instrumentr_dot_t dot) \
+    MACRO(instrumentr_dot_get_element,                                         \
+          instrumentr_value_t,                                                 \
+          instrumentr_dot_t dot,                                               \
+          int index)
+
+#define INSTRUMENTR_DOT_R_API_MAP(MACRO)
+
+#define INSTRUMENTR_DOT_API_MAP(MACRO) \
+    INSTRUMENTR_DOT_C_API_MAP(MACRO)   \
+    INSTRUMENTR_DOT_R_API_MAP(MACRO)
+
+/********************************************************************************
+ PAIRLIST API
+*******************************************************************************/
+
+#define INSTRUMENTR_PAIRLIST_C_API_MAP(MACRO)                                  \
+    MACRO(                                                                     \
+        instrumentr_pairlist_get_sexp, SEXP, instrumentr_pairlist_t pairlist)  \
+    MACRO(                                                                     \
+        instrumentr_pairlist_get_length, int, instrumentr_pairlist_t pairlist) \
+    MACRO(instrumentr_pairlist_get_car,                                        \
+          instrumentr_value_t,                                                 \
+          instrumentr_pairlist_t pairlist)                                     \
+    MACRO(instrumentr_pairlist_get_cdr,                                        \
+          instrumentr_value_t,                                                 \
+          instrumentr_pairlist_t pairlist)                                     \
+    MACRO(instrumentr_pairlist_get_tag,                                        \
+          instrumentr_value_t,                                                 \
+          instrumentr_pairlist_t pairlist)                                     \
+    MACRO(instrumentr_pairlist_get_element,                                    \
+          instrumentr_value_t,                                                 \
+          instrumentr_pairlist_t pairlist,                                     \
+          int index)
+
+#define INSTRUMENTR_PAIRLIST_R_API_MAP(MACRO)
+
+#define INSTRUMENTR_PAIRLIST_API_MAP(MACRO) \
+    INSTRUMENTR_PAIRLIST_C_API_MAP(MACRO)   \
+    INSTRUMENTR_PAIRLIST_R_API_MAP(MACRO)
+
+/********************************************************************************
+ LIST API
+*******************************************************************************/
+
+#define INSTRUMENTR_LIST_C_API_MAP(MACRO)                            \
+    MACRO(instrumentr_list_get_sexp, SEXP, instrumentr_list_t list)  \
+    MACRO(instrumentr_list_get_length, int, instrumentr_list_t list) \
+    MACRO(instrumentr_list_get_element,                              \
+          instrumentr_value_t,                                       \
+          instrumentr_list_t list,                                   \
+          int index)
+
+#define INSTRUMENTR_LIST_R_API_MAP(MACRO)
+
+#define INSTRUMENTR_LIST_API_MAP(MACRO) \
+    INSTRUMENTR_LIST_C_API_MAP(MACRO)   \
+    INSTRUMENTR_LIST_R_API_MAP(MACRO)
+
+/********************************************************************************
+ EXPRESSION API
+*******************************************************************************/
+
+#define INSTRUMENTR_EXPRESSION_C_API_MAP(MACRO) \
+    MACRO(instrumentr_expression_get_sexp,      \
+          SEXP,                                 \
+          instrumentr_expression_t expression)  \
+    MACRO(instrumentr_expression_get_length,    \
+          int,                                  \
+          instrumentr_expression_t expression)  \
+    MACRO(instrumentr_expression_get_element,   \
+          instrumentr_value_t,                  \
+          instrumentr_expression_t expression,  \
+          int index)
+
+#define INSTRUMENTR_EXPRESSION_R_API_MAP(MACRO)
+
+#define INSTRUMENTR_EXPRESSION_API_MAP(MACRO) \
+    INSTRUMENTR_EXPRESSION_C_API_MAP(MACRO)   \
+    INSTRUMENTR_EXPRESSION_R_API_MAP(MACRO)
+
+/********************************************************************************
  CHARACTER API
  *******************************************************************************/
 
@@ -1042,6 +1161,11 @@
     INSTRUMENTR_CHAR_API_MAP(MACRO)          \
     INSTRUMENTR_CHARACTER_API_MAP(MACRO)     \
     INSTRUMENTR_SYMBOL_API_MAP(MACRO)        \
+    INSTRUMENTR_LANGUAGE_API_MAP(MACRO)      \
+    INSTRUMENTR_DOT_API_MAP(MACRO)           \
+    INSTRUMENTR_PAIRLIST_API_MAP(MACRO)      \
+    INSTRUMENTR_LIST_API_MAP(MACRO)          \
+    INSTRUMENTR_EXPRESSION_API_MAP(MACRO)    \
     INSTRUMENTR_INTEGER_API_MAP(MACRO)       \
     INSTRUMENTR_REAL_API_MAP(MACRO)          \
     INSTRUMENTR_LOGICAL_API_MAP(MACRO)       \
@@ -1070,6 +1194,11 @@
     INSTRUMENTR_CHAR_R_API_MAP(MACRO)          \
     INSTRUMENTR_CHARACTER_R_API_MAP(MACRO)     \
     INSTRUMENTR_SYMBOL_R_API_MAP(MACRO)        \
+    INSTRUMENTR_LANGUAGE_R_API_MAP(MACRO)      \
+    INSTRUMENTR_DOT_R_API_MAP(MACRO)           \
+    INSTRUMENTR_PAIRLIST_R_API_MAP(MACRO)      \
+    INSTRUMENTR_LIST_R_API_MAP(MACRO)          \
+    INSTRUMENTR_EXPRESSION_R_API_MAP(MACRO)    \
     INSTRUMENTR_INTEGER_R_API_MAP(MACRO)       \
     INSTRUMENTR_REAL_R_API_MAP(MACRO)          \
     INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)       \
