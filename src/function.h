@@ -30,6 +30,8 @@ INSTRUMENTR_MODEL_INTEROP_DECLARE_API(function, INSTRUMENTR_MODEL_TYPE_FUNCTION)
 void instrumentr_function_set_name(instrumentr_function_t function,
                                    const char* name);
 
+void instrumentr_function_set_environment(instrumentr_function_t function);
+
 void instrumentr_function_set_exported(instrumentr_function_t function);
 
 void instrumentr_function_set_object_class(instrumentr_function_t function,

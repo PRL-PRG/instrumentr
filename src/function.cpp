@@ -38,8 +38,10 @@ void instrumentr_function_finalize(instrumentr_model_t model) {
     free((char*) (function->name));
     function->name = NULL;
 
-    instrumentr_model_release(function->environment);
-    function->environment = NULL;
+    if (function->environment != NULL) {
+        instrumentr_model_release(function->environment);
+        function->environment = NULL;
+    }
 
     if (function->parent != NULL) {
         instrumentr_model_release(function->parent);
@@ -82,41 +84,11 @@ instrumentr_function_t instrumentr_function_create(instrumentr_state_t state,
         function->parameter_count = Rf_length(CAR(r_definition));
 
         SEXP r_environment = CLOENV(r_definition);
-        function->environment =
-            instrumentr_state_environment_table_lookup(state, r_environment, 1);
 
-        instrumentr_model_acquire(function->environment);
-
-        instrumentr_environment_type_t environment_type =
-            instrumentr_environment_get_type(function->environment);
-
-        /* nested function  */
-        if (environment_type != INSTRUMENTR_ENVIRONMENT_TYPE_NAMESPACE &&
-            environment_type != INSTRUMENTR_ENVIRONMENT_TYPE_PACKAGE) {
-            instrumentr_call_stack_t call_stack =
-                instrumentr_state_get_call_stack(state);
-            int size = instrumentr_call_stack_get_size(call_stack);
-
-            for (int i = size - 1; i >= 0; --i) {
-                instrumentr_frame_t frame =
-                    instrumentr_call_stack_get_frame(call_stack, i);
-                if (!instrumentr_frame_is_call(frame)) {
-                    continue;
-                }
-                instrumentr_call_t call = instrumentr_frame_as_call(frame);
-                instrumentr_function_t call_fun =
-                    instrumentr_call_get_function(call);
-
-                /* call's environment is function's lexical environment */
-                if (instrumentr_function_is_closure(call_fun) &&
-                    instrumentr_call_get_environment(call) ==
-                        function->environment) {
-                    function->parent = call_fun;
-                    instrumentr_model_acquire(function->parent);
-                    break;
-                }
-            }
+        if (TYPEOF(r_environment) == ENVSXP) {
+            instrumentr_function_set_environment(function);
         }
+
     } else {
         function->type = TYPEOF(r_definition) == SPECIALSXP
                              ? INSTRUMENTR_FUNCTION_SPECIAL
@@ -130,8 +102,9 @@ instrumentr_function_t instrumentr_function_create(instrumentr_state_t state,
         function->parameter_count =
             instrumentr_funtab_get_parameter_count(function->funtab_index);
 
-        function->environment = instrumentr_state_environment_table_lookup(
-            state, R_BaseNamespace, 1);
+        function->environment =
+            instrumentr_state_value_table_lookup_environment(
+                state, R_BaseNamespace, 1);
         instrumentr_model_acquire(function->environment);
 
         /* builtins and specials are never nested */
@@ -234,10 +207,55 @@ SEXP r_instrumentr_function_get_definition(SEXP r_function) {
 /********************************************************************************
  * environment
  *******************************************************************************/
+void instrumentr_function_set_environment(instrumentr_function_t function) {
+    instrumentr_state_t state = instrumentr_model_get_state(function);
+
+    SEXP r_environment = CLOENV(function->r_definition);
+
+    function->environment = instrumentr_state_value_table_lookup_environment(
+        state, r_environment, 1);
+
+    instrumentr_model_acquire(function->environment);
+
+    instrumentr_environment_type_t environment_type =
+        instrumentr_environment_get_type(function->environment);
+
+    /* nested function  */
+    if (environment_type != INSTRUMENTR_ENVIRONMENT_TYPE_NAMESPACE &&
+        environment_type != INSTRUMENTR_ENVIRONMENT_TYPE_PACKAGE) {
+        instrumentr_call_stack_t call_stack =
+            instrumentr_state_get_call_stack(state);
+        int size = instrumentr_call_stack_get_size(call_stack);
+
+        for (int i = size - 1; i >= 0; --i) {
+            instrumentr_frame_t frame =
+                instrumentr_call_stack_get_frame(call_stack, i);
+            if (!instrumentr_frame_is_call(frame)) {
+                continue;
+            }
+            instrumentr_call_t call = instrumentr_frame_as_call(frame);
+            instrumentr_function_t call_fun =
+                instrumentr_call_get_function(call);
+
+            /* call's environment is function's lexical environment */
+            if (instrumentr_function_is_closure(call_fun) &&
+                instrumentr_call_get_environment(call) ==
+                    function->environment) {
+                function->parent = call_fun;
+                instrumentr_model_acquire(function->parent);
+                break;
+            }
+        }
+    }
+}
 
 /* accessor  */
 instrumentr_environment_t
 instrumentr_function_get_environment(instrumentr_function_t function) {
+    if (function->environment == NULL) {
+        instrumentr_function_set_environment(function);
+    }
+
     return function->environment;
 }
 

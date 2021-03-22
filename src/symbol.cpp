@@ -3,6 +3,7 @@
 #include "symbol.h"
 #include "char.h"
 #include "state.h"
+#include "value.h"
 
 /********************************************************************************
  * definition
@@ -50,7 +51,7 @@ instrumentr_symbol_t instrumentr_symbol_create(instrumentr_state_t state,
 INSTRUMENTR_MODEL_INTEROP_DEFINE_API(symbol, INSTRUMENTR_MODEL_TYPE_SYMBOL)
 
 SEXP instrumentr_symbol_get_sexp(instrumentr_symbol_t symbol) {
-    return symbol->r_sexp;
+    return instrumentr_sexp_quote(symbol->r_sexp);
 }
 
 SEXP r_instrumentr_symbol_get_sexp(SEXP r_symbol) {
@@ -59,9 +60,12 @@ SEXP r_instrumentr_symbol_get_sexp(SEXP r_symbol) {
 }
 
 instrumentr_char_t instrumentr_symbol_get_name(instrumentr_symbol_t symbol) {
-    SEXP charval = PRINTNAME(symbol->r_sexp);
+    SEXP r_char = PRINTNAME(symbol->r_sexp);
     instrumentr_state_t state = instrumentr_model_get_state(symbol);
-    return instrumentr_state_char_table_lookup(state, charval, 1);
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_char, 1);
+
+    return instrumentr_value_as_char(value);
 }
 
 SEXP r_instrumentr_symbol_get_name(SEXP r_symbol) {

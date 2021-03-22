@@ -8,8 +8,6 @@
 #include "function.h"
 #include "environment.h"
 #include "call.h"
-#include "parameter.h"
-#include "argument.h"
 #include "trace.h"
 #include "dyntrace.h"
 #include "utilities.h"
@@ -193,8 +191,7 @@ SEXP r_instrumentr_trace_package_load(SEXP r_tracer, SEXP r_package_name) {
     const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
 
     instrumentr_environment_t environment =
-        instrumentr_state_environment_table_update_namespace(state,
-                                                             package_name);
+        instrumentr_state_value_table_update_namespace(state, package_name);
 
     TRACING_INVOKE_CALLBACK(event, package_load_function_t, environment);
 
@@ -213,8 +210,7 @@ SEXP r_instrumentr_trace_package_unload(SEXP r_tracer, SEXP r_package_name) {
     const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
 
     instrumentr_environment_t environment =
-        instrumentr_state_environment_table_lookup_namespace(state,
-                                                             package_name);
+        instrumentr_state_value_table_lookup_namespace(state, package_name);
 
     TRACING_INVOKE_CALLBACK(event, package_unload_function_t, environment);
 
@@ -233,7 +229,7 @@ SEXP r_instrumentr_trace_package_attach(SEXP r_tracer, SEXP r_package_name) {
     const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
 
     instrumentr_environment_t environment =
-        instrumentr_state_environment_table_lookup_package(state, package_name);
+        instrumentr_state_value_table_lookup_package(state, package_name);
 
     TRACING_INVOKE_CALLBACK(event, package_attach_function_t, environment);
 
@@ -252,7 +248,7 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer, SEXP r_package_name) {
     const char* package_name = CHAR(STRING_ELT(r_package_name, 0));
 
     instrumentr_environment_t environment =
-        instrumentr_state_environment_table_lookup_package(state, package_name);
+        instrumentr_state_value_table_lookup_package(state, package_name);
 
     TRACING_INVOKE_CALLBACK(event, package_detach_function_t, environment)
 
@@ -282,7 +278,7 @@ void instrumentr_trace_call_entry(dyntracer_t* dyntracer,
     TRACING_INITIALIZE(event)
 
     instrumentr_function_t function =
-        instrumentr_state_function_table_lookup(state, r_op, 1);
+        instrumentr_state_value_table_lookup_function(state, r_op, 1);
 
     instrumentr_environment_t environment =
         instrumentr_function_get_environment(function);
@@ -397,12 +393,6 @@ void instrumentr_trace_call_exit(dyntracer_t* dyntracer,
         instrumentr_call_get_expression(call) != r_call) {
         instrumentr_log_error(
             "call on stack does not match the call being exited");
-    }
-
-    if (instrumentr_function_get_name(function) != NULL &&
-        !strcmp(instrumentr_function_get_name(function), "function") &&
-        TYPEOF(r_result) == CLOSXP) {
-        instrumentr_state_function_table_create(state, r_result);
     }
 
     if (event == INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT) {
@@ -580,7 +570,7 @@ void instrumentr_trace_promise_force_entry(dyntracer_t* dyntracer,
     TRACING_INITIALIZE(event)
 
     instrumentr_promise_t promise =
-        instrumentr_state_promise_table_lookup(state, r_promise, 1);
+        instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
 
     instrumentr_call_stack_t call_stack =
         instrumentr_state_get_call_stack(state);
@@ -606,7 +596,7 @@ void instrumentr_trace_promise_force_exit(dyntracer_t* dyntracer,
     TRACING_INITIALIZE(event)
 
     instrumentr_promise_t promise =
-        instrumentr_state_promise_table_lookup(state, r_promise, 1);
+        instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
 
     TRACING_INVOKE_CALLBACK(event, promise_force_exit_function_t, promise);
 
@@ -628,7 +618,7 @@ void instrumentr_trace_promise_value_lookup(dyntracer_t* dyntracer,
     TRACING_INITIALIZE(event)
 
     instrumentr_promise_t promise =
-        instrumentr_state_promise_table_lookup(state, r_promise, 1);
+        instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
 
     TRACING_INVOKE_CALLBACK(event, promise_value_lookup_function_t, promise);
 
@@ -644,7 +634,7 @@ void instrumentr_trace_promise_substitute(dyntracer_t* dyntracer,
     TRACING_INITIALIZE(event)
 
     instrumentr_promise_t promise =
-        instrumentr_state_promise_table_lookup(state, r_promise, 1);
+        instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
 
     TRACING_INVOKE_CALLBACK(event, promise_substitute_function_t, promise);
 
@@ -765,89 +755,7 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     TRACING_INITIALIZE(event)
 
-    if (r_object == R_UnboundValue) {
-        instrumentr_state_unbound_table_create(state, r_object);
-    }
-
-    else if (r_object == R_MissingArg) {
-        instrumentr_state_missing_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == NILSXP) {
-        instrumentr_state_null_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == EXTPTRSXP) {
-        instrumentr_state_externalptr_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == WEAKREFSXP) {
-        instrumentr_state_weakref_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == BCODESXP) {
-        instrumentr_state_bytecode_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == S4SXP) {
-        instrumentr_state_s4_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CHARSXP) {
-        instrumentr_state_char_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == SYMSXP) {
-        instrumentr_state_symbol_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == STRSXP) {
-        instrumentr_state_character_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == PROMSXP) {
-        instrumentr_state_promise_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CLOSXP) {
-        instrumentr_state_function_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == SPECIALSXP) {
-        instrumentr_state_function_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == BUILTINSXP) {
-        instrumentr_state_function_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == ENVSXP) {
-        instrumentr_state_environment_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == INTSXP) {
-        instrumentr_state_integer_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == REALSXP) {
-        instrumentr_state_real_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == LGLSXP) {
-        instrumentr_state_logical_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CPLXSXP) {
-        instrumentr_state_complex_table_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == RAWSXP) {
-        instrumentr_state_raw_table_create(state, r_object);
-    }
-
-    else {
-        instrumentr_state_miscellaneous_table_create(state, r_object);
-    }
+    instrumentr_state_value_table_insert(state, r_object);
 
     /* TODO: add this after adding value */
     // TRACING_INVOKE_CALLBACK(event, gc_allocation_function_t, value);
@@ -862,89 +770,7 @@ void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     TRACING_INITIALIZE(event)
 
-    if (r_object == R_UnboundValue) {
-        instrumentr_state_unbound_table_remove(state, r_object);
-    }
-
-    else if (r_object == R_MissingArg) {
-        instrumentr_state_missing_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == NILSXP) {
-        instrumentr_state_null_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == EXTPTRSXP) {
-        instrumentr_state_externalptr_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == WEAKREFSXP) {
-        instrumentr_state_weakref_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == BCODESXP) {
-        instrumentr_state_bytecode_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == S4SXP) {
-        instrumentr_state_s4_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CHARSXP) {
-        instrumentr_state_char_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == SYMSXP) {
-        instrumentr_state_symbol_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == STRSXP) {
-        instrumentr_state_character_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == PROMSXP) {
-        instrumentr_state_promise_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CLOSXP) {
-        instrumentr_state_function_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == SPECIALSXP) {
-        instrumentr_state_function_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == BUILTINSXP) {
-        instrumentr_state_function_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == ENVSXP) {
-        instrumentr_state_environment_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == INTSXP) {
-        instrumentr_state_integer_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == REALSXP) {
-        instrumentr_state_real_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == LGLSXP) {
-        instrumentr_state_logical_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CPLXSXP) {
-        instrumentr_state_complex_table_remove(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == RAWSXP) {
-        instrumentr_state_raw_table_remove(state, r_object);
-    }
-
-    else {
-        instrumentr_state_miscellaneous_table_remove(state, r_object);
-    }
+    instrumentr_state_value_table_remove(state, r_object);
 
     /* TODO: add this after adding value */
     // TRACING_INVOKE_CALLBACK(event, gc_deallocation_function_t, value);

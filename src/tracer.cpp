@@ -124,13 +124,13 @@ void instrumentr_tracer_initialize_tracing(instrumentr_tracer_t tracer,
                                            SEXP r_code,
                                            SEXP r_environment) {
     instrumentr_environment_t environment =
-        instrumentr_state_environment_table_lookup(
+        instrumentr_state_value_table_lookup_environment(
             tracer->state, r_environment, 1);
 
     tracer->application = instrumentr_application_create(
         tracer->state, working_directory, r_code, environment);
 
-    instrumentr_state_environment_table_initialize(tracer->state);
+    instrumentr_state_value_table_initialize(tracer->state);
 }
 
 SEXP instrumentr_tracer_finalize_tracing(instrumentr_tracer_t tracer) {

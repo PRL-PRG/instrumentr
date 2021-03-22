@@ -3,6 +3,7 @@
 #include "character.h"
 #include "state.h"
 #include "char.h"
+#include "value.h"
 
 /********************************************************************************
  * definition
@@ -74,10 +75,13 @@ SEXP r_instrumentr_character_get_size(SEXP r_character) {
 instrumentr_char_t
 instrumentr_character_get_element(instrumentr_character_t character,
                                   int index) {
-    return instrumentr_state_char_table_lookup(
-        instrumentr_model_get_state(character),
-        STRING_ELT(character->r_sexp, index),
-        1);
+    instrumentr_state_t state = instrumentr_model_get_state(character);
+    SEXP r_char = STRING_ELT(character->r_sexp, index);
+
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_char, 1);
+
+    return instrumentr_value_as_char(value);
 }
 
 SEXP r_instrumentr_character_get_element(SEXP r_character, SEXP r_index) {

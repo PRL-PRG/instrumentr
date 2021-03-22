@@ -7,8 +7,6 @@
 #include "environment.h"
 #include "function.h"
 #include "call.h"
-#include "parameter.h"
-#include "argument.h"
 #include "call_stack.h"
 #include "callback.h"
 #include "context.h"

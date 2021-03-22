@@ -853,149 +853,33 @@
  CALL API
  *******************************************************************************/
 
-#define INSTRUMENTR_CALL_C_API_MAP(MACRO)                                     \
-    MACRO(instrumentr_call_wrap, SEXP, instrumentr_call_t call)               \
-    MACRO(instrumentr_call_unwrap, instrumentr_call_t, SEXP r_call)           \
-    MACRO(instrumentr_call_get_function,                                      \
-          instrumentr_function_t,                                             \
-          instrumentr_call_t call)                                            \
-    MACRO(instrumentr_call_get_expression, SEXP, instrumentr_call_t call)     \
-    MACRO(instrumentr_call_get_environment,                                   \
-          instrumentr_environment_t,                                          \
-          instrumentr_call_t call)                                            \
-    MACRO(instrumentr_call_get_frame_position, int, instrumentr_call_t call)  \
-    MACRO(instrumentr_call_is_active, int, instrumentr_call_t call)           \
-    MACRO(instrumentr_call_has_result, int, instrumentr_call_t call)          \
-    MACRO(instrumentr_call_get_result, SEXP, instrumentr_call_t call)         \
-    MACRO(instrumentr_call_get_parameter_count, int, instrumentr_call_t call) \
-    MACRO(instrumentr_call_get_parameter_by_position,                         \
-          instrumentr_parameter_t,                                            \
-          instrumentr_call_t call,                                            \
-          int position)                                                       \
-    MACRO(instrumentr_call_get_parameter_by_name,                             \
-          instrumentr_parameter_t,                                            \
-          instrumentr_call_t call,                                            \
-          const char* name)
+#define INSTRUMENTR_CALL_C_API_MAP(MACRO)                                    \
+    MACRO(instrumentr_call_wrap, SEXP, instrumentr_call_t call)              \
+    MACRO(instrumentr_call_unwrap, instrumentr_call_t, SEXP r_call)          \
+    MACRO(instrumentr_call_get_function,                                     \
+          instrumentr_function_t,                                            \
+          instrumentr_call_t call)                                           \
+    MACRO(instrumentr_call_get_expression, SEXP, instrumentr_call_t call)    \
+    MACRO(instrumentr_call_get_environment,                                  \
+          instrumentr_environment_t,                                         \
+          instrumentr_call_t call)                                           \
+    MACRO(instrumentr_call_get_frame_position, int, instrumentr_call_t call) \
+    MACRO(instrumentr_call_is_active, int, instrumentr_call_t call)          \
+    MACRO(instrumentr_call_has_result, int, instrumentr_call_t call)         \
+    MACRO(instrumentr_call_get_result, SEXP, instrumentr_call_t call)
 
-#define INSTRUMENTR_CALL_R_API_MAP(MACRO)                            \
-    MACRO(r_instrumentr_call_get_function, SEXP, SEXP r_call)        \
-    MACRO(r_instrumentr_call_get_expression, SEXP, SEXP r_call)      \
-    MACRO(r_instrumentr_call_get_environment, SEXP, SEXP r_call)     \
-    MACRO(r_instrumentr_call_get_frame_position, SEXP, SEXP r_call)  \
-    MACRO(r_instrumentr_call_is_active, SEXP, SEXP r_call)           \
-    MACRO(r_instrumentr_call_has_result, SEXP, SEXP r_call)          \
-    MACRO(r_instrumentr_call_get_result, SEXP, SEXP r_call)          \
-    MACRO(r_instrumentr_call_get_parameter_count, SEXP, SEXP r_call) \
-    MACRO(r_instrumentr_call_get_parameter_by_position,              \
-          SEXP,                                                      \
-          SEXP r_call,                                               \
-          SEXP r_position)                                           \
-    MACRO(r_instrumentr_call_get_parameter_by_name,                  \
-          SEXP,                                                      \
-          SEXP r_call,                                               \
-          SEXP r_name)                                               \
-    MACRO(r_instrumentr_call_get_parameters, SEXP, SEXP r_call)
+#define INSTRUMENTR_CALL_R_API_MAP(MACRO)                           \
+    MACRO(r_instrumentr_call_get_function, SEXP, SEXP r_call)       \
+    MACRO(r_instrumentr_call_get_expression, SEXP, SEXP r_call)     \
+    MACRO(r_instrumentr_call_get_environment, SEXP, SEXP r_call)    \
+    MACRO(r_instrumentr_call_get_frame_position, SEXP, SEXP r_call) \
+    MACRO(r_instrumentr_call_is_active, SEXP, SEXP r_call)          \
+    MACRO(r_instrumentr_call_has_result, SEXP, SEXP r_call)         \
+    MACRO(r_instrumentr_call_get_result, SEXP, SEXP r_call)
 
 #define INSTRUMENTR_CALL_API_MAP(MACRO) \
     INSTRUMENTR_CALL_C_API_MAP(MACRO)   \
     INSTRUMENTR_CALL_R_API_MAP(MACRO)
-
-/********************************************************************************
- PARAMETER API
- *******************************************************************************/
-
-#define INSTRUMENTR_PARAMETER_C_API_MAP(MACRO)                                 \
-    MACRO(instrumentr_parameter_wrap, SEXP, instrumentr_parameter_t parameter) \
-    MACRO(instrumentr_parameter_unwrap,                                        \
-          instrumentr_parameter_t,                                             \
-          SEXP r_parameter)                                                    \
-    MACRO(instrumentr_parameter_get_name,                                      \
-          const char*,                                                         \
-          instrumentr_parameter_t parameter)                                   \
-    MACRO(instrumentr_parameter_get_position,                                  \
-          int,                                                                 \
-          instrumentr_parameter_t parameter)                                   \
-    MACRO(instrumentr_parameter_has_default_argument,                          \
-          int,                                                                 \
-          instrumentr_parameter_t parameter)                                   \
-    MACRO(instrumentr_parameter_get_default_argument,                          \
-          SEXP,                                                                \
-          instrumentr_parameter_t parameter)                                   \
-    MACRO(instrumentr_parameter_get_argument_count,                            \
-          int,                                                                 \
-          instrumentr_parameter_t parameter)                                   \
-    MACRO(instrumentr_parameter_is_missing,                                    \
-          int,                                                                 \
-          instrumentr_parameter_t parameter)                                   \
-    MACRO(instrumentr_parameter_is_vararg,                                     \
-          int,                                                                 \
-          instrumentr_parameter_t parameter)                                   \
-    MACRO(instrumentr_parameter_get_argument_by_position,                      \
-          instrumentr_argument_t,                                              \
-          instrumentr_parameter_t parameter,                                   \
-          int position)                                                        \
-    MACRO(instrumentr_parameter_get_argument_by_name,                          \
-          instrumentr_argument_t,                                              \
-          instrumentr_parameter_t parameter,                                   \
-          const char* name)
-
-#define INSTRUMENTR_PARAMETER_R_API_MAP(MACRO)                                \
-    MACRO(r_instrumentr_parameter_get_name, SEXP, SEXP r_parameter)           \
-    MACRO(r_instrumentr_parameter_get_position, SEXP, SEXP r_parameter)       \
-    MACRO(                                                                    \
-        r_instrumentr_parameter_has_default_argument, SEXP, SEXP r_parameter) \
-    MACRO(                                                                    \
-        r_instrumentr_parameter_get_default_argument, SEXP, SEXP r_parameter) \
-    MACRO(r_instrumentr_parameter_get_argument_count, SEXP, SEXP r_parameter) \
-    MACRO(r_instrumentr_parameter_is_missing, SEXP, SEXP r_parameter)         \
-    MACRO(r_instrumentr_parameter_is_vararg, SEXP, SEXP r_parameter)          \
-    MACRO(r_instrumentr_parameter_get_argument_by_position,                   \
-          SEXP,                                                               \
-          SEXP r_parameter,                                                   \
-          SEXP r_position)                                                    \
-    MACRO(r_instrumentr_parameter_get_argument_by_name,                       \
-          SEXP,                                                               \
-          SEXP r_parameter,                                                   \
-          SEXP r_name)                                                        \
-    MACRO(r_instrumentr_parameter_get_arguments, SEXP, SEXP r_parameter)
-
-#define INSTRUMENTR_PARAMETER_API_MAP(MACRO) \
-    INSTRUMENTR_PARAMETER_C_API_MAP(MACRO)   \
-    INSTRUMENTR_PARAMETER_R_API_MAP(MACRO)
-
-/********************************************************************************
- ARGUMENT API
- *******************************************************************************/
-
-#define INSTRUMENTR_ARGUMENT_C_API_MAP(MACRO)                                  \
-    MACRO(instrumentr_argument_wrap, SEXP, instrumentr_argument_t argument)    \
-    MACRO(                                                                     \
-        instrumentr_argument_unwrap, instrumentr_argument_t, SEXP r_argument)  \
-    MACRO(instrumentr_argument_has_name, int, instrumentr_argument_t argument) \
-    MACRO(instrumentr_argument_get_name,                                       \
-          const char*,                                                         \
-          instrumentr_argument_t argument)                                     \
-    MACRO(instrumentr_argument_is_value, int, instrumentr_argument_t argument) \
-    MACRO(instrumentr_argument_as_value,                                       \
-          instrumentr_value_t,                                                 \
-          instrumentr_argument_t argument)                                     \
-    MACRO(                                                                     \
-        instrumentr_argument_is_promise, int, instrumentr_argument_t argument) \
-    MACRO(instrumentr_argument_as_promise,                                     \
-          instrumentr_promise_t,                                               \
-          instrumentr_argument_t argument)
-
-#define INSTRUMENTR_ARGUMENT_R_API_MAP(MACRO)                       \
-    MACRO(r_instrumentr_argument_has_name, SEXP, SEXP r_argument)   \
-    MACRO(r_instrumentr_argument_get_name, SEXP, SEXP r_argument)   \
-    MACRO(r_instrumentr_argument_is_value, SEXP, SEXP r_argument)   \
-    MACRO(r_instrumentr_argument_as_value, SEXP, SEXP r_argument)   \
-    MACRO(r_instrumentr_argument_is_promise, SEXP, SEXP r_argument) \
-    MACRO(r_instrumentr_argument_as_promise, SEXP, SEXP r_argument)
-
-#define INSTRUMENTR_ARGUMENT_API_MAP(MACRO) \
-    INSTRUMENTR_ARGUMENT_C_API_MAP(MACRO)   \
-    INSTRUMENTR_ARGUMENT_R_API_MAP(MACRO)
 
 /********************************************************************************
  CALL STACK API
@@ -1085,8 +969,8 @@
     MACRO(                                                                     \
         instrumentr_promise_is_lazy_load, int, instrumentr_promise_t promise)  \
     MACRO(instrumentr_promise_is_unknown, int, instrumentr_promise_t promise)  \
-    MACRO(instrumentr_promise_get_call_info,                                   \
-          const std::vector<instrumentr_promise_call_info_t>&,                 \
+    MACRO(instrumentr_promise_get_calls,                                       \
+          const std::vector<instrumentr_call_t>&,                              \
           instrumentr_promise_t promise)                                       \
     MACRO(instrumentr_promise_get_call,                                        \
           instrumentr_call_t,                                                  \
@@ -1123,17 +1007,9 @@
  VALUE API
  *******************************************************************************/
 
-#define INSTRUMENTR_VALUE_C_API_MAP(MACRO)                             \
-    MACRO(instrumentr_value_get_sexp, SEXP, instrumentr_value_t value) \
-    MACRO(instrumentr_value_get_sexp_address,                          \
-          const char*,                                                 \
-          instrumentr_value_t value)                                   \
-    MACRO(instrumentr_value_get_sexp_type, SEXPTYPE, instrumentr_value_t value)
+#define INSTRUMENTR_VALUE_C_API_MAP(MACRO)
 
-#define INSTRUMENTR_VALUE_R_API_MAP(MACRO)                          \
-    MACRO(r_instrumentr_value_get_sexp, SEXP, SEXP r_value)         \
-    MACRO(r_instrumentr_value_get_sexp_address, SEXP, SEXP r_value) \
-    MACRO(r_instrumentr_value_get_sexp_type, SEXP, SEXP r_value)
+#define INSTRUMENTR_VALUE_R_API_MAP(MACRO)
 
 #define INSTRUMENTR_VALUE_API_MAP(MACRO) \
     INSTRUMENTR_VALUE_C_API_MAP(MACRO)   \
@@ -1174,8 +1050,6 @@
     INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_API_MAP(MACRO)          \
-    INSTRUMENTR_PARAMETER_API_MAP(MACRO)     \
-    INSTRUMENTR_ARGUMENT_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_STACK_API_MAP(MACRO)    \
     INSTRUMENTR_FRAME_API_MAP(MACRO)         \
     INSTRUMENTR_PROMISE_API_MAP(MACRO)       \
@@ -1204,8 +1078,6 @@
     INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)   \
     INSTRUMENTR_FUNCTION_R_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_R_API_MAP(MACRO)          \
-    INSTRUMENTR_PARAMETER_R_API_MAP(MACRO)     \
-    INSTRUMENTR_ARGUMENT_R_API_MAP(MACRO)      \
     INSTRUMENTR_CALL_STACK_R_API_MAP(MACRO)    \
     INSTRUMENTR_FRAME_R_API_MAP(MACRO)         \
     INSTRUMENTR_PROMISE_R_API_MAP(MACRO)       \

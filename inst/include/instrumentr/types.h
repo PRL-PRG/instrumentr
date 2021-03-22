@@ -76,12 +76,6 @@ typedef struct instrumentr_argument_impl_t* instrumentr_argument_t;
 typedef struct instrumentr_promise_impl_t* instrumentr_promise_t;
 
 /********************************************************************************
- * value
- *******************************************************************************/
-
-typedef struct instrumentr_value_impl_t* instrumentr_value_t;
-
-/********************************************************************************
  * callback
  *******************************************************************************/
 
@@ -213,6 +207,14 @@ typedef struct instrumentr_complex_impl_t* instrumentr_complex_t;
 
 typedef struct instrumentr_raw_impl_t* instrumentr_raw_t;
 
+/********************************************************************************
+ * value
+ *******************************************************************************/
+
+typedef struct {
+    instrumentr_model_t model;
+} instrumentr_value_t;
+
 /* The type of the do_xxxx functions. */
 /* These are the built-in R functions. */
 typedef SEXP (*CCODE)(SEXP, SEXP, SEXP, SEXP);
@@ -251,7 +253,6 @@ typedef enum {
     INSTRUMENTR_MODEL_TYPE_PARAMETER,
     INSTRUMENTR_MODEL_TYPE_ARGUMENT,
     INSTRUMENTR_MODEL_TYPE_PROMISE,
-    INSTRUMENTR_MODEL_TYPE_VALUE,
     INSTRUMENTR_MODEL_TYPE_FRAME,
     INSTRUMENTR_MODEL_TYPE_CONTEXT,
     INSTRUMENTR_MODEL_TYPE_MISCELLANEOUS,
@@ -276,12 +277,6 @@ typedef enum {
     INSTRUMENTR_PROMISE_TYPE_LAZY_LOAD,
     INSTRUMENTR_PROMISE_TYPE_UNKNOWN
 } instrumentr_promise_type_t;
-
-typedef struct {
-    instrumentr_argument_t argument;
-    instrumentr_parameter_t parameter;
-    instrumentr_call_t call;
-} instrumentr_promise_call_info_t;
 
 typedef union {
     SEXP sexp;

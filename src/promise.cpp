@@ -1,10 +1,7 @@
 #include "promise.h"
 #include "interop.h"
 #include "utilities.h"
-#include "argument.h"
-#include "parameter.h"
 #include "call.h"
-#include <vector>
 
 /********************************************************************************
  * definition
@@ -14,8 +11,7 @@ struct instrumentr_promise_impl_t {
     struct instrumentr_model_impl_t model;
     SEXP r_promise;
     instrumentr_promise_type_t type;
-    std::vector<instrumentr_promise_call_info_t>* call_info_seq;
-    instrumentr_call_t call;
+    std::vector<instrumentr_call_t>* calls;
 };
 
 /********************************************************************************
@@ -27,29 +23,12 @@ void instrumentr_promise_finalize(instrumentr_model_t model) {
 
     promise->r_promise = NULL;
 
-    switch (promise->type) {
-    case INSTRUMENTR_PROMISE_TYPE_ARGUMENT:
-        for (std::size_t i = 0; i < promise->call_info_seq->size(); ++i) {
-            auto& call_info = promise->call_info_seq->at(i);
-            instrumentr_model_release(call_info.argument);
-            instrumentr_model_release(call_info.parameter);
-            instrumentr_model_release(call_info.call);
+    if (promise->type != INSTRUMENTR_PROMISE_TYPE_UNKNOWN) {
+        for (std::size_t i = 0; i < promise->calls->size(); ++i) {
+            instrumentr_model_release(promise->calls->at(i));
         }
-        delete promise->call_info_seq;
-        promise->call_info_seq = NULL;
-        break;
-    case INSTRUMENTR_PROMISE_TYPE_LAZY_LOAD:
-        instrumentr_model_release(promise->call);
-        promise->call = NULL;
-        break;
-
-    case INSTRUMENTR_PROMISE_TYPE_DELAYED_ASSIGN:
-        instrumentr_model_release(promise->call);
-        promise->call = NULL;
-        break;
-
-    case INSTRUMENTR_PROMISE_TYPE_UNKNOWN:
-        break;
+        delete promise->calls;
+        promise->calls = NULL;
     }
 }
 
@@ -71,8 +50,7 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
     promise->r_promise = r_promise;
 
     promise->type = INSTRUMENTR_PROMISE_TYPE_UNKNOWN;
-    promise->call_info_seq = new std::vector<instrumentr_promise_call_info_t>();
-    promise->call = nullptr;
+    promise->calls = new std::vector<instrumentr_call_t>();
 
     return promise;
 }
@@ -178,23 +156,14 @@ SEXP r_instrumentr_promise_is_argument(SEXP r_promise) {
 
 /* mutator */
 void instrumentr_promise_add_call(instrumentr_promise_t promise,
-                                  instrumentr_call_t call,
-                                  instrumentr_parameter_t parameter,
-                                  instrumentr_argument_t argument) {
+                                  instrumentr_call_t call) {
     /* if promis is already an argument promise then warn and release the
      * current call */
     promise->type = INSTRUMENTR_PROMISE_TYPE_ARGUMENT;
 
-    instrumentr_promise_call_info_t call_info;
-    call_info.call = call;
-    call_info.parameter = parameter;
-    call_info.argument = argument;
-
-    promise->call_info_seq->push_back(call_info);
+    promise->calls->push_back(call);
 
     instrumentr_model_acquire(call);
-    instrumentr_model_acquire(parameter);
-    instrumentr_model_acquire(argument);
 }
 
 /* accessor  */
@@ -231,17 +200,13 @@ SEXP r_instrumentr_promise_is_unknown(SEXP r_promise) {
 }
 
 /********************************************************************************
- * call_info_seq
+ * calls
  *******************************************************************************/
 
-const std::vector<instrumentr_promise_call_info_t>&
-instrumentr_promise_get_call_info(instrumentr_promise_t promise) {
-    return *promise->call_info_seq;
+const std::vector<instrumentr_call_t>&
+instrumentr_promise_get_calls(instrumentr_promise_t promise) {
+    return *promise->calls;
 }
-
-/********************************************************************************
- * call
- *******************************************************************************/
 
 /* accessor  */
 instrumentr_call_t instrumentr_promise_get_call(instrumentr_promise_t promise) {
@@ -253,7 +218,7 @@ instrumentr_call_t instrumentr_promise_get_call(instrumentr_promise_t promise) {
         return NULL;
     }
 
-    return promise->call;
+    return promise->calls->at(0);
 }
 
 SEXP r_instrumentr_promise_get_call(SEXP r_promise) {
