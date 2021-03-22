@@ -87,6 +87,11 @@ void instrumentr_trace_eval_exit(dyntracer_t* dyntracer,
                                  SEXP r_rho,
                                  SEXP r_result);
 
+void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
+                                               const SEXP symbol,
+                                               SEXP promise,
+                                               SEXP rho);
+
 void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object);
 
 void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object);
@@ -109,6 +114,11 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
                                        const SEXP r_symbol,
                                        const SEXP r_value,
                                        const SEXP r_rho);
+
+void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
+                                               const SEXP r_symbol,
+                                               const SEXP r_value,
+                                               const SEXP r_rho);
 
 void instrumentr_trace_promise_force_entry(dyntracer_t* dyntracer,
                                            SEXP r_promise);

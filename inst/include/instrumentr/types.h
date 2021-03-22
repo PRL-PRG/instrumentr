@@ -347,6 +347,7 @@ typedef enum {
     INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
     INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
     INSTRUMENTR_EVENT_VARIABLE_LOOKUP,
+    INSTRUMENTR_EVENT_FUNCTION_CONTEXT_LOOKUP,
     INSTRUMENTR_EVENT_CONTEXT_ENTRY,
     INSTRUMENTR_EVENT_CONTEXT_EXIT,
     INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY,
@@ -504,6 +505,15 @@ typedef void (*variable_lookup_function_t)(
     SEXP r_variable,
     SEXP r_value,
     SEXP r_rho);
+
+typedef void (*function_context_lookup_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_symbol_t symbol,
+    instrumentr_value_t value,
+    instrumentr_environment_t environment);
 
 typedef void (*context_entry_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,

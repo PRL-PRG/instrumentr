@@ -25,6 +25,7 @@
 #include "builtin.h"
 #include "special.h"
 #include "environment.h"
+#include "symbol.h"
 
 #define TRACING_INITIALIZE(EVENT)                                     \
     instrumentr_tracer_disable(tracer);                               \
@@ -75,7 +76,7 @@
     SEXP r_##ONE = PROTECT(instrumentr_##ONE##_wrap(ONE));       \
     SEXP r_##TWO = PROTECT(instrumentr_##TWO##_wrap(TWO));       \
     SEXP r_##THREE = PROTECT(instrumentr_##THREE##_wrap(THREE)); \
-    Rf_eval(Rf_lang3(r_name,                                     \
+    Rf_eval(Rf_lang8(r_name,                                     \
                      r_tracer,                                   \
                      r_callback,                                 \
                      r_state,                                    \
@@ -831,6 +832,36 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
     // TODO: add back this line.
     // TRACING_INVOKE_CALLBACK(event, variable_lookup_function_t, symbol,
     // value, rho);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
+                                               SEXP r_symbol,
+                                               SEXP r_promise,
+                                               SEXP r_rho) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_FUNCTION_CONTEXT_LOOKUP;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    // TODO: remove after adding value_wrap
+    //instrumentr_value_t symval =
+    //    instrumentr_state_value_table_lookup(state, r_symbol, 1);
+    //instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
+    //
+    //instrumentr_value_t promval =
+    //    instrumentr_state_value_table_lookup(state, r_promise, 1);
+    //instrumentr_promise_t promise = instrumentr_value_as_promise(promval);
+    //
+    //instrumentr_value_t envval =
+    //    instrumentr_state_value_table_lookup(state, r_rho, 1);
+    //instrumentr_environment_t environment =
+    //    instrumentr_value_as_environment(envval);
+    //
+    //TRACING_INVOKE_CALLBACK(
+    //    event, function_context_lookup_function_t, symbol, promise, environment)
 
     TRACING_FINALIZE(event)
 }
