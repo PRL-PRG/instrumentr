@@ -758,6 +758,35 @@ void instrumentr_trace_promise_delayed_assign(dyntracer_t* dyntracer,
     TRACING_FINALIZE(event)
 }
 
+void instrumentr_trace_promise_lazy_load(dyntracer_t* dyntracer,
+                                         SEXP r_symbol,
+                                         SEXP r_promise,
+                                         SEXP r_rho) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_PROMISE_LAZY_LOAD;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t symval =
+        instrumentr_state_value_table_lookup(state, r_symbol, 1);
+    instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
+
+    instrumentr_value_t promval =
+        instrumentr_state_value_table_lookup(state, r_promise, 1);
+    instrumentr_promise_t promise = instrumentr_value_as_promise(promval);
+
+    instrumentr_value_t envval =
+        instrumentr_state_value_table_lookup(state, r_rho, 1);
+    instrumentr_environment_t environment =
+        instrumentr_value_as_environment(envval);
+
+    TRACING_INVOKE_CALLBACK(
+        event, promise_lazy_load_function_t, symbol, promise, environment)
+
+    TRACING_FINALIZE(event)
+}
+
 void instrumentr_trace_eval_entry(dyntracer_t* dyntracer,
                                   SEXP r_expression,
                                   SEXP r_rho) {

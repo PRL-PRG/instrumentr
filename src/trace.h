@@ -137,6 +137,11 @@ void instrumentr_trace_promise_delayed_assign(dyntracer_t* dyntracer,
                                               SEXP r_promise,
                                               SEXP r_rho);
 
+void instrumentr_trace_promise_lazy_load(dyntracer_t* dyntracer,
+                                         SEXP r_symbol,
+                                         SEXP r_promise,
+                                         SEXP r_rho);
+
 #ifdef __cplusplus
 }
 #endif
