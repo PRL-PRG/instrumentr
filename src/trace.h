@@ -132,6 +132,11 @@ void instrumentr_trace_promise_value_lookup(dyntracer_t* dyntracer,
 void instrumentr_trace_promise_substitute(dyntracer_t* dyntracer,
                                           SEXP r_promise);
 
+void instrumentr_trace_promise_delayed_assign(dyntracer_t* dyntracer,
+                                              SEXP r_symbol,
+                                              SEXP r_promise,
+                                              SEXP r_rho);
+
 #ifdef __cplusplus
 }
 #endif

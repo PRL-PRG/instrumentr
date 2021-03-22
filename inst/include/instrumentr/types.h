@@ -354,6 +354,7 @@ typedef enum {
     INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT,
     INSTRUMENTR_EVENT_PROMISE_VALUE_LOOKUP,
     INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE,
+    INSTRUMENTR_EVENT_PROMISE_DELAYED_ASSIGN,
     /* NOTE: this has to be the last event */
     INSTRUMENTR_EVENT_COUNT
 } instrumentr_event_t;
@@ -554,6 +555,15 @@ typedef void (*promise_substitute_function_t)(
     instrumentr_state_t state,
     instrumentr_application_t application,
     instrumentr_promise_t promise);
+
+typedef void (*promise_delayed_assign_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_symbol_t symbol,
+    instrumentr_promise_t promise,
+    instrumentr_environment_t environment);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
     MACRO(INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_entry, ARGUMENT)         \

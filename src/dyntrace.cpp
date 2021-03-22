@@ -35,6 +35,10 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
         dyntracer, instrumentr_trace_promise_force_exit);
     dyntracer_set_promise_value_lookup_callback(
         dyntracer, instrumentr_trace_promise_value_lookup);
+
+    dyntracer_set_promise_delayed_assign_callback(
+        dyntracer, instrumentr_trace_promise_delayed_assign);
+
     dyntracer_set_promise_substitute_callback(
         dyntracer, instrumentr_trace_promise_substitute);
     dyntracer_set_environment_variable_define_callback(

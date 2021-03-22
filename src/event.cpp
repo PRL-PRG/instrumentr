@@ -34,7 +34,8 @@ event_info_t table[INSTRUMENTR_EVENT_COUNT] = {
     {INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY, "promise_force_entry", 5},
     {INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT, "promise_force_exit", 5},
     {INSTRUMENTR_EVENT_PROMISE_VALUE_LOOKUP, "promise_value_lookup", 5},
-    {INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE, "promise_substitute", 5}};
+    {INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE, "promise_substitute", 5},
+    {INSTRUMENTR_EVENT_PROMISE_DELAYED_ASSIGN, "promise_delayed_assign", 7},
 
 int instrumentr_event_get_parameter_count(instrumentr_event_t event) {
     int index = (int) (event);
