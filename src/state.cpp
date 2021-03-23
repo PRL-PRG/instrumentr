@@ -4,16 +4,13 @@
 #include "interop.h"
 #include <string>
 #include <unordered_map>
-#include "promise.h"
-#include "closure.h"
 #include "call_stack.h"
 #include "frame.h"
 #include "call.h"
-#include "environment.h"
 #include "alloc_stats.h"
 #include "exec_stats.h"
-#include "miscellaneous.h"
 #include "value.h"
+#include "values.h"
 
 const int INSTRUMENTR_VALUE_TABLE_INITIAL_SIZE = 1000000;
 
@@ -48,7 +45,7 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
     }
 
     if (state->call_stack != nullptr) {
-        instrumentr_model_kill(state->call_stack);
+        instrumentr_call_stack_kill(state->call_stack);
         state->call_stack = nullptr;
     }
 
@@ -95,7 +92,7 @@ instrumentr_state_t instrumentr_state_create() {
  *******************************************************************************/
 
 SEXP instrumentr_state_finalize_tracing(instrumentr_state_t state) {
-    instrumentr_model_kill(state->call_stack);
+    instrumentr_call_stack_kill(state->call_stack);
     state->call_stack = nullptr;
 
     instrumentr_state_value_table_clear(state);
@@ -427,16 +424,216 @@ void instrumentr_state_value_table_initialize(instrumentr_state_t state) {
     }
 }
 
+/*******************************************************************************
+ * value
+ ******************************************************************************/
+bool instrumentr_value_is_consistent(instrumentr_value_t value) {
+    SEXP r_sexp = instrumentr_value_get_sexp(value);
+
+    if (r_sexp == R_UnboundValue) {
+        return instrumentr_value_is_unbound(value);
+    }
+
+    else if (r_sexp == R_MissingArg) {
+        return instrumentr_value_is_missing(value);
+    }
+
+    SEXPTYPE expected = TYPEOF(r_sexp);
+
+    switch (expected) {
+    case NILSXP:
+        return instrumentr_value_is_null(value);
+    case EXTPTRSXP:
+        return instrumentr_value_is_externalptr(value);
+    case WEAKREFSXP:
+        return instrumentr_value_is_weakref(value);
+    case BCODESXP:
+        return instrumentr_value_is_bytecode(value);
+    case S4SXP:
+        return instrumentr_value_is_s4(value);
+    case CHARSXP:
+        return instrumentr_value_is_char(value);
+    case SYMSXP:
+        return instrumentr_value_is_symbol(value);
+    case STRSXP:
+        return instrumentr_value_is_character(value);
+    case PROMSXP:
+        return instrumentr_value_is_promise(value);
+    case CLOSXP:
+        return instrumentr_value_is_closure(value);
+    case SPECIALSXP:
+        return instrumentr_value_is_special(value);
+    case BUILTINSXP:
+        return instrumentr_value_is_builtin(value);
+    case ENVSXP:
+        return instrumentr_value_is_environment(value);
+    case INTSXP:
+        return instrumentr_value_is_integer(value);
+    case REALSXP:
+        return instrumentr_value_is_real(value);
+    case LGLSXP:
+        return instrumentr_value_is_logical(value);
+    case CPLXSXP:
+        return instrumentr_value_is_complex(value);
+    case RAWSXP:
+        return instrumentr_value_is_raw(value);
+    case LANGSXP:
+        return instrumentr_value_is_language(value);
+    case DOTSXP:
+        return instrumentr_value_is_dot(value);
+    case LISTSXP:
+        return instrumentr_value_is_pairlist(value);
+    case VECSXP:
+        return instrumentr_value_is_list(value);
+    case EXPRSXP:
+        return instrumentr_value_is_expression(value);
+    default:
+        return instrumentr_value_is_miscellaneous(value);
+    }
+
+    return false;
+}
+
+instrumentr_value_t instrumentr_state_create_value(instrumentr_state_t state,
+                                                   SEXP r_object) {
+    instrumentr_value_t value = NULL;
+
+    if (r_object == R_UnboundValue) {
+        value =
+            (instrumentr_value_t) instrumentr_unbound_create(state, r_object);
+    }
+
+    else if (r_object == R_MissingArg) {
+        value =
+            (instrumentr_value_t) instrumentr_missing_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == NILSXP) {
+        value = (instrumentr_value_t) instrumentr_null_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == EXTPTRSXP) {
+        value = (instrumentr_value_t) instrumentr_externalptr_create(state,
+                                                                     r_object);
+    }
+
+    else if (TYPEOF(r_object) == WEAKREFSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_weakref_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == BCODESXP) {
+        value =
+            (instrumentr_value_t) instrumentr_bytecode_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == S4SXP) {
+        value = (instrumentr_value_t) instrumentr_s4_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == CHARSXP) {
+        value = (instrumentr_value_t) instrumentr_char_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == SYMSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_symbol_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == STRSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_character_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == PROMSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_promise_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == CLOSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_closure_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == SPECIALSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_special_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == BUILTINSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_builtin_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == ENVSXP) {
+        value = (instrumentr_value_t) instrumentr_environment_create(state,
+                                                                     r_object);
+    }
+
+    else if (TYPEOF(r_object) == INTSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_integer_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == REALSXP) {
+        value = (instrumentr_value_t) instrumentr_real_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == LGLSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_logical_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == CPLXSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_complex_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == RAWSXP) {
+        value = (instrumentr_value_t) instrumentr_raw_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == LANGSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_language_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == DOTSXP) {
+        value = (instrumentr_value_t) instrumentr_dot_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == LISTSXP) {
+        value =
+            (instrumentr_value_t) instrumentr_pairlist_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == VECSXP) {
+        value = (instrumentr_value_t) instrumentr_list_create(state, r_object);
+    }
+
+    else if (TYPEOF(r_object) == EXPRSXP) {
+        value = (instrumentr_value_t) instrumentr_expression_create(state,
+                                                                    r_object);
+    }
+
+    else {
+        value = (instrumentr_value_t) instrumentr_miscellaneous_create(
+            state, r_object);
+    }
+
+    return value;
+}
+
 instrumentr_value_t
 instrumentr_state_value_table_insert(instrumentr_state_t state, SEXP r_object) {
+    instrumentr_value_t value = instrumentr_state_create_value(state, r_object);
     /* TODO: set value birth time */
-    instrumentr_value_t value = instrumentr_value_create(state, r_object);
     auto result = state->value_table->insert({r_object, value});
     if (!result.second) {
         /* NOTE: this means the object was deallocated when tracing was
          * disabled. */
         auto iter = result.first;
-        instrumentr_model_kill((iter->second).model);
+        instrumentr_value_kill(iter->second);
         result.first->second = value;
     }
 
@@ -447,7 +644,7 @@ void instrumentr_state_value_table_remove(instrumentr_state_t state,
                                           SEXP r_object) {
     auto result = state->value_table->find(r_object);
     if (result != state->value_table->end()) {
-        instrumentr_model_kill(result->second.model);
+        instrumentr_value_kill(result->second);
         state->value_table->erase(result);
     }
 }
@@ -457,13 +654,22 @@ instrumentr_state_value_table_lookup(instrumentr_state_t state,
                                      SEXP r_value,
                                      int create) {
     auto result = state->value_table->find(r_value);
+
     if (result != state->value_table->end()) {
-        return result->second;
+        instrumentr_value_t value = result->second;
+
+        if (!instrumentr_value_is_consistent(value)) {
+            value = instrumentr_state_value_table_insert(
+                state, instrumentr_value_get_sexp(value));
+        }
+
+        return value;
+
     } else if (create) {
         return instrumentr_state_value_table_insert(state, r_value);
     } else {
         instrumentr_log_error("value %p not present in value table", r_value);
-        return instrumentr_value_create(state, R_NilValue);
+        return NULL;
     }
 }
 
@@ -517,7 +723,7 @@ void instrumentr_state_value_table_clear(instrumentr_state_t state) {
     for (auto iter = state->value_table->begin();
          iter != state->value_table->end();
          ++iter) {
-        instrumentr_model_kill(iter->second.model);
+        instrumentr_value_kill(iter->second);
     }
     state->value_table->clear();
 }

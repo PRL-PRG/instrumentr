@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_missing_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_missing_finalize(instrumentr_model_t model) {
-    instrumentr_missing_t missing = (instrumentr_missing_t)(model);
-
-    missing->r_sexp = NULL;
+void instrumentr_missing_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -27,16 +23,15 @@ void instrumentr_missing_finalize(instrumentr_model_t model) {
 instrumentr_missing_t instrumentr_missing_create(instrumentr_state_t state,
                                                  SEXP r_sexp) {
     /* TODO: make foreign for instrumentr missing */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_missing_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_MISSING,
+                                 INSTRUMENTR_VALUE_TYPE_MISSING,
                                  instrumentr_missing_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_missing_t missing = (instrumentr_missing_t)(model);
-
-    missing->r_sexp = r_sexp;
+    instrumentr_missing_t missing = (instrumentr_missing_t)(value);
 
     return missing;
 }
@@ -45,13 +40,4 @@ instrumentr_missing_t instrumentr_missing_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(missing, INSTRUMENTR_MODEL_TYPE_MISSING)
-
-SEXP instrumentr_missing_get_sexp(instrumentr_missing_t missing) {
-    return missing->r_sexp;
-}
-
-SEXP r_instrumentr_missing_get_sexp(SEXP r_missing) {
-    instrumentr_missing_t missing = instrumentr_missing_unwrap(r_missing);
-    return instrumentr_missing_get_sexp(missing);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_MISSING, missing, missing)

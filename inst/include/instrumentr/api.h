@@ -270,30 +270,30 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_ALLOC_STATS_C_API_MAP(MACRO)         \
-    MACRO(instrumentr_alloc_stats_get_model_size,        \
+    MACRO(instrumentr_alloc_stats_get_value_size,        \
           int,                                           \
           instrumentr_alloc_stats_t alloc_stats,         \
-          instrumentr_model_type_t model_type)           \
+          instrumentr_value_type_t value_type)           \
     MACRO(instrumentr_alloc_stats_get_allocated_count,   \
           int,                                           \
           instrumentr_alloc_stats_t alloc_stats,         \
-          instrumentr_model_type_t model_type)           \
+          instrumentr_value_type_t value_type)           \
     MACRO(instrumentr_alloc_stats_get_deallocated_count, \
           int,                                           \
           instrumentr_alloc_stats_t alloc_stats,         \
-          instrumentr_model_type_t model_type)           \
+          instrumentr_value_type_t value_type)           \
     MACRO(instrumentr_alloc_stats_get_finalized_count,   \
           int,                                           \
           instrumentr_alloc_stats_t alloc_stats,         \
-          instrumentr_model_type_t model_type)           \
+          instrumentr_value_type_t value_type)           \
     MACRO(instrumentr_alloc_stats_get_zombie_count,      \
           int,                                           \
           instrumentr_alloc_stats_t alloc_stats,         \
-          instrumentr_model_type_t model_type)           \
+          instrumentr_value_type_t value_type)           \
     MACRO(instrumentr_alloc_stats_get_max_alive_count,   \
           int,                                           \
           instrumentr_alloc_stats_t alloc_stats,         \
-          instrumentr_model_type_t model_type)           \
+          instrumentr_value_type_t value_type)           \
     MACRO(instrumentr_alloc_stats_as_data_frame,         \
           SEXP,                                          \
           instrumentr_alloc_stats_t alloc_stats)
@@ -389,16 +389,18 @@
  MODEL API
 *******************************************************************************/
 
-#define INSTRUMENTR_MODEL_C_API_MAP(MACRO)                         \
-    MACRO(instrumentr_model_get_id, instrumentr_id_t, void* model) \
-    MACRO(instrumentr_model_get_reference_count, int, void* model) \
-    MACRO(instrumentr_model_get_birth_time, int, void* model)      \
-    MACRO(instrumentr_model_get_death_time, int, void* model)      \
-    MACRO(instrumentr_model_get_life_time, int, void* model)       \
-    MACRO(instrumentr_model_is_alive, int, void* model)            \
-    MACRO(instrumentr_model_is_dead, int, void* model)             \
-    MACRO(instrumentr_model_is_local, int, void* model)            \
-    MACRO(instrumentr_model_is_foreign, int, void* model)
+#define INSTRUMENTR_MODEL_C_API_MAP(MACRO)                                     \
+    MACRO(                                                                     \
+        instrumentr_model_get_id, instrumentr_id_t, instrumentr_model_t model) \
+    MACRO(                                                                     \
+        instrumentr_model_get_reference_count, int, instrumentr_model_t model) \
+    MACRO(instrumentr_model_get_birth_time, int, instrumentr_model_t model)    \
+    MACRO(instrumentr_model_get_death_time, int, instrumentr_model_t model)    \
+    MACRO(instrumentr_model_get_life_time, int, instrumentr_model_t model)     \
+    MACRO(instrumentr_model_is_alive, int, instrumentr_model_t model)          \
+    MACRO(instrumentr_model_is_dead, int, instrumentr_model_t model)           \
+    MACRO(instrumentr_model_is_local, int, instrumentr_model_t model)          \
+    MACRO(instrumentr_model_is_foreign, int, instrumentr_model_t model)
 
 #define INSTRUMENTR_MODEL_R_API_MAP(MACRO)                             \
     MACRO(r_instrumentr_model_get_id, SEXP, SEXP r_model)              \

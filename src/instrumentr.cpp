@@ -6,6 +6,7 @@
 #include "object.h"
 #include "object_type.h"
 #include "model_type.h"
+#include "value_type.h"
 
 typedef vec_t(instrumentr_tracer_t) instrumentr_tracer_vector_t;
 
@@ -114,6 +115,7 @@ void instrumentr_initialize(SEXP r_package_environment,
                                      r_state_environment);
     instrumentr_object_type_initialize();
     instrumentr_model_type_initialize();
+    instrumentr_value_type_initialize();
 }
 
 SEXP r_instrumentr_initialize(SEXP r_package_environment,
@@ -127,6 +129,7 @@ void instrumentr_finalize() {
     vec_deinit(&tracers);
     instrumentr_object_type_finalize();
     instrumentr_model_type_finalize();
+    instrumentr_value_type_finalize();
 }
 
 SEXP r_instrumentr_finalize() {

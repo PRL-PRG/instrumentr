@@ -2,7 +2,7 @@
 #define INSTRUMENTR_PROMISE_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,18 +13,16 @@ extern "C" {
  *******************************************************************************/
 
 instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
-                                                 SEXP r_promise);
+                                                 SEXP r_sexp);
 
 /********************************************************************************
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(promise, INSTRUMENTR_MODEL_TYPE_PROMISE)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_PROMISE, promise, promise)
 
 void instrumentr_promise_add_call(instrumentr_promise_t promise,
-                                  instrumentr_call_t call,
-                                  instrumentr_parameter_t parameter,
-                                  instrumentr_argument_t argument);
+                                  instrumentr_call_t call);
 
 INSTRUMENTR_PROMISE_API_MAP(INSTRUMENTR_API_INCLUDER)
 

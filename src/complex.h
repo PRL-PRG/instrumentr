@@ -2,7 +2,7 @@
 #define INSTRUMENTR_COMPLEX_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ instrumentr_complex_t instrumentr_complex_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(complex, INSTRUMENTR_MODEL_TYPE_COMPLEX)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_COMPLEX, complex, complex)
 
 INSTRUMENTR_COMPLEX_API_MAP(INSTRUMENTR_API_INCLUDER)
 

@@ -2,7 +2,7 @@
 #define INSTRUMENTR_NULL_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ instrumentr_null_t instrumentr_null_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(null, INSTRUMENTR_MODEL_TYPE_NULL)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_MODEL_TYPE_NULL, null, nullval)
 
 INSTRUMENTR_NULL_API_MAP(INSTRUMENTR_API_INCLUDER)
 

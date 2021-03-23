@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_raw_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_raw_finalize(instrumentr_model_t model) {
-    instrumentr_raw_t raw = (instrumentr_raw_t)(model);
-
-    raw->r_sexp = NULL;
+void instrumentr_raw_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -27,16 +23,15 @@ void instrumentr_raw_finalize(instrumentr_model_t model) {
 instrumentr_raw_t instrumentr_raw_create(instrumentr_state_t state,
                                          SEXP r_sexp) {
     /* TODO: make foreign for instrumentr raw */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_raw_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_RAW,
+                                 INSTRUMENTR_VALUE_TYPE_RAW,
                                  instrumentr_raw_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_raw_t raw = (instrumentr_raw_t)(model);
-
-    raw->r_sexp = r_sexp;
+    instrumentr_raw_t raw = (instrumentr_raw_t)(value);
 
     return raw;
 }
@@ -45,19 +40,10 @@ instrumentr_raw_t instrumentr_raw_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(raw, INSTRUMENTR_MODEL_TYPE_RAW)
-
-SEXP instrumentr_raw_get_sexp(instrumentr_raw_t raw) {
-    return raw->r_sexp;
-}
-
-SEXP r_instrumentr_raw_get_sexp(SEXP r_raw) {
-    instrumentr_raw_t raw = instrumentr_raw_unwrap(r_raw);
-    return instrumentr_raw_get_sexp(raw);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_RAW, raw, raw)
 
 int instrumentr_raw_get_size(instrumentr_raw_t raw) {
-    return Rf_length(raw->r_sexp);
+    return Rf_length(instrumentr_raw_get_sexp(raw));
 }
 
 SEXP r_instrumentr_raw_get_size(SEXP r_raw) {
@@ -67,7 +53,7 @@ SEXP r_instrumentr_raw_get_size(SEXP r_raw) {
 }
 
 Rbyte instrumentr_raw_get_element(instrumentr_raw_t raw, int index) {
-    return RAW_ELT(raw->r_sexp, index);
+    return RAW_ELT(instrumentr_raw_get_sexp(raw), index);
 }
 
 SEXP r_instrumentr_raw_get_element(SEXP r_raw, SEXP r_index) {

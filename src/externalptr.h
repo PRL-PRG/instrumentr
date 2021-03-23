@@ -2,7 +2,7 @@
 #define INSTRUMENTR_EXTERNALPTR_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,8 +19,9 @@ instrumentr_externalptr_create(instrumentr_state_t state, SEXP r_externalptr);
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(externalptr,
-                                      INSTRUMENTR_MODEL_TYPE_EXTERNALPTR)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_EXTERNALPTR,
+                              externalptr,
+                              externalptr)
 
 INSTRUMENTR_EXTERNALPTR_API_MAP(INSTRUMENTR_API_INCLUDER)
 

@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_weakref_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_weakref_finalize(instrumentr_model_t model) {
-    instrumentr_weakref_t weakref = (instrumentr_weakref_t)(model);
-
-    weakref->r_sexp = NULL;
+void instrumentr_weakref_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -27,16 +23,15 @@ void instrumentr_weakref_finalize(instrumentr_model_t model) {
 instrumentr_weakref_t instrumentr_weakref_create(instrumentr_state_t state,
                                                  SEXP r_sexp) {
     /* TODO: make foreign for instrumentr weakref */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_weakref_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_WEAKREF,
+                                 INSTRUMENTR_VALUE_TYPE_WEAKREF,
                                  instrumentr_weakref_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_weakref_t weakref = (instrumentr_weakref_t)(model);
-
-    weakref->r_sexp = r_sexp;
+    instrumentr_weakref_t weakref = (instrumentr_weakref_t)(value);
 
     return weakref;
 }
@@ -45,13 +40,4 @@ instrumentr_weakref_t instrumentr_weakref_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(weakref, INSTRUMENTR_MODEL_TYPE_WEAKREF)
-
-SEXP instrumentr_weakref_get_sexp(instrumentr_weakref_t weakref) {
-    return weakref->r_sexp;
-}
-
-SEXP r_instrumentr_weakref_get_sexp(SEXP r_weakref) {
-    instrumentr_weakref_t weakref = instrumentr_weakref_unwrap(r_weakref);
-    return instrumentr_weakref_get_sexp(weakref);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_WEAKREF, weakref, weakref)

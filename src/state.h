@@ -39,6 +39,13 @@ int instrumentr_state_get_next_id(instrumentr_state_t state);
 void instrumentr_state_increment_time(instrumentr_state_t state);
 
 /*******************************************************************************
+ * value
+ ******************************************************************************/
+
+instrumentr_value_t instrumentr_state_create_value(instrumentr_state_t state,
+                                                   SEXP r_object);
+
+/*******************************************************************************
  * value_table
  *******************************************************************************/
 

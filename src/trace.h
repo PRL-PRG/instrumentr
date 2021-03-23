@@ -89,7 +89,7 @@ void instrumentr_trace_eval_exit(dyntracer_t* dyntracer,
 
 void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
                                                const SEXP symbol,
-                                               SEXP promise,
+                                               SEXP value,
                                                SEXP rho);
 
 void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object);

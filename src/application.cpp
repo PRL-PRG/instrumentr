@@ -27,7 +27,7 @@ void instrumentr_application_finalize(instrumentr_model_t model) {
     instrumentr_sexp_release(application->r_code);
     application->r_code = NULL;
 
-    instrumentr_model_release(application->environment);
+    instrumentr_environment_release(application->environment);
     application->environment = NULL;
 }
 
@@ -56,7 +56,7 @@ instrumentr_application_create(instrumentr_state_t state,
     instrumentr_sexp_acquire(application->r_code);
 
     application->environment = environment;
-    instrumentr_model_acquire(application->environment);
+    instrumentr_environment_acquire(application->environment);
 
     return application;
 }

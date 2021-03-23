@@ -51,7 +51,7 @@ void instrumentr_tracer_finalize(instrumentr_object_t object) {
     }
 
     if (tracer->application != NULL) {
-        instrumentr_model_kill(tracer->application);
+        instrumentr_application_kill(tracer->application);
         tracer->application = NULL;
     }
 
@@ -134,7 +134,7 @@ void instrumentr_tracer_initialize_tracing(instrumentr_tracer_t tracer,
 }
 
 SEXP instrumentr_tracer_finalize_tracing(instrumentr_tracer_t tracer) {
-    instrumentr_model_kill(tracer->application);
+    instrumentr_application_kill(tracer->application);
     tracer->application = NULL;
     SEXP r_result = PROTECT(instrumentr_state_finalize_tracing(tracer->state));
     instrumentr_object_release(tracer->state);

@@ -9,8 +9,7 @@
  *******************************************************************************/
 
 struct instrumentr_special_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
     int funtab_index;
 };
 
@@ -18,9 +17,8 @@ struct instrumentr_special_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_special_finalize(instrumentr_model_t model) {
-    instrumentr_special_t special = (instrumentr_special_t)(model);
-    special->r_sexp = NULL;
+void instrumentr_special_finalize(instrumentr_value_t value) {
+    instrumentr_special_t special = (instrumentr_special_t)(value);
     special->funtab_index = -1;
 }
 
@@ -30,15 +28,15 @@ void instrumentr_special_finalize(instrumentr_model_t model) {
 
 instrumentr_special_t instrumentr_special_create(instrumentr_state_t state,
                                                  SEXP r_sexp) {
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_special_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_SPECIAL,
+                                 INSTRUMENTR_VALUE_TYPE_SPECIAL,
                                  instrumentr_special_finalize,
-                                 INSTRUMENTR_ORIGIN_FOREIGN);
+                                 INSTRUMENTR_ORIGIN_FOREIGN,
+                                 r_sexp);
 
-    instrumentr_special_t special = (instrumentr_special_t)(model);
-    special->r_sexp = r_sexp;
+    instrumentr_special_t special = (instrumentr_special_t)(value);
     special->funtab_index = instrumentr_funtab_get_index(r_sexp);
     return special;
 }
@@ -47,7 +45,7 @@ instrumentr_special_t instrumentr_special_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(special, INSTRUMENTR_MODEL_TYPE_SPECIAL)
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_SPECIAL, special, special)
 
 /********************************************************************************
  * name
@@ -62,20 +60,6 @@ SEXP r_instrumentr_special_get_name(SEXP r_special) {
     instrumentr_special_t special = instrumentr_special_unwrap(r_special);
     const char* name = instrumentr_special_get_name(special);
     return instrumentr_c_string_to_r_character(name);
-}
-
-/********************************************************************************
- * definition
- *******************************************************************************/
-
-/* accessor  */
-SEXP instrumentr_special_get_sexp(instrumentr_special_t special) {
-    return special->r_sexp;
-}
-
-SEXP r_instrumentr_special_get_sexp(SEXP r_special) {
-    instrumentr_special_t special = instrumentr_special_unwrap(r_special);
-    return instrumentr_special_get_sexp(special);
 }
 
 /********************************************************************************

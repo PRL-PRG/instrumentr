@@ -14,9 +14,7 @@
  *******************************************************************************/
 
 struct instrumentr_closure_impl_t {
-    struct instrumentr_model_impl_t model;
-
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
     const char* name;
     int parameter_count;
     instrumentr_environment_t environment;
@@ -30,21 +28,19 @@ struct instrumentr_closure_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_closure_finalize(instrumentr_model_t model) {
-    instrumentr_closure_t closure = (instrumentr_closure_t)(model);
-
-    closure->r_sexp = NULL;
+void instrumentr_closure_finalize(instrumentr_value_t value) {
+    instrumentr_closure_t closure = (instrumentr_closure_t)(value);
 
     free((char*) (closure->name));
     closure->name = NULL;
 
     if (closure->environment != NULL) {
-        instrumentr_model_release(closure->environment);
+        instrumentr_environment_release(closure->environment);
         closure->environment = NULL;
     }
 
     if (closure->parent != NULL) {
-        instrumentr_model_release(closure->parent);
+        instrumentr_closure_release(closure->parent);
         closure->parent = NULL;
     }
 
@@ -59,16 +55,16 @@ void instrumentr_closure_finalize(instrumentr_model_t model) {
 
 instrumentr_closure_t instrumentr_closure_create(instrumentr_state_t state,
                                                  SEXP r_sexp) {
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_closure_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_CLOSURE,
+                                 INSTRUMENTR_VALUE_TYPE_CLOSURE,
                                  instrumentr_closure_finalize,
-                                 INSTRUMENTR_ORIGIN_FOREIGN);
+                                 INSTRUMENTR_ORIGIN_FOREIGN,
+                                 r_sexp);
 
-    instrumentr_closure_t closure = (instrumentr_closure_t)(model);
+    instrumentr_closure_t closure = (instrumentr_closure_t)(value);
 
-    closure->r_sexp = r_sexp;
     closure->exported = 0;
     closure->generic_name = NULL;
     closure->object_class = NULL;
@@ -90,21 +86,7 @@ instrumentr_closure_t instrumentr_closure_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(closure, INSTRUMENTR_MODEL_TYPE_CLOSURE)
-
-/********************************************************************************
- * sexp
- *******************************************************************************/
-
-/* accessor  */
-SEXP instrumentr_closure_get_sexp(instrumentr_closure_t closure) {
-    return closure->r_sexp;
-}
-
-SEXP r_instrumentr_closure_get_sexp(SEXP r_closure) {
-    instrumentr_closure_t closure = instrumentr_closure_unwrap(r_closure);
-    return instrumentr_closure_get_sexp(closure);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_CLOSURE, closure, closure)
 
 /********************************************************************************
  * name
@@ -141,14 +123,14 @@ void instrumentr_closure_set_name(instrumentr_closure_t closure,
  * environment
  *******************************************************************************/
 void instrumentr_closure_set_environment(instrumentr_closure_t closure) {
-    instrumentr_state_t state = instrumentr_model_get_state(closure);
+    instrumentr_state_t state = instrumentr_closure_get_state(closure);
 
-    SEXP r_environment = CLOENV(closure->r_sexp);
+    SEXP r_environment = CLOENV(instrumentr_closure_get_sexp(closure));
 
     closure->environment = instrumentr_state_value_table_lookup_environment(
         state, r_environment, 1);
 
-    instrumentr_model_acquire(closure->environment);
+    instrumentr_environment_acquire(closure->environment);
 
     instrumentr_environment_type_t environment_type =
         instrumentr_environment_get_type(closure->environment);
@@ -174,7 +156,7 @@ void instrumentr_closure_set_environment(instrumentr_closure_t closure) {
                 instrumentr_call_get_environment(call) ==
                     closure->environment) {
                 closure->parent = instrumentr_value_as_closure(call_fun);
-                instrumentr_model_acquire(closure->parent);
+                instrumentr_closure_acquire(closure->parent);
                 break;
             }
         }

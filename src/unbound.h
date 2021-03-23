@@ -2,7 +2,7 @@
 #define INSTRUMENTR_UNBOUND_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ instrumentr_unbound_t instrumentr_unbound_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(unbound, INSTRUMENTR_MODEL_TYPE_UNBOUND)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_UNBOUND, unbound, unbound)
 
 INSTRUMENTR_UNBOUND_API_MAP(INSTRUMENTR_API_INCLUDER)
 

@@ -81,14 +81,14 @@ SEXP r_instrumentr_call_stack_get_size(SEXP r_call_stack) {
 /* mutator  */
 void instrumentr_call_stack_push_frame(instrumentr_call_stack_t call_stack,
                                        instrumentr_frame_t frame) {
-    instrumentr_model_acquire(frame);
+    instrumentr_frame_acquire(frame);
     vec_push(&call_stack->frames, frame);
 }
 
 /* mutator  */
 void instrumentr_call_stack_pop_frame(instrumentr_call_stack_t call_stack) {
     instrumentr_frame_t frame = vec_pop(&call_stack->frames);
-    instrumentr_model_kill(frame);
+    instrumentr_frame_kill(frame);
 }
 
 /* accessor  */

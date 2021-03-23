@@ -271,14 +271,14 @@ instrumentr_call_t instrumentr_trace_call_entry(instrumentr_state_t state,
 
     instrumentr_frame_t frame = instrumentr_frame_create_from_call(state, call);
     /* NOTE: release call here because it is now owned by the stack frame */
-    instrumentr_model_release(call);
+    instrumentr_call_release(call);
 
     instrumentr_call_stack_t call_stack =
         instrumentr_state_get_call_stack(state);
 
     instrumentr_call_stack_push_frame(call_stack, frame);
 
-    instrumentr_model_release(frame);
+    instrumentr_frame_release(frame);
 
     return call;
 }
@@ -504,13 +504,13 @@ void instrumentr_trace_context_entry(dyntracer_t* dyntracer, void* pointer) {
 
     instrumentr_frame_t frame =
         instrumentr_frame_create_from_context(state, context);
-    instrumentr_model_release(context);
+    instrumentr_context_release(context);
 
     instrumentr_call_stack_t call_stack =
         instrumentr_state_get_call_stack(state);
 
     instrumentr_call_stack_push_frame(call_stack, frame);
-    instrumentr_model_release(frame);
+    instrumentr_frame_release(frame);
 
     TRACING_INVOKE_CALLBACK(
         INSTRUMENTR_EVENT_CONTEXT_ENTRY, context_entry_function_t, context);
@@ -668,7 +668,7 @@ void instrumentr_trace_promise_force_entry(dyntracer_t* dyntracer,
 
     instrumentr_call_stack_push_frame(call_stack, frame);
 
-    instrumentr_model_release(frame);
+    instrumentr_frame_release(frame);
 
     TRACING_INVOKE_CALLBACK(event, promise_force_entry_function_t, promise);
 
@@ -896,7 +896,7 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
 
 void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
                                                SEXP r_symbol,
-                                               SEXP r_promise,
+                                               SEXP r_value,
                                                SEXP r_rho) {
     instrumentr_event_t event = INSTRUMENTR_EVENT_FUNCTION_CONTEXT_LOOKUP;
 
@@ -904,22 +904,20 @@ void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    // TODO: remove after adding value_wrap
-    //instrumentr_value_t symval =
-    //    instrumentr_state_value_table_lookup(state, r_symbol, 1);
-    //instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
-    //
-    //instrumentr_value_t promval =
-    //    instrumentr_state_value_table_lookup(state, r_promise, 1);
-    //instrumentr_promise_t promise = instrumentr_value_as_promise(promval);
-    //
-    //instrumentr_value_t envval =
-    //    instrumentr_state_value_table_lookup(state, r_rho, 1);
-    //instrumentr_environment_t environment =
-    //    instrumentr_value_as_environment(envval);
-    //
-    //TRACING_INVOKE_CALLBACK(
-    //    event, function_context_lookup_function_t, symbol, promise, environment)
+    instrumentr_value_t symval =
+        instrumentr_state_value_table_lookup(state, r_symbol, 1);
+    instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
+
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_value, 1);
+
+    instrumentr_value_t envval =
+        instrumentr_state_value_table_lookup(state, r_rho, 1);
+    instrumentr_environment_t environment =
+        instrumentr_value_as_environment(envval);
+
+    TRACING_INVOKE_CALLBACK(
+        event, function_context_lookup_function_t, symbol, value, environment)
 
     TRACING_FINALIZE(event)
 }
@@ -928,6 +926,8 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
     instrumentr_event_t event = INSTRUMENTR_EVENT_GC_ALLOCATION;
 
     instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_value_t value = NULL;
 
     TRACING_INITIALIZE(event)
 

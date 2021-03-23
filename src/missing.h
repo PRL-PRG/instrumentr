@@ -2,26 +2,26 @@
 #define INSTRUMENTR_MISSING_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    /********************************************************************************
-     * create
-     *******************************************************************************/
+/********************************************************************************
+ * create
+ *******************************************************************************/
 
-    instrumentr_missing_t instrumentr_missing_create(instrumentr_state_t state,
-                                               SEXP r_missing);
+instrumentr_missing_t instrumentr_missing_create(instrumentr_state_t state,
+                                                 SEXP r_missing);
 
-    /********************************************************************************
-     * interop
-     *******************************************************************************/
+/********************************************************************************
+ * interop
+ *******************************************************************************/
 
-    INSTRUMENTR_MODEL_INTEROP_DECLARE_API(missing, INSTRUMENTR_MODEL_TYPE_MISSING)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_MISSING, missing, missing)
 
-    INSTRUMENTR_MISSING_API_MAP(INSTRUMENTR_API_INCLUDER)
+INSTRUMENTR_MISSING_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus
 }

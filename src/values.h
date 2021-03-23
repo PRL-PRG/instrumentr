@@ -1,0 +1,31 @@
+#ifndef INSTRUMENTR_VALUES_H
+#define INSTRUMENTR_VALUES_H
+
+#include "null.h"
+#include "symbol.h"
+#include "pairlist.h"
+#include "closure.h"
+#include "environment.h"
+#include "promise.h"
+#include "language.h"
+#include "special.h"
+#include "builtin.h"
+#include "char.h"
+#include "logical.h"
+#include "integer.h"
+#include "real.h"
+#include "complex.h"
+#include "character.h"
+#include "dot.h"
+#include "list.h"
+#include "expression.h"
+#include "bytecode.h"
+#include "externalptr.h"
+#include "weakref.h"
+#include "raw.h"
+#include "s4.h"
+#include "unbound.h"
+#include "missing.h"
+#include "miscellaneous.h"
+
+#endif /* INSTRUMENTR_VALUES_H */

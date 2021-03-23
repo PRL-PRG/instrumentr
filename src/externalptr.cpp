@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_externalptr_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_externalptr_finalize(instrumentr_model_t model) {
-    instrumentr_externalptr_t externalptr = (instrumentr_externalptr_t)(model);
-
-    externalptr->r_sexp = NULL;
+void instrumentr_externalptr_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -27,16 +23,15 @@ void instrumentr_externalptr_finalize(instrumentr_model_t model) {
 instrumentr_externalptr_t
 instrumentr_externalptr_create(instrumentr_state_t state, SEXP r_sexp) {
     /* TODO: make foreign for instrumentr externalptr */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_externalptr_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_EXTERNALPTR,
+                                 INSTRUMENTR_VALUE_TYPE_EXTERNALPTR,
                                  instrumentr_externalptr_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_externalptr_t externalptr = (instrumentr_externalptr_t)(model);
-
-    externalptr->r_sexp = r_sexp;
+    instrumentr_externalptr_t externalptr = (instrumentr_externalptr_t)(value);
 
     return externalptr;
 }
@@ -45,15 +40,6 @@ instrumentr_externalptr_create(instrumentr_state_t state, SEXP r_sexp) {
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(externalptr,
-                                     INSTRUMENTR_MODEL_TYPE_EXTERNALPTR)
-
-SEXP instrumentr_externalptr_get_sexp(instrumentr_externalptr_t externalptr) {
-    return externalptr->r_sexp;
-}
-
-SEXP r_instrumentr_externalptr_get_sexp(SEXP r_externalptr) {
-    instrumentr_externalptr_t externalptr =
-        instrumentr_externalptr_unwrap(r_externalptr);
-    return instrumentr_externalptr_get_sexp(externalptr);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_EXTERNALPTR,
+                             externalptr,
+                             externalptr)

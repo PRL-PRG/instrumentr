@@ -1,15 +1,14 @@
+#include "call.h"
 #include "promise.h"
 #include "interop.h"
 #include "utilities.h"
-#include "call.h"
 
 /********************************************************************************
  * definition
  *******************************************************************************/
 
 struct instrumentr_promise_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_promise;
+    struct instrumentr_value_impl_t value;
     instrumentr_promise_type_t type;
     std::vector<instrumentr_call_t>* calls;
 };
@@ -18,14 +17,12 @@ struct instrumentr_promise_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_promise_finalize(instrumentr_model_t model) {
-    instrumentr_promise_t promise = (instrumentr_promise_t)(model);
-
-    promise->r_promise = NULL;
+void instrumentr_promise_finalize(instrumentr_value_t value) {
+    instrumentr_promise_t promise = (instrumentr_promise_t)(value);
 
     if (promise->type != INSTRUMENTR_PROMISE_TYPE_UNKNOWN) {
         for (std::size_t i = 0; i < promise->calls->size(); ++i) {
-            instrumentr_model_release(promise->calls->at(i));
+            instrumentr_call_release(promise->calls->at(i));
         }
         delete promise->calls;
         promise->calls = NULL;
@@ -37,17 +34,16 @@ void instrumentr_promise_finalize(instrumentr_model_t model) {
  *******************************************************************************/
 
 instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
-                                                 SEXP r_promise) {
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+                                                 SEXP r_sexp) {
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_promise_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_PROMISE,
+                                 INSTRUMENTR_VALUE_TYPE_PROMISE,
                                  instrumentr_promise_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_promise_t promise = (instrumentr_promise_t)(model);
-
-    promise->r_promise = r_promise;
+    instrumentr_promise_t promise = (instrumentr_promise_t)(value);
 
     promise->type = INSTRUMENTR_PROMISE_TYPE_UNKNOWN;
     promise->calls = new std::vector<instrumentr_call_t>();
@@ -59,7 +55,7 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(promise, INSTRUMENTR_MODEL_TYPE_PROMISE)
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_PROMISE, promise, promise)
 
 /********************************************************************************
  * r_promise
@@ -67,7 +63,8 @@ INSTRUMENTR_MODEL_INTEROP_DEFINE_API(promise, INSTRUMENTR_MODEL_TYPE_PROMISE)
 
 /* accessor  */
 int instrumentr_promise_is_forced(instrumentr_promise_t promise) {
-    return PRVALUE(promise->r_promise) != R_UnboundValue;
+    SEXP r_sexp = instrumentr_promise_get_sexp(promise);
+    return PRVALUE(r_sexp) != R_UnboundValue;
 }
 
 SEXP r_instrumentr_promise_is_forced(SEXP r_promise) {
@@ -82,7 +79,8 @@ SEXP r_instrumentr_promise_is_forced(SEXP r_promise) {
 
 /* accessor  */
 SEXP instrumentr_promise_get_expression(instrumentr_promise_t promise) {
-    return PREXPR(promise->r_promise);
+    SEXP r_sexp = instrumentr_promise_get_sexp(promise);
+    return PREXPR(r_sexp);
 }
 
 SEXP r_instrumentr_promise_get_expression(SEXP r_promise) {
@@ -97,7 +95,7 @@ SEXP r_instrumentr_promise_get_expression(SEXP r_promise) {
 /* accessor  */
 SEXP instrumentr_promise_get_value(instrumentr_promise_t promise) {
     if (instrumentr_promise_is_forced(promise)) {
-        return PRVALUE(promise->r_promise);
+        return PRVALUE(instrumentr_promise_get_sexp(promise));
     } else {
         instrumentr_log_error("promise is not forced");
         /* NOTE: not executed */
@@ -163,7 +161,7 @@ void instrumentr_promise_add_call(instrumentr_promise_t promise,
 
     promise->calls->push_back(call);
 
-    instrumentr_model_acquire(call);
+    instrumentr_call_acquire(call);
 }
 
 /* accessor  */

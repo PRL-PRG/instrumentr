@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_integer_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_integer_finalize(instrumentr_model_t model) {
-    instrumentr_integer_t integer = (instrumentr_integer_t)(model);
-
-    integer->r_sexp = NULL;
+void instrumentr_integer_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -27,16 +23,15 @@ void instrumentr_integer_finalize(instrumentr_model_t model) {
 instrumentr_integer_t instrumentr_integer_create(instrumentr_state_t state,
                                                  SEXP r_sexp) {
     /* TODO: make foreign for instrumentr integer */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_integer_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_INTEGER,
+                                 INSTRUMENTR_VALUE_TYPE_INTEGER,
                                  instrumentr_integer_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_integer_t integer = (instrumentr_integer_t)(model);
-
-    integer->r_sexp = r_sexp;
+    instrumentr_integer_t integer = (instrumentr_integer_t)(value);
 
     return integer;
 }
@@ -45,19 +40,10 @@ instrumentr_integer_t instrumentr_integer_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(integer, INSTRUMENTR_MODEL_TYPE_INTEGER)
-
-SEXP instrumentr_integer_get_sexp(instrumentr_integer_t integer) {
-    return integer->r_sexp;
-}
-
-SEXP r_instrumentr_integer_get_sexp(SEXP r_integer) {
-    instrumentr_integer_t integer = instrumentr_integer_unwrap(r_integer);
-    return instrumentr_integer_get_sexp(integer);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_INTEGER, integer, integer)
 
 int instrumentr_integer_get_size(instrumentr_integer_t integer) {
-    return Rf_length(integer->r_sexp);
+    return Rf_length(instrumentr_integer_get_sexp(integer));
 }
 
 SEXP r_instrumentr_integer_get_size(SEXP r_integer) {
@@ -67,7 +53,7 @@ SEXP r_instrumentr_integer_get_size(SEXP r_integer) {
 }
 
 int instrumentr_integer_get_element(instrumentr_integer_t integer, int index) {
-    return INTEGER(integer->r_sexp)[index];
+    return INTEGER(instrumentr_integer_get_sexp(integer))[index];
 }
 
 SEXP r_instrumentr_integer_get_element(SEXP r_integer, SEXP r_index) {
@@ -78,7 +64,7 @@ SEXP r_instrumentr_integer_get_element(SEXP r_integer, SEXP r_index) {
 }
 
 bool instrumentr_integer_is_na(instrumentr_integer_t integer, int index) {
-    return INTEGER(integer->r_sexp)[index] == NA_INTEGER;
+    return INTEGER(instrumentr_integer_get_sexp(integer))[index] == NA_INTEGER;
 }
 
 SEXP r_instrumentr_integer_is_na(SEXP r_integer, SEXP r_index) {

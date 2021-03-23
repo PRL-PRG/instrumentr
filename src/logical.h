@@ -2,7 +2,7 @@
 #define INSTRUMENTR_LOGICAL_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ instrumentr_logical_t instrumentr_logical_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(logical, INSTRUMENTR_MODEL_TYPE_LOGICAL)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_LOGICAL, logical, logical)
 
 INSTRUMENTR_LOGICAL_API_MAP(INSTRUMENTR_API_INCLUDER)
 

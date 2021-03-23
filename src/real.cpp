@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_real_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_real_finalize(instrumentr_model_t model) {
-    instrumentr_real_t real = (instrumentr_real_t)(model);
-
-    real->r_sexp = NULL;
+void instrumentr_real_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -27,16 +23,15 @@ void instrumentr_real_finalize(instrumentr_model_t model) {
 instrumentr_real_t instrumentr_real_create(instrumentr_state_t state,
                                            SEXP r_sexp) {
     /* TODO: make foreign for instrumentr real */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_real_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_REAL,
+                                 INSTRUMENTR_VALUE_TYPE_REAL,
                                  instrumentr_real_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_real_t real = (instrumentr_real_t)(model);
-
-    real->r_sexp = r_sexp;
+    instrumentr_real_t real = (instrumentr_real_t)(value);
 
     return real;
 }
@@ -45,19 +40,10 @@ instrumentr_real_t instrumentr_real_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(real, INSTRUMENTR_MODEL_TYPE_REAL)
-
-SEXP instrumentr_real_get_sexp(instrumentr_real_t real) {
-    return real->r_sexp;
-}
-
-SEXP r_instrumentr_real_get_sexp(SEXP r_real) {
-    instrumentr_real_t real = instrumentr_real_unwrap(r_real);
-    return instrumentr_real_get_sexp(real);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_REAL, real, real)
 
 int instrumentr_real_get_size(instrumentr_real_t real) {
-    return Rf_length(real->r_sexp);
+    return Rf_length(instrumentr_real_get_sexp(real));
 }
 
 SEXP r_instrumentr_real_get_size(SEXP r_real) {
@@ -67,7 +53,7 @@ SEXP r_instrumentr_real_get_size(SEXP r_real) {
 }
 
 double instrumentr_real_get_element(instrumentr_real_t real, int index) {
-    return REAL_ELT(real->r_sexp, index);
+    return REAL_ELT(instrumentr_real_get_sexp(real), index);
 }
 
 SEXP r_instrumentr_real_get_element(SEXP r_real, SEXP r_index) {
@@ -78,7 +64,7 @@ SEXP r_instrumentr_real_get_element(SEXP r_real, SEXP r_index) {
 }
 
 bool instrumentr_real_is_na(instrumentr_real_t real, int index) {
-    return REAL_ELT(real->r_sexp, index) == NA_REAL;
+    return REAL_ELT(instrumentr_real_get_sexp(real), index) == NA_REAL;
 }
 
 SEXP r_instrumentr_real_is_na(SEXP r_real, SEXP r_index) {

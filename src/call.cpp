@@ -25,12 +25,12 @@ struct instrumentr_call_impl_t {
 void instrumentr_call_finalize(instrumentr_model_t model) {
     instrumentr_call_t call = (instrumentr_call_t)(model);
 
-    instrumentr_model_release(call->function.model);
-    call->function.model = NULL;
+    instrumentr_value_release(call->function);
+    call->function = NULL;
 
     call->r_expression = NULL;
 
-    instrumentr_model_release(call->environment);
+    instrumentr_environment_release(call->environment);
     call->environment = NULL;
 
     call->r_result = NULL;
@@ -213,14 +213,14 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
     instrumentr_call_t call = (instrumentr_call_t)(model);
 
     call->function = function;
-    instrumentr_model_acquire(call->function.model);
+    instrumentr_value_acquire(call->function);
 
     call->r_expression = r_expression;
 
     call->environment = instrumentr_state_value_table_lookup_environment(
         state, r_environment, 1);
 
-    instrumentr_model_acquire(call->environment);
+    instrumentr_environment_acquire(call->environment);
 
     return call;
 }
@@ -243,7 +243,7 @@ instrumentr_value_t instrumentr_call_get_function(instrumentr_call_t call) {
 SEXP r_instrumentr_call_get_function(SEXP r_call) {
     instrumentr_call_t call = instrumentr_call_unwrap(r_call);
     instrumentr_value_t function = instrumentr_call_get_function(call);
-    return instrumentr_model_wrap(function.model);
+    return instrumentr_value_wrap(function);
 }
 
 /********************************************************************************

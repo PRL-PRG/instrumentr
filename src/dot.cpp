@@ -8,18 +8,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_dot_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_dot_finalize(instrumentr_model_t model) {
-    instrumentr_dot_t dot = (instrumentr_dot_t)(model);
-
-    dot->r_sexp = NULL;
+void instrumentr_dot_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -29,16 +25,15 @@ void instrumentr_dot_finalize(instrumentr_model_t model) {
 instrumentr_dot_t instrumentr_dot_create(instrumentr_state_t state,
                                          SEXP r_sexp) {
     /* TODO: make foreign for instrumentr dot */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_dot_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_DOT,
+                                 INSTRUMENTR_VALUE_TYPE_DOT,
                                  instrumentr_dot_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_dot_t dot = (instrumentr_dot_t)(model);
-
-    dot->r_sexp = r_sexp;
+    instrumentr_dot_t dot = (instrumentr_dot_t)(value);
 
     return dot;
 }
@@ -47,31 +42,27 @@ instrumentr_dot_t instrumentr_dot_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(dot, INSTRUMENTR_MODEL_TYPE_DOT)
-
-SEXP instrumentr_dot_get_sexp(instrumentr_dot_t dot) {
-    return dot->r_sexp;
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_DOT, dot, dot)
 
 int instrumentr_dot_get_length(instrumentr_dot_t dot) {
-    return Rf_length(dot->r_sexp);
+    return Rf_length(instrumentr_dot_get_sexp(dot));
 }
 
 instrumentr_value_t instrumentr_dot_get_car(instrumentr_dot_t dot) {
-    SEXP result = CAR(dot->r_sexp);
-    instrumentr_state_t state = instrumentr_model_get_state(result);
+    SEXP result = CAR(instrumentr_dot_get_sexp(dot));
+    instrumentr_state_t state = instrumentr_dot_get_state(dot);
     return instrumentr_state_value_table_lookup(state, result, 1);
 }
 
 instrumentr_value_t instrumentr_dot_get_cdr(instrumentr_dot_t dot) {
-    SEXP result = CDR(dot->r_sexp);
-    instrumentr_state_t state = instrumentr_model_get_state(result);
+    SEXP result = CDR(instrumentr_dot_get_sexp(dot));
+    instrumentr_state_t state = instrumentr_dot_get_state(dot);
     return instrumentr_state_value_table_lookup(state, result, 1);
 }
 
 instrumentr_value_t instrumentr_dot_get_tag(instrumentr_dot_t dot) {
-    SEXP result = TAG(dot->r_sexp);
-    instrumentr_state_t state = instrumentr_model_get_state(result);
+    SEXP result = TAG(instrumentr_dot_get_sexp(dot));
+    instrumentr_state_t state = instrumentr_dot_get_state(dot);
     return instrumentr_state_value_table_lookup(state, result, 1);
 }
 
@@ -79,9 +70,9 @@ instrumentr_value_t instrumentr_dot_get_element(instrumentr_dot_t dot,
                                                 int index) {
     int i = 0;
     SEXP result = R_NilValue;
-    instrumentr_state_t state = instrumentr_model_get_state(dot);
+    instrumentr_state_t state = instrumentr_dot_get_state(dot);
 
-    for (i = 0, result = dot->r_sexp; result != R_NilValue;
+    for (i = 0, result = instrumentr_dot_get_sexp(dot); result != R_NilValue;
          result = CDR(result), ++i) {
         if (i == index) {
             return instrumentr_state_value_table_lookup(state, result, 1);
@@ -93,5 +84,5 @@ instrumentr_value_t instrumentr_dot_get_element(instrumentr_dot_t dot,
         index,
         instrumentr_dot_get_length(dot));
 
-    return instrumentr_value_create(state, R_NilValue);
+    return instrumentr_state_value_table_lookup(state, R_NilValue, 1);
 }

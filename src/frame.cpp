@@ -23,7 +23,8 @@ void instrumentr_frame_finalize(instrumentr_model_t model) {
 
     /* do not kill promise as it is owned by state */
     switch (instrumentr_model_get_type(frame->kernel)) {
-    case INSTRUMENTR_MODEL_TYPE_PROMISE:
+    case INSTRUMENTR_MODEL_TYPE_VALUE:
+        /* this means it is a promise */
         instrumentr_model_release(frame->kernel);
         break;
 
@@ -126,7 +127,7 @@ SEXP r_instrumentr_frame_as_call(SEXP r_frame) {
 /* accessor  */
 int instrumentr_frame_is_promise(instrumentr_frame_t frame) {
     return instrumentr_model_get_type(frame->kernel) ==
-           INSTRUMENTR_MODEL_TYPE_PROMISE;
+           INSTRUMENTR_MODEL_TYPE_VALUE;
 }
 
 SEXP r_instrumentr_frame_is_promise(SEXP r_frame) {

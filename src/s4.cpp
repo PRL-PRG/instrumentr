@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_s4_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_s4_finalize(instrumentr_model_t model) {
-    instrumentr_s4_t s4 = (instrumentr_s4_t)(model);
-
-    s4->r_sexp = NULL;
+void instrumentr_s4_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -26,16 +22,15 @@ void instrumentr_s4_finalize(instrumentr_model_t model) {
 
 instrumentr_s4_t instrumentr_s4_create(instrumentr_state_t state, SEXP r_sexp) {
     /* TODO: make foreign for instrumentr s4 */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_s4_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_S4,
+                                 INSTRUMENTR_VALUE_TYPE_S4,
                                  instrumentr_s4_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_s4_t s4 = (instrumentr_s4_t)(model);
-
-    s4->r_sexp = r_sexp;
+    instrumentr_s4_t s4 = (instrumentr_s4_t)(value);
 
     return s4;
 }
@@ -44,13 +39,4 @@ instrumentr_s4_t instrumentr_s4_create(instrumentr_state_t state, SEXP r_sexp) {
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(s4, INSTRUMENTR_MODEL_TYPE_S4)
-
-SEXP instrumentr_s4_get_sexp(instrumentr_s4_t s4) {
-    return s4->r_sexp;
-}
-
-SEXP r_instrumentr_s4_get_sexp(SEXP r_s4) {
-    instrumentr_s4_t s4 = instrumentr_s4_unwrap(r_s4);
-    return instrumentr_s4_get_sexp(s4);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_S4, s4, s4)

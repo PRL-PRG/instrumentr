@@ -1,205 +1,250 @@
 #include "value.h"
 #include "interop.h"
 #include "utilities.h"
-#include "unbound.h"
-#include "missing.h"
-#include "null.h"
-#include "externalptr.h"
-#include "weakref.h"
-#include "bytecode.h"
-#include "s4.h"
-#include "char.h"
-#include "symbol.h"
-#include "character.h"
-#include "integer.h"
-#include "real.h"
-#include "logical.h"
-#include "complex.h"
-#include "raw.h"
-#include "builtin.h"
-#include "special.h"
-#include "closure.h"
-#include "environment.h"
-#include "miscellaneous.h"
-#include "promise.h"
-#include "language.h"
-#include "dot.h"
-#include "pairlist.h"
-#include "list.h"
-#include "expression.h"
+#include "state.h"
+#include "alloc_stats.h"
+#include "value_type.h"
+#include "model.h"
 
-/********************************************************************************
+/*******************************************************************************
+ * finalize
+ *******************************************************************************/
+
+void instrumentr_value_finalize(instrumentr_model_t model) {
+    instrumentr_value_t value = (instrumentr_value_t)(model);
+    /* NOTE: we don't overwrite the type field because it is read by model when
+     * freeing the object to update alloc_stats. */
+    value->r_sexp = NULL;
+
+    value->finalizer(value);
+}
+
+/*******************************************************************************
  * create
  *******************************************************************************/
 
-instrumentr_value_t instrumentr_value_create(instrumentr_state_t state,
-                                             SEXP r_object) {
-    instrumentr_model_t model = NULL;
+instrumentr_value_t
+instrumentr_value_create(instrumentr_state_t state,
+                         int size,
+                         instrumentr_value_type_t type,
+                         instrumentr_value_finalizer_t finalizer,
+                         instrumentr_origin_t origin,
+                         SEXP r_sexp) {
+    instrumentr_model_t model =
+        instrumentr_model_create(state,
+                                 size,
+                                 INSTRUMENTR_MODEL_TYPE_VALUE,
+                                 instrumentr_value_finalize,
+                                 origin);
 
-    if (r_object == R_UnboundValue) {
-        model =
-            (instrumentr_model_t) instrumentr_unbound_create(state, r_object);
-    }
+    instrumentr_value_t value = (instrumentr_value_t)(model);
 
-    else if (r_object == R_MissingArg) {
-        model =
-            (instrumentr_model_t) instrumentr_missing_create(state, r_object);
-    }
+    value->type = type;
+    value->r_sexp = r_sexp;
+    value->finalizer = finalizer;
 
-    else if (TYPEOF(r_object) == NILSXP) {
-        model = (instrumentr_model_t) instrumentr_null_create(state, r_object);
-    }
+    instrumentr_alloc_stats_t alloc_stats =
+        instrumentr_state_get_alloc_stats(state);
+    instrumentr_alloc_stats_increment_allocated_count(alloc_stats, value->type);
+    instrumentr_alloc_stats_set_value_size(alloc_stats, value->type, size);
 
-    else if (TYPEOF(r_object) == EXTPTRSXP) {
-        model = (instrumentr_model_t) instrumentr_externalptr_create(state,
-                                                                     r_object);
-    }
-
-    else if (TYPEOF(r_object) == WEAKREFSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_weakref_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == BCODESXP) {
-        model =
-            (instrumentr_model_t) instrumentr_bytecode_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == S4SXP) {
-        model = (instrumentr_model_t) instrumentr_s4_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CHARSXP) {
-        model = (instrumentr_model_t) instrumentr_char_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == SYMSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_symbol_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == STRSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_character_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == PROMSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_promise_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CLOSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_closure_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == SPECIALSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_special_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == BUILTINSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_builtin_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == ENVSXP) {
-        model = (instrumentr_model_t) instrumentr_environment_create(state,
-                                                                     r_object);
-    }
-
-    else if (TYPEOF(r_object) == INTSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_integer_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == REALSXP) {
-        model = (instrumentr_model_t) instrumentr_real_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == LGLSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_logical_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == CPLXSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_complex_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == RAWSXP) {
-        model = (instrumentr_model_t) instrumentr_raw_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == LANGSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_language_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == DOTSXP) {
-        model = (instrumentr_model_t) instrumentr_dot_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == LISTSXP) {
-        model =
-            (instrumentr_model_t) instrumentr_pairlist_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == VECSXP) {
-        model = (instrumentr_model_t) instrumentr_list_create(state, r_object);
-    }
-
-    else if (TYPEOF(r_object) == EXPRSXP) {
-        model = (instrumentr_model_t) instrumentr_expression_create(state,
-                                                                    r_object);
-    }
-
-    else {
-        model = (instrumentr_model_t) instrumentr_miscellaneous_create(
-            state, r_object);
-    }
-
-    instrumentr_value_t value;
-    value.model = model;
     return value;
 }
 
+/*******************************************************************************
+ * destroy
+ *******************************************************************************/
+
+// void instrumentr_value_destroy(instrumentr_value_t value) {
+//    /* if value is not killed before */
+//    if (value->finalizer != NULL) {
+//        instrumentr_value_finalize(value);
+//    }
+//
+//    instrumentr_object_release(value->state);
+//    value->state = NULL;
+//    free(value);
+//}
+
 /********************************************************************************
+ * interop
+ *******************************************************************************/
+
+void r_instrumentr_value_release(SEXP r_value) {
+    r_instrumentr_model_release(r_value);
+}
+
+SEXP instrumentr_value_wrap(instrumentr_value_t value) {
+    if (value == NULL) {
+        instrumentr_log_error("cannot wrap NULL value object");
+    }
+
+    SEXP r_value = instrumentr_c_pointer_to_r_externalptr(
+        (void*) value, R_NilValue, R_NilValue, r_instrumentr_value_release);
+    PROTECT(r_value);
+    instrumentr_value_acquire(value);
+    instrumentr_sexp_set_class(r_value,
+                               instrumentr_value_type_get_class(value->type));
+    UNPROTECT(1);
+    return r_value;
+}
+
+instrumentr_value_t instrumentr_value_unwrap(SEXP r_value,
+                                             instrumentr_value_type_t type) {
+    instrumentr_value_t value =
+        (instrumentr_value_t) instrumentr_r_externalptr_to_c_pointer(r_value);
+    if (type == INSTRUMENTR_VALUE_TYPE_COUNT || value->type == type) {
+        return value;
+    } else {
+        instrumentr_log_error(
+            "cannot unwrap %d value as %d value", value->type, type);
+        /* NOTE: not executed  */
+        return NULL;
+    }
+}
+
+/*******************************************************************************
+ * reference_count
+ *******************************************************************************/
+
+/* mutator  */
+int instrumentr_value_acquire(instrumentr_value_t value) {
+    return instrumentr_model_acquire((instrumentr_model_t) value);
+}
+
+/* mutator  */
+int instrumentr_value_release(instrumentr_value_t value) {
+    return instrumentr_model_release((instrumentr_model_t) value);
+}
+
+int instrumentr_value_kill(instrumentr_value_t value) {
+    return instrumentr_model_kill((instrumentr_model_t) value);
+}
+
+int instrumentr_value_get_reference_count(instrumentr_value_t value) {
+    return instrumentr_model_get_reference_count((instrumentr_model_t) value);
+}
+
+SEXP r_instrumentr_value_get_reference_count(SEXP r_value) {
+    return r_instrumentr_model_get_reference_count(r_value);
+}
+
+/*******************************************************************************
+ * id
+ *******************************************************************************/
+
+/* accessor */
+instrumentr_id_t instrumentr_value_get_id(instrumentr_value_t value) {
+    return instrumentr_model_get_id((instrumentr_model_t)(value));
+}
+
+SEXP r_instrumentr_value_get_id(SEXP r_value) {
+    return r_instrumentr_model_get_id(r_value);
+}
+
+/*******************************************************************************
  * type
  *******************************************************************************/
 
-instrumentr_model_type_t instrumentr_value_get_type(instrumentr_value_t value) {
-    return instrumentr_model_get_type(value.model);
+instrumentr_value_type_t instrumentr_value_get_type(instrumentr_value_t value) {
+    return value->type;
 }
 
-#define INSTRUMENTR_VALUE_DEFINE_API(MODEL_TYPE, MODEL_NAME)            \
-    bool instrumentr_value_is_##MODEL_NAME(instrumentr_value_t value) { \
-        return instrumentr_model_get_type(value.model) == MODEL_TYPE;   \
-    }                                                                   \
-                                                                        \
-    instrumentr_##MODEL_NAME##_t instrumentr_value_as_##MODEL_NAME(     \
-        instrumentr_value_t value) {                                    \
-        return (instrumentr_##MODEL_NAME##_t)(value.model);             \
-    }
+/*******************************************************************************
+ * time
+ *******************************************************************************/
 
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_APPLICATION, application)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_UNBOUND, unbound)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_MISSING, missing)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_NULL, null)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_EXTERNALPTR, externalptr)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_WEAKREF, weakref)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_BYTECODE, bytecode)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_S4, s4)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_CHAR, char)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_SYMBOL, symbol)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_CHARACTER, character)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_INTEGER, integer)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_REAL, real)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_LOGICAL, logical)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_COMPLEX, complex)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_RAW, raw)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_ENVIRONMENT, environment)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_BUILTIN, builtin)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_SPECIAL, special)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_CLOSURE, closure)
-INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_MODEL_TYPE_PROMISE, promise)
+/* accessor */
+int instrumentr_value_get_birth_time(instrumentr_value_t value) {
+    return instrumentr_model_get_birth_time((instrumentr_model_t)(value));
+}
+
+SEXP r_instrumentr_value_get_birth_time(SEXP r_value) {
+    return r_instrumentr_model_get_birth_time(r_value);
+}
+
+/* accessor */
+int instrumentr_value_get_death_time(instrumentr_value_t value) {
+    return instrumentr_model_get_death_time((instrumentr_model_t)(value));
+}
+
+SEXP r_instrumentr_value_get_death_time(SEXP r_value) {
+    return r_instrumentr_model_get_death_time(r_value);
+}
+
+/* accessor */
+int instrumentr_value_get_life_time(instrumentr_value_t value) {
+    return instrumentr_model_get_life_time((instrumentr_model_t)(value));
+}
+
+SEXP r_instrumentr_value_get_life_time(SEXP r_value) {
+    return r_instrumentr_model_get_life_time(r_value);
+}
+
+/*******************************************************************************
+ * alive
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_value_is_alive(instrumentr_value_t value) {
+    return instrumentr_model_is_alive((instrumentr_model_t) value);
+}
+
+SEXP r_instrumentr_value_is_alive(SEXP r_value) {
+    return r_instrumentr_model_is_alive(r_value);
+}
+
+/* accessor */
+int instrumentr_value_is_dead(instrumentr_value_t value) {
+    return instrumentr_model_is_dead((instrumentr_model_t) value);
+}
+
+SEXP r_instrumentr_value_is_dead(SEXP r_value) {
+    return r_instrumentr_model_is_dead(r_value);
+}
+
+/*******************************************************************************
+ * origin
+ *******************************************************************************/
+
+/* accessor */
+int instrumentr_value_is_local(instrumentr_value_t value) {
+    return instrumentr_model_is_local((instrumentr_model_t) value);
+}
+
+SEXP r_instrumentr_value_is_local(SEXP r_value) {
+    return r_instrumentr_model_is_local(r_value);
+}
+
+/* accessor */
+int instrumentr_value_is_foreign(instrumentr_value_t value) {
+    return instrumentr_model_is_foreign((instrumentr_model_t) value);
+}
+
+SEXP r_instrumentr_value_is_foreign(SEXP r_value) {
+    return r_instrumentr_model_is_foreign(r_value);
+}
+
+/*******************************************************************************
+ * state
+ *******************************************************************************/
+
+/* accessor */
+instrumentr_state_t instrumentr_value_get_state(instrumentr_value_t value) {
+    return instrumentr_model_get_state((instrumentr_model_t) value);
+}
+
+/*******************************************************************************
+ * r_sexp
+ *******************************************************************************/
+
+/* accessor */
+SEXP instrumentr_value_get_sexp(instrumentr_value_t value) {
+    return value->r_sexp;
+}
+
+SEXP r_instrumentr_value_get_sexp(SEXP r_value) {
+    instrumentr_value_t value =
+        instrumentr_value_unwrap(r_value, INSTRUMENTR_VALUE_TYPE_COUNT);
+    return instrumentr_value_get_sexp(value);
+}

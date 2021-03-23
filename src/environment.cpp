@@ -10,9 +10,8 @@
  * definition
  *******************************************************************************/
 struct instrumentr_environment_impl_t {
-    struct instrumentr_model_impl_t model;
+    struct instrumentr_value_impl_t value;
     instrumentr_environment_type_t type;
-    SEXP r_sexp;
     const char* name;
     std::unordered_map<std::string, instrumentr_closure_t>* bindings;
 };
@@ -21,10 +20,9 @@ struct instrumentr_environment_impl_t {
  * finalize
  *******************************************************************************/
 
-void instrumentr_environment_finalize(instrumentr_model_t model) {
-    instrumentr_environment_t environment = (instrumentr_environment_t)(model);
+void instrumentr_environment_finalize(instrumentr_value_t value) {
+    instrumentr_environment_t environment = (instrumentr_environment_t)(value);
 
-    environment->r_sexp = NULL;
     free((char*) (environment->name));
     instrumentr_environment_clear(environment);
     delete environment->bindings;
@@ -37,31 +35,21 @@ void instrumentr_environment_finalize(instrumentr_model_t model) {
 instrumentr_environment_t
 instrumentr_environment_create(instrumentr_state_t state, SEXP r_sexp) {
     /* TODO: make foreign for instrumentr environment */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_environment_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_ENVIRONMENT,
+                                 INSTRUMENTR_VALUE_TYPE_ENVIRONMENT,
                                  instrumentr_environment_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_environment_t environment = (instrumentr_environment_t)(model);
+    instrumentr_environment_t environment = (instrumentr_environment_t)(value);
 
     environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_UNKNOWN;
     environment->name = NULL;
 
-    environment->r_sexp = r_sexp;
-
     environment->bindings =
         new std::unordered_map<std::string, instrumentr_closure_t>();
-
-    // for base env
-    // if (strcmp(name, "base") == 0) {
-    //    int funtab_size = instrumentr_funtab_get_size();
-    //    for (int i = 0; i < funtab_size; ++i) {
-    //        vec_push(&environment->basic_closures,
-    //                 instrumentr_funtab_create_closure(state, i));
-    //    }
-    //}
 
     return environment;
 }
@@ -70,8 +58,9 @@ instrumentr_environment_create(instrumentr_state_t state, SEXP r_sexp) {
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(environment,
-                                     INSTRUMENTR_MODEL_TYPE_ENVIRONMENT)
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_ENVIRONMENT,
+                             environment,
+                             environment)
 
 /********************************************************************************
  * type
@@ -114,21 +103,6 @@ void instrumentr_environment_set_name(instrumentr_environment_t environment,
 }
 
 /********************************************************************************
- * r_namespace
- *******************************************************************************/
-
-/* accessor  */
-SEXP instrumentr_environment_get_sexp(instrumentr_environment_t environment) {
-    return environment->r_sexp;
-}
-
-SEXP r_instrumentr_environment_get_sexp(SEXP r_environment) {
-    instrumentr_environment_t environment =
-        instrumentr_environment_unwrap(r_environment);
-    return instrumentr_environment_get_sexp(environment);
-}
-
-/********************************************************************************
  * closures
  *******************************************************************************/
 
@@ -153,7 +127,7 @@ instrumentr_environment_lookup(instrumentr_environment_t environment,
     if (iter == environment->bindings->end()) {
         instrumentr_log_error("cannot find closure %s in environment %p",
                               name,
-                              environment->r_sexp);
+                              instrumentr_environment_get_sexp(environment));
     }
 
     return iter->second;
@@ -200,10 +174,10 @@ void instrumentr_environment_insert(instrumentr_environment_t environment,
         instrumentr_log_error(
             "binding with name %s already exists in environment %p",
             name,
-            environment->r_sexp);
+            instrumentr_environment_get_sexp(environment));
     }
 
-    instrumentr_model_acquire(closure);
+    instrumentr_closure_acquire(closure);
 }
 
 /* accessor  */
@@ -246,7 +220,7 @@ void instrumentr_environment_clear(instrumentr_environment_t environment) {
          iter != environment->bindings->end();
          ++iter) {
         instrumentr_closure_t closure = iter->second;
-        instrumentr_model_release(closure);
+        instrumentr_closure_release(closure);
     }
 
     environment->bindings->clear();

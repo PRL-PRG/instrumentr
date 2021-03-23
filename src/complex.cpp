@@ -6,18 +6,14 @@
  * definition
  *******************************************************************************/
 struct instrumentr_complex_impl_t {
-    struct instrumentr_model_impl_t model;
-    SEXP r_sexp;
+    struct instrumentr_value_impl_t value;
 };
 
 /********************************************************************************
  * finalize
  *******************************************************************************/
 
-void instrumentr_complex_finalize(instrumentr_model_t model) {
-    instrumentr_complex_t complex = (instrumentr_complex_t)(model);
-
-    complex->r_sexp = NULL;
+void instrumentr_complex_finalize(instrumentr_value_t value) {
 }
 
 /********************************************************************************
@@ -27,16 +23,15 @@ void instrumentr_complex_finalize(instrumentr_model_t model) {
 instrumentr_complex_t instrumentr_complex_create(instrumentr_state_t state,
                                                  SEXP r_sexp) {
     /* TODO: make foreign for instrumentr complex */
-    instrumentr_model_t model =
-        instrumentr_model_create(state,
+    instrumentr_value_t value =
+        instrumentr_value_create(state,
                                  sizeof(struct instrumentr_complex_impl_t),
-                                 INSTRUMENTR_MODEL_TYPE_COMPLEX,
+                                 INSTRUMENTR_VALUE_TYPE_COMPLEX,
                                  instrumentr_complex_finalize,
-                                 INSTRUMENTR_ORIGIN_LOCAL);
+                                 INSTRUMENTR_ORIGIN_LOCAL,
+                                 r_sexp);
 
-    instrumentr_complex_t complex = (instrumentr_complex_t)(model);
-
-    complex->r_sexp = r_sexp;
+    instrumentr_complex_t complex = (instrumentr_complex_t)(value);
 
     return complex;
 }
@@ -45,19 +40,10 @@ instrumentr_complex_t instrumentr_complex_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(complex, INSTRUMENTR_MODEL_TYPE_COMPLEX)
-
-SEXP instrumentr_complex_get_sexp(instrumentr_complex_t complex) {
-    return complex->r_sexp;
-}
-
-SEXP r_instrumentr_complex_get_sexp(SEXP r_complex) {
-    instrumentr_complex_t complex = instrumentr_complex_unwrap(r_complex);
-    return instrumentr_complex_get_sexp(complex);
-}
+INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_COMPLEX, complex, complex)
 
 int instrumentr_complex_get_size(instrumentr_complex_t complex) {
-    return Rf_length(complex->r_sexp);
+    return Rf_length(instrumentr_complex_get_sexp(complex));
 }
 
 SEXP r_instrumentr_complex_get_size(SEXP r_complex) {
@@ -68,7 +54,7 @@ SEXP r_instrumentr_complex_get_size(SEXP r_complex) {
 
 Rcomplex instrumentr_complex_get_element(instrumentr_complex_t complex,
                                          int index) {
-    return COMPLEX_ELT(complex->r_sexp, index);
+    return COMPLEX_ELT(instrumentr_complex_get_sexp(complex), index);
 }
 
 SEXP r_instrumentr_complex_get_element(SEXP r_complex, SEXP r_index) {
@@ -79,7 +65,7 @@ SEXP r_instrumentr_complex_get_element(SEXP r_complex, SEXP r_index) {
 }
 
 bool instrumentr_complex_is_na(instrumentr_complex_t complex, int index) {
-    Rcomplex result = COMPLEX_ELT(complex->r_sexp, index);
+    Rcomplex result = COMPLEX_ELT(instrumentr_complex_get_sexp(complex), index);
     return result.r == NA_REAL && result.i == NA_REAL;
 }
 

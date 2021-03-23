@@ -2,7 +2,7 @@
 #define INSTRUMENTR_MISCELLANEOUS_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,8 +20,9 @@ instrumentr_miscellaneous_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(miscellaneous,
-                                      INSTRUMENTR_MODEL_TYPE_MISCELLANEOUS)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_MISCELLANEOUS,
+                              miscellaneous,
+                              miscellaneous)
 
 INSTRUMENTR_MISCELLANEOUS_API_MAP(INSTRUMENTR_API_INCLUDER)
 

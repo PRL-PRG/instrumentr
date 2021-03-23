@@ -2,7 +2,7 @@
 #define INSTRUMENTR_S4_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,7 +18,7 @@ instrumentr_s4_t instrumentr_s4_create(instrumentr_state_t state, SEXP r_s4);
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(s4, INSTRUMENTR_MODEL_TYPE_S4)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_S4, s4, s4)
 
 INSTRUMENTR_S4_API_MAP(INSTRUMENTR_API_INCLUDER)
 

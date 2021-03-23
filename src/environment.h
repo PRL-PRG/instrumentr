@@ -2,7 +2,7 @@
 #define INSTRUMENTR_ENVIRONMENT_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 #include <unordered_map>
 
 #ifdef __cplusplus
@@ -20,8 +20,9 @@ instrumentr_environment_create(instrumentr_state_t state, SEXP r_environment);
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(environment,
-                                      INSTRUMENTR_MODEL_TYPE_ENVIRONMENT)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_ENVIRONMENT,
+                              environment,
+                              environment)
 
 /********************************************************************************
  * type

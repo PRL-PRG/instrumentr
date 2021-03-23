@@ -2,7 +2,7 @@
 #define INSTRUMENTR_EXPRESSION_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,8 +19,9 @@ instrumentr_expression_create(instrumentr_state_t state, SEXP r_expression);
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(expression,
-                                      INSTRUMENTR_MODEL_TYPE_EXPRESSION)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_EXPRESSION,
+                              expression,
+                              expression)
 
 INSTRUMENTR_EXPRESSION_API_MAP(INSTRUMENTR_API_INCLUDER)
 

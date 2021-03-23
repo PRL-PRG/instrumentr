@@ -2,7 +2,7 @@
 #define INSTRUMENTR_LANGUAGE_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,9 @@ instrumentr_language_t instrumentr_language_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(language, INSTRUMENTR_MODEL_TYPE_LANGUAGE)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_LANGUAGE,
+                              language,
+                              language)
 
 INSTRUMENTR_LANGUAGE_API_MAP(INSTRUMENTR_API_INCLUDER)
 

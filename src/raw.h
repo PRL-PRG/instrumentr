@@ -2,7 +2,7 @@
 #define INSTRUMENTR_RAW_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,7 +18,7 @@ instrumentr_raw_t instrumentr_raw_create(instrumentr_state_t state, SEXP r_raw);
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(raw, INSTRUMENTR_MODEL_TYPE_RAW)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_RAW, raw, raw)
 
 INSTRUMENTR_RAW_API_MAP(INSTRUMENTR_API_INCLUDER)
 

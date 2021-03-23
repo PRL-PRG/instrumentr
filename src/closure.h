@@ -2,7 +2,7 @@
 #define INSTRUMENTR_CLOSURE_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,13 +19,13 @@ instrumentr_closure_t instrumentr_closure_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(closure, INSTRUMENTR_MODEL_TYPE_CLOSURE)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_CLOSURE, closure, closure)
 
 /********************************************************************************
  * type
  *******************************************************************************/
 
-/* TODO add R funciton for get type. Add a type table similar to model_type */
+/* TODO add R funciton for get type. Add a type table similar to value_type */
 
 void instrumentr_closure_set_name(instrumentr_closure_t closure,
                                   const char* name);

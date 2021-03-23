@@ -2,7 +2,7 @@
 #define INSTRUMENTR_LIST_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ instrumentr_list_t instrumentr_list_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(list, INSTRUMENTR_MODEL_TYPE_LIST)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_LIST, list, list)
 
 INSTRUMENTR_LIST_API_MAP(INSTRUMENTR_API_INCLUDER)
 

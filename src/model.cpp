@@ -2,8 +2,9 @@
 #include "interop.h"
 #include "utilities.h"
 #include "state.h"
-#include "alloc_stats.h"
 #include "model_type.h"
+#include "value.h"
+#include "alloc_stats.h"
 
 /*******************************************************************************
  * create
@@ -30,11 +31,6 @@ instrumentr_model_create(instrumentr_state_t state,
     model->state = state;
     instrumentr_object_acquire(state);
 
-    instrumentr_alloc_stats_t alloc_stats =
-        instrumentr_state_get_alloc_stats(state);
-    instrumentr_alloc_stats_increment_allocated_count(alloc_stats, model->type);
-    instrumentr_alloc_stats_set_model_size(alloc_stats, model->type, size);
-
     return model;
 }
 
@@ -42,20 +38,24 @@ instrumentr_model_create(instrumentr_state_t state,
  * finalize
  *******************************************************************************/
 
-void instrumentr_model_finalize(void* model) {
-    instrumentr_model_t mod = (instrumentr_model_t)(model);
-
-    if (mod->finalizer == NULL) {
+void instrumentr_model_finalize(instrumentr_model_t model) {
+    if (model->finalizer == NULL) {
         Rf_error("attempt to finalize already finalized model");
     }
-    mod->finalizer(mod);
-    mod->finalizer = NULL;
-    /* this is the point where the model's kernel is deleted */
-    mod->death_time = instrumentr_state_get_time(mod->state);
 
-    instrumentr_alloc_stats_t alloc_stats =
-        instrumentr_state_get_alloc_stats(mod->state);
-    instrumentr_alloc_stats_increment_finalized_count(alloc_stats, mod->type);
+    if (model->type == INSTRUMENTR_MODEL_TYPE_VALUE) {
+        instrumentr_value_t value = (instrumentr_value_t)(model);
+        instrumentr_state_t state = instrumentr_model_get_state(model);
+        instrumentr_alloc_stats_t alloc_stats =
+            instrumentr_state_get_alloc_stats(state);
+        instrumentr_alloc_stats_increment_finalized_count(alloc_stats,
+                                                          instrumentr_value_get_type(value));
+    }
+
+    model->finalizer(model);
+    model->finalizer = NULL;
+    /* this is the point where the model's kernel is deleted */
+    model->death_time = instrumentr_state_get_time(model->state);
 }
 
 /*******************************************************************************
@@ -68,10 +68,15 @@ void instrumentr_model_destroy(instrumentr_model_t model) {
         instrumentr_model_finalize(model);
     }
 
-    instrumentr_alloc_stats_t alloc_stats =
-        instrumentr_state_get_alloc_stats(model->state);
-    instrumentr_alloc_stats_increment_deallocated_count(alloc_stats,
-                                                        model->type);
+    if (instrumentr_model_get_type(model) == INSTRUMENTR_MODEL_TYPE_VALUE) {
+        instrumentr_alloc_stats_t alloc_stats =
+            instrumentr_state_get_alloc_stats(model->state);
+
+        instrumentr_alloc_stats_increment_deallocated_count(
+            alloc_stats,
+            instrumentr_value_get_type((instrumentr_value_t)(model)));
+    }
+
     instrumentr_object_release(model->state);
     model->state = NULL;
     free(model);
@@ -82,7 +87,8 @@ void instrumentr_model_destroy(instrumentr_model_t model) {
  *******************************************************************************/
 
 void r_instrumentr_model_release(SEXP r_model) {
-    void* model = instrumentr_r_externalptr_to_c_pointer(r_model);
+    instrumentr_model_t model =
+        (instrumentr_model_t) instrumentr_r_externalptr_to_c_pointer(r_model);
     if (model == NULL) {
         instrumentr_log_error("instrumentr model finalizer encountered NULL "
                               "model in externalptr");
@@ -125,44 +131,46 @@ instrumentr_model_t instrumentr_model_unwrap(SEXP r_model,
  *******************************************************************************/
 
 /* mutator  */
-int instrumentr_model_acquire(void* model) {
-    instrumentr_model_t obj = (instrumentr_model_t)(model);
-    obj->reference_count += 1;
-    return obj->reference_count;
+int instrumentr_model_acquire(instrumentr_model_t model) {
+    model->reference_count += 1;
+    return model->reference_count;
 }
 
 /* mutator  */
-int instrumentr_model_release(void* model) {
-    instrumentr_model_t obj = (instrumentr_model_t)(model);
-    obj->reference_count -= 1;
-    int reference_count = obj->reference_count;
+int instrumentr_model_release(instrumentr_model_t model) {
+    model->reference_count -= 1;
+    int reference_count = model->reference_count;
 
     if (reference_count == 0) {
-        instrumentr_model_destroy(obj);
+        instrumentr_model_destroy(model);
     }
 
     return reference_count;
 }
 
-int instrumentr_model_kill(void* model) {
+int instrumentr_model_kill(instrumentr_model_t model) {
     int reference_count = instrumentr_model_release(model);
 
     /* this means the model is not destroyed  */
     if (reference_count != 0) {
         instrumentr_model_finalize(model);
 
-        instrumentr_model_t mod = (instrumentr_model_t)(model);
-        instrumentr_alloc_stats_t alloc_stats =
-            instrumentr_state_get_alloc_stats(mod->state);
-        instrumentr_alloc_stats_increment_zombie_count(alloc_stats, mod->type);
+        if (model->type == INSTRUMENTR_MODEL_TYPE_VALUE) {
+            instrumentr_value_t value = (instrumentr_value_t)(model);
+
+            instrumentr_alloc_stats_t alloc_stats =
+                instrumentr_state_get_alloc_stats(model->state);
+
+            instrumentr_alloc_stats_increment_zombie_count(
+                alloc_stats, instrumentr_value_get_type(value));
+        }
     }
 
     return reference_count;
 }
 
-int instrumentr_model_get_reference_count(void* model) {
-    instrumentr_model_t obj = (instrumentr_model_t)(model);
-    return obj->reference_count;
+int instrumentr_model_get_reference_count(instrumentr_model_t model) {
+    return model->reference_count;
 }
 
 SEXP r_instrumentr_model_get_reference_count(SEXP r_model) {
@@ -177,7 +185,7 @@ SEXP r_instrumentr_model_get_reference_count(SEXP r_model) {
  *******************************************************************************/
 
 /* accessor */
-instrumentr_id_t instrumentr_model_get_id(void* model) {
+instrumentr_id_t instrumentr_model_get_id(instrumentr_model_t model) {
     instrumentr_model_t obj = (instrumentr_model_t)(model);
     return obj->id;
 }
@@ -193,7 +201,7 @@ SEXP r_instrumentr_model_get_id(SEXP r_model) {
  * type
  *******************************************************************************/
 
-instrumentr_model_type_t instrumentr_model_get_type(void* model) {
+instrumentr_model_type_t instrumentr_model_get_type(instrumentr_model_t model) {
     instrumentr_model_t obj = (instrumentr_model_t)(model);
     return obj->type;
 }
@@ -203,7 +211,7 @@ instrumentr_model_type_t instrumentr_model_get_type(void* model) {
  *******************************************************************************/
 
 /* accessor */
-int instrumentr_model_get_birth_time(void* model) {
+int instrumentr_model_get_birth_time(instrumentr_model_t model) {
     instrumentr_model_t mod = (instrumentr_model_t)(model);
     return mod->birth_time;
 }
@@ -216,7 +224,7 @@ SEXP r_instrumentr_model_get_birth_time(SEXP r_model) {
 }
 
 /* accessor */
-int instrumentr_model_get_death_time(void* model) {
+int instrumentr_model_get_death_time(instrumentr_model_t model) {
     instrumentr_model_t mod = (instrumentr_model_t)(model);
     return mod->death_time;
 }
@@ -229,7 +237,7 @@ SEXP r_instrumentr_model_get_death_time(SEXP r_model) {
 }
 
 /* accessor */
-int instrumentr_model_get_life_time(void* model) {
+int instrumentr_model_get_life_time(instrumentr_model_t model) {
     instrumentr_model_t mod = (instrumentr_model_t)(model);
     if (mod->death_time < 0) {
         return mod->death_time;
@@ -252,7 +260,7 @@ SEXP r_instrumentr_model_get_life_time(SEXP r_model) {
  *******************************************************************************/
 
 /* accessor */
-int instrumentr_model_is_alive(void* model) {
+int instrumentr_model_is_alive(instrumentr_model_t model) {
     instrumentr_model_t mod = (instrumentr_model_t)(model);
     return !(mod->death_time > 0);
 }
@@ -265,7 +273,7 @@ SEXP r_instrumentr_model_is_alive(SEXP r_model) {
 }
 
 /* accessor */
-int instrumentr_model_is_dead(void* model) {
+int instrumentr_model_is_dead(instrumentr_model_t model) {
     return !instrumentr_model_is_alive(model);
 }
 
@@ -281,7 +289,7 @@ SEXP r_instrumentr_model_is_dead(SEXP r_model) {
  *******************************************************************************/
 
 /* accessor */
-int instrumentr_model_is_local(void* model) {
+int instrumentr_model_is_local(instrumentr_model_t model) {
     instrumentr_model_t mod = (instrumentr_model_t)(model);
     return mod->origin == INSTRUMENTR_ORIGIN_LOCAL;
 }
@@ -294,7 +302,7 @@ SEXP r_instrumentr_model_is_local(SEXP r_model) {
 }
 
 /* accessor */
-int instrumentr_model_is_foreign(void* model) {
+int instrumentr_model_is_foreign(instrumentr_model_t model) {
     instrumentr_model_t mod = (instrumentr_model_t)(model);
     return mod->origin == INSTRUMENTR_ORIGIN_FOREIGN;
 }
@@ -311,7 +319,7 @@ SEXP r_instrumentr_model_is_foreign(SEXP r_model) {
  *******************************************************************************/
 
 /* accessor */
-instrumentr_state_t instrumentr_model_get_state(void* model) {
+instrumentr_state_t instrumentr_model_get_state(instrumentr_model_t model) {
     instrumentr_model_t mod = (instrumentr_model_t)(model);
     return mod->state;
 }

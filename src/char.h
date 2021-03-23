@@ -2,7 +2,7 @@
 #define INSTRUMENTR_CHAR_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ instrumentr_char_t instrumentr_char_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(char, INSTRUMENTR_MODEL_TYPE_CHAR)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_CHAR, char, charval)
 
 INSTRUMENTR_CHAR_API_MAP(INSTRUMENTR_API_INCLUDER)
 

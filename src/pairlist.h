@@ -2,7 +2,7 @@
 #define INSTRUMENTR_PAIRLIST_H
 
 #include <instrumentr/api.h>
-#include "model.h"
+#include "value.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,9 @@ instrumentr_pairlist_t instrumentr_pairlist_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(pairlist, INSTRUMENTR_MODEL_TYPE_PAIRLIST)
+INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_PAIRLIST,
+                              pairlist,
+                              pairlist)
 
 INSTRUMENTR_PAIRLIST_API_MAP(INSTRUMENTR_API_INCLUDER)
 
