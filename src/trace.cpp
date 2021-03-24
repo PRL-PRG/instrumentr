@@ -26,6 +26,7 @@
 #include "special.h"
 #include "environment.h"
 #include "symbol.h"
+#include "char.h"
 
 #define TRACING_INITIALIZE(EVENT)                                     \
     instrumentr_tracer_disable(tracer);                               \
@@ -819,6 +820,26 @@ void instrumentr_trace_eval_exit(dyntracer_t* dyntracer,
     TRACING_FINALIZE(event)
 }
 
+void set_function_name(instrumentr_symbol_t symbol,
+                       instrumentr_value_t value,
+                       instrumentr_environment_t environment) {
+    if (instrumentr_value_is_closure(value)) {
+        instrumentr_closure_t closure = instrumentr_value_as_closure(value);
+        if (instrumentr_closure_has_name(closure)) {
+            return;
+        }
+        instrumentr_environment_t lex_env =
+            instrumentr_closure_get_environment(closure);
+
+        /* if function is being named in the same environment in which it was
+         * created, then this is the canonical name. */
+        if (lex_env == environment) {
+            instrumentr_char_t charval = instrumentr_symbol_get_name(symbol);
+            instrumentr_closure_set_name(closure, instrumentr_char_get_value(charval));
+        }
+    }
+}
+
 void instrumentr_trace_variable_definition(dyntracer_t* dyntracer,
                                            const SEXP r_symbol,
                                            const SEXP r_value,
@@ -829,13 +850,22 @@ void instrumentr_trace_variable_definition(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    // TODO: add back this line:
-    // instrumentr_state_function_table_update_name(state, r_symbol,
-    // r_value, r_rho);),
+    instrumentr_value_t symval =
+        instrumentr_state_value_table_lookup(state, r_symbol, 1);
+    instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
 
-    // TODO: add back this line.
-    // TRACING_INVOKE_CALLBACK(event, variable_definition_function_t, symbol,
-    // value, rho);
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_value, 1);
+
+    instrumentr_value_t envval =
+        instrumentr_state_value_table_lookup(state, r_rho, 1);
+    instrumentr_environment_t environment =
+        instrumentr_value_as_environment(envval);
+
+    set_function_name(symbol, value, environment);
+
+    TRACING_INVOKE_CALLBACK(
+        event, variable_definition_function_t, symbol, value, environment);
 
     TRACING_FINALIZE(event)
 }
@@ -854,9 +884,22 @@ void instrumentr_trace_variable_assignment(dyntracer_t* dyntracer,
     // instrumentr_state_function_table_update_name(state, r_symbol,
     // r_value, r_rho);),
 
-    // TODO: add back this line.
-    // TRACING_INVOKE_CALLBACK(event, variable_definition_function_t, symbol,
-    // value, rho);
+    instrumentr_value_t symval =
+        instrumentr_state_value_table_lookup(state, r_symbol, 1);
+    instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
+
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_value, 1);
+
+    instrumentr_value_t envval =
+        instrumentr_state_value_table_lookup(state, r_rho, 1);
+    instrumentr_environment_t environment =
+        instrumentr_value_as_environment(envval);
+
+    set_function_name(symbol, value, environment);
+
+    TRACING_INVOKE_CALLBACK(
+        event, variable_definition_function_t, symbol, value, environment);
 
     TRACING_FINALIZE(event)
 }
@@ -870,9 +913,17 @@ void instrumentr_trace_variable_removal(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    // TODO: add back this line.
-    // TRACING_INVOKE_CALLBACK(event, variable_removal_function_t, symbol,
-    // value, rho);
+    instrumentr_value_t symval =
+        instrumentr_state_value_table_lookup(state, r_symbol, 1);
+    instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
+
+    instrumentr_value_t envval =
+        instrumentr_state_value_table_lookup(state, r_rho, 1);
+    instrumentr_environment_t environment =
+        instrumentr_value_as_environment(envval);
+
+    TRACING_INVOKE_CALLBACK(
+        event, variable_removal_function_t, symbol, environment);
 
     TRACING_FINALIZE(event)
 }
@@ -887,9 +938,22 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    // TODO: add back this line.
-    // TRACING_INVOKE_CALLBACK(event, variable_lookup_function_t, symbol,
-    // value, rho);
+    instrumentr_value_t symval =
+        instrumentr_state_value_table_lookup(state, r_symbol, 1);
+    instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
+
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_value, 1);
+
+    instrumentr_value_t envval =
+        instrumentr_state_value_table_lookup(state, r_rho, 1);
+    instrumentr_environment_t environment =
+        instrumentr_value_as_environment(envval);
+
+    set_function_name(symbol, value, environment);
+
+    TRACING_INVOKE_CALLBACK(
+        event, variable_lookup_function_t, symbol, value, environment);
 
     TRACING_FINALIZE(event)
 }
