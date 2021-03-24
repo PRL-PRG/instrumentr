@@ -120,6 +120,17 @@ void instrumentr_closure_set_name(instrumentr_closure_t closure,
 }
 
 /********************************************************************************
+ * formals
+ *******************************************************************************/
+
+instrumentr_value_t
+instrumentr_closure_get_formals(instrumentr_closure_t closure) {
+    SEXP r_formals = FORMALS(instrumentr_closure_get_sexp(closure));
+    instrumentr_state_t state = instrumentr_closure_get_state(closure);
+    return instrumentr_state_value_table_lookup(state, r_formals, 1);
+}
+
+/********************************************************************************
  * environment
  *******************************************************************************/
 void instrumentr_closure_set_environment(instrumentr_closure_t closure) {
