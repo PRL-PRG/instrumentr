@@ -19,8 +19,8 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-void instrumentr_promise_add_call(instrumentr_promise_t promise,
-                                  instrumentr_call_t call);
+void instrumentr_promise_make_argument(instrumentr_promise_t promise,
+                                       instrumentr_call_t call);
 
 INSTRUMENTR_PROMISE_API_MAP(INSTRUMENTR_API_INCLUDER)
 

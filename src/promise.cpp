@@ -2,6 +2,7 @@
 #include "promise.h"
 #include "interop.h"
 #include "utilities.h"
+#include "state.h"
 
 /********************************************************************************
  * definition
@@ -78,14 +79,17 @@ SEXP r_instrumentr_promise_is_forced(SEXP r_promise) {
  *******************************************************************************/
 
 /* accessor  */
-SEXP instrumentr_promise_get_expression(instrumentr_promise_t promise) {
+instrumentr_value_t
+instrumentr_promise_get_expression(instrumentr_promise_t promise) {
     SEXP r_sexp = instrumentr_promise_get_sexp(promise);
-    return PREXPR(r_sexp);
+    instrumentr_state_t state = instrumentr_promise_get_state(promise);
+    return instrumentr_state_value_table_lookup(state, PREXPR(r_sexp), 1);
 }
 
 SEXP r_instrumentr_promise_get_expression(SEXP r_promise) {
     instrumentr_promise_t promise = instrumentr_promise_unwrap(r_promise);
-    return instrumentr_promise_get_expression(promise);
+    instrumentr_value_t value = instrumentr_promise_get_expression(promise);
+    return instrumentr_value_wrap(value);
 }
 
 /********************************************************************************
@@ -93,19 +97,17 @@ SEXP r_instrumentr_promise_get_expression(SEXP r_promise) {
  *******************************************************************************/
 
 /* accessor  */
-SEXP instrumentr_promise_get_value(instrumentr_promise_t promise) {
-    if (instrumentr_promise_is_forced(promise)) {
-        return PRVALUE(instrumentr_promise_get_sexp(promise));
-    } else {
-        instrumentr_log_error("promise is not forced");
-        /* NOTE: not executed */
-        return NULL;
-    }
+instrumentr_value_t
+instrumentr_promise_get_value(instrumentr_promise_t promise) {
+    SEXP r_sexp = instrumentr_promise_get_sexp(promise);
+    instrumentr_state_t state = instrumentr_promise_get_state(promise);
+    return instrumentr_state_value_table_lookup(state, PRVALUE(r_sexp), 1);
 }
 
 SEXP r_instrumentr_promise_get_value(SEXP r_promise) {
     instrumentr_promise_t promise = instrumentr_promise_unwrap(r_promise);
-    return instrumentr_promise_get_value(promise);
+    instrumentr_value_t value = instrumentr_promise_get_value(promise);
+    return instrumentr_value_wrap(value);
 }
 
 /********************************************************************************
@@ -153,9 +155,9 @@ SEXP r_instrumentr_promise_is_argument(SEXP r_promise) {
 }
 
 /* mutator */
-void instrumentr_promise_add_call(instrumentr_promise_t promise,
-                                  instrumentr_call_t call) {
-    /* if promis is already an argument promise then warn and release the
+void instrumentr_promise_make_argument(instrumentr_promise_t promise,
+                                       instrumentr_call_t call) {
+    /* if promise is already an argument promise then warn and release the
      * current call */
     promise->type = INSTRUMENTR_PROMISE_TYPE_ARGUMENT;
 
