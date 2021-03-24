@@ -19,9 +19,6 @@ instrumentr_call_stack_create(instrumentr_state_t state);
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(call_stack,
-                                      INSTRUMENTR_MODEL_TYPE_CALL_STACK)
-
 void instrumentr_call_stack_push_frame(instrumentr_call_stack_t call_stack,
                                        instrumentr_frame_t frame);
 

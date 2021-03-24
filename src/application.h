@@ -22,9 +22,6 @@ instrumentr_application_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(application,
-                                      INSTRUMENTR_MODEL_TYPE_APPLICATION)
-
 INSTRUMENTR_APPLICATION_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

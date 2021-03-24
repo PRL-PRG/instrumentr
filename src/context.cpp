@@ -44,7 +44,7 @@ instrumentr_context_t instrumentr_context_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(context, INSTRUMENTR_MODEL_TYPE_CONTEXT)
+INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_CONTEXT, context, context)
 
 /********************************************************************************
  * r_context

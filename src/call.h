@@ -21,8 +21,6 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(call, INSTRUMENTR_MODEL_TYPE_CALL)
-
 void instrumentr_call_activate(instrumentr_call_t call);
 
 

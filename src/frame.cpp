@@ -86,7 +86,7 @@ instrumentr_frame_create_from_context(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(frame, INSTRUMENTR_MODEL_TYPE_FRAME)
+INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_FRAME, frame, frame)
 
 /********************************************************************************
  * call

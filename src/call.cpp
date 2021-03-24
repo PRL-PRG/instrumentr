@@ -229,7 +229,7 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(call, INSTRUMENTR_MODEL_TYPE_CALL)
+INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_CALL, call, call)
 
 /********************************************************************************
  * function

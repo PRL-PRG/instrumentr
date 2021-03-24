@@ -24,11 +24,6 @@ instrumentr_frame_t
 instrumentr_frame_create_from_context(instrumentr_state_t state,
                                       instrumentr_context_t context);
 
-/********************************************************************************
- * interop
- *******************************************************************************/
-
-INSTRUMENTR_MODEL_INTEROP_DECLARE_API(frame, INSTRUMENTR_MODEL_TYPE_FRAME)
 
 INSTRUMENTR_FRAME_API_MAP(INSTRUMENTR_API_INCLUDER)
 

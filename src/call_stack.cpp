@@ -55,8 +55,9 @@ instrumentr_call_stack_create(instrumentr_state_t state) {
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(call_stack,
-                                     INSTRUMENTR_MODEL_TYPE_CALL_STACK)
+INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_CALL_STACK,
+                                     call_stack,
+                                     call_stack)
 
 /********************************************************************************
  * size

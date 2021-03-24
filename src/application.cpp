@@ -65,8 +65,9 @@ instrumentr_application_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_INTEROP_DEFINE_API(application,
-                                     INSTRUMENTR_MODEL_TYPE_APPLICATION)
+INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_APPLICATION,
+                                     application,
+                                     application)
 
 /*******************************************************************************
  * directory
