@@ -359,6 +359,8 @@ void instrumentr_trace_closure_call_entry(dyntracer_t* dyntracer,
     instrumentr_call_t call =
         instrumentr_trace_call_entry(state, function, r_call, r_rho);
 
+    instrumentr_environment_set_call(environment, call);
+
     TRACING_INVOKE_CALLBACK(
         event, closure_call_entry_function_t, closure, call);
 
