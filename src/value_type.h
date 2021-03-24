@@ -1,12 +1,12 @@
 #ifndef INSTRUMENTR_VALUE_TYPE_H
 #define INSTRUMENTR_VALUE_TYPE_H
 
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
 
 /*******************************************************************************
  * initialize
@@ -20,12 +20,7 @@ void instrumentr_value_type_initialize();
 
 void instrumentr_value_type_finalize();
 
-/*******************************************************************************
- * name
- *******************************************************************************/
-
-const char*
-instrumentr_value_type_get_name(instrumentr_value_type_t value_type);
+INSTRUMENTR_VALUE_TYPE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 /*******************************************************************************
  * class

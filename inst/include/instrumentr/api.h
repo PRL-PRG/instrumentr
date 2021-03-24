@@ -6,6 +6,162 @@
 #include <vector>
 #include <string>
 
+#define INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(                              \
+    MACRO, MODEL_TYPE, MODEL_NAME, MODEL_VAR)                                 \
+    MACRO(instrumentr_##MODEL_NAME##_wrap,                                    \
+          SEXP,                                                               \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_unwrap,                                  \
+          instrumentr_##MODEL_NAME##_t,                                       \
+          SEXP r_##MODEL_NAME)                                                \
+    MACRO(instrumentr_##MODEL_NAME##_acquire,                                 \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_release,                                 \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_kill,                                    \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_get_reference_count,                     \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_get_id,                                  \
+          instrumentr_id_t,                                                   \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_model_is_##MODEL_NAME, bool, instrumentr_model_t model) \
+    MACRO(instrumentr_model_as_##MODEL_NAME,                                  \
+          instrumentr_##MODEL_NAME##_t,                                       \
+          instrumentr_model_t model)                                          \
+    MACRO(instrumentr_##MODEL_NAME##_as_model,                                \
+          instrumentr_model_t,                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_get_birth_time,                          \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_get_death_time,                          \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_get_life_time,                           \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_is_alive,                                \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_is_dead,                                 \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_is_local,                                \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_is_foreign,                              \
+          int,                                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)                      \
+    MACRO(instrumentr_##MODEL_NAME##_get_state,                               \
+          instrumentr_state_t,                                                \
+          instrumentr_##MODEL_NAME##_t MODEL_NAME##_var)
+
+#define INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API( \
+    MACRO, MODEL_TYPE, MODEL_NAME, MODEL_VAR)
+
+#define INSTRUMENTR_MODEL_DECLARE_DERIVED_API(                                 \
+    MODEL_TYPE, MODEL_NAME, MODEL_VAR)                                         \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API(MODEL_TYPE, MODEL_NAME, MODEL_VAR) \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(MODEL_TYPE, MODEL_NAME, MODEL_VAR)
+
+#define INSTRUMENTR_VALUE_DECLARE_C_API(                                      \
+    MACRO, VALUE_TYPE, VALUE_NAME, VALUE_VAR)                                 \
+    MACRO(instrumentr_##VALUE_NAME##_wrap,                                    \
+          SEXP,                                                               \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_unwrap,                                  \
+          instrumentr_##VALUE_NAME##_t,                                       \
+          SEXP r_##VALUE_NAME)                                                \
+    MACRO(instrumentr_##VALUE_NAME##_acquire,                                 \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_release,                                 \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_kill,                                    \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_reference_count,                     \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_id,                                  \
+          instrumentr_id_t,                                                   \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_value_is_##VALUE_NAME, bool, instrumentr_value_t value) \
+    MACRO(instrumentr_value_as_##VALUE_NAME,                                  \
+          instrumentr_##VALUE_NAME##_t,                                       \
+          instrumentr_value_t value)                                          \
+    MACRO(instrumentr_##VALUE_NAME##_as_value,                                \
+          instrumentr_value_t,                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_birth_time,                          \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_death_time,                          \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_life_time,                           \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_is_alive,                                \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_is_dead,                                 \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_is_local,                                \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_is_foreign,                              \
+          int,                                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_state,                               \
+          instrumentr_state_t,                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_sexp,                                \
+          SEXP,                                                               \
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)
+
+#define INSTRUMENTR_VALUE_DECLARE_R_API(                                       \
+    MACRO, VALUE_TYPE, VALUE_NAME, VALUE_VAR)                                  \
+    MACRO(r_instrumentr_##VALUE_NAME##_get_reference_count,                    \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(                                                                     \
+        r_instrumentr_##VALUE_NAME##_get_id, SEXP, SEXP r_##VALUE_NAME##_var)  \
+    MACRO(r_instrumentr_##VALUE_NAME##_get_birth_time,                         \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(r_instrumentr_##VALUE_NAME##_get_death_time,                         \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(r_instrumentr_##VALUE_NAME##_get_life_time,                          \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(r_instrumentr_##VALUE_NAME##_is_alive,                               \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(                                                                     \
+        r_instrumentr_##VALUE_NAME##_is_dead, SEXP, SEXP r_##VALUE_NAME##_var) \
+    MACRO(r_instrumentr_##VALUE_NAME##_is_local,                               \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(r_instrumentr_##VALUE_NAME##_is_foreign,                             \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(r_instrumentr_##VALUE_NAME##_get_sexp,                               \
+          SEXP,                                                                \
+          SEXP r_##VALUE_NAME##_var)
+
+#define INSTRUMENTR_VALUE_DECLARE_API(VALUE_TYPE, VALUE_NAME, VALUE_VAR) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(VALUE_TYPE, VALUE_NAME, VALUE_VAR)   \
+    INSTRUMENTR_VALUE_DECLARE_C_API(VALUE_TYPE, VALUE_NAME, VALUE_VAR)
+
 /********************************************************************************
  interop
  *******************************************************************************/
@@ -430,12 +586,16 @@
           instrumentr_application_t application)   \
     MACRO(instrumentr_application_get_environment, \
           instrumentr_environment_t,               \
-          instrumentr_application_t application)
+          instrumentr_application_t application)   \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(       \
+        MACRO, INSTRUMENTR_MODEL_TYPE_APPLICATION, application, application)
 
-#define INSTRUMENTR_APPLICATION_R_API_MAP(MACRO)                             \
-    MACRO(r_instrumentr_application_get_directory, SEXP, SEXP r_application) \
-    MACRO(r_instrumentr_application_get_code, SEXP, SEXP r_application)      \
-    MACRO(r_instrumentr_application_get_environment, SEXP, SEXP r_application)
+#define INSTRUMENTR_APPLICATION_R_API_MAP(MACRO)                               \
+    MACRO(r_instrumentr_application_get_directory, SEXP, SEXP r_application)   \
+    MACRO(r_instrumentr_application_get_code, SEXP, SEXP r_application)        \
+    MACRO(r_instrumentr_application_get_environment, SEXP, SEXP r_application) \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API(                                   \
+        MACRO, INSTRUMENTR_MODEL_TYPE_APPLICATION, application, application)
 
 #define INSTRUMENTR_APPLICATION_API_MAP(MACRO) \
     INSTRUMENTR_APPLICATION_C_API_MAP(MACRO)   \
@@ -446,10 +606,12 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_UNBOUND_C_API_MAP(MACRO) \
-    MACRO(instrumentr_unbound_get_sexp, SEXP, instrumentr_unbound_t unboundval)
+    INSTRUMENTR_VALUE_DECLARE_C_API(         \
+        MACRO, INSTRUMENTR_VALUE_TYPE_UNBOUND, unbound, unboundval)
 
 #define INSTRUMENTR_UNBOUND_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_unbound_get_sexp, SEXP, SEXP r_unbound)
+    INSTRUMENTR_VALUE_DECLARE_R_API(         \
+        MACRO, INSTRUMENTR_VALUE_TYPE_UNBOUND, unbound, unboundval)
 
 #define INSTRUMENTR_UNBOUND_API_MAP(MACRO) \
     INSTRUMENTR_UNBOUND_C_API_MAP(MACRO)   \
@@ -460,10 +622,12 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_MISSING_C_API_MAP(MACRO) \
-    MACRO(instrumentr_missing_get_sexp, SEXP, instrumentr_missing_t missingval)
+    INSTRUMENTR_VALUE_DECLARE_C_API(         \
+        MACRO, INSTRUMENTR_VALUE_TYPE_MISSING, missing, missingval)
 
 #define INSTRUMENTR_MISSING_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_missing_get_sexp, SEXP, SEXP r_missing)
+    INSTRUMENTR_VALUE_DECLARE_R_API(         \
+        MACRO, INSTRUMENTR_VALUE_TYPE_MISSING, missing, missingval)
 
 #define INSTRUMENTR_MISSING_API_MAP(MACRO) \
     INSTRUMENTR_MISSING_C_API_MAP(MACRO)   \
@@ -474,10 +638,12 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_NULL_C_API_MAP(MACRO) \
-    MACRO(instrumentr_null_get_sexp, SEXP, instrumentr_null_t nullval)
+    INSTRUMENTR_VALUE_DECLARE_C_API(      \
+        MACRO, INSTRUMENTR_VALUE_TYPE_NULL, null, nullval)
 
 #define INSTRUMENTR_NULL_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_null_get_sexp, SEXP, SEXP r_null)
+    INSTRUMENTR_VALUE_DECLARE_R_API(      \
+        MACRO, INSTRUMENTR_VALUE_TYPE_NULL, null, nullval)
 
 #define INSTRUMENTR_NULL_API_MAP(MACRO) \
     INSTRUMENTR_NULL_C_API_MAP(MACRO)   \
@@ -487,13 +653,17 @@
  EXTERNALPTR API
 *******************************************************************************/
 
-#define INSTRUMENTR_EXTERNALPTR_C_API_MAP(MACRO) \
-    MACRO(instrumentr_externalptr_get_sexp,      \
-          SEXP,                                  \
-          instrumentr_externalptr_t externalptrval)
+#define INSTRUMENTR_EXTERNALPTR_C_API_MAP(MACRO)                        \
+    INSTRUMENTR_VALUE_DECLARE_C_API(MACRO,                              \
+                                    INSTRUMENTR_VALUE_TYPE_EXTERNALPTR, \
+                                    externalptr,                        \
+                                    externalptrval)
 
-#define INSTRUMENTR_EXTERNALPTR_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_externalptr_get_sexp, SEXP, SEXP r_externalptr)
+#define INSTRUMENTR_EXTERNALPTR_R_API_MAP(MACRO)                        \
+    INSTRUMENTR_VALUE_DECLARE_R_API(MACRO,                              \
+                                    INSTRUMENTR_VALUE_TYPE_EXTERNALPTR, \
+                                    externalptr,                        \
+                                    externalptrval)
 
 #define INSTRUMENTR_EXTERNALPTR_API_MAP(MACRO) \
     INSTRUMENTR_EXTERNALPTR_C_API_MAP(MACRO)   \
@@ -504,10 +674,12 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_WEAKREF_C_API_MAP(MACRO) \
-    MACRO(instrumentr_weakref_get_sexp, SEXP, instrumentr_weakref_t weakrefval)
+    INSTRUMENTR_VALUE_DECLARE_C_API(         \
+        MACRO, INSTRUMENTR_VALUE_TYPE_WEAKREF, weakref, weakrefval)
 
 #define INSTRUMENTR_WEAKREF_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_weakref_get_sexp, SEXP, SEXP r_weakref)
+    INSTRUMENTR_VALUE_DECLARE_R_API(         \
+        MACRO, INSTRUMENTR_VALUE_TYPE_WEAKREF, weakref, weakrefval)
 
 #define INSTRUMENTR_WEAKREF_API_MAP(MACRO) \
     INSTRUMENTR_WEAKREF_C_API_MAP(MACRO)   \
@@ -518,12 +690,12 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_BYTECODE_C_API_MAP(MACRO) \
-    MACRO(instrumentr_bytecode_get_sexp,      \
-          SEXP,                               \
-          instrumentr_bytecode_t bytecodeval)
+    INSTRUMENTR_VALUE_DECLARE_C_API(          \
+        MACRO, INSTRUMENTR_VALUE_TYPE_BYTECODE, bytecode, bytecodeval)
 
 #define INSTRUMENTR_BYTECODE_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_bytecode_get_sexp, SEXP, SEXP r_bytecode)
+    INSTRUMENTR_VALUE_DECLARE_R_API(          \
+        MACRO, INSTRUMENTR_VALUE_TYPE_BYTECODE, bytecode, bytecodeval)
 
 #define INSTRUMENTR_BYTECODE_API_MAP(MACRO) \
     INSTRUMENTR_BYTECODE_C_API_MAP(MACRO)   \
@@ -534,10 +706,10 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_S4_C_API_MAP(MACRO) \
-    MACRO(instrumentr_s4_get_sexp, SEXP, instrumentr_s4_t s4val)
+    INSTRUMENTR_VALUE_DECLARE_C_API(MACRO, INSTRUMENTR_VALUE_TYPE_S4, s4, s4val)
 
 #define INSTRUMENTR_S4_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_s4_get_sexp, SEXP, SEXP r_s4)
+    INSTRUMENTR_VALUE_DECLARE_R_API(MACRO, INSTRUMENTR_VALUE_TYPE_S4, s4, s4val)
 
 #define INSTRUMENTR_S4_API_MAP(MACRO) \
     INSTRUMENTR_S4_C_API_MAP(MACRO)   \
@@ -548,14 +720,16 @@
  *******************************************************************************/
 
 #define INSTRUMENTR_CHAR_C_API_MAP(MACRO)                                      \
-    MACRO(instrumentr_char_get_sexp, SEXP, instrumentr_char_t charval)         \
     MACRO(instrumentr_char_get_value, const char*, instrumentr_char_t charval) \
-    MACRO(instrumentr_char_is_na, bool, instrumentr_char_t charval)
+    MACRO(instrumentr_char_is_na, bool, instrumentr_char_t charval)            \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_CHAR, char, charval)
 
 #define INSTRUMENTR_CHAR_R_API_MAP(MACRO)                  \
-    MACRO(r_instrumentr_char_get_sexp, SEXP, SEXP r_char)  \
     MACRO(r_instrumentr_char_get_value, SEXP, SEXP r_char) \
-    MACRO(r_instrumentr_char_is_na, SEXP, SEXP r_char)
+    MACRO(r_instrumentr_char_is_na, SEXP, SEXP r_char)     \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                       \
+        MACRO, INSTRUMENTR_VALUE_TYPE_CHAR, char, charval)
 
 #define INSTRUMENTR_CHAR_API_MAP(MACRO) \
     INSTRUMENTR_CHAR_C_API_MAP(MACRO)   \
@@ -565,15 +739,17 @@
  SYMBOL API
  *******************************************************************************/
 
-#define INSTRUMENTR_SYMBOL_C_API_MAP(MACRO)                               \
-    MACRO(instrumentr_symbol_get_sexp, SEXP, instrumentr_symbol_t symbol) \
-    MACRO(instrumentr_symbol_get_name,                                    \
-          instrumentr_char_t,                                             \
-          instrumentr_symbol_t symbol)
+#define INSTRUMENTR_SYMBOL_C_API_MAP(MACRO) \
+    MACRO(instrumentr_symbol_get_name,      \
+          instrumentr_char_t,               \
+          instrumentr_symbol_t symbol)      \
+    INSTRUMENTR_VALUE_DECLARE_C_API(        \
+        MACRO, INSTRUMENTR_VALUE_TYPE_SYMBOL, symbol, symbolval)
 
 #define INSTRUMENTR_SYMBOL_R_API_MAP(MACRO)                   \
-    MACRO(r_instrumentr_symbol_get_sexp, SEXP, SEXP r_symbol) \
-    MACRO(r_instrumentr_symbol_get_name, SEXP, SEXP r_symbol)
+    MACRO(r_instrumentr_symbol_get_name, SEXP, SEXP r_symbol) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                          \
+        MACRO, INSTRUMENTR_VALUE_TYPE_SYMBOL, symbol, symbolval)
 
 #define INSTRUMENTR_SYMBOL_API_MAP(MACRO) \
     INSTRUMENTR_SYMBOL_C_API_MAP(MACRO)   \
@@ -584,8 +760,6 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_LANGUAGE_C_API_MAP(MACRO)                                  \
-    MACRO(                                                                     \
-        instrumentr_language_get_sexp, SEXP, instrumentr_language_t language)  \
     MACRO(                                                                     \
         instrumentr_language_get_length, int, instrumentr_language_t language) \
     MACRO(instrumentr_language_get_car,                                        \
@@ -600,9 +774,13 @@
     MACRO(instrumentr_language_get_element,                                    \
           instrumentr_value_t,                                                 \
           instrumentr_language_t language,                                     \
-          int index)
+          int index)                                                           \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_LANGUAGE, language, language)
 
-#define INSTRUMENTR_LANGUAGE_R_API_MAP(MACRO)
+#define INSTRUMENTR_LANGUAGE_R_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(          \
+        MACRO, INSTRUMENTR_VALUE_TYPE_LANGUAGE, language, languageval)
 
 #define INSTRUMENTR_LANGUAGE_API_MAP(MACRO) \
     INSTRUMENTR_LANGUAGE_C_API_MAP(MACRO)   \
@@ -613,7 +791,6 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_DOT_C_API_MAP(MACRO)                                       \
-    MACRO(instrumentr_dot_get_sexp, SEXP, instrumentr_dot_t dot)               \
     MACRO(instrumentr_dot_get_length, int, instrumentr_dot_t dot)              \
     MACRO(instrumentr_dot_get_car, instrumentr_value_t, instrumentr_dot_t dot) \
     MACRO(instrumentr_dot_get_cdr, instrumentr_value_t, instrumentr_dot_t dot) \
@@ -621,9 +798,12 @@
     MACRO(instrumentr_dot_get_element,                                         \
           instrumentr_value_t,                                                 \
           instrumentr_dot_t dot,                                               \
-          int index)
+          int index)                                                           \
+    INSTRUMENTR_VALUE_DECLARE_C_API(MACRO, INSTRUMENTR_VALUE_TYPE_DOT, dot, dot)
 
-#define INSTRUMENTR_DOT_R_API_MAP(MACRO)
+#define INSTRUMENTR_DOT_R_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(     \
+        MACRO, INSTRUMENTR_VALUE_TYPE_DOT, dot, dotval)
 
 #define INSTRUMENTR_DOT_API_MAP(MACRO) \
     INSTRUMENTR_DOT_C_API_MAP(MACRO)   \
@@ -634,8 +814,6 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_PAIRLIST_C_API_MAP(MACRO)                                  \
-    MACRO(                                                                     \
-        instrumentr_pairlist_get_sexp, SEXP, instrumentr_pairlist_t pairlist)  \
     MACRO(                                                                     \
         instrumentr_pairlist_get_length, int, instrumentr_pairlist_t pairlist) \
     MACRO(instrumentr_pairlist_get_car,                                        \
@@ -650,9 +828,13 @@
     MACRO(instrumentr_pairlist_get_element,                                    \
           instrumentr_value_t,                                                 \
           instrumentr_pairlist_t pairlist,                                     \
-          int index)
+          int index)                                                           \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_PAIRLIST, pairlist, pairlist)
 
-#define INSTRUMENTR_PAIRLIST_R_API_MAP(MACRO)
+#define INSTRUMENTR_PAIRLIST_R_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(          \
+        MACRO, INSTRUMENTR_VALUE_TYPE_PAIRLIST, pairlist, pairlistval)
 
 #define INSTRUMENTR_PAIRLIST_API_MAP(MACRO) \
     INSTRUMENTR_PAIRLIST_C_API_MAP(MACRO)   \
@@ -663,14 +845,17 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_LIST_C_API_MAP(MACRO)                            \
-    MACRO(instrumentr_list_get_sexp, SEXP, instrumentr_list_t list)  \
     MACRO(instrumentr_list_get_length, int, instrumentr_list_t list) \
     MACRO(instrumentr_list_get_element,                              \
           instrumentr_value_t,                                       \
           instrumentr_list_t list,                                   \
-          int index)
+          int index)                                                 \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                 \
+        MACRO, INSTRUMENTR_VALUE_TYPE_LIST, list, list)
 
-#define INSTRUMENTR_LIST_R_API_MAP(MACRO)
+#define INSTRUMENTR_LIST_R_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(      \
+        MACRO, INSTRUMENTR_VALUE_TYPE_LIST, list, listval)
 
 #define INSTRUMENTR_LIST_API_MAP(MACRO) \
     INSTRUMENTR_LIST_C_API_MAP(MACRO)   \
@@ -681,18 +866,19 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_EXPRESSION_C_API_MAP(MACRO) \
-    MACRO(instrumentr_expression_get_sexp,      \
-          SEXP,                                 \
-          instrumentr_expression_t expression)  \
     MACRO(instrumentr_expression_get_length,    \
           int,                                  \
           instrumentr_expression_t expression)  \
     MACRO(instrumentr_expression_get_element,   \
           instrumentr_value_t,                  \
           instrumentr_expression_t expression,  \
-          int index)
+          int index)                            \
+    INSTRUMENTR_VALUE_DECLARE_C_API(            \
+        MACRO, INSTRUMENTR_VALUE_TYPE_EXPRESSION, expression, expressionval)
 
-#define INSTRUMENTR_EXPRESSION_R_API_MAP(MACRO)
+#define INSTRUMENTR_EXPRESSION_R_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(            \
+        MACRO, INSTRUMENTR_VALUE_TYPE_EXPRESSION, expression, expressionval)
 
 #define INSTRUMENTR_EXPRESSION_API_MAP(MACRO) \
     INSTRUMENTR_EXPRESSION_C_API_MAP(MACRO)   \
@@ -703,9 +889,6 @@
  *******************************************************************************/
 
 #define INSTRUMENTR_CHARACTER_C_API_MAP(MACRO) \
-    MACRO(instrumentr_character_get_sexp,      \
-          SEXP,                                \
-          instrumentr_character_t character)   \
     MACRO(instrumentr_character_get_size,      \
           int,                                 \
           instrumentr_character_t character)   \
@@ -716,16 +899,19 @@
     MACRO(instrumentr_character_is_na,         \
           bool,                                \
           instrumentr_character_t character,   \
-          int index)
+          int index)                           \
+    INSTRUMENTR_VALUE_DECLARE_C_API(           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_CHARACTER, character, characterval)
 
-#define INSTRUMENTR_CHARACTER_R_API_MAP(MACRO)                      \
-    MACRO(r_instrumentr_character_get_sexp, SEXP, SEXP r_character) \
-    MACRO(r_instrumentr_character_get_size, SEXP, SEXP r_character) \
-    MACRO(r_instrumentr_character_get_element,                      \
-          SEXP,                                                     \
-          SEXP r_character,                                         \
-          SEXP r_index)                                             \
-    MACRO(r_instrumentr_character_is_na, SEXP, SEXP r_character, SEXP r_index)
+#define INSTRUMENTR_CHARACTER_R_API_MAP(MACRO)                                 \
+    MACRO(r_instrumentr_character_get_size, SEXP, SEXP r_character)            \
+    MACRO(r_instrumentr_character_get_element,                                 \
+          SEXP,                                                                \
+          SEXP r_character,                                                    \
+          SEXP r_index)                                                        \
+    MACRO(r_instrumentr_character_is_na, SEXP, SEXP r_character, SEXP r_index) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_CHARACTER, character, characterval)
 
 #define INSTRUMENTR_CHARACTER_API_MAP(MACRO) \
     INSTRUMENTR_CHARACTER_C_API_MAP(MACRO)   \
@@ -735,24 +921,26 @@
  INTEGER API
  *******************************************************************************/
 
-#define INSTRUMENTR_INTEGER_C_API_MAP(MACRO)                                 \
-    MACRO(instrumentr_integer_get_sexp, SEXP, instrumentr_integer_t integer) \
-    MACRO(instrumentr_integer_get_size, int, instrumentr_integer_t integer)  \
-    MACRO(instrumentr_integer_get_element,                                   \
-          int,                                                               \
-          instrumentr_integer_t integer,                                     \
-          int index)                                                         \
-    MACRO(instrumentr_integer_is_na,                                         \
-          bool,                                                              \
-          instrumentr_integer_t integer,                                     \
-          int index)
+#define INSTRUMENTR_INTEGER_C_API_MAP(MACRO)                                \
+    MACRO(instrumentr_integer_get_size, int, instrumentr_integer_t integer) \
+    MACRO(instrumentr_integer_get_element,                                  \
+          int,                                                              \
+          instrumentr_integer_t integer,                                    \
+          int index)                                                        \
+    MACRO(instrumentr_integer_is_na,                                        \
+          bool,                                                             \
+          instrumentr_integer_t integer,                                    \
+          int index)                                                        \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                        \
+        MACRO, INSTRUMENTR_VALUE_TYPE_INTEGER, integer, integerval)
 
 #define INSTRUMENTR_INTEGER_R_API_MAP(MACRO)                                   \
-    MACRO(r_instrumentr_integer_get_sexp, SEXP, SEXP r_integer)                \
     MACRO(r_instrumentr_integer_get_size, SEXP, SEXP r_integer)                \
     MACRO(                                                                     \
         r_instrumentr_integer_get_element, SEXP, SEXP r_integer, SEXP r_index) \
-    MACRO(r_instrumentr_integer_is_na, SEXP, SEXP r_integer, SEXP r_index)
+    MACRO(r_instrumentr_integer_is_na, SEXP, SEXP r_integer, SEXP r_index)     \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_INTEGER, integer, integerval)
 
 #define INSTRUMENTR_INTEGER_API_MAP(MACRO) \
     INSTRUMENTR_INTEGER_C_API_MAP(MACRO)   \
@@ -762,20 +950,22 @@
  REAL API
  *******************************************************************************/
 
-#define INSTRUMENTR_REAL_C_API_MAP(MACRO)                           \
-    MACRO(instrumentr_real_get_sexp, SEXP, instrumentr_real_t real) \
-    MACRO(instrumentr_real_get_size, int, instrumentr_real_t real)  \
-    MACRO(instrumentr_real_get_element,                             \
-          double,                                                   \
-          instrumentr_real_t real,                                  \
-          int index)                                                \
-    MACRO(instrumentr_real_is_na, bool, instrumentr_real_t real, int index)
+#define INSTRUMENTR_REAL_C_API_MAP(MACRO)                                   \
+    MACRO(instrumentr_real_get_size, int, instrumentr_real_t real)          \
+    MACRO(instrumentr_real_get_element,                                     \
+          double,                                                           \
+          instrumentr_real_t real,                                          \
+          int index)                                                        \
+    MACRO(instrumentr_real_is_na, bool, instrumentr_real_t real, int index) \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                        \
+        MACRO, INSTRUMENTR_VALUE_TYPE_REAL, real, realval)
 
 #define INSTRUMENTR_REAL_R_API_MAP(MACRO)                                  \
-    MACRO(r_instrumentr_real_get_sexp, SEXP, SEXP r_real)                  \
     MACRO(r_instrumentr_real_get_size, SEXP, SEXP r_real)                  \
     MACRO(r_instrumentr_real_get_element, SEXP, SEXP r_real, SEXP r_index) \
-    MACRO(r_instrumentr_real_is_na, SEXP, SEXP r_real, SEXP r_index)
+    MACRO(r_instrumentr_real_is_na, SEXP, SEXP r_real, SEXP r_index)       \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                       \
+        MACRO, INSTRUMENTR_VALUE_TYPE_REAL, real, realval)
 
 #define INSTRUMENTR_REAL_API_MAP(MACRO) \
     INSTRUMENTR_REAL_C_API_MAP(MACRO)   \
@@ -785,24 +975,26 @@
  LOGICAL API
  *******************************************************************************/
 
-#define INSTRUMENTR_LOGICAL_C_API_MAP(MACRO)                                 \
-    MACRO(instrumentr_logical_get_sexp, SEXP, instrumentr_logical_t logical) \
-    MACRO(instrumentr_logical_get_size, int, instrumentr_logical_t logical)  \
-    MACRO(instrumentr_logical_get_element,                                   \
-          int,                                                               \
-          instrumentr_logical_t logical,                                     \
-          int index)                                                         \
-    MACRO(instrumentr_logical_is_na,                                         \
-          bool,                                                              \
-          instrumentr_logical_t logical,                                     \
-          int index)
+#define INSTRUMENTR_LOGICAL_C_API_MAP(MACRO)                                \
+    MACRO(instrumentr_logical_get_size, int, instrumentr_logical_t logical) \
+    MACRO(instrumentr_logical_get_element,                                  \
+          int,                                                              \
+          instrumentr_logical_t logical,                                    \
+          int index)                                                        \
+    MACRO(instrumentr_logical_is_na,                                        \
+          bool,                                                             \
+          instrumentr_logical_t logical,                                    \
+          int index)                                                        \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                        \
+        MACRO, INSTRUMENTR_VALUE_TYPE_LOGICAL, logical, logicalval)
 
 #define INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)                                   \
-    MACRO(r_instrumentr_logical_get_sexp, SEXP, SEXP r_logical)                \
     MACRO(r_instrumentr_logical_get_size, SEXP, SEXP r_logical)                \
     MACRO(                                                                     \
         r_instrumentr_logical_get_element, SEXP, SEXP r_logical, SEXP r_index) \
-    MACRO(r_instrumentr_logical_is_na, SEXP, SEXP r_logical, SEXP r_index)
+    MACRO(r_instrumentr_logical_is_na, SEXP, SEXP r_logical, SEXP r_index)     \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_LOGICAL, logical, logicalval)
 
 #define INSTRUMENTR_LOGICAL_API_MAP(MACRO) \
     INSTRUMENTR_LOGICAL_C_API_MAP(MACRO)   \
@@ -812,24 +1004,26 @@
  COMPLEX API
  *******************************************************************************/
 
-#define INSTRUMENTR_COMPLEX_C_API_MAP(MACRO)                                 \
-    MACRO(instrumentr_complex_get_sexp, SEXP, instrumentr_complex_t complex) \
-    MACRO(instrumentr_complex_get_size, int, instrumentr_complex_t complex)  \
-    MACRO(instrumentr_complex_get_element,                                   \
-          Rcomplex,                                                          \
-          instrumentr_complex_t complex,                                     \
-          int index)                                                         \
-    MACRO(instrumentr_complex_is_na,                                         \
-          bool,                                                              \
-          instrumentr_complex_t complex,                                     \
-          int index)
+#define INSTRUMENTR_COMPLEX_C_API_MAP(MACRO)                                \
+    MACRO(instrumentr_complex_get_size, int, instrumentr_complex_t complex) \
+    MACRO(instrumentr_complex_get_element,                                  \
+          Rcomplex,                                                         \
+          instrumentr_complex_t complex,                                    \
+          int index)                                                        \
+    MACRO(instrumentr_complex_is_na,                                        \
+          bool,                                                             \
+          instrumentr_complex_t complex,                                    \
+          int index)                                                        \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                        \
+        MACRO, INSTRUMENTR_VALUE_TYPE_COMPLEX, complex, complexval)
 
 #define INSTRUMENTR_COMPLEX_R_API_MAP(MACRO)                                   \
-    MACRO(r_instrumentr_complex_get_sexp, SEXP, SEXP r_complex)                \
     MACRO(r_instrumentr_complex_get_size, SEXP, SEXP r_complex)                \
     MACRO(                                                                     \
         r_instrumentr_complex_get_element, SEXP, SEXP r_complex, SEXP r_index) \
-    MACRO(r_instrumentr_complex_is_na, SEXP, SEXP r_complex, SEXP r_index)
+    MACRO(r_instrumentr_complex_is_na, SEXP, SEXP r_complex, SEXP r_index)     \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_COMPLEX, complex, complexval)
 
 #define INSTRUMENTR_COMPLEX_API_MAP(MACRO) \
     INSTRUMENTR_COMPLEX_C_API_MAP(MACRO)   \
@@ -839,15 +1033,18 @@
  RAW API
  *******************************************************************************/
 
-#define INSTRUMENTR_RAW_C_API_MAP(MACRO)                         \
-    MACRO(instrumentr_raw_get_sexp, SEXP, instrumentr_raw_t raw) \
-    MACRO(instrumentr_raw_get_size, int, instrumentr_raw_t raw)  \
-    MACRO(instrumentr_raw_get_element, Rbyte, instrumentr_raw_t raw, int index)
+#define INSTRUMENTR_RAW_C_API_MAP(MACRO)                                      \
+    MACRO(instrumentr_raw_get_size, int, instrumentr_raw_t raw)               \
+    MACRO(                                                                    \
+        instrumentr_raw_get_element, Rbyte, instrumentr_raw_t raw, int index) \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                          \
+        MACRO, INSTRUMENTR_VALUE_TYPE_RAW, raw, rawval)
 
-#define INSTRUMENTR_RAW_R_API_MAP(MACRO)                \
-    MACRO(r_instrumentr_raw_get_sexp, SEXP, SEXP r_raw) \
-    MACRO(r_instrumentr_raw_get_size, SEXP, SEXP r_raw) \
-    MACRO(r_instrumentr_raw_get_element, SEXP, SEXP r_raw, SEXP r_index)
+#define INSTRUMENTR_RAW_R_API_MAP(MACRO)                                 \
+    MACRO(r_instrumentr_raw_get_size, SEXP, SEXP r_raw)                  \
+    MACRO(r_instrumentr_raw_get_element, SEXP, SEXP r_raw, SEXP r_index) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                     \
+        MACRO, INSTRUMENTR_VALUE_TYPE_RAW, raw, rawval)
 
 #define INSTRUMENTR_RAW_API_MAP(MACRO) \
     INSTRUMENTR_RAW_C_API_MAP(MACRO)   \
@@ -857,44 +1054,51 @@
  ENVIRONMENT API
  *******************************************************************************/
 
-#define INSTRUMENTR_ENVIRONMENT_C_API_MAP(MACRO) \
-    MACRO(instrumentr_environment_wrap,          \
-          SEXP,                                  \
-          instrumentr_environment_t environment) \
-    MACRO(instrumentr_environment_unwrap,        \
-          instrumentr_environment_t,             \
-          SEXP r_environment)                    \
-    MACRO(instrumentr_environment_get_name,      \
-          const char*,                           \
-          instrumentr_environment_t environment) \
-    MACRO(instrumentr_environment_get_sexp,      \
-          SEXP,                                  \
-          instrumentr_environment_t environment) \
-    MACRO(instrumentr_environment_get_size,      \
-          int,                                   \
-          instrumentr_environment_t environment) \
-    MACRO(instrumentr_environment_lookup,        \
-          instrumentr_closure_t,                 \
-          instrumentr_environment_t environment, \
-          const char* name)                      \
-    MACRO(instrumentr_environment_contains,      \
-          int,                                   \
-          instrumentr_environment_t environment, \
-          const char* name)
+#define INSTRUMENTR_ENVIRONMENT_C_API_MAP(MACRO)                        \
+    MACRO(instrumentr_environment_get_name,                             \
+          const char*,                                                  \
+          instrumentr_environment_t environment)                        \
+    MACRO(instrumentr_environment_get_type,                             \
+          instrumentr_environment_type_t,                               \
+          instrumentr_environment_t environment)                        \
+    MACRO(instrumentr_environment_type_to_string,                       \
+          std::string,                                                  \
+          instrumentr_environment_type_t type)                          \
+    MACRO(instrumentr_environment_get_size,                             \
+          int,                                                          \
+          instrumentr_environment_t environment)                        \
+    MACRO(instrumentr_environment_lookup,                               \
+          instrumentr_value_t,                                          \
+          instrumentr_environment_t environment,                        \
+          instrumentr_symbol_t symbol)                                  \
+    MACRO(instrumentr_environment_contains,                             \
+          int,                                                          \
+          instrumentr_environment_t environment,                        \
+          const char* name)                                             \
+    MACRO(instrumentr_environment_get_call,                             \
+          instrumentr_call_t,                                           \
+          instrumentr_environment_t environment)                        \
+    INSTRUMENTR_VALUE_DECLARE_C_API(MACRO,                              \
+                                    INSTRUMENTR_VALUE_TYPE_ENVIRONMENT, \
+                                    environment,                        \
+                                    environmentval)
 
-#define INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)                        \
-    MACRO(r_instrumentr_environment_get_name, SEXP, SEXP r_environment) \
-    MACRO(r_instrumentr_environment_get_sexp, SEXP, SEXP r_environment) \
-    MACRO(r_instrumentr_environment_get_size, SEXP, SEXP r_environment) \
-    MACRO(r_instrumentr_environment_lookup,                             \
-          SEXP,                                                         \
-          SEXP r_environment,                                           \
-          SEXP r_name)                                                  \
-    MACRO(r_instrumentr_environment_contains,                           \
-          SEXP,                                                         \
-          SEXP r_environment,                                           \
-          SEXP r_name)                                                  \
-    MACRO(r_instrumentr_environment_get_bindings, SEXP, SEXP r_environment)
+#define INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)                            \
+    MACRO(r_instrumentr_environment_get_name, SEXP, SEXP r_environment)     \
+    MACRO(r_instrumentr_environment_get_size, SEXP, SEXP r_environment)     \
+    MACRO(r_instrumentr_environment_lookup,                                 \
+          SEXP,                                                             \
+          SEXP r_environment,                                               \
+          SEXP r_name)                                                      \
+    MACRO(r_instrumentr_environment_contains,                               \
+          SEXP,                                                             \
+          SEXP r_environment,                                               \
+          SEXP r_name)                                                      \
+    MACRO(r_instrumentr_environment_get_bindings, SEXP, SEXP r_environment) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(MACRO,                                  \
+                                    INSTRUMENTR_VALUE_TYPE_ENVIRONMENT,     \
+                                    environment,                            \
+                                    environmentval)
 
 #define INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO) \
     INSTRUMENTR_ENVIRONMENT_C_API_MAP(MACRO)   \
@@ -905,9 +1109,6 @@
  *******************************************************************************/
 
 #define INSTRUMENTR_BUILTIN_C_API_MAP(MACRO)                                   \
-    MACRO(instrumentr_builtin_wrap, SEXP, instrumentr_builtin_t builtin)       \
-    MACRO(instrumentr_builtin_unwrap, instrumentr_builtin_t, SEXP r_builtin)   \
-    MACRO(instrumentr_builtin_get_sexp, SEXP, instrumentr_builtin_t builtin)   \
     MACRO(instrumentr_builtin_get_name,                                        \
           const char*,                                                         \
           instrumentr_builtin_t builtin)                                       \
@@ -915,14 +1116,18 @@
           int,                                                                 \
           instrumentr_builtin_t builtin)                                       \
     MACRO(instrumentr_builtin_is_internal, int, instrumentr_builtin_t builtin) \
-    MACRO(instrumentr_builtin_is_primitive, int, instrumentr_builtin_t builtin)
+    MACRO(                                                                     \
+        instrumentr_builtin_is_primitive, int, instrumentr_builtin_t builtin)  \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_BUILTIN, builtin, builtinval)
 
 #define INSTRUMENTR_BUILTIN_R_API_MAP(MACRO)                               \
-    MACRO(r_instrumentr_builtin_get_sexp, SEXP, SEXP r_builtin)            \
     MACRO(r_instrumentr_builtin_get_name, SEXP, SEXP r_builtin)            \
     MACRO(r_instrumentr_builtin_get_parameter_count, SEXP, SEXP r_builtin) \
     MACRO(r_instrumentr_builtin_is_internal, SEXP, SEXP r_builtin)         \
-    MACRO(r_instrumentr_builtin_is_primitive, SEXP, SEXP r_builtin)
+    MACRO(r_instrumentr_builtin_is_primitive, SEXP, SEXP r_builtin)        \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                       \
+        MACRO, INSTRUMENTR_VALUE_TYPE_BUILTIN, builtin, builtinval)
 
 #define INSTRUMENTR_BUILTIN_API_MAP(MACRO) \
     INSTRUMENTR_BUILTIN_C_API_MAP(MACRO)   \
@@ -933,9 +1138,6 @@
  *******************************************************************************/
 
 #define INSTRUMENTR_SPECIAL_C_API_MAP(MACRO)                                   \
-    MACRO(instrumentr_special_wrap, SEXP, instrumentr_special_t special)       \
-    MACRO(instrumentr_special_unwrap, instrumentr_special_t, SEXP r_special)   \
-    MACRO(instrumentr_special_get_sexp, SEXP, instrumentr_special_t special)   \
     MACRO(instrumentr_special_get_name,                                        \
           const char*,                                                         \
           instrumentr_special_t special)                                       \
@@ -943,14 +1145,18 @@
           int,                                                                 \
           instrumentr_special_t special)                                       \
     MACRO(instrumentr_special_is_internal, int, instrumentr_special_t special) \
-    MACRO(instrumentr_special_is_primitive, int, instrumentr_special_t special)
+    MACRO(                                                                     \
+        instrumentr_special_is_primitive, int, instrumentr_special_t special)  \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_SPECIAL, special, specialval)
 
 #define INSTRUMENTR_SPECIAL_R_API_MAP(MACRO)                               \
-    MACRO(r_instrumentr_special_get_sexp, SEXP, SEXP r_special)            \
     MACRO(r_instrumentr_special_get_name, SEXP, SEXP r_special)            \
     MACRO(r_instrumentr_special_get_parameter_count, SEXP, SEXP r_special) \
     MACRO(r_instrumentr_special_is_internal, SEXP, SEXP r_special)         \
-    MACRO(r_instrumentr_special_is_primitive, SEXP, SEXP r_special)
+    MACRO(r_instrumentr_special_is_primitive, SEXP, SEXP r_special)        \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                       \
+        MACRO, INSTRUMENTR_VALUE_TYPE_SPECIAL, special, specialval)
 
 #define INSTRUMENTR_SPECIAL_API_MAP(MACRO) \
     INSTRUMENTR_SPECIAL_C_API_MAP(MACRO)   \
@@ -961,12 +1167,12 @@
  *******************************************************************************/
 
 #define INSTRUMENTR_CLOSURE_C_API_MAP(MACRO)                                   \
-    MACRO(instrumentr_closure_wrap, SEXP, instrumentr_closure_t closure)       \
-    MACRO(instrumentr_closure_unwrap, instrumentr_closure_t, SEXP r_closure)   \
-    MACRO(instrumentr_closure_get_sexp, SEXP, instrumentr_closure_t closure)   \
     MACRO(instrumentr_closure_has_name, int, instrumentr_closure_t closure)    \
     MACRO(instrumentr_closure_get_name,                                        \
           const char*,                                                         \
+          instrumentr_closure_t closure)                                       \
+    MACRO(instrumentr_closure_get_formals,                                     \
+          instrumentr_value_t,                                                 \
           instrumentr_closure_t closure)                                       \
     MACRO(instrumentr_closure_get_environment,                                 \
           instrumentr_environment_t,                                           \
@@ -981,10 +1187,12 @@
     MACRO(instrumentr_closure_is_exported, int, instrumentr_closure_t closure) \
     MACRO(                                                                     \
         instrumentr_closure_is_s3_generic, int, instrumentr_closure_t closure) \
-    MACRO(instrumentr_closure_is_s3_method, int, instrumentr_closure_t closure)
+    MACRO(                                                                     \
+        instrumentr_closure_is_s3_method, int, instrumentr_closure_t closure)  \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                           \
+        MACRO, INSTRUMENTR_VALUE_TYPE_CLOSURE, closure, closureval)
 
 #define INSTRUMENTR_CLOSURE_R_API_MAP(MACRO)                               \
-    MACRO(r_instrumentr_closure_get_sexp, SEXP, SEXP r_closure)            \
     MACRO(r_instrumentr_closure_has_name, SEXP, SEXP r_closure)            \
     MACRO(r_instrumentr_closure_get_name, SEXP, SEXP r_closure)            \
     MACRO(r_instrumentr_closure_get_environment, SEXP, SEXP r_closure)     \
@@ -992,7 +1200,9 @@
     MACRO(r_instrumentr_closure_get_parameter_count, SEXP, SEXP r_closure) \
     MACRO(r_instrumentr_closure_is_exported, SEXP, SEXP r_closure)         \
     MACRO(r_instrumentr_closure_is_s3_generic, SEXP, SEXP r_closure)       \
-    MACRO(r_instrumentr_closure_is_s3_method, SEXP, SEXP r_closure)
+    MACRO(r_instrumentr_closure_is_s3_method, SEXP, SEXP r_closure)        \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                       \
+        MACRO, INSTRUMENTR_VALUE_TYPE_CLOSURE, closure, closureval)
 
 #define INSTRUMENTR_CLOSURE_API_MAP(MACRO) \
     INSTRUMENTR_CLOSURE_C_API_MAP(MACRO)   \
@@ -1003,8 +1213,6 @@
  *******************************************************************************/
 
 #define INSTRUMENTR_CALL_C_API_MAP(MACRO)                                 \
-    MACRO(instrumentr_call_wrap, SEXP, instrumentr_call_t call)           \
-    MACRO(instrumentr_call_unwrap, instrumentr_call_t, SEXP r_call)       \
     MACRO(instrumentr_call_get_function,                                  \
           instrumentr_value_t,                                            \
           instrumentr_call_t call)                                        \
@@ -1014,7 +1222,9 @@
           instrumentr_call_t call)                                        \
     MACRO(instrumentr_call_is_active, int, instrumentr_call_t call)       \
     MACRO(instrumentr_call_has_result, int, instrumentr_call_t call)      \
-    MACRO(instrumentr_call_get_result, SEXP, instrumentr_call_t call)
+    MACRO(instrumentr_call_get_result, SEXP, instrumentr_call_t call)     \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(                              \
+        MACRO, INSTRUMENTR_MODEL_TYPE_CALL, call, call)
 
 #define INSTRUMENTR_CALL_R_API_MAP(MACRO)                        \
     MACRO(r_instrumentr_call_get_function, SEXP, SEXP r_call)    \
@@ -1022,7 +1232,9 @@
     MACRO(r_instrumentr_call_get_environment, SEXP, SEXP r_call) \
     MACRO(r_instrumentr_call_is_active, SEXP, SEXP r_call)       \
     MACRO(r_instrumentr_call_has_result, SEXP, SEXP r_call)      \
-    MACRO(r_instrumentr_call_get_result, SEXP, SEXP r_call)
+    MACRO(r_instrumentr_call_get_result, SEXP, SEXP r_call)      \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API(                     \
+        MACRO, INSTRUMENTR_MODEL_TYPE_CALL, call, call)
 
 #define INSTRUMENTR_CALL_API_MAP(MACRO) \
     INSTRUMENTR_CALL_C_API_MAP(MACRO)   \
@@ -1033,12 +1245,6 @@
  *******************************************************************************/
 
 #define INSTRUMENTR_CALL_STACK_C_API_MAP(MACRO) \
-    MACRO(instrumentr_call_stack_wrap,          \
-          SEXP,                                 \
-          instrumentr_call_stack_t call_stack)  \
-    MACRO(instrumentr_call_stack_unwrap,        \
-          instrumentr_call_stack_t,             \
-          SEXP r_call_stack)                    \
     MACRO(instrumentr_call_stack_get_size,      \
           int,                                  \
           instrumentr_call_stack_t call_stack)  \
@@ -1049,7 +1255,9 @@
     MACRO(instrumentr_call_stack_peek_frame,    \
           instrumentr_frame_t,                  \
           instrumentr_call_stack_t call_stack,  \
-          int index)
+          int index)                            \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(    \
+        MACRO, INSTRUMENTR_MODEL_TYPE_CALL_STACK, call_stack, call_stack)
 
 #define INSTRUMENTR_CALL_STACK_R_API_MAP(MACRO)                       \
     MACRO(r_instrumentr_call_stack_get_size, SEXP, SEXP r_call_stack) \
@@ -1060,7 +1268,9 @@
     MACRO(r_instrumentr_call_stack_peek_frame,                        \
           SEXP,                                                       \
           SEXP r_call_stack,                                          \
-          SEXP r_index)
+          SEXP r_index)                                               \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API(                          \
+        MACRO, INSTRUMENTR_MODEL_TYPE_CALL_STACK, call_stack, call_stack)
 
 #define INSTRUMENTR_CALL_STACK_API_MAP(MACRO) \
     INSTRUMENTR_CALL_STACK_C_API_MAP(MACRO)   \
@@ -1082,7 +1292,9 @@
     MACRO(instrumentr_frame_is_context, int, instrumentr_frame_t frame) \
     MACRO(instrumentr_frame_as_context,                                 \
           instrumentr_context_t,                                        \
-          instrumentr_frame_t frame)
+          instrumentr_frame_t frame)                                    \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(                            \
+        MACRO, INSTRUMENTR_MODEL_TYPE_FRAME, frame, frame)
 
 #define INSTRUMENTR_FRAME_R_API_MAP(MACRO)                    \
     MACRO(r_instrumentr_frame_is_call, SEXP, SEXP r_frame)    \
@@ -1090,7 +1302,9 @@
     MACRO(r_instrumentr_frame_is_promise, SEXP, SEXP r_frame) \
     MACRO(r_instrumentr_frame_as_promise, SEXP, SEXP r_frame) \
     MACRO(r_instrumentr_frame_is_context, SEXP, SEXP r_frame) \
-    MACRO(r_instrumentr_frame_as_context, SEXP, SEXP r_frame)
+    MACRO(r_instrumentr_frame_as_context, SEXP, SEXP r_frame) \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API(                  \
+        MACRO, INSTRUMENTR_MODEL_TYPE_FRAME, frame, frame)
 
 #define INSTRUMENTR_FRAME_API_MAP(MACRO) \
     INSTRUMENTR_FRAME_C_API_MAP(MACRO)   \
@@ -1103,9 +1317,11 @@
 #define INSTRUMENTR_PROMISE_C_API_MAP(MACRO)                                   \
     MACRO(instrumentr_promise_is_forced, int, instrumentr_promise_t promise)   \
     MACRO(instrumentr_promise_get_expression,                                  \
-          SEXP,                                                                \
+          instrumentr_value_t,                                                 \
           instrumentr_promise_t promise)                                       \
-    MACRO(instrumentr_promise_get_value, SEXP, instrumentr_promise_t promise)  \
+    MACRO(instrumentr_promise_get_value,                                       \
+          instrumentr_value_t,                                                 \
+          instrumentr_promise_t promise)                                       \
     MACRO(instrumentr_promise_get_type,                                        \
           instrumentr_promise_type_t,                                          \
           instrumentr_promise_t promise)                                       \
@@ -1121,7 +1337,9 @@
           instrumentr_promise_t promise)                                       \
     MACRO(instrumentr_promise_get_call,                                        \
           instrumentr_call_t,                                                  \
-          instrumentr_promise_t promise)
+          instrumentr_promise_t promise)                                       \
+    INSTRUMENTR_VALUE_DECLARE_C_API(                                           \
+        MACRO, INSTRUMENTR_MODEL_TYPE_PROMISE, promise, promiseval)
 
 #define INSTRUMENTR_PROMISE_R_API_MAP(MACRO)                             \
     MACRO(r_instrumentr_promise_is_forced, SEXP, SEXP r_promise)         \
@@ -1132,7 +1350,9 @@
     MACRO(r_instrumentr_promise_is_delayed_assign, SEXP, SEXP r_promise) \
     MACRO(r_instrumentr_promise_is_lazy_load, SEXP, SEXP r_promise)      \
     MACRO(r_instrumentr_promise_is_unknown, SEXP, SEXP r_promise)        \
-    MACRO(r_instrumentr_promise_get_call, SEXP, SEXP r_promise)
+    MACRO(r_instrumentr_promise_get_call, SEXP, SEXP r_promise)          \
+    INSTRUMENTR_VALUE_DECLARE_R_API(                                     \
+        MACRO, INSTRUMENTR_MODEL_TYPE_PROMISE, promise, promiseval)
 
 #define INSTRUMENTR_PROMISE_API_MAP(MACRO) \
     INSTRUMENTR_PROMISE_C_API_MAP(MACRO)   \
@@ -1142,9 +1362,13 @@
  MISCELLANEOUS API
  *******************************************************************************/
 
-#define INSTRUMENTR_MISCELLANEOUS_C_API_MAP(MACRO)
+#define INSTRUMENTR_MISCELLANEOUS_C_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_DECLARE_C_API(               \
+        MACRO, INSTRUMENTR_MODEL_TYPE_MISCELLANEOUS, miscellaneous, miscval)
 
-#define INSTRUMENTR_MISCELLANEOUS_R_API_MAP(MACRO)
+#define INSTRUMENTR_MISCELLANEOUS_R_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(               \
+        MACRO, INSTRUMENTR_MODEL_TYPE_MISCELLANEOUS, miscellaneous, miscval)
 
 #define INSTRUMENTR_MISCELLANEOUS_API_MAP(MACRO) \
     INSTRUMENTR_MISCELLANEOUS_C_API_MAP(MACRO)   \
@@ -1154,9 +1378,42 @@
  VALUE API
  *******************************************************************************/
 
-#define INSTRUMENTR_VALUE_C_API_MAP(MACRO)
+#define INSTRUMENTR_VALUE_C_API_MAP(MACRO)                                     \
+    MACRO(instrumentr_value_wrap, SEXP, instrumentr_value_t value)             \
+    MACRO(instrumentr_value_unwrap,                                            \
+          instrumentr_value_t,                                                 \
+          SEXP r_value,                                                        \
+          instrumentr_value_type_t type)                                       \
+    MACRO(                                                                     \
+        instrumentr_value_get_reference_count, int, instrumentr_value_t value) \
+    MACRO(                                                                     \
+        instrumentr_value_get_id, instrumentr_id_t, instrumentr_value_t value) \
+    MACRO(instrumentr_value_get_type,                                          \
+          instrumentr_value_type_t,                                            \
+          instrumentr_value_t value)                                           \
+    MACRO(instrumentr_value_get_birth_time, int, instrumentr_value_t value)    \
+    MACRO(instrumentr_value_get_death_time, int, instrumentr_value_t value)    \
+    MACRO(instrumentr_value_get_life_time, int, instrumentr_value_t value)     \
+    MACRO(instrumentr_value_is_alive, int, instrumentr_value_t value)          \
+    MACRO(instrumentr_value_is_dead, int, instrumentr_value_t value)           \
+    MACRO(instrumentr_value_is_local, int, instrumentr_value_t value)          \
+    MACRO(instrumentr_value_is_foreign, int, instrumentr_value_t value)        \
+    MACRO(instrumentr_value_get_state,                                         \
+          instrumentr_state_t,                                                 \
+          instrumentr_value_t value)                                           \
+    MACRO(instrumentr_value_get_sexp, SEXP, instrumentr_value_t value)
 
-#define INSTRUMENTR_VALUE_R_API_MAP(MACRO)
+#define INSTRUMENTR_VALUE_R_API_MAP(MACRO)                             \
+    MACRO(r_instrumentr_value_get_reference_count, SEXP, SEXP r_value) \
+    MACRO(r_instrumentr_value_get_id, SEXP, SEXP r_value)              \
+    MACRO(r_instrumentr_value_get_birth_time, SEXP, SEXP r_value)      \
+    MACRO(r_instrumentr_value_get_death_time, SEXP, SEXP r_value)      \
+    MACRO(r_instrumentr_value_get_life_time, SEXP, SEXP r_value)       \
+    MACRO(r_instrumentr_value_is_alive, SEXP, SEXP r_value)            \
+    MACRO(r_instrumentr_value_is_dead, SEXP, SEXP r_value)             \
+    MACRO(r_instrumentr_value_is_local, SEXP, SEXP r_value)            \
+    MACRO(r_instrumentr_value_is_foreign, SEXP, SEXP r_value)          \
+    MACRO(r_instrumentr_value_get_sexp, SEXP, SEXP r_value)
 
 #define INSTRUMENTR_VALUE_API_MAP(MACRO) \
     INSTRUMENTR_VALUE_C_API_MAP(MACRO)   \
@@ -1166,15 +1423,48 @@
  CONTEXT API
 *******************************************************************************/
 
-#define INSTRUMENTR_CONTEXT_C_API_MAP(MACRO) \
-    MACRO(instrumentr_context_get_pointer, void*, instrumentr_context_t context)
+#define INSTRUMENTR_CONTEXT_C_API_MAP(MACRO)                                   \
+    MACRO(                                                                     \
+        instrumentr_context_get_pointer, void*, instrumentr_context_t context) \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(                                   \
+        MACRO, INSTRUMENTR_MODEL_TYPE_CONTEXT, context, context)
 
-#define INSTRUMENTR_CONTEXT_R_API_MAP(MACRO) \
-    MACRO(r_instrumentr_context_get_pointer, SEXP, SEXP r_context)
+#define INSTRUMENTR_CONTEXT_R_API_MAP(MACRO)                       \
+    MACRO(r_instrumentr_context_get_pointer, SEXP, SEXP r_context) \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API(                       \
+        MACRO, INSTRUMENTR_MODEL_TYPE_CONTEXT, context, context)
 
 #define INSTRUMENTR_CONTEXT_API_MAP(MACRO) \
     INSTRUMENTR_CONTEXT_C_API_MAP(MACRO)   \
     INSTRUMENTR_CONTEXT_R_API_MAP(MACRO)
+
+/********************************************************************************
+ VALUE_TYPE API
+*******************************************************************************/
+#define INSTRUMENTR_VALUE_TYPE_C_API_MAP(MACRO) \
+    MACRO(instrumentr_value_type_get_name,      \
+          const char*,                          \
+          instrumentr_value_type_t value_type)
+
+#define INSTRUMENTR_VALUE_TYPE_R_API_MAP(MACRO)
+
+#define INSTRUMENTR_VALUE_TYPE_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_TYPE_C_API_MAP(MACRO)   \
+    INSTRUMENTR_VALUE_TYPE_R_API_MAP(MACRO)
+
+/********************************************************************************
+ MODEL_TYPE API
+*******************************************************************************/
+#define INSTRUMENTR_MODEL_TYPE_C_API_MAP(MACRO) \
+    MACRO(instrumentr_model_type_get_name,      \
+          const char*,                          \
+          instrumentr_model_type_t model_type)
+
+#define INSTRUMENTR_MODEL_TYPE_R_API_MAP(MACRO)
+
+#define INSTRUMENTR_MODEL_TYPE_API_MAP(MACRO) \
+    INSTRUMENTR_MODEL_TYPE_C_API_MAP(MACRO)   \
+    INSTRUMENTR_MODEL_TYPE_R_API_MAP(MACRO)
 
 #define INSTRUMENTR_API_MAP(MACRO)           \
     INSTRUMENTR_INTEROP_API_MAP(MACRO)       \
@@ -1186,30 +1476,39 @@
     INSTRUMENTR_STATE_API_MAP(MACRO)         \
     INSTRUMENTR_MODEL_API_MAP(MACRO)         \
     INSTRUMENTR_APPLICATION_API_MAP(MACRO)   \
-    INSTRUMENTR_CHAR_API_MAP(MACRO)          \
-    INSTRUMENTR_CHARACTER_API_MAP(MACRO)     \
-    INSTRUMENTR_SYMBOL_API_MAP(MACRO)        \
-    INSTRUMENTR_LANGUAGE_API_MAP(MACRO)      \
-    INSTRUMENTR_DOT_API_MAP(MACRO)           \
-    INSTRUMENTR_PAIRLIST_API_MAP(MACRO)      \
-    INSTRUMENTR_LIST_API_MAP(MACRO)          \
-    INSTRUMENTR_EXPRESSION_API_MAP(MACRO)    \
-    INSTRUMENTR_INTEGER_API_MAP(MACRO)       \
-    INSTRUMENTR_REAL_API_MAP(MACRO)          \
-    INSTRUMENTR_LOGICAL_API_MAP(MACRO)       \
-    INSTRUMENTR_COMPLEX_API_MAP(MACRO)       \
-    INSTRUMENTR_RAW_API_MAP(MACRO)           \
-    INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO)   \
-    INSTRUMENTR_BUILTIN_API_MAP(MACRO)       \
-    INSTRUMENTR_SPECIAL_API_MAP(MACRO)       \
-    INSTRUMENTR_CLOSURE_API_MAP(MACRO)       \
     INSTRUMENTR_CALL_API_MAP(MACRO)          \
     INSTRUMENTR_CALL_STACK_API_MAP(MACRO)    \
     INSTRUMENTR_FRAME_API_MAP(MACRO)         \
-    INSTRUMENTR_PROMISE_API_MAP(MACRO)       \
-    INSTRUMENTR_MISCELLANEOUS_API_MAP(MACRO) \
+    INSTRUMENTR_CONTEXT_API_MAP(MACRO)       \
     INSTRUMENTR_VALUE_API_MAP(MACRO)         \
-    INSTRUMENTR_CONTEXT_API_MAP(MACRO)
+    INSTRUMENTR_NULL_API_MAP(MACRO)          \
+    INSTRUMENTR_SYMBOL_API_MAP(MACRO)        \
+    INSTRUMENTR_PAIRLIST_API_MAP(MACRO)      \
+    INSTRUMENTR_CLOSURE_API_MAP(MACRO)       \
+    INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO)   \
+    INSTRUMENTR_PROMISE_API_MAP(MACRO)       \
+    INSTRUMENTR_LANGUAGE_API_MAP(MACRO)      \
+    INSTRUMENTR_SPECIAL_API_MAP(MACRO)       \
+    INSTRUMENTR_BUILTIN_API_MAP(MACRO)       \
+    INSTRUMENTR_CHAR_API_MAP(MACRO)          \
+    INSTRUMENTR_LOGICAL_API_MAP(MACRO)       \
+    INSTRUMENTR_INTEGER_API_MAP(MACRO)       \
+    INSTRUMENTR_REAL_API_MAP(MACRO)          \
+    INSTRUMENTR_COMPLEX_API_MAP(MACRO)       \
+    INSTRUMENTR_CHARACTER_API_MAP(MACRO)     \
+    INSTRUMENTR_DOT_API_MAP(MACRO)           \
+    INSTRUMENTR_LIST_API_MAP(MACRO)          \
+    INSTRUMENTR_EXPRESSION_API_MAP(MACRO)    \
+    INSTRUMENTR_BYTECODE_API_MAP(MACRO)      \
+    INSTRUMENTR_EXTERNALPTR_API_MAP(MACRO)   \
+    INSTRUMENTR_WEAKREF_API_MAP(MACRO)       \
+    INSTRUMENTR_RAW_API_MAP(MACRO)           \
+    INSTRUMENTR_S4_API_MAP(MACRO)            \
+    INSTRUMENTR_UNBOUND_API_MAP(MACRO)       \
+    INSTRUMENTR_MISSING_API_MAP(MACRO)       \
+    INSTRUMENTR_MISCELLANEOUS_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_TYPE_API_MAP(MACRO)    \
+    INSTRUMENTR_MODEL_TYPE_API_MAP(MACRO)
 
 #define INSTRUMENTR_R_API_MAP(MACRO)           \
     INSTRUMENTR_INTEROP_R_API_MAP(MACRO)       \
@@ -1221,30 +1520,39 @@
     INSTRUMENTR_STATE_R_API_MAP(MACRO)         \
     INSTRUMENTR_MODEL_R_API_MAP(MACRO)         \
     INSTRUMENTR_APPLICATION_R_API_MAP(MACRO)   \
-    INSTRUMENTR_CHAR_R_API_MAP(MACRO)          \
-    INSTRUMENTR_CHARACTER_R_API_MAP(MACRO)     \
-    INSTRUMENTR_SYMBOL_R_API_MAP(MACRO)        \
-    INSTRUMENTR_LANGUAGE_R_API_MAP(MACRO)      \
-    INSTRUMENTR_DOT_R_API_MAP(MACRO)           \
-    INSTRUMENTR_PAIRLIST_R_API_MAP(MACRO)      \
-    INSTRUMENTR_LIST_R_API_MAP(MACRO)          \
-    INSTRUMENTR_EXPRESSION_R_API_MAP(MACRO)    \
-    INSTRUMENTR_INTEGER_R_API_MAP(MACRO)       \
-    INSTRUMENTR_REAL_R_API_MAP(MACRO)          \
-    INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)       \
-    INSTRUMENTR_COMPLEX_R_API_MAP(MACRO)       \
-    INSTRUMENTR_RAW_R_API_MAP(MACRO)           \
-    INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)   \
-    INSTRUMENTR_BUILTIN_R_API_MAP(MACRO)       \
-    INSTRUMENTR_SPECIAL_R_API_MAP(MACRO)       \
-    INSTRUMENTR_CLOSURE_R_API_MAP(MACRO)       \
     INSTRUMENTR_CALL_R_API_MAP(MACRO)          \
     INSTRUMENTR_CALL_STACK_R_API_MAP(MACRO)    \
     INSTRUMENTR_FRAME_R_API_MAP(MACRO)         \
-    INSTRUMENTR_PROMISE_R_API_MAP(MACRO)       \
-    INSTRUMENTR_MISCELLANEOUS_R_API_MAP(MACRO) \
+    INSTRUMENTR_CONTEXT_R_API_MAP(MACRO)       \
     INSTRUMENTR_VALUE_R_API_MAP(MACRO)         \
-    INSTRUMENTR_CONTEXT_R_API_MAP(MACRO)
+    INSTRUMENTR_NULL_R_API_MAP(MACRO)          \
+    INSTRUMENTR_SYMBOL_R_API_MAP(MACRO)        \
+    INSTRUMENTR_PAIRLIST_R_API_MAP(MACRO)      \
+    INSTRUMENTR_CLOSURE_R_API_MAP(MACRO)       \
+    INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)   \
+    INSTRUMENTR_PROMISE_R_API_MAP(MACRO)       \
+    INSTRUMENTR_LANGUAGE_R_API_MAP(MACRO)      \
+    INSTRUMENTR_SPECIAL_R_API_MAP(MACRO)       \
+    INSTRUMENTR_BUILTIN_R_API_MAP(MACRO)       \
+    INSTRUMENTR_CHAR_R_API_MAP(MACRO)          \
+    INSTRUMENTR_LOGICAL_R_API_MAP(MACRO)       \
+    INSTRUMENTR_INTEGER_R_API_MAP(MACRO)       \
+    INSTRUMENTR_REAL_R_API_MAP(MACRO)          \
+    INSTRUMENTR_COMPLEX_R_API_MAP(MACRO)       \
+    INSTRUMENTR_CHARACTER_R_API_MAP(MACRO)     \
+    INSTRUMENTR_DOT_R_API_MAP(MACRO)           \
+    INSTRUMENTR_LIST_R_API_MAP(MACRO)          \
+    INSTRUMENTR_EXPRESSION_R_API_MAP(MACRO)    \
+    INSTRUMENTR_BYTECODE_R_API_MAP(MACRO)      \
+    INSTRUMENTR_EXTERNALPTR_R_API_MAP(MACRO)   \
+    INSTRUMENTR_WEAKREF_R_API_MAP(MACRO)       \
+    INSTRUMENTR_RAW_R_API_MAP(MACRO)           \
+    INSTRUMENTR_S4_R_API_MAP(MACRO)            \
+    INSTRUMENTR_UNBOUND_R_API_MAP(MACRO)       \
+    INSTRUMENTR_MISSING_R_API_MAP(MACRO)       \
+    INSTRUMENTR_MISCELLANEOUS_R_API_MAP(MACRO) \
+    INSTRUMENTR_VALUE_TYPE_R_API_MAP(MACRO)    \
+    INSTRUMENTR_MODEL_TYPE_R_API_MAP(MACRO)
 
 #define INSTRUMENTR_API_INCLUDER(FUNCTION, OUTPUT_TYPE, ...) \
     OUTPUT_TYPE FUNCTION(__VA_ARGS__);

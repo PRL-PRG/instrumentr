@@ -34,8 +34,6 @@ instrumentr_value_create(instrumentr_state_t state,
                          instrumentr_origin_t origin,
                          SEXP r_sexp);
 
-instrumentr_value_type_t instrumentr_value_get_type(instrumentr_value_t value);
-
 int instrumentr_value_acquire(instrumentr_value_t value);
 
 int instrumentr_value_release(instrumentr_value_t value);
@@ -136,57 +134,6 @@ SEXP instrumentr_value_get_sexp(instrumentr_value_t value);
 
 SEXP r_instrumentr_value_get_sexp(SEXP r_value);
 
-#define INSTRUMENTR_VALUE_DECLARE_API(VALUE_TYPE, VALUE_NAME, VALUE_VAR)     \
-    SEXP instrumentr_##VALUE_NAME##_wrap(                                    \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    instrumentr_##VALUE_NAME##_t instrumentr_##VALUE_NAME##_unwrap(          \
-        SEXP r_##VALUE_NAME);                                                \
-    int instrumentr_##VALUE_NAME##_acquire(                                  \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    int instrumentr_##VALUE_NAME##_release(                                  \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    int instrumentr_##VALUE_NAME##_kill(                                     \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    int instrumentr_##VALUE_NAME##_get_reference_count(                      \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_get_reference_count(                   \
-        SEXP r_##VALUE_NAME##_var);                                          \
-    instrumentr_id_t instrumentr_##VALUE_NAME##_get_id(                      \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_get_id(SEXP r_##VALUE_NAME##_var);     \
-    bool instrumentr_value_is_##VALUE_NAME(instrumentr_value_t value);       \
-    instrumentr_##VALUE_NAME##_t instrumentr_value_as_##VALUE_NAME(          \
-        instrumentr_value_t value);                                          \
-    int instrumentr_##VALUE_NAME##_get_birth_time(                           \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_get_birth_time(                        \
-        SEXP r_##VALUE_NAME##_var);                                          \
-    int instrumentr_##VALUE_NAME##_get_death_time(                           \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_get_death_time(                        \
-        SEXP r_##VALUE_NAME##_var);                                          \
-    int instrumentr_##VALUE_NAME##_get_life_time(                            \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_get_life_time(                         \
-        SEXP r_##VALUE_NAME##_var);                                          \
-    int instrumentr_##VALUE_NAME##_is_alive(                                 \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_is_alive(SEXP r_##VALUE_NAME##_var);   \
-    int instrumentr_##VALUE_NAME##_is_dead(                                  \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_is_dead(SEXP r_##VALUE_NAME##_var);    \
-    int instrumentr_##VALUE_NAME##_is_local(                                 \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_is_local(SEXP r_##VALUE_NAME##_var);   \
-    int instrumentr_##VALUE_NAME##_is_foreign(                               \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_is_foreign(SEXP r_##VALUE_NAME##_var); \
-    instrumentr_state_t instrumentr_##VALUE_NAME##_get_state(                \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP instrumentr_##VALUE_NAME##_get_sexp(                                \
-        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var);                      \
-    SEXP r_instrumentr_##VALUE_NAME##_get_sexp(SEXP r_##VALUE_NAME##_var);
-
 #define INSTRUMENTR_VALUE_DEFINE_API(VALUE_TYPE, VALUE_NAME, VALUE_VAR)       \
     SEXP instrumentr_##VALUE_NAME##_wrap(                                     \
         instrumentr_##VALUE_NAME##_t VALUE_NAME##_var) {                      \
@@ -253,6 +200,10 @@ SEXP r_instrumentr_value_get_sexp(SEXP r_value);
                                   expected_str);                              \
         }                                                                     \
         return (instrumentr_##VALUE_NAME##_t)(value);                         \
+    }                                                                         \
+    instrumentr_value_t instrumentr_##VALUE_NAME##_as_value(                  \
+        instrumentr_##VALUE_NAME##_t VALUE_NAME##_var) {                      \
+        return (instrumentr_value_t)(VALUE_NAME##_var);                       \
     }                                                                         \
     int instrumentr_##VALUE_NAME##_get_birth_time(                            \
         instrumentr_##VALUE_NAME##_t VALUE_VAR) {                             \

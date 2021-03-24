@@ -1,12 +1,12 @@
 #ifndef INSTRUMENTR_MODEL_TYPE_H
 #define INSTRUMENTR_MODEL_TYPE_H
 
+#include <instrumentr/Rincludes.h>
+#include <instrumentr/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <instrumentr/Rincludes.h>
-#include <instrumentr/types.h>
 
 /*******************************************************************************
  * initialize
@@ -24,8 +24,7 @@ void instrumentr_model_type_finalize();
  * name
  *******************************************************************************/
 
-const char*
-instrumentr_model_type_get_name(instrumentr_model_type_t model_type);
+INSTRUMENTR_MODEL_TYPE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 /*******************************************************************************
  * class

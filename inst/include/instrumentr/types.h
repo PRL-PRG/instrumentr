@@ -366,6 +366,7 @@ typedef enum {
     INSTRUMENTR_ENVIRONMENT_TYPE_UNKNOWN = 0,
     INSTRUMENTR_ENVIRONMENT_TYPE_NAMESPACE,
     INSTRUMENTR_ENVIRONMENT_TYPE_PACKAGE,
+    INSTRUMENTR_ENVIRONMENT_TYPE_CALL,
     INSTRUMENTR_ENVIRONMENT_TYPE_COUNT
 } instrumentr_environment_type_t;
 
@@ -480,35 +481,35 @@ typedef void (*variable_definition_function_t)(
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    SEXP r_variable,
-    SEXP r_value,
-    SEXP r_rho);
+    instrumentr_symbol_t symbol,
+    instrumentr_value_t value,
+    instrumentr_environment_t environment);
 
 typedef void (*variable_assignment_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    SEXP r_variable,
-    SEXP r_value,
-    SEXP r_rho);
+    instrumentr_symbol_t symbol,
+    instrumentr_value_t value,
+    instrumentr_environment_t environment);
 
 typedef void (*variable_removal_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    SEXP r_variable,
-    SEXP r_rho);
+    instrumentr_symbol_t symbol,
+    instrumentr_environment_t environment);
 
 typedef void (*variable_lookup_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_state_t state,
     instrumentr_application_t application,
-    SEXP r_variable,
-    SEXP r_value,
-    SEXP r_rho);
+    instrumentr_symbol_t symbol,
+    instrumentr_value_t value,
+    instrumentr_environment_t environment);
 
 typedef void (*function_context_lookup_function_t)(
     instrumentr_tracer_t tracer,
