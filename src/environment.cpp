@@ -5,6 +5,8 @@
 #include "funtab.h"
 #include "closure.h"
 #include "state.h"
+#include "call.h"
+#include "symbol.h"
 
 /********************************************************************************
  * definition
@@ -14,6 +16,7 @@ struct instrumentr_environment_impl_t {
     instrumentr_environment_type_t type;
     const char* name;
     std::unordered_map<std::string, instrumentr_closure_t>* bindings;
+    instrumentr_call_t call;
 };
 
 /********************************************************************************
@@ -26,6 +29,10 @@ void instrumentr_environment_finalize(instrumentr_value_t value) {
     free((char*) (environment->name));
     instrumentr_environment_clear(environment);
     delete environment->bindings;
+
+    if (environment->type == INSTRUMENTR_ENVIRONMENT_TYPE_CALL) {
+        instrumentr_call_release(environment->call);
+    }
 }
 
 /********************************************************************************
@@ -50,6 +57,8 @@ instrumentr_environment_create(instrumentr_state_t state, SEXP r_sexp) {
 
     environment->bindings =
         new std::unordered_map<std::string, instrumentr_closure_t>();
+
+    environment->call = NULL;
 
     return environment;
 }
@@ -77,6 +86,32 @@ instrumentr_environment_get_type(instrumentr_environment_t environment) {
 void instrumentr_environment_set_type(instrumentr_environment_t environment,
                                       instrumentr_environment_type_t type) {
     environment->type = type;
+}
+
+std::string
+instrumentr_environment_type_to_string(instrumentr_environment_type_t type) {
+    switch (type) {
+    case INSTRUMENTR_ENVIRONMENT_TYPE_UNKNOWN:
+        return "unknown";
+        break;
+
+    case INSTRUMENTR_ENVIRONMENT_TYPE_NAMESPACE:
+        return "namespace";
+        break;
+
+    case INSTRUMENTR_ENVIRONMENT_TYPE_PACKAGE:
+        return "package";
+        break;
+
+    case INSTRUMENTR_ENVIRONMENT_TYPE_CALL:
+        return "call";
+        break;
+
+    case INSTRUMENTR_ENVIRONMENT_TYPE_COUNT:
+        instrumentr_log_error(
+            "environment type 'INSTRUMENTR_ENVIRONMENT_TYPE_COUNT' is reserved "
+            "for internal use only");
+    }
 }
 
 /********************************************************************************
@@ -119,30 +154,30 @@ SEXP r_instrumentr_environment_get_size(SEXP r_environment) {
 }
 
 /* accessor  */
-instrumentr_closure_t
+instrumentr_value_t
 instrumentr_environment_lookup(instrumentr_environment_t environment,
-                               const char* name) {
-    auto iter = environment->bindings->find(name);
+                               instrumentr_symbol_t symbol) {
+    SEXP r_name = instrumentr_symbol_get_sexp(symbol);
 
-    if (iter == environment->bindings->end()) {
-        instrumentr_log_error("cannot find closure %s in environment %p",
-                              name,
-                              instrumentr_environment_get_sexp(environment));
-    }
+    SEXP r_env = instrumentr_environment_get_sexp(environment);
 
-    return iter->second;
+    SEXP r_result = Rf_findVarInFrame(r_env, r_name);
+
+    instrumentr_state_t state = instrumentr_environment_get_state(environment);
+
+    return instrumentr_state_value_table_lookup(state, r_result, 1);
 }
 
-SEXP r_instrumentr_environment_lookup(SEXP r_environment, SEXP r_name) {
+SEXP r_instrumentr_environment_lookup(SEXP r_environment, SEXP r_symbol) {
     instrumentr_environment_t environment =
         instrumentr_environment_unwrap(r_environment);
 
-    const char* name = CHAR(STRING_ELT(r_name, 0));
+    instrumentr_symbol_t symbol = instrumentr_symbol_unwrap(r_symbol);
 
-    instrumentr_closure_t closure =
-        instrumentr_environment_lookup(environment, name);
+    instrumentr_value_t value =
+        instrumentr_environment_lookup(environment, symbol);
 
-    return instrumentr_closure_wrap(closure);
+    return instrumentr_value_wrap(value);
 }
 
 /* accessor  */
@@ -224,4 +259,34 @@ void instrumentr_environment_clear(instrumentr_environment_t environment) {
     }
 
     environment->bindings->clear();
+}
+
+void instrumentr_environment_set_call(instrumentr_environment_t environment,
+                                      instrumentr_call_t call) {
+    environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_CALL;
+    environment->call = call;
+    instrumentr_call_acquire(environment->call);
+}
+
+instrumentr_call_t
+instrumentr_environment_get_call(instrumentr_environment_t environment) {
+    if (environment->type != INSTRUMENTR_ENVIRONMENT_TYPE_CALL) {
+        instrumentr_log_error(
+            "cannot get call for an '%s' environment",
+            instrumentr_environment_type_to_string(environment->type).c_str());
+    }
+    return environment->call;
+}
+
+void instrumentr_environment_set_package(instrumentr_environment_t environment,
+                                         const char* name) {
+    environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_PACKAGE;
+    instrumentr_environment_set_name(environment, name);
+}
+
+void instrumentr_environment_set_namespace(
+    instrumentr_environment_t environment,
+    const char* name) {
+    environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_NAMESPACE;
+    instrumentr_environment_set_name(environment, name);
 }
