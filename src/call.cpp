@@ -4,6 +4,8 @@
 #include "state.h"
 #include "value.h"
 #include "environment.h"
+#include "closure.h"
+#include "promise.h"
 
 /********************************************************************************
  * definition
@@ -50,154 +52,24 @@ const char* unwrap_name(SEXP r_name) {
     return name;
 }
 
-// void process_promise_argument(instrumentr_state_t state,
-//                              instrumentr_call_t call,
-//                              instrumentr_parameter_t parameter,
-//                              SEXP r_argument_name,
-//                              SEXP r_argument_value) {
-//    instrumentr_promise_t promise =
-//        instrumentr_state_value_table_lookup_promise(state, r_argument_value,
-//        1);
-//
-//    instrumentr_argument_t argument =
-//    instrumentr_argument_create_from_promise(
-//        state, unwrap_name(r_argument_name), promise);
-//
-//    instrumentr_parameter_append_argument(parameter, argument);
-//    /* NOTE: argument is owned by parameter now */
-//    instrumentr_model_release(argument);
-//
-//    instrumentr_promise_add_call(promise, call, parameter, argument);
-//}
-//
-// void process_value_argument(instrumentr_state_t state,
-//                            instrumentr_parameter_t parameter,
-//                            SEXP r_argument_name,
-//                            SEXP r_argument_value) {
-//    instrumentr_value_t value =
-//        instrumentr_value_create(state, r_argument_value);
-//
-//    instrumentr_argument_t argument = instrumentr_argument_create_from_value(
-//        state, unwrap_name(r_argument_name), value);
-//    /* NOTE: value is owned by argument now */
-//    instrumentr_model_release(value);
-//
-//    instrumentr_parameter_append_argument(parameter, argument);
-//    /* NOTE: argument is owned by parameter now */
-//    instrumentr_model_release(argument);
-//}
-//
-// void process_vararg_argument(instrumentr_state_t state,
-//                             instrumentr_call_t call,
-//                             instrumentr_parameter_t parameter,
-//                             SEXP r_argument_value) {
-//    for (SEXP r_dot_argument_pointer = r_argument_value;
-//         r_dot_argument_pointer != R_NilValue;
-//         r_dot_argument_pointer = CDR(r_dot_argument_pointer)) {
-//        SEXP r_dot_argument_name = TAG(r_dot_argument_pointer);
-//
-//        SEXP r_dot_argument_value = CAR(r_dot_argument_pointer);
-//
-//        /* promise value */
-//        if (TYPEOF(r_dot_argument_value) == PROMSXP) {
-//            process_promise_argument(state,
-//                                     call,
-//                                     parameter,
-//                                     r_dot_argument_name,
-//                                     r_dot_argument_value);
-//        }
-//        /* non promise value */
-//        else {
-//            process_value_argument(
-//                state, parameter, r_dot_argument_name, r_dot_argument_value);
-//        }
-//    }
-//}
-//
-// void process_parameter(instrumentr_state_t state,
-//                       instrumentr_call_t call,
-//                       SEXP r_argument_name,
-//                       SEXP r_argument_value,
-//                       SEXP r_default_argument,
-//                       int position) {
-//    const char* argument_name = unwrap_name(r_argument_name);
-//
-//    instrumentr_parameter_t parameter = instrumentr_parameter_create(
-//        state, argument_name, position, r_default_argument);
-//
-//    instrumentr_call_append_parameter(call, parameter);
-//
-//    /* NOTE: parameter owned by call now */
-//    instrumentr_model_release(parameter);
-//
-//    /* missing argument */
-//    if (r_argument_value == R_UnboundValue ||
-//        r_argument_value == R_MissingArg) {
-//        /* NOTE: do nothing */
-//    }
-//    /* ... */
-//    else if (TYPEOF(r_argument_value) == DOTSXP) {
-//        process_vararg_argument(state, call, parameter, r_argument_value);
-//    }
-//    /* promise  */
-//    else if (TYPEOF(r_argument_value) == PROMSXP) {
-//        process_promise_argument(
-//            state, call, parameter, R_NilValue, r_argument_value);
-//    }
-//    /* non promise  */
-//    else {
-//        process_value_argument(state, parameter, R_NilValue,
-//        r_argument_value);
-//    }
-//}
-//
-// void process_closure_parameters(instrumentr_state_t state,
-//                                instrumentr_call_t call,
-//                                instrumentr_function_t function,
-//                                SEXP r_environment) {
-//    /* TODO - process calls to special and builtin */
-//    SEXP r_definition = instrumentr_function_get_definition(function);
-//
-//    SEXP r_parameter_list = FORMALS(r_definition);
-//
-//    for (int position = 0; r_parameter_list != R_NilValue;
-//         ++position, r_parameter_list = CDR(r_parameter_list)) {
-//        SEXP r_argument_name = TAG(r_parameter_list);
-//
-//        SEXP r_default_argument = CAR(r_parameter_list);
-//
-//        SEXP r_argument_value =
-//            Rf_findVarInFrame(r_environment, r_argument_name);
-//
-//        process_parameter(state,
-//                          call,
-//                          r_argument_name,
-//                          r_argument_value,
-//                          r_default_argument,
-//                          position);
-//    }
-//}
-//
-// void process_non_closure_parameters(instrumentr_state_t state,
-//                                    instrumentr_call_t call,
-//                                    SEXP r_args) {
-//    for (int position = 0; r_args != R_NilValue;
-//         ++position, r_args = CDR(r_args)) {
-//        SEXP r_argument_name = TAG(r_args);
-//
-//        // NOTE: no default arguments for non-closures
-//        SEXP r_default_argument = NULL;
-//
-//        SEXP r_argument_value = CAR(r_args);
-//
-//        process_parameter(state,
-//                          call,
-//                          r_argument_name,
-//                          r_argument_value,
-//                          r_default_argument,
-//                          position);
-//    }
-//}
+void mark_argument_promises(instrumentr_state_t state,
+                            instrumentr_call_t call,
+                            SEXP r_closure,
+                            SEXP r_environment) {
+    for (SEXP r_params = FORMALS(r_closure); r_params != R_NilValue;
+         r_params = CDR(r_params)) {
+        SEXP r_argname = TAG(r_params);
+
+        SEXP r_argval = Rf_findVarInFrame(r_environment, r_argname);
+
+        if (TYPEOF(r_argval) == PROMSXP) {
+            instrumentr_value_t value =
+                instrumentr_state_value_table_lookup(state, r_argval, 1);
+            instrumentr_promise_t promise = instrumentr_value_as_promise(value);
+            instrumentr_promise_make_argument(promise, call);
+        }
+    }
+}
 
 instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
                                            instrumentr_value_t function,
@@ -221,6 +93,12 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
         state, r_environment, 1);
 
     instrumentr_environment_acquire(call->environment);
+
+    if (instrumentr_value_is_closure(function)) {
+        instrumentr_closure_t closure = instrumentr_value_as_closure(function);
+        SEXP r_closure = instrumentr_closure_get_sexp(closure);
+        mark_argument_promises(state, call, r_closure, r_environment);
+    }
 
     return call;
 }
