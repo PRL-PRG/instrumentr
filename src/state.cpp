@@ -679,12 +679,6 @@ instrumentr_state_value_table_lookup_closure(instrumentr_state_t state,
                                              int create) {
     instrumentr_value_t value =
         instrumentr_state_value_table_lookup(state, r_value, create);
-    if (!instrumentr_value_is_closure(value)) {
-        instrumentr_state_value_table_insert(state, r_value);
-        return instrumentr_state_value_table_lookup_closure(
-            state, r_value, create);
-    }
-
     return instrumentr_value_as_closure(value);
 }
 
@@ -694,12 +688,6 @@ instrumentr_state_value_table_lookup_environment(instrumentr_state_t state,
                                                  int create) {
     instrumentr_value_t value =
         instrumentr_state_value_table_lookup(state, r_value, create);
-    if (!instrumentr_value_is_environment(value)) {
-        instrumentr_state_value_table_insert(state, r_value);
-        return instrumentr_state_value_table_lookup_environment(
-            state, r_value, create);
-    }
-
     return instrumentr_value_as_environment(value);
 }
 
@@ -709,14 +697,16 @@ instrumentr_state_value_table_lookup_promise(instrumentr_state_t state,
                                              int create) {
     instrumentr_value_t value =
         instrumentr_state_value_table_lookup(state, r_value, create);
-
-    if (!instrumentr_value_is_promise(value)) {
-        instrumentr_state_value_table_insert(state, r_value);
-        return instrumentr_state_value_table_lookup_promise(
-            state, r_value, create);
-    }
-
     return instrumentr_value_as_promise(value);
+}
+
+instrumentr_symbol_t
+instrumentr_state_value_table_lookup_symbol(instrumentr_state_t state,
+                                            SEXP r_value,
+                                            int create) {
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_value, create);
+    return instrumentr_value_as_symbol(value);
 }
 
 void instrumentr_state_value_table_clear(instrumentr_state_t state) {
@@ -787,12 +777,18 @@ void instrumentr_state_update_namespace_exports(
     for (int i = 0; i < Rf_length(r_ns_exports_keys); ++i) {
         const char* key = CHAR(STRING_ELT(r_ns_exports_keys, i));
 
+        instrumentr_symbol_t symbol =
+            instrumentr_state_value_table_lookup_symbol(
+                state, Rf_install(key), 1);
+
+        instrumentr_value_t value =
+            instrumentr_environment_lookup(environment, symbol);
+
         /* TODO: value can be invalid (R_UnboundValue) */
         /* TODO: handle closures exported by pacakge A but defined by package
            B. graphics exports plot closure defined in base package */
-        if (instrumentr_environment_contains(environment, key)) {
-            instrumentr_closure_t closure =
-                instrumentr_environment_lookup(environment, key);
+        if (instrumentr_value_is_closure(value)) {
+            instrumentr_closure_t closure = instrumentr_value_as_closure(value);
 
             instrumentr_closure_set_exported(closure);
         }
@@ -825,12 +821,23 @@ void instrumentr_state_update_namespace_s3_methods(
                 const char* specific_name =
                     CHAR(STRING_ELT(r_s3_methods, 2 * nrows + row_index));
 
-                /* TODO: value can be invalid (R_UnboundValue) */
-                instrumentr_closure_t closure =
-                    instrumentr_environment_lookup(environment, specific_name);
+                instrumentr_symbol_t symbol =
+                    instrumentr_state_value_table_lookup_symbol(
+                        state, Rf_install(specific_name), 1);
 
-                instrumentr_closure_set_object_class(closure, object_class);
-                instrumentr_closure_set_generic_name(closure, generic_name);
+                instrumentr_value_t value =
+                    instrumentr_environment_lookup(environment, symbol);
+
+                /* TODO: handle closures exported by pacakge A but defined by
+                   package B. graphics exports plot closure defined in base
+                   package */
+                if (instrumentr_value_is_closure(value)) {
+                    instrumentr_closure_t closure =
+                        instrumentr_value_as_closure(value);
+
+                    instrumentr_closure_set_object_class(closure, object_class);
+                    instrumentr_closure_set_generic_name(closure, generic_name);
+                }
             }
         }
     }
@@ -849,27 +856,27 @@ instrumentr_state_value_table_update_namespace(instrumentr_state_t state,
     instrumentr_environment_t environment =
         instrumentr_state_value_table_lookup_environment(state, r_namespace, 1);
 
-    instrumentr_environment_set_name(environment, name);
+    instrumentr_environment_set_namespace(environment, name);
+
+    int count = instrumentr_state_update_namespace_closure_names(
+        state, r_namespace, environment);
 
     SEXP r_ns_inner =
         Rf_findVarInFrame(r_namespace, Rf_install(".__NAMESPACE__."));
 
-    if (r_ns_inner == R_UnboundValue) {
+    if (r_ns_inner != R_UnboundValue) {
+        instrumentr_state_update_namespace_exports(
+            state, r_ns_inner, environment);
+        instrumentr_state_update_namespace_s3_methods(
+            state, r_ns_inner, environment);
+
+    } else {
         instrumentr_log_message("cannot accesss inner namespace "
                                 "'.__NAMESPACE__.' from namespace "
-                                "environment %p for %\n",
+                                "environment %p for %s\n",
                                 r_namespace,
                                 name);
-
-        /* TODO: handle non inner ns cases */
-        return environment;
     }
-
-    int count = instrumentr_state_update_namespace_closure_names(
-        state, r_namespace, environment);
-    instrumentr_state_update_namespace_exports(state, r_ns_inner, environment);
-    instrumentr_state_update_namespace_s3_methods(
-        state, r_ns_inner, environment);
 
     instrumentr_log_message("Added %d values to %s\n", count, name);
 
@@ -905,7 +912,7 @@ instrumentr_state_value_table_lookup_package(instrumentr_state_t state,
     instrumentr_environment_t environment =
         instrumentr_state_value_table_lookup_environment(state, r_env, 1);
 
-    instrumentr_environment_set_name(environment, name);
+    instrumentr_environment_set_package(environment, name);
 
     return environment;
 }
