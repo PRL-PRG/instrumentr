@@ -19,8 +19,6 @@ instrumentr_list_t instrumentr_list_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_LIST, list, list)
-
 INSTRUMENTR_LIST_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

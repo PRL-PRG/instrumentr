@@ -19,10 +19,6 @@ instrumentr_bytecode_t instrumentr_bytecode_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_BYTECODE,
-                              bytecode,
-                              bytecode)
-
 INSTRUMENTR_BYTECODE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

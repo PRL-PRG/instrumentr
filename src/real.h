@@ -19,8 +19,6 @@ instrumentr_real_t instrumentr_real_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_REAL, real, real)
-
 INSTRUMENTR_REAL_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

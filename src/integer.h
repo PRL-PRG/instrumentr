@@ -19,8 +19,6 @@ instrumentr_integer_t instrumentr_integer_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_INTEGER, integer, integer)
-
 INSTRUMENTR_INTEGER_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

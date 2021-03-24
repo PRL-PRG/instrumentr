@@ -17,14 +17,6 @@ instrumentr_environment_t
 instrumentr_environment_create(instrumentr_state_t state, SEXP r_environment);
 
 /********************************************************************************
- * interop
- *******************************************************************************/
-
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_ENVIRONMENT,
-                              environment,
-                              environment)
-
-/********************************************************************************
  * type
  *******************************************************************************/
 
@@ -47,6 +39,16 @@ const std::unordered_map<std::string, instrumentr_closure_t>&
 instrumentr_environment_get_bindings(instrumentr_environment_t environment);
 
 void instrumentr_environment_clear(instrumentr_environment_t environment);
+
+void instrumentr_environment_set_call(instrumentr_environment_t environment,
+                                      instrumentr_call_t call);
+
+void instrumentr_environment_set_package(instrumentr_environment_t environment,
+                                         const char* name);
+
+void instrumentr_environment_set_namespace(
+    instrumentr_environment_t environment,
+    const char* name);
 
 INSTRUMENTR_ENVIRONMENT_API_MAP(INSTRUMENTR_API_INCLUDER)
 

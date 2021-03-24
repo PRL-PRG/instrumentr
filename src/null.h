@@ -19,8 +19,6 @@ instrumentr_null_t instrumentr_null_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_MODEL_TYPE_NULL, null, nullval)
-
 INSTRUMENTR_NULL_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

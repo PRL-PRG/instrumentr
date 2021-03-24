@@ -19,10 +19,6 @@ instrumentr_language_t instrumentr_language_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_LANGUAGE,
-                              language,
-                              language)
-
 INSTRUMENTR_LANGUAGE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

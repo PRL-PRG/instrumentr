@@ -19,8 +19,6 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_PROMISE, promise, promise)
-
 void instrumentr_promise_add_call(instrumentr_promise_t promise,
                                   instrumentr_call_t call);
 

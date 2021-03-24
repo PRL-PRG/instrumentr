@@ -19,8 +19,6 @@ instrumentr_logical_t instrumentr_logical_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_LOGICAL, logical, logical)
-
 INSTRUMENTR_LOGICAL_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

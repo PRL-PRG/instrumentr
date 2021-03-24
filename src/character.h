@@ -19,10 +19,6 @@ instrumentr_character_t instrumentr_character_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_CHARACTER,
-                              character,
-                              character)
-
 INSTRUMENTR_CHARACTER_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

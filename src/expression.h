@@ -19,10 +19,6 @@ instrumentr_expression_create(instrumentr_state_t state, SEXP r_expression);
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_EXPRESSION,
-                              expression,
-                              expression)
-
 INSTRUMENTR_EXPRESSION_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

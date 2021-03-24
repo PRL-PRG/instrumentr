@@ -19,8 +19,6 @@ instrumentr_special_t instrumentr_special_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_SPECIAL, special, special)
-
 INSTRUMENTR_SPECIAL_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

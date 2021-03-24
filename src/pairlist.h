@@ -19,10 +19,6 @@ instrumentr_pairlist_t instrumentr_pairlist_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_VALUE_DECLARE_API(INSTRUMENTR_VALUE_TYPE_PAIRLIST,
-                              pairlist,
-                              pairlist)
-
 INSTRUMENTR_PAIRLIST_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus
