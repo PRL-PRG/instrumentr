@@ -1,6 +1,8 @@
 #include "context.h"
 #include "interop.h"
 #include "utilities.h"
+#include "state.h"
+#include "environment.h"
 
 /********************************************************************************
  * definition
@@ -44,7 +46,9 @@ instrumentr_context_t instrumentr_context_create(instrumentr_state_t state,
  * interop
  *******************************************************************************/
 
-INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_CONTEXT, context, context)
+INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_CONTEXT,
+                                     context,
+                                     context)
 
 /********************************************************************************
  * r_context
@@ -60,4 +64,18 @@ SEXP r_instrumentr_context_get_pointer(SEXP r_context) {
     void* result = instrumentr_context_get_pointer(context);
     return instrumentr_c_pointer_to_r_externalptr(
         result, R_NilValue, R_NilValue, NULL);
+}
+
+instrumentr_value_t
+instrumentr_context_get_promargs(instrumentr_context_t context) {
+    instrumentr_state_t state = instrumentr_context_get_state(context);
+    return instrumentr_state_value_table_lookup(
+        state, dyntrace_context_get_promargs(context->pointer), 1);
+}
+
+instrumentr_value_t
+instrumentr_context_get_cloenv(instrumentr_context_t context) {
+    instrumentr_state_t state = instrumentr_context_get_state(context);
+    SEXP r_cloenv = dyntrace_context_get_cloenv(context->pointer);
+    return instrumentr_state_value_table_lookup(state, r_cloenv, 1);
 }

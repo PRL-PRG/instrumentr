@@ -17,6 +17,8 @@ struct instrumentr_environment_impl_t {
     const char* name;
     std::unordered_map<std::string, instrumentr_closure_t>* bindings;
     instrumentr_call_t call;
+    int last_write_time;
+    int last_read_time;
 };
 
 /********************************************************************************
@@ -59,6 +61,8 @@ instrumentr_environment_create(instrumentr_state_t state, SEXP r_sexp) {
         new std::unordered_map<std::string, instrumentr_closure_t>();
 
     environment->call = NULL;
+    environment->last_read_time = INT_MAX;
+    environment->last_write_time = INT_MAX;
 
     return environment;
 }
@@ -88,7 +92,7 @@ void instrumentr_environment_set_type(instrumentr_environment_t environment,
     environment->type = type;
 }
 
-std::string
+const char*
 instrumentr_environment_type_to_string(instrumentr_environment_type_t type) {
     switch (type) {
     case INSTRUMENTR_ENVIRONMENT_TYPE_UNKNOWN:
@@ -263,9 +267,15 @@ void instrumentr_environment_clear(instrumentr_environment_t environment) {
 
 void instrumentr_environment_set_call(instrumentr_environment_t environment,
                                       instrumentr_call_t call) {
-    environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_CALL;
-    environment->call = call;
-    instrumentr_call_acquire(environment->call);
+    /* if namespace or package environment, we don't want to change its type.
+       It should not be possible to make a call with namespace or package
+       environment so ideally this check is not needed.*/
+    if (environment->type == INSTRUMENTR_ENVIRONMENT_TYPE_UNKNOWN ||
+        environment->type == INSTRUMENTR_ENVIRONMENT_TYPE_CALL) {
+        environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_CALL;
+        environment->call = call;
+        instrumentr_call_acquire(environment->call);
+    }
 }
 
 instrumentr_call_t
@@ -273,7 +283,7 @@ instrumentr_environment_get_call(instrumentr_environment_t environment) {
     if (environment->type != INSTRUMENTR_ENVIRONMENT_TYPE_CALL) {
         instrumentr_log_error(
             "cannot get call for an '%s' environment",
-            instrumentr_environment_type_to_string(environment->type).c_str());
+            instrumentr_environment_type_to_string(environment->type));
     }
     return environment->call;
 }
@@ -289,4 +299,26 @@ void instrumentr_environment_set_namespace(
     const char* name) {
     environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_NAMESPACE;
     instrumentr_environment_set_name(environment, name);
+}
+
+int instrumentr_environment_get_last_write_time(
+    instrumentr_environment_t environment) {
+    return environment->last_write_time;
+}
+
+void instrumentr_environment_set_last_write_time(
+    instrumentr_environment_t environment,
+    int last_write_time) {
+    environment->last_write_time = last_write_time;
+}
+
+int instrumentr_environment_get_last_read_time(
+    instrumentr_environment_t environment) {
+    return environment->last_read_time;
+}
+
+void instrumentr_environment_set_last_read_time(
+    instrumentr_environment_t environment,
+    int last_read_time) {
+    environment->last_read_time = last_read_time;
 }

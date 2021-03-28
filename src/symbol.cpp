@@ -45,7 +45,7 @@ instrumentr_symbol_t instrumentr_symbol_create(instrumentr_state_t state,
 
 INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_SYMBOL, symbol, symbol)
 
-instrumentr_char_t instrumentr_symbol_get_name(instrumentr_symbol_t symbol) {
+instrumentr_char_t instrumentr_symbol_get_element(instrumentr_symbol_t symbol) {
     SEXP r_char = PRINTNAME(instrumentr_symbol_get_sexp(symbol));
     instrumentr_state_t state = instrumentr_symbol_get_state(symbol);
     instrumentr_value_t value =
@@ -54,8 +54,8 @@ instrumentr_char_t instrumentr_symbol_get_name(instrumentr_symbol_t symbol) {
     return instrumentr_value_as_char(value);
 }
 
-SEXP r_instrumentr_symbol_get_name(SEXP r_symbol) {
+SEXP r_instrumentr_symbol_get_element(SEXP r_symbol) {
     instrumentr_symbol_t symbol = instrumentr_symbol_unwrap(r_symbol);
-    instrumentr_char_t charval = instrumentr_symbol_get_name(symbol);
+    instrumentr_char_t charval = instrumentr_symbol_get_element(symbol);
     return instrumentr_char_wrap(charval);
 }

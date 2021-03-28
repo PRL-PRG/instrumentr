@@ -6,6 +6,7 @@
 #include "environment.h"
 #include "closure.h"
 #include "promise.h"
+#include "language.h"
 
 /********************************************************************************
  * definition
@@ -14,10 +15,11 @@
 struct instrumentr_call_impl_t {
     struct instrumentr_model_impl_t model;
     instrumentr_value_t function;
-    SEXP r_expression;
+    instrumentr_language_t expression;
+    instrumentr_value_t arguments;
     instrumentr_environment_t environment;
     int active;
-    SEXP r_result;
+    instrumentr_value_t result;
 };
 
 /********************************************************************************
@@ -30,12 +32,19 @@ void instrumentr_call_finalize(instrumentr_model_t model) {
     instrumentr_value_release(call->function);
     call->function = NULL;
 
-    call->r_expression = NULL;
+    instrumentr_language_release(call->expression);
+    call->expression = NULL;
+
+    instrumentr_value_release(call->arguments);
+    call->arguments = NULL;
 
     instrumentr_environment_release(call->environment);
     call->environment = NULL;
 
-    call->r_result = NULL;
+    if (call->result != NULL) {
+        instrumentr_value_release(call->result);
+        call->result = NULL;
+    }
 }
 
 /********************************************************************************
@@ -74,6 +83,7 @@ void mark_argument_promises(instrumentr_state_t state,
 instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
                                            instrumentr_value_t function,
                                            SEXP r_expression,
+                                           SEXP r_arguments,
                                            SEXP r_environment) {
     instrumentr_model_t model =
         instrumentr_model_create(state,
@@ -87,11 +97,16 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
     call->function = function;
     instrumentr_value_acquire(call->function);
 
-    call->r_expression = r_expression;
+    call->expression = instrumentr_value_as_language(
+        instrumentr_state_value_table_lookup(state, r_expression, 1));
+    instrumentr_language_acquire(call->expression);
+
+    call->arguments =
+        instrumentr_state_value_table_lookup(state, r_arguments, 1);
+    instrumentr_value_acquire(call->arguments);
 
     call->environment = instrumentr_state_value_table_lookup_environment(
         state, r_environment, 1);
-
     instrumentr_environment_acquire(call->environment);
 
     if (instrumentr_value_is_closure(function)) {
@@ -99,6 +114,8 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
         SEXP r_closure = instrumentr_closure_get_sexp(closure);
         mark_argument_promises(state, call, r_closure, r_environment);
     }
+
+    call->result = NULL;
 
     return call;
 }
@@ -129,13 +146,30 @@ SEXP r_instrumentr_call_get_function(SEXP r_call) {
  *******************************************************************************/
 
 /* accessor  */
-SEXP instrumentr_call_get_expression(instrumentr_call_t call) {
-    return call->r_expression;
+instrumentr_language_t
+instrumentr_call_get_expression(instrumentr_call_t call) {
+    return call->expression;
 }
 
 SEXP r_instrumentr_call_get_expression(SEXP r_call) {
     instrumentr_call_t call = instrumentr_call_unwrap(r_call);
-    return instrumentr_call_get_expression(call);
+    instrumentr_language_t language = instrumentr_call_get_expression(call);
+    return instrumentr_language_wrap(language);
+}
+
+/********************************************************************************
+ * arguments
+ *******************************************************************************/
+
+/* accessor  */
+instrumentr_value_t instrumentr_call_get_arguments(instrumentr_call_t call) {
+    return call->arguments;
+}
+
+SEXP r_instrumentr_call_get_arguments(SEXP r_call) {
+    instrumentr_call_t call = instrumentr_call_unwrap(r_call);
+    instrumentr_value_t value = instrumentr_call_get_arguments(call);
+    return instrumentr_value_wrap(value);
 }
 
 /********************************************************************************
@@ -181,12 +215,12 @@ void instrumentr_call_deactivate(instrumentr_call_t call) {
 }
 
 /********************************************************************************
- * r_result
+ * result
  *******************************************************************************/
 
 /* accessor  */
 int instrumentr_call_has_result(instrumentr_call_t call) {
-    return call->r_result != NULL;
+    return call->result != NULL;
 }
 
 SEXP r_instrumentr_call_has_result(SEXP r_call) {
@@ -196,9 +230,9 @@ SEXP r_instrumentr_call_has_result(SEXP r_call) {
 }
 
 /* accessor  */
-SEXP instrumentr_call_get_result(instrumentr_call_t call) {
+instrumentr_value_t instrumentr_call_get_result(instrumentr_call_t call) {
     if (instrumentr_call_has_result(call)) {
-        return call->r_result;
+        return call->result;
     } else {
         instrumentr_log_error("call does not have a result");
         /* NOTE: never executed*/
@@ -208,10 +242,13 @@ SEXP instrumentr_call_get_result(instrumentr_call_t call) {
 
 SEXP r_instrumentr_call_get_result(SEXP r_call) {
     instrumentr_call_t call = instrumentr_call_unwrap(r_call);
-    return instrumentr_call_get_result(call);
+    instrumentr_value_t result = instrumentr_call_get_result(call);
+    return instrumentr_value_wrap(result);
 }
 
 /* mutator */
-void instrumentr_call_set_result(instrumentr_call_t call, SEXP r_result) {
-    call->r_result = r_result;
+void instrumentr_call_set_result(instrumentr_call_t call,
+                                 instrumentr_value_t result) {
+    call->result = result;
+    instrumentr_value_acquire(result);
 }

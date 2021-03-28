@@ -5,7 +5,6 @@
 #include "tracer.h"
 #include "callback.h"
 #include "application.h"
-#include "closure.h"
 #include "environment.h"
 #include "call.h"
 #include "trace.h"
@@ -17,16 +16,11 @@
 #include "frame.h"
 #include "state.h"
 #include "call_stack.h"
-#include "promise.h"
 #include "exec_stats.h"
 #include "event.h"
 #include "miscellaneous.h"
 #include "value.h"
-#include "builtin.h"
-#include "special.h"
-#include "environment.h"
-#include "symbol.h"
-#include "char.h"
+#include "values.h"
 
 #define TRACING_INITIALIZE(EVENT)                                     \
     instrumentr_tracer_disable(tracer);                               \
@@ -167,6 +161,8 @@ SEXP r_instrumentr_trace_tracing_entry(SEXP r_tracer,
 }
 
 SEXP r_instrumentr_trace_tracing_exit(SEXP r_tracer) {
+    instrumentr_trace_multivalue_finalize(r_tracer);
+
     instrumentr_event_t event = INSTRUMENTR_EVENT_TRACING_EXIT;
 
     instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
@@ -266,9 +262,10 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer, SEXP r_package_name) {
 instrumentr_call_t instrumentr_trace_call_entry(instrumentr_state_t state,
                                                 instrumentr_value_t function,
                                                 SEXP r_call,
+                                                SEXP r_args,
                                                 SEXP r_rho) {
     instrumentr_call_t call =
-        instrumentr_call_create(state, function, r_call, r_rho);
+        instrumentr_call_create(state, function, r_call, r_args, r_rho);
 
     instrumentr_frame_t frame = instrumentr_frame_create_from_call(state, call);
     /* NOTE: release call here because it is now owned by the stack frame */
@@ -302,7 +299,7 @@ void instrumentr_trace_builtin_call_entry(dyntracer_t* dyntracer,
     instrumentr_builtin_t builtin = instrumentr_value_as_builtin(function);
 
     instrumentr_call_t call =
-        instrumentr_trace_call_entry(state, function, r_call, r_rho);
+        instrumentr_trace_call_entry(state, function, r_call, r_args, r_rho);
 
     TRACING_INVOKE_CALLBACK(
         event, builtin_call_entry_function_t, builtin, call);
@@ -328,7 +325,7 @@ void instrumentr_trace_special_call_entry(dyntracer_t* dyntracer,
     instrumentr_special_t special = instrumentr_value_as_special(function);
 
     instrumentr_call_t call =
-        instrumentr_trace_call_entry(state, function, r_call, r_rho);
+        instrumentr_trace_call_entry(state, function, r_call, r_args, r_rho);
 
     TRACING_INVOKE_CALLBACK(
         event, special_call_entry_function_t, special, call);
@@ -353,13 +350,16 @@ void instrumentr_trace_closure_call_entry(dyntracer_t* dyntracer,
 
     instrumentr_closure_t closure = instrumentr_value_as_closure(function);
 
-    instrumentr_environment_t environment =
+    /* get this to make sure closure environment is constructed */
+    instrumentr_environment_t cloenv =
         instrumentr_closure_get_environment(closure);
 
     instrumentr_call_t call =
-        instrumentr_trace_call_entry(state, function, r_call, r_rho);
+        instrumentr_trace_call_entry(state, function, r_call, r_args, r_rho);
 
-    instrumentr_environment_set_call(environment, call);
+    instrumentr_environment_t callenv = instrumentr_call_get_environment(call);
+
+    instrumentr_environment_set_call(callenv, call);
 
     TRACING_INVOKE_CALLBACK(
         event, closure_call_entry_function_t, closure, call);
@@ -386,13 +386,16 @@ instrumentr_call_t instrumentr_trace_call_exit(instrumentr_state_t state,
     instrumentr_environment_t environment =
         instrumentr_call_get_environment(call);
 
-    if (instrumentr_call_get_expression(call) != r_call ||
+    if (instrumentr_language_get_sexp(instrumentr_call_get_expression(call)) !=
+            r_call ||
         instrumentr_environment_get_sexp(environment) != r_rho) {
         instrumentr_log_error(
             "call on stack does not match the call being exited");
     }
 
-    instrumentr_call_set_result(call, r_result);
+    instrumentr_value_t result =
+        instrumentr_state_value_table_lookup(state, r_result, 1);
+    instrumentr_call_set_result(call, result);
 
     return call;
 }
@@ -640,6 +643,9 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
         else if (instrumentr_frame_is_promise(frame)) {
             instrumentr_promise_t promise = instrumentr_frame_as_promise(frame);
 
+            instrumentr_promise_set_force_exit_time(
+                promise, instrumentr_state_get_time(state));
+
             TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT,
                                     promise_force_exit_function_t,
                                     promise);
@@ -673,6 +679,9 @@ void instrumentr_trace_promise_force_entry(dyntracer_t* dyntracer,
 
     instrumentr_frame_release(frame);
 
+    instrumentr_promise_set_force_entry_time(promise,
+                                             instrumentr_state_get_time(state));
+
     TRACING_INVOKE_CALLBACK(event, promise_force_entry_function_t, promise);
 
     TRACING_FINALIZE(event)
@@ -688,6 +697,9 @@ void instrumentr_trace_promise_force_exit(dyntracer_t* dyntracer,
 
     instrumentr_promise_t promise =
         instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
+
+    instrumentr_promise_set_force_exit_time(promise,
+                                            instrumentr_state_get_time(state));
 
     TRACING_INVOKE_CALLBACK(event, promise_force_exit_function_t, promise);
 
@@ -836,8 +848,9 @@ void set_function_name(instrumentr_symbol_t symbol,
         /* if function is being named in the same environment in which it was
          * created, then this is the canonical name. */
         if (lex_env == environment) {
-            instrumentr_char_t charval = instrumentr_symbol_get_name(symbol);
-            instrumentr_closure_set_name(closure, instrumentr_char_get_value(charval));
+            instrumentr_char_t charval = instrumentr_symbol_get_element(symbol);
+            instrumentr_closure_set_name(closure,
+                                         instrumentr_char_get_element(charval));
         }
     }
 }
@@ -863,6 +876,9 @@ void instrumentr_trace_variable_definition(dyntracer_t* dyntracer,
         instrumentr_state_value_table_lookup(state, r_rho, 1);
     instrumentr_environment_t environment =
         instrumentr_value_as_environment(envval);
+
+    instrumentr_environment_set_last_write_time(
+        environment, instrumentr_state_get_time(state));
 
     set_function_name(symbol, value, environment);
 
@@ -898,6 +914,9 @@ void instrumentr_trace_variable_assignment(dyntracer_t* dyntracer,
     instrumentr_environment_t environment =
         instrumentr_value_as_environment(envval);
 
+    instrumentr_environment_set_last_write_time(
+        environment, instrumentr_state_get_time(state));
+
     set_function_name(symbol, value, environment);
 
     TRACING_INVOKE_CALLBACK(
@@ -923,6 +942,9 @@ void instrumentr_trace_variable_removal(dyntracer_t* dyntracer,
         instrumentr_state_value_table_lookup(state, r_rho, 1);
     instrumentr_environment_t environment =
         instrumentr_value_as_environment(envval);
+
+    instrumentr_environment_set_last_write_time(
+        environment, instrumentr_state_get_time(state));
 
     TRACING_INVOKE_CALLBACK(
         event, variable_removal_function_t, symbol, environment);
@@ -951,6 +973,9 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
         instrumentr_state_value_table_lookup(state, r_rho, 1);
     instrumentr_environment_t environment =
         instrumentr_value_as_environment(envval);
+
+    instrumentr_environment_set_last_read_time(
+        environment, instrumentr_state_get_time(state));
 
     set_function_name(symbol, value, environment);
 
@@ -1005,17 +1030,56 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
     TRACING_FINALIZE(event)
 }
 
-void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
-    instrumentr_event_t event = INSTRUMENTR_EVENT_GC_DEALLOCATION;
+void instrumentr_trace_multivalue_finalize(SEXP r_tracer) {
+    instrumentr_tracer_t tracer = instrumentr_tracer_unwrap(r_tracer);
 
-    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+    instrumentr_state_t state = instrumentr_tracer_get_state(tracer);
+
+    std::vector<instrumentr_value_t> values =
+        instrumentr_state_value_table_get_values(state);
+
+    for (instrumentr_value_t value: values) {
+        instrumentr_trace_value_finalize(
+            tracer, instrumentr_value_get_sexp(value), value);
+    }
+}
+
+instrumentr_value_t
+instrumentr_trace_value_finalize(instrumentr_tracer_t tracer,
+                                 SEXP r_object,
+                                 instrumentr_value_t value) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_VALUE_FINALIZE;
 
     TRACING_INITIALIZE(event)
 
-    instrumentr_state_value_table_remove(state, r_object);
+    if (value == NULL) {
+        value = instrumentr_state_value_table_get(state, r_object);
+    }
 
-    /* TODO: add this after adding value */
-    // TRACING_INVOKE_CALLBACK(event, gc_deallocation_function_t, value);
+    if (value != NULL) {
+        TRACING_INVOKE_CALLBACK(event, value_finalize_function_t, value);
+    }
+
+    TRACING_FINALIZE(event)
+
+    return value;
+}
+
+void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_value_t value =
+        instrumentr_trace_value_finalize(tracer, r_object, NULL);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_GC_DEALLOCATION;
+
+    TRACING_INITIALIZE(event)
+
+    TRACING_INVOKE_CALLBACK(event, gc_deallocation_function_t, value);
+
+    if (value != NULL) {
+        instrumentr_state_value_table_remove(state, r_object);
+    }
 
     TRACING_FINALIZE(event)
 }

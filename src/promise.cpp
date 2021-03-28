@@ -3,6 +3,7 @@
 #include "interop.h"
 #include "utilities.h"
 #include "state.h"
+#include <limits>
 
 /********************************************************************************
  * definition
@@ -12,6 +13,8 @@ struct instrumentr_promise_impl_t {
     struct instrumentr_value_impl_t value;
     instrumentr_promise_type_t type;
     std::vector<instrumentr_call_t>* calls;
+    int force_entry_time;
+    int force_exit_time;
 };
 
 /********************************************************************************
@@ -48,6 +51,8 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
 
     promise->type = INSTRUMENTR_PROMISE_TYPE_UNKNOWN;
     promise->calls = new std::vector<instrumentr_call_t>();
+    promise->force_entry_time = INT_MAX;
+    promise->force_exit_time = INT_MAX;
 
     return promise;
 }
@@ -225,4 +230,22 @@ SEXP r_instrumentr_promise_get_call(SEXP r_promise) {
     instrumentr_promise_t promise = instrumentr_promise_unwrap(r_promise);
     instrumentr_call_t call = instrumentr_promise_get_call(promise);
     return instrumentr_call_wrap(call);
+}
+
+int instrumentr_promise_get_force_entry_time(instrumentr_promise_t promise) {
+    return promise->force_entry_time;
+}
+
+void instrumentr_promise_set_force_entry_time(instrumentr_promise_t promise,
+                                              int force_entry_time) {
+    promise->force_entry_time = force_entry_time;
+}
+
+int instrumentr_promise_get_force_exit_time(instrumentr_promise_t promise) {
+    return promise->force_exit_time;
+}
+
+void instrumentr_promise_set_force_exit_time(instrumentr_promise_t promise,
+                                             int force_exit_time) {
+    promise->force_exit_time = force_exit_time;
 }

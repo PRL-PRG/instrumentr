@@ -15,6 +15,7 @@ extern "C" {
 instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
                                            instrumentr_value_t function,
                                            SEXP r_expression,
+                                           SEXP r_arguments,
                                            SEXP r_environment);
 
 /********************************************************************************
@@ -23,12 +24,10 @@ instrumentr_call_t instrumentr_call_create(instrumentr_state_t state,
 
 void instrumentr_call_activate(instrumentr_call_t call);
 
-
 void instrumentr_call_deactivate(instrumentr_call_t call);
 
-
-void instrumentr_call_set_result(instrumentr_call_t call, SEXP r_result);
-
+void instrumentr_call_set_result(instrumentr_call_t call,
+                                 instrumentr_value_t result);
 
 void instrumentr_call_append_parameter(instrumentr_call_t call,
                                        instrumentr_parameter_t parameter);

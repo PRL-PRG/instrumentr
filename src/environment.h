@@ -50,6 +50,14 @@ void instrumentr_environment_set_namespace(
     instrumentr_environment_t environment,
     const char* name);
 
+void instrumentr_environment_set_last_write_time(
+    instrumentr_environment_t environment,
+    int last_write_time);
+
+void instrumentr_environment_set_last_read_time(
+    instrumentr_environment_t environment,
+    int last_read_time);
+
 INSTRUMENTR_ENVIRONMENT_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

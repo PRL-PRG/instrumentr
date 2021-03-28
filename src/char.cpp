@@ -43,13 +43,13 @@ instrumentr_char_t instrumentr_char_create(instrumentr_state_t state,
 
 INSTRUMENTR_VALUE_DEFINE_API(INSTRUMENTR_VALUE_TYPE_CHAR, char, charval)
 
-const char* instrumentr_char_get_value(instrumentr_char_t charval) {
+const char* instrumentr_char_get_element(instrumentr_char_t charval) {
     return CHAR(instrumentr_char_get_sexp(charval));
 }
 
-SEXP r_instrumentr_char_get_value(SEXP r_char) {
+SEXP r_instrumentr_char_get_element(SEXP r_char) {
     instrumentr_char_t charval = instrumentr_char_unwrap(r_char);
-    const char* result = instrumentr_char_get_value(charval);
+    const char* result = instrumentr_char_get_element(charval);
     return instrumentr_c_string_to_r_character(result);
 }
 

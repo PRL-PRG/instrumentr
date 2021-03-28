@@ -54,8 +54,14 @@ void instrumentr_state_value_table_initialize(instrumentr_state_t state);
 instrumentr_value_t
 instrumentr_state_value_table_insert(instrumentr_state_t state, SEXP r_value);
 
+instrumentr_value_t instrumentr_state_value_table_get(instrumentr_state_t state,
+                                                      SEXP r_object);
+
 void instrumentr_state_value_table_remove(instrumentr_state_t state,
                                           SEXP r_value);
+
+std::vector<instrumentr_value_t>
+instrumentr_state_value_table_get_values(instrumentr_state_t state);
 
 instrumentr_value_t
 instrumentr_state_value_table_lookup(instrumentr_state_t state,

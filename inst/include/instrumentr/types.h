@@ -345,6 +345,7 @@ typedef enum {
     INSTRUMENTR_EVENT_EVAL_EXIT,
     INSTRUMENTR_EVENT_GC_ALLOCATION,
     INSTRUMENTR_EVENT_GC_DEALLOCATION,
+    INSTRUMENTR_EVENT_VALUE_FINALIZE,
     INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
     INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
     INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
@@ -474,7 +475,21 @@ typedef void (*gc_allocation_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,
                                          instrumentr_state_t state,
                                          instrumentr_application_t application,
-                                         SEXP r_object);
+                                         instrumentr_value_t value);
+
+typedef void (*gc_deallocation_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_value_t value);
+
+typedef void (*value_finalize_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_value_t value);
 
 typedef void (*variable_definition_function_t)(
     instrumentr_tracer_t tracer,

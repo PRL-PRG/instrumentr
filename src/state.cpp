@@ -649,6 +649,20 @@ void instrumentr_state_value_table_remove(instrumentr_state_t state,
     }
 }
 
+std::vector<instrumentr_value_t>
+instrumentr_state_value_table_get_values(instrumentr_state_t state) {
+    std::vector<instrumentr_value_t> values;
+    values.reserve(state->value_table->size());
+
+    for (auto iter = state->value_table->begin();
+         iter != state->value_table->end();
+         ++iter) {
+        values.push_back(iter->second);
+    }
+
+    return values;
+}
+
 instrumentr_value_t
 instrumentr_state_value_table_lookup(instrumentr_state_t state,
                                      SEXP r_value,
@@ -671,6 +685,16 @@ instrumentr_state_value_table_lookup(instrumentr_state_t state,
         instrumentr_log_error("value %p not present in value table", r_value);
         return NULL;
     }
+}
+
+instrumentr_value_t instrumentr_state_value_table_get(instrumentr_state_t state,
+                                                      SEXP r_value) {
+    auto result = state->value_table->find(r_value);
+
+    if (result != state->value_table->end()) {
+        return result->second;
+    }
+    return NULL;
 }
 
 instrumentr_closure_t

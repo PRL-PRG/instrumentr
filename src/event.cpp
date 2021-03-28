@@ -24,6 +24,7 @@ event_info_t table[INSTRUMENTR_EVENT_COUNT] = {
     {INSTRUMENTR_EVENT_EVAL_EXIT, "eval_exit", 7},
     {INSTRUMENTR_EVENT_GC_ALLOCATION, "gc_allocation", 5},
     {INSTRUMENTR_EVENT_GC_DEALLOCATION, "gc_deallocation", 5},
+    {INSTRUMENTR_EVENT_VALUE_FINALIZE, "value_finalize", 5},
     {INSTRUMENTR_EVENT_VARIABLE_DEFINITION, "variable_definition", 7},
     {INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT, "variable_assignment", 7},
     {INSTRUMENTR_EVENT_VARIABLE_REMOVAL, "variable_removal", 6},
