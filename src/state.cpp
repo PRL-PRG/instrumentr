@@ -657,7 +657,11 @@ instrumentr_state_value_table_get_values(instrumentr_state_t state) {
     for (auto iter = state->value_table->begin();
          iter != state->value_table->end();
          ++iter) {
-        values.push_back(iter->second);
+        instrumentr_value_t value = iter->second;
+        if (instrumentr_value_is_closure(value) ||
+            instrumentr_value_is_environment(value)) {
+            values.push_back(value);
+        }
     }
 
     return values;

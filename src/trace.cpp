@@ -1057,7 +1057,10 @@ instrumentr_trace_value_finalize(instrumentr_tracer_t tracer,
     }
 
     if (value != NULL) {
-        TRACING_INVOKE_CALLBACK(event, value_finalize_function_t, value);
+        if (instrumentr_value_is_closure(value) ||
+            instrumentr_value_is_environment(value)) {
+            TRACING_INVOKE_CALLBACK(event, value_finalize_function_t, value);
+        }
     }
 
     TRACING_FINALIZE(event)
