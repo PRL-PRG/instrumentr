@@ -19,7 +19,9 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         code <- substitute(code)
     }
 
-    result <- NULL
+    ## TODO: fix this part, result should be created using a function
+    result <- list(error = create_error("trace_code", "result not assigned", NULL), value = NULL)
+    state <- list(output = list(), statistics = list())
 
     .Call(r_instrumentr_initialize_tracing, tracer)
 
@@ -30,7 +32,10 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
 
         value <- .Call(r_instrumentr_trace_code, tracer, code, environment)
 
-        result <- create_result(value)
+        ## TODO: fix this
+        if(!value[[2]]) {
+            result <- create_result(value[[1]])
+        }
     },
     error = function(e) {
         print(e)
@@ -52,7 +57,6 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         ##       or if error happened only in the code
         ##       being traced but not in the tracing code
         state <- .Call(r_instrumentr_trace_tracing_exit, tracer)
-        result <- set_state(result, state)
     },
     error = function(e) {
         print(e)
@@ -64,7 +68,10 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
         .Call(r_instrumentr_finalize_tracing, tracer)
     })
 
-    result
+    structure(list(result = result,
+                   output = state$output,
+                   statistics = state$output),
+              class = "instrumentr_trace")
 }
 
 #' @export

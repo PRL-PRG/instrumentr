@@ -116,16 +116,27 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
 
     clock_t start = clock();
 
-    SEXP r_result = R_NilValue;
+    dyntrace_result_t result;
+
+    int prot = 0;
+    SEXP r_value = R_NilValue;
+    SEXP r_error = PROTECT(ScalarLogical(TRUE));
+    ++prot;
 
     instrumentr_tracer_enable(tracer);
 
-    r_result = dyntrace_trace_code(instrumentr_tracer_get_dyntracer(tracer),
-                                   r_code,
-                                   r_environment)
-                   .value;
+    result = dyntrace_trace_code(
+        instrumentr_tracer_get_dyntracer(tracer), r_code, r_environment);
 
     instrumentr_tracer_reinstate(tracer);
+
+    /* this means error has not occurred */
+    if (!result.error_code) {
+        r_value = PROTECT(result.value);
+        ++prot;
+        r_error = PROTECT(ScalarLogical(FALSE));
+        ++prot;
+    }
 
     clock_t end = clock();
 
@@ -134,6 +145,13 @@ SEXP r_instrumentr_trace_code(SEXP r_tracer, SEXP r_code, SEXP r_environment) {
     instrumentr_exec_stats_t exec_stats =
         instrumentr_state_get_exec_stats(state);
     instrumentr_exec_stats_update(exec_stats, INSTRUMENTR_EVENT_COUNT, diff);
+
+    SEXP r_result = PROTECT(allocVector(VECSXP, 2));
+    ++prot;
+    SET_VECTOR_ELT(r_result, 0, r_value);
+    SET_VECTOR_ELT(r_result, 1, r_error);
+
+    UNPROTECT(prot);
 
     return r_result;
 }

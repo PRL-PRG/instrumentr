@@ -469,16 +469,6 @@ erase <- function(state, key) {
     UseMethod("erase")
 }
 
-#' @export
-set_state <- function(object, state) {
-    UseMethod("set_state")
-}
-
-#' @export
-get_state <- function(object) {
-    UseMethod("get_state")
-}
-
 get_type <- function(object) {
     UseMethod("get_type")
 }
