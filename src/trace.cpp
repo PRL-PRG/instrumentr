@@ -746,6 +746,23 @@ void instrumentr_trace_promise_value_lookup(dyntracer_t* dyntracer,
     TRACING_FINALIZE(event)
 }
 
+void instrumentr_trace_promise_expression_lookup(dyntracer_t* dyntracer,
+                                                 SEXP r_promise) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_PROMISE_EXPRESSION_LOOKUP;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_promise_t promise =
+        instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
+
+    TRACING_INVOKE_CALLBACK(
+        event, promise_expression_lookup_function_t, promise);
+
+    TRACING_FINALIZE(event)
+}
+
 void instrumentr_trace_promise_substitute(dyntracer_t* dyntracer,
                                           SEXP r_promise) {
     instrumentr_event_t event = INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE;

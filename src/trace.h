@@ -136,6 +136,9 @@ void instrumentr_trace_promise_force_exit(dyntracer_t* dyntracer,
 void instrumentr_trace_promise_value_lookup(dyntracer_t* dyntracer,
                                             SEXP r_promise);
 
+void instrumentr_trace_promise_expression_lookup(dyntracer_t* dyntracer,
+                                                 SEXP r_promise);
+
 void instrumentr_trace_promise_substitute(dyntracer_t* dyntracer,
                                           SEXP r_promise);
 

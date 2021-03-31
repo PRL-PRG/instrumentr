@@ -356,6 +356,7 @@ typedef enum {
     INSTRUMENTR_EVENT_PROMISE_FORCE_ENTRY,
     INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT,
     INSTRUMENTR_EVENT_PROMISE_VALUE_LOOKUP,
+    INSTRUMENTR_EVENT_PROMISE_EXPRESSION_LOOKUP,
     INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE,
     INSTRUMENTR_EVENT_PROMISE_DELAYED_ASSIGN,
     INSTRUMENTR_EVENT_PROMISE_LAZY_LOAD,
@@ -484,12 +485,11 @@ typedef void (*gc_deallocation_function_t)(
     instrumentr_application_t application,
     instrumentr_value_t value);
 
-typedef void (*value_finalize_function_t)(
-    instrumentr_tracer_t tracer,
-    instrumentr_callback_t callback,
-    instrumentr_state_t state,
-    instrumentr_application_t application,
-    instrumentr_value_t value);
+typedef void (*value_finalize_function_t)(instrumentr_tracer_t tracer,
+                                          instrumentr_callback_t callback,
+                                          instrumentr_state_t state,
+                                          instrumentr_application_t application,
+                                          instrumentr_value_t value);
 
 typedef void (*variable_definition_function_t)(
     instrumentr_tracer_t tracer,
@@ -562,6 +562,13 @@ typedef void (*promise_force_exit_function_t)(
     instrumentr_promise_t promise);
 
 typedef void (*promise_value_lookup_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_promise_t promise);
+
+typedef void (*promise_expression_lookup_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
     instrumentr_state_t state,
