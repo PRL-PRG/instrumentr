@@ -70,7 +70,7 @@ trace_code.instrumentr_tracer <- function(tracer, code, environment = .GlobalEnv
 
     structure(list(result = result,
                    output = state$output,
-                   statistics = state$output),
+                   statistics = state$statistics),
               class = "instrumentr_trace")
 }
 
