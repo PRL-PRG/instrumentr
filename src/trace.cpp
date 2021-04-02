@@ -1121,3 +1121,23 @@ void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     TRACING_FINALIZE(event)
 }
+
+void instrumentr_trace_error(dyntracer_t* dyntracer,
+                             SEXP r_call,
+                             const char* format,
+                             va_list ap) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_ERROR;
+
+    TRACING_INITIALIZE(event)
+
+    /* TODO: should this be instrumentr_language_t? */
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_call, 1);
+
+    /* TODO: handle format and ap arguments and remove call to R callback. */
+    TRACING_INVOKE_CALLBACK(event, error_function_t, value);
+
+    TRACING_FINALIZE(event)
+}

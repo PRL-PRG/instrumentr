@@ -360,6 +360,7 @@ typedef enum {
     INSTRUMENTR_EVENT_PROMISE_SUBSTITUTE,
     INSTRUMENTR_EVENT_PROMISE_DELAYED_ASSIGN,
     INSTRUMENTR_EVENT_PROMISE_LAZY_LOAD,
+    INSTRUMENTR_EVENT_ERROR,
     /* NOTE: this has to be the last event */
     INSTRUMENTR_EVENT_COUNT
 } instrumentr_event_t;
@@ -599,6 +600,13 @@ typedef void (*promise_lazy_load_function_t)(
     instrumentr_symbol_t symbol,
     instrumentr_promise_t promise,
     instrumentr_environment_t environment);
+
+typedef void (*error_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_value_t call_expr);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
     MACRO(INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_entry, ARGUMENT)         \

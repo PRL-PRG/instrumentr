@@ -152,6 +152,11 @@ void instrumentr_trace_promise_lazy_load(dyntracer_t* dyntracer,
                                          SEXP r_promise,
                                          SEXP r_rho);
 
+void instrumentr_trace_error(dyntracer_t* dyntracer,
+                             SEXP r_call,
+                             const char* format,
+                             va_list ap);
+
 #ifdef __cplusplus
 }
 #endif

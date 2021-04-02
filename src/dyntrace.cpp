@@ -66,6 +66,8 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_environment_function_context_lookup_callback(
         dyntracer, instrumentr_trace_function_context_lookup);
 
+    dyntracer_set_error_callback(dyntracer, instrumentr_trace_error);
+
     dyntracer_set_data(dyntracer, (void*) (tracer));
 
     return dyntracer;
