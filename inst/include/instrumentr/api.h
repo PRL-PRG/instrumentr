@@ -1331,6 +1331,9 @@
 
 #define INSTRUMENTR_PROMISE_C_API_MAP(MACRO)                                   \
     MACRO(instrumentr_promise_is_forced, int, instrumentr_promise_t promise)   \
+    MACRO(instrumentr_promise_get_environment,                                 \
+          instrumentr_value_t,                                                 \
+          instrumentr_promise_t promise)                                       \
     MACRO(instrumentr_promise_get_expression,                                  \
           instrumentr_value_t,                                                 \
           instrumentr_promise_t promise)                                       \
@@ -1364,6 +1367,7 @@
 
 #define INSTRUMENTR_PROMISE_R_API_MAP(MACRO)                             \
     MACRO(r_instrumentr_promise_is_forced, SEXP, SEXP r_promise)         \
+    MACRO(r_instrumentr_promise_get_environment, SEXP, SEXP r_promise)   \
     MACRO(r_instrumentr_promise_get_expression, SEXP, SEXP r_promise)    \
     MACRO(r_instrumentr_promise_get_value, SEXP, SEXP r_promise)         \
     MACRO(r_instrumentr_promise_get_type, SEXP, SEXP r_promise)          \

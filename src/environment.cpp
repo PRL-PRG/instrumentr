@@ -116,6 +116,8 @@ instrumentr_environment_type_to_string(instrumentr_environment_type_t type) {
             "environment type 'INSTRUMENTR_ENVIRONMENT_TYPE_COUNT' is reserved "
             "for internal use only");
     }
+
+    return NULL;
 }
 
 /********************************************************************************

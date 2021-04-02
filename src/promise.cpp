@@ -3,6 +3,7 @@
 #include "interop.h"
 #include "utilities.h"
 #include "state.h"
+#include "environment.h"
 #include <limits>
 
 /********************************************************************************
@@ -77,6 +78,24 @@ SEXP r_instrumentr_promise_is_forced(SEXP r_promise) {
     instrumentr_promise_t promise = instrumentr_promise_unwrap(r_promise);
     int result = instrumentr_promise_is_forced(promise);
     return instrumentr_c_int_to_r_logical(result);
+}
+
+/********************************************************************************
+ * environment
+ *******************************************************************************/
+
+/* accessor  */
+instrumentr_value_t
+instrumentr_promise_get_environment(instrumentr_promise_t promise) {
+    SEXP r_sexp = instrumentr_promise_get_sexp(promise);
+    instrumentr_state_t state = instrumentr_promise_get_state(promise);
+    return instrumentr_state_value_table_lookup(state, PRENV(r_sexp), 1);
+}
+
+SEXP r_instrumentr_promise_get_environment(SEXP r_promise) {
+    instrumentr_promise_t promise = instrumentr_promise_unwrap(r_promise);
+    instrumentr_value_t value = instrumentr_promise_get_environment(promise);
+    return instrumentr_value_wrap(value);
 }
 
 /********************************************************************************
