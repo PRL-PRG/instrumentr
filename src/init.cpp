@@ -24,8 +24,11 @@
 #define DECLARE_BINDING(NAME, PARAMETERS) \
     { #NAME, (DL_FUNC) &NAME, PARAMETERS }
 
-#define DECLARE_API_BINDING(NAME, OUTPUT_TYPE, ...) \
-    {#NAME, (DL_FUNC) &NAME, PP_NARG(__VA_ARGS__)},
+#define DECLARE_API_BINDING(                            \
+    FUNCTION_PREFIX, FUNCTION_SUFFIX, OUTPUT_TYPE, ...) \
+    {#FUNCTION_PREFIX #FUNCTION_SUFFIX,                 \
+     (DL_FUNC) &FUNCTION_PREFIX##FUNCTION_SUFFIX,       \
+     PP_NARG(__VA_ARGS__)},
 
 #ifdef __cplusplus
 extern "C" {
