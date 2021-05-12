@@ -36,7 +36,7 @@ struct instrumentr_state_impl_t {
  *******************************************************************************/
 
 void instrumentr_state_finalize(instrumentr_object_t object) {
-    instrumentr_state_t state = (instrumentr_state_t)(object);
+    instrumentr_state_t state = (instrumentr_state_t) (object);
 
     if (state->external != nullptr) {
         instrumentr_state_clear(state);
@@ -1035,4 +1035,21 @@ SEXP r_instrumentr_state_get_namespaces(SEXP r_state) {
     UNPROTECT(2);
 
     return r_namespaces;
+}
+
+/*******************************************************************************
+ symbol
+ *******************************************************************************/
+
+instrumentr_symbol_t instrumentr_state_get_symbol(instrumentr_state_t state,
+                                                  const char* name) {
+    SEXP r_name = Rf_install(name);
+    return instrumentr_state_value_table_lookup_symbol(state, r_name, 1);
+}
+
+SEXP r_instrumentr_state_get_symbol(SEXP r_state, SEXP r_name) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    const char* name = instrumentr_r_character_to_c_string(r_name);
+    instrumentr_symbol_t symbol = instrumentr_state_get_symbol(state, name);
+    return instrumentr_symbol_wrap(symbol);
 }

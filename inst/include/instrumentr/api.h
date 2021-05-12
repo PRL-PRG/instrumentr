@@ -506,7 +506,11 @@
           instrumentr_state_t state)                                   \
     MACRO(instrumentr_state_get_namespaces,                            \
           std::vector<instrumentr_environment_t>,                      \
-          instrumentr_state_t state)
+          instrumentr_state_t state)                                   \
+    MACRO(instrumentr_state_get_symbol,                                \
+          instrumentr_symbol_t,                                        \
+          instrumentr_state_t state,                                   \
+          const char* name)
 
 #define INSTRUMENTR_STATE_R_API_MAP(MACRO)                             \
     MACRO(r_instrumentr_state_get_time, SEXP, SEXP r_state)            \
@@ -535,7 +539,8 @@
           SEXP r_permissive)                                           \
     MACRO(r_instrumentr_state_get_call_stack, SEXP, SEXP r_state)      \
     MACRO(r_instrumentr_state_get_packages, SEXP, SEXP r_state)        \
-    MACRO(r_instrumentr_state_get_namespaces, SEXP, SEXP r_state)
+    MACRO(r_instrumentr_state_get_namespaces, SEXP, SEXP r_state)      \
+    MACRO(r_instrumentr_state_get_symbol, SEXP, SEXP r_state, SEXP r_name)
 
 #define INSTRUMENTR_STATE_API_MAP(MACRO) \
     INSTRUMENTR_STATE_C_API_MAP(MACRO)   \
@@ -1599,15 +1604,15 @@
 #define INSTRUMENTR_DECLARE_API() \
     INSTRUMENTR_API_MAP(INSTRUMENTR_API_DECLARATOR)
 
-#define INSTRUMENTR_API_INITIALIZER(FUNCTION, OUTPUT_TYPE, ...) \
-    FUNCTION = (OUTPUT_TYPE(*)(__VA_ARGS__))(                   \
-        R_GetCCallable("instrumentr", #FUNCTION));
+#define INSTRUMENTR_API_INITIALIZER(FUNCTION, OUTPUT_TYPE, ...)             \
+    FUNCTION = (OUTPUT_TYPE(*)(__VA_ARGS__)) (R_GetCCallable("instrumentr", \
+                                                             #FUNCTION));
 
 #define INSTRUMENTR_INITIALIZE_API() \
     INSTRUMENTR_API_MAP(INSTRUMENTR_API_INITIALIZER)
 
 #define INSTRUMENTR_API_EXPORTER(FUNCTION, OUTPUT_TYPE, ...) \
-    R_RegisterCCallable("instrumentr", #FUNCTION, (DL_FUNC)(FUNCTION));
+    R_RegisterCCallable("instrumentr", #FUNCTION, (DL_FUNC) (FUNCTION));
 
 #define INSTRUMENTR_EXPORT_API() INSTRUMENTR_API_MAP(INSTRUMENTR_API_EXPORTER)
 
