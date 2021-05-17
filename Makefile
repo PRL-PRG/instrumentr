@@ -1,6 +1,7 @@
 R := R
 SOURCEDIR := src
 INCLUDEDIR := inst/include
+DOCKER := docker
 
 SOURCES := $(shell find $(SOURCEDIR) -name '*.cpp')
 INCLUDES := $(shell find $(INCLUDEDIR) -name '*.hpp') $(shell find $(SOURCEDIR) -name '*.h')
@@ -12,7 +13,7 @@ SCAN_BUILD := scan-build
 
 all: clean document build check
 
-build: document
+build: install-dplyr document
 	$(R) CMD build .
 
 check: build
@@ -27,25 +28,31 @@ install: clean
 	$(R) CMD INSTALL .
 
 uninstall:
-	$(R) --slave -e "remove.packages('instrumentr')"
+	$(R) -s -e "remove.packages('instrumentr')"
 
-generate-callback-api:
-	$(R) --slave --file=inst/meta/generate-callback-api.R --args R/callbacks.R
+generate-callback-api: install-stringr
+	$(R) -s --file=inst/meta/generate-callback-api.R --args R/callbacks.R
 
 document: generate-callback-api install-devtools
-	$(R) --slave -e "devtools::document()"
+	$(R) -s -e "devtools::document()"
 
 test: install-devtools
-	$(R) --slave -e "devtools::test()"
+	$(R) -s -e "devtools::test()"
 
 lintr: install-lintr
-	$(R) --slave -e "quit(status = length(print(lintr::lint_package())) != 0)"
+	$(R) -s -e "quit(status = length(print(lintr::lint_package())) != 0)"
 
 install-devtools:
-	$(R) --slave -e "if (!require('devtools')) install.packages('devtools')"
+	$(R) -s -e "if (!require('devtools')) install.packages('devtools', repos = 'http://cran.rstudio.com/')"
+
+install-stringr:
+	$(R) -s -e "if (!require('string')) install.packages('stringr', repos = 'http://cran.rstudio.com/')";
 
 install-lintr:
-	$(R) --slave -e "if (!require('lintr')) install.packages('lintr')"
+	$(R) -s -e "if (!require('lintr')) install.packages('lintr', repos = 'http://cran.rstudio.com/')"
+
+install-dplyr:
+	$(R) -s -e "if (!require('dplyr')) install.packages('dplyr', repos = 'http://cran.rstudio.com/')"
 
 clang-tidy: clean
 	$(SCAN_BUILD) make build
@@ -67,3 +74,9 @@ cppcheck:
 	              -I inst/include/                                        \
 	             $(SOURCES)                                               \
 	             $(INCLUDES)
+
+build-docker:
+	$(DOCKER) build -t instrumentr  .
+
+run-docker:
+	$(DOCKER) run -it instrumentr
