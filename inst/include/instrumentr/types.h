@@ -489,16 +489,13 @@ typedef void (*eval_entry_function_t)(instrumentr_tracer_t tracer,
                                       instrumentr_callback_t callback,
                                       instrumentr_state_t state,
                                       instrumentr_application_t application,
-                                      instrumentr_value_t expression,
-                                      instrumentr_environment_t environment);
+                                      instrumentr_eval_t eval);
 
 typedef void (*eval_exit_function_t)(instrumentr_tracer_t tracer,
                                      instrumentr_callback_t callback,
                                      instrumentr_state_t state,
                                      instrumentr_application_t application,
-                                     instrumentr_value_t expression,
-                                     instrumentr_environment_t environment,
-                                     instrumentr_value_t result);
+                                     instrumentr_eval_t eval);
 
 typedef void (*gc_allocation_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,

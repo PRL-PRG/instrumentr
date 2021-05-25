@@ -21,6 +21,7 @@
 #include "miscellaneous.h"
 #include "value.h"
 #include "values.h"
+#include "eval.h"
 
 #define TRACING_INITIALIZE(EVENT)                                     \
     instrumentr_tracer_disable(tracer);                               \
@@ -776,6 +777,13 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
                                     promise,
                                     promise);
         }
+        /* eval */
+        else if (instrumentr_frame_is_eval(frame)) {
+            instrumentr_eval_t eval = instrumentr_frame_as_eval(frame);
+
+            TRACING_INVOKE_CALLBACK(
+                INSTRUMENTR_EVENT_EVAL_EXIT, eval_exit_function_t, eval, eval);
+        }
 
         instrumentr_call_stack_pop_frame(call_stack);
         --frame_count;
@@ -970,18 +978,19 @@ void instrumentr_trace_eval_entry(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    instrumentr_value_t expression =
-        instrumentr_state_value_table_lookup(state, r_expression, 1);
+    instrumentr_eval_t eval =
+        instrumentr_eval_create(state, r_expression, r_rho);
 
-    instrumentr_environment_t environment =
-        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+    instrumentr_frame_t frame = instrumentr_frame_create_from_eval(state, eval);
+    instrumentr_eval_release(eval);
 
-    TRACING_INVOKE_CALLBACK(event,
-                            eval_entry_function_t,
-                            expression,
-                            value,
-                            environment,
-                            environment);
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
+
+    instrumentr_call_stack_push_frame(call_stack, frame);
+    instrumentr_frame_release(frame);
+
+    TRACING_INVOKE_CALLBACK(event, eval_entry_function_t, eval, eval);
 
     TRACING_FINALIZE(event)
 }
@@ -996,23 +1005,46 @@ void instrumentr_trace_eval_exit(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    instrumentr_value_t expression =
-        instrumentr_state_value_table_lookup(state, r_expression, 1);
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
 
-    instrumentr_environment_t environment =
-        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+    instrumentr_frame_t frame =
+        instrumentr_call_stack_peek_frame(call_stack, 0);
+
+    if (!instrumentr_frame_is_eval(frame)) {
+        instrumentr_log_error("expected eval frame on stack");
+    }
+
+    instrumentr_eval_t eval = instrumentr_frame_as_eval(frame);
+
+    SEXP r_curr_expression =
+        instrumentr_value_get_sexp(instrumentr_eval_get_expression(eval));
+
+    if (r_expression != r_curr_expression) {
+        instrumentr_log_error(
+            "expected expression pointer '%p' in eval frame, received '%p'",
+            r_expression,
+            r_curr_expression);
+    }
+
+    SEXP r_curr_rho = instrumentr_environment_get_sexp(
+        instrumentr_eval_get_environment(eval));
+
+    if (r_rho != r_curr_rho) {
+        instrumentr_log_error(
+            "expected environment pointer '%p' in eval frame, received '%p'",
+            r_rho,
+            r_curr_rho);
+    }
 
     instrumentr_value_t result =
         instrumentr_state_value_table_lookup(state, r_result, 1);
 
-    TRACING_INVOKE_CALLBACK(event,
-                            eval_exit_function_t,
-                            expression,
-                            value,
-                            environment,
-                            environment,
-                            result,
-                            value);
+    instrumentr_eval_set_result(eval, result);
+
+    TRACING_INVOKE_CALLBACK(event, eval_exit_function_t, eval, eval);
+
+    instrumentr_call_stack_pop_frame(call_stack);
 
     TRACING_FINALIZE(event)
 }
