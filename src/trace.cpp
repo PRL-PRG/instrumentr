@@ -517,6 +517,61 @@ void instrumentr_trace_closure_call_exit(dyntracer_t* dyntracer,
     TRACING_FINALIZE(event)
 }
 
+void instrumentr_trace_use_method_entry(dyntracer_t* dyntracer,
+                                        const char* generic,
+                                        SEXP r_klass,
+                                        SEXP r_object,
+                                        SEXP r_call,
+                                        SEXP r_args,
+                                        SEXP r_rho) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_USE_METHOD_ENTRY;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_object, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+
+    TRACING_INVOKE_CALLBACK(
+        event, use_method_entry_function_t, value, environment);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_use_method_exit(dyntracer_t* dyntracer,
+                                       const char* generic,
+                                       SEXP r_klass,
+                                       SEXP r_object,
+                                       SEXP r_call,
+                                       SEXP r_args,
+                                       SEXP r_rho,
+                                       SEXP r_ans) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_USE_METHOD_ENTRY;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_object, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+
+    instrumentr_value_t ans =
+        r_ans == NULL ? NULL
+                      : instrumentr_state_value_table_lookup(state, r_ans, 1);
+
+    TRACING_INVOKE_CALLBACK(
+        event, use_method_exit_function_t, value, environment, ans);
+
+    TRACING_FINALIZE(event)
+}
+
 void instrumentr_trace_context_entry(dyntracer_t* dyntracer, void* pointer) {
     instrumentr_event_t event = INSTRUMENTR_EVENT_CONTEXT_ENTRY;
 

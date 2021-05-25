@@ -341,6 +341,8 @@ typedef enum {
     INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
     INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY,
     INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT,
+    INSTRUMENTR_EVENT_USE_METHOD_ENTRY,
+    INSTRUMENTR_EVENT_USE_METHOD_EXIT,
     INSTRUMENTR_EVENT_EVAL_ENTRY,
     INSTRUMENTR_EVENT_EVAL_EXIT,
     INSTRUMENTR_EVENT_GC_ALLOCATION,
@@ -459,20 +461,37 @@ typedef void (*closure_call_exit_function_t)(
     instrumentr_closure_t closure,
     instrumentr_call_t call);
 
+typedef void (*use_method_entry_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_value_t object,
+    instrumentr_environment_t environment);
+
+typedef void (*use_method_exit_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_value_t object,
+    instrumentr_environment_t environment,
+    instrumentr_value_t result);
+
 typedef void (*eval_entry_function_t)(instrumentr_tracer_t tracer,
                                       instrumentr_callback_t callback,
                                       instrumentr_state_t state,
                                       instrumentr_application_t application,
-                                      SEXP r_expression,
-                                      SEXP r_rho);
+                                      instrumentr_value_t expression,
+                                      instrumentr_environment_t environment);
 
 typedef void (*eval_exit_function_t)(instrumentr_tracer_t tracer,
                                      instrumentr_callback_t callback,
                                      instrumentr_state_t state,
                                      instrumentr_application_t application,
-                                     SEXP r_expression,
-                                     SEXP r_rho,
-                                     SEXP r_result);
+                                     instrumentr_value_t expression,
+                                     instrumentr_environment_t environment,
+                                     instrumentr_value_t result);
 
 typedef void (*gc_allocation_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,

@@ -21,6 +21,13 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
                                          instrumentr_trace_context_entry);
     dyntracer_set_context_exit_callback(dyntracer,
                                         instrumentr_trace_context_exit);
+
+    dyntracer_set_use_method_entry_callback(dyntracer,
+                                            instrumentr_trace_use_method_entry);
+
+    dyntracer_set_use_method_exit_callback(dyntracer,
+                                           instrumentr_trace_use_method_exit);
+
     dyntracer_set_context_jump_callback(dyntracer,
                                         instrumentr_trace_context_jump);
     dyntracer_set_eval_entry_callback(dyntracer, instrumentr_trace_eval_entry);

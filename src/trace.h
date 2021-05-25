@@ -69,6 +69,23 @@ void instrumentr_trace_closure_call_exit(dyntracer_t* dyntracer,
                                          dyntrace_dispatch_t dispatch,
                                          SEXP r_result);
 
+void instrumentr_trace_use_method_entry(dyntracer_t* dyntracer,
+                                        const char* generic,
+                                        SEXP r_klass,
+                                        SEXP r_object,
+                                        SEXP r_call,
+                                        SEXP r_args,
+                                        SEXP r_rho);
+
+void instrumentr_trace_use_method_exit(dyntracer_t* dyntracer,
+                                       const char* generic,
+                                       SEXP r_klass,
+                                       SEXP r_object,
+                                       SEXP r_call,
+                                       SEXP r_args,
+                                       SEXP r_rho,
+                                       SEXP r_ans);
+
 void instrumentr_trace_context_entry(dyntracer_t* dyntracer, void* pointer);
 
 void instrumentr_trace_context_exit(dyntracer_t* dyntracer, void* pointer);

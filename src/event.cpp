@@ -20,6 +20,8 @@ event_info_t table[INSTRUMENTR_EVENT_COUNT] = {
     {INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT, "special_call_exit", 6},
     {INSTRUMENTR_EVENT_CLOSURE_CALL_ENTRY, "closure_call_entry", 6},
     {INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT, "closure_call_exit", 6},
+    {INSTRUMENTR_EVENT_USE_METHOD_ENTRY, "use_method_entry", 6},
+    {INSTRUMENTR_EVENT_USE_METHOD_EXIT, "use_method_exit", 7},
     {INSTRUMENTR_EVENT_EVAL_ENTRY, "eval_entry", 6},
     {INSTRUMENTR_EVENT_EVAL_EXIT, "eval_exit", 7},
     {INSTRUMENTR_EVENT_GC_ALLOCATION, "gc_allocation", 5},
