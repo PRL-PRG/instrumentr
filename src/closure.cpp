@@ -29,7 +29,7 @@ struct instrumentr_closure_impl_t {
  *******************************************************************************/
 
 void instrumentr_closure_finalize(instrumentr_value_t value) {
-    instrumentr_closure_t closure = (instrumentr_closure_t)(value);
+    instrumentr_closure_t closure = (instrumentr_closure_t) (value);
 
     free((char*) (closure->name));
     closure->name = NULL;
@@ -63,7 +63,7 @@ instrumentr_closure_t instrumentr_closure_create(instrumentr_state_t state,
                                  INSTRUMENTR_ORIGIN_FOREIGN,
                                  r_sexp);
 
-    instrumentr_closure_t closure = (instrumentr_closure_t)(value);
+    instrumentr_closure_t closure = (instrumentr_closure_t) (value);
 
     closure->exported = 0;
     closure->generic_name = NULL;
@@ -138,6 +138,11 @@ void instrumentr_closure_set_environment(instrumentr_closure_t closure) {
 
     SEXP r_environment = CLOENV(instrumentr_closure_get_sexp(closure));
 
+    if (closure->environment != NULL) {
+        instrumentr_environment_release(closure->environment);
+        closure->environment = NULL;
+    }
+
     closure->environment = instrumentr_state_value_table_lookup_environment(
         state, r_environment, 1);
 
@@ -177,7 +182,9 @@ void instrumentr_closure_set_environment(instrumentr_closure_t closure) {
 /* accessor  */
 instrumentr_environment_t
 instrumentr_closure_get_environment(instrumentr_closure_t closure) {
-    if (closure->environment == NULL) {
+    /* TODO: figure out why the closure->environment->r_sexp is NULL */
+    if (closure->environment == NULL ||
+        instrumentr_environment_get_sexp(closure->environment) == NULL) {
         instrumentr_closure_set_environment(closure);
     }
 
