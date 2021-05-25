@@ -4,6 +4,7 @@
 #include "object.h"
 #include "tracer.h"
 #include "application.h"
+#include "eval.h"
 #include "call.h"
 #include "call_stack.h"
 #include "callback.h"
