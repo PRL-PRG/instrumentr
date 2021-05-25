@@ -7,6 +7,7 @@
 #include "state.h"
 #include "call.h"
 #include "symbol.h"
+#include "value.h"
 
 /********************************************************************************
  * definition
@@ -26,7 +27,7 @@ struct instrumentr_environment_impl_t {
  *******************************************************************************/
 
 void instrumentr_environment_finalize(instrumentr_value_t value) {
-    instrumentr_environment_t environment = (instrumentr_environment_t)(value);
+    instrumentr_environment_t environment = (instrumentr_environment_t) (value);
 
     free((char*) (environment->name));
     instrumentr_environment_clear(environment);
@@ -52,7 +53,7 @@ instrumentr_environment_create(instrumentr_state_t state, SEXP r_sexp) {
                                  INSTRUMENTR_ORIGIN_LOCAL,
                                  r_sexp);
 
-    instrumentr_environment_t environment = (instrumentr_environment_t)(value);
+    instrumentr_environment_t environment = (instrumentr_environment_t) (value);
 
     environment->type = INSTRUMENTR_ENVIRONMENT_TYPE_UNKNOWN;
     environment->name = NULL;
@@ -157,6 +158,77 @@ SEXP r_instrumentr_environment_get_size(SEXP r_environment) {
         instrumentr_environment_unwrap(r_environment);
     int size = instrumentr_environment_get_size(environment);
     return instrumentr_c_int_to_r_integer(size);
+}
+
+/********************************************************************************
+ * hashed
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_environment_is_hashed(instrumentr_environment_t environment) {
+    return dyntrace_environment_is_hashed(
+        instrumentr_environment_get_sexp(environment));
+}
+
+SEXP r_instrumentr_environment_is_hashed(SEXP r_environment) {
+    instrumentr_environment_t environment =
+        instrumentr_environment_unwrap(r_environment);
+    int result = instrumentr_environment_is_hashed(environment);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+/********************************************************************************
+ * parent
+ *******************************************************************************/
+
+/* accessor  */
+instrumentr_value_t
+instrumentr_environment_get_parent(instrumentr_environment_t environment) {
+    SEXP r_env = ENCLOS(instrumentr_environment_get_sexp(environment));
+    instrumentr_state_t state = instrumentr_environment_get_state(environment);
+    return instrumentr_state_value_table_lookup(state, r_env, 1);
+}
+
+SEXP r_instrumentr_environment_get_parent(SEXP r_environment) {
+    instrumentr_environment_t environment =
+        instrumentr_environment_unwrap(r_environment);
+    instrumentr_value_t parent =
+        instrumentr_environment_get_parent(environment);
+    return instrumentr_value_wrap(parent);
+}
+
+/********************************************************************************
+ * empty_env
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_environment_is_empty_env(
+    instrumentr_environment_t environment) {
+    return instrumentr_environment_get_sexp(environment) == R_EmptyEnv;
+}
+
+SEXP r_instrumentr_environment_is_empty_env(SEXP r_environment) {
+    instrumentr_environment_t environment =
+        instrumentr_environment_unwrap(r_environment);
+    int result = instrumentr_environment_is_empty_env(environment);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+/********************************************************************************
+ * global_env
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_environment_is_global_env(
+    instrumentr_environment_t environment) {
+    return instrumentr_environment_get_sexp(environment) == R_GlobalEnv;
+}
+
+SEXP r_instrumentr_environment_is_global_env(SEXP r_environment) {
+    instrumentr_environment_t environment =
+        instrumentr_environment_unwrap(r_environment);
+    int result = instrumentr_environment_is_global_env(environment);
+    return instrumentr_c_int_to_r_logical(result);
 }
 
 /* accessor  */

@@ -1053,3 +1053,94 @@ SEXP r_instrumentr_state_get_symbol(SEXP r_state, SEXP r_name) {
     instrumentr_symbol_t symbol = instrumentr_state_get_symbol(state, name);
     return instrumentr_symbol_wrap(symbol);
 }
+
+instrumentr_environment_t
+instrumentr_state_get_empty_env(instrumentr_state_t state) {
+    return instrumentr_state_value_table_lookup_environment(
+        state, R_EmptyEnv, 1);
+}
+
+SEXP r_instrumentr_state_get_empty_env(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_environment_t environment =
+        instrumentr_state_get_empty_env(state);
+    return instrumentr_environment_wrap(environment);
+}
+
+instrumentr_environment_t
+instrumentr_state_get_base_namespace(instrumentr_state_t state) {
+    return instrumentr_state_value_table_lookup_environment(
+        state, R_BaseNamespace, 1);
+}
+
+SEXP r_instrumentr_state_get_base_namespace(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_environment_t environment =
+        instrumentr_state_get_base_namespace(state);
+    return instrumentr_environment_wrap(environment);
+}
+
+instrumentr_environment_t
+instrumentr_state_get_base_env(instrumentr_state_t state) {
+    return instrumentr_state_value_table_lookup_environment(
+        state, R_BaseEnv, 1);
+}
+
+SEXP r_instrumentr_state_get_base_env(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_environment_t environment =
+        instrumentr_state_get_base_env(state);
+    return instrumentr_environment_wrap(environment);
+}
+
+instrumentr_environment_t
+instrumentr_state_get_global_env(instrumentr_state_t state) {
+    return instrumentr_state_value_table_lookup_environment(
+        state, R_GlobalEnv, 1);
+}
+
+SEXP r_instrumentr_state_get_global_env(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_environment_t environment =
+        instrumentr_state_get_global_env(state);
+    return instrumentr_environment_wrap(environment);
+}
+
+instrumentr_environment_t
+instrumentr_state_get_namespace_registry(instrumentr_state_t state) {
+    return instrumentr_state_value_table_lookup_environment(
+        state, R_NamespaceRegistry, 1);
+}
+
+SEXP r_instrumentr_state_get_namespace_registry(SEXP r_state) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_environment_t environment =
+        instrumentr_state_get_namespace_registry(state);
+    return instrumentr_environment_wrap(environment);
+}
+
+//instrumentr_environment_t
+//instrumentr_state_get_methods_namespace(instrumentr_state_t state) {
+//    return instrumentr_state_value_table_lookup_environment(
+//        state, R_MethodsNamespace, 1);
+//}
+//
+//SEXP r_instrumentr_state_get_methods_namespace(SEXP r_state) {
+//    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+//    instrumentr_environment_t environment =
+//        instrumentr_state_get_methods_namespace(state);
+//    return instrumentr_environment_wrap(environment);
+//}
+//
+//instrumentr_environment_t
+//instrumentr_state_get_global_cache(instrumentr_state_t state) {
+//    return instrumentr_state_value_table_lookup_environment(
+//        state, R_GlobalCache, 1);
+//}
+//
+//SEXP r_instrumentr_state_get_global_cache(SEXP r_state) {
+//    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+//    instrumentr_environment_t environment =
+//        instrumentr_state_get_global_cache(state);
+//    return instrumentr_environment_wrap(environment);
+//}
