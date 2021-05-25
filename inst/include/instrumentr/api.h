@@ -1265,6 +1265,38 @@
     INSTRUMENTR_CLOSURE_R_API_MAP(MACRO)
 
 /********************************************************************************
+ EVAL API
+ *******************************************************************************/
+
+#define INSTRUMENTR_EVAL_C_API_MAP(MACRO)                            \
+    MACRO(instrumentr_eval_get_expression,                           \
+          instrumentr_value_t,                                       \
+          instrumentr_eval_t eval)                                   \
+    MACRO(instrumentr_eval_get_environment,                          \
+          instrumentr_environment_t,                                 \
+          instrumentr_eval_t eval)                                   \
+    MACRO(instrumentr_eval_is_active, int, instrumentr_eval_t eval)  \
+    MACRO(instrumentr_eval_has_result, int, instrumentr_eval_t eval) \
+    MACRO(instrumentr_eval_get_result,                               \
+          instrumentr_value_t,                                       \
+          instrumentr_eval_t eval)                                   \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_C_API(                         \
+        MACRO, INSTRUMENTR_MODEL_TYPE_EVAL, eval, eval)
+
+#define INSTRUMENTR_EVAL_R_API_MAP(MACRO)                        \
+    MACRO(r_instrumentr_eval_get_expression, SEXP, SEXP r_eval)  \
+    MACRO(r_instrumentr_eval_get_environment, SEXP, SEXP r_eval) \
+    MACRO(r_instrumentr_eval_is_active, SEXP, SEXP r_eval)       \
+    MACRO(r_instrumentr_eval_has_result, SEXP, SEXP r_eval)      \
+    MACRO(r_instrumentr_eval_get_result, SEXP, SEXP r_eval)      \
+    INSTRUMENTR_MODEL_DECLARE_DERIVED_R_API(                     \
+        MACRO, INSTRUMENTR_MODEL_TYPE_EVAL, eval, eval)
+
+#define INSTRUMENTR_EVAL_API_MAP(MACRO) \
+    INSTRUMENTR_EVAL_C_API_MAP(MACRO)   \
+    INSTRUMENTR_EVAL_R_API_MAP(MACRO)
+
+/********************************************************************************
  CALL API
  *******************************************************************************/
 
@@ -1556,6 +1588,7 @@
     INSTRUMENTR_STATE_API_MAP(MACRO)         \
     INSTRUMENTR_MODEL_API_MAP(MACRO)         \
     INSTRUMENTR_APPLICATION_API_MAP(MACRO)   \
+    INSTRUMENTR_EVAL_API_MAP(MACRO)          \
     INSTRUMENTR_CALL_API_MAP(MACRO)          \
     INSTRUMENTR_CALL_STACK_API_MAP(MACRO)    \
     INSTRUMENTR_FRAME_API_MAP(MACRO)         \
@@ -1600,6 +1633,7 @@
     INSTRUMENTR_STATE_R_API_MAP(MACRO)         \
     INSTRUMENTR_MODEL_R_API_MAP(MACRO)         \
     INSTRUMENTR_APPLICATION_R_API_MAP(MACRO)   \
+    INSTRUMENTR_EVAL_R_API_MAP(MACRO)          \
     INSTRUMENTR_CALL_R_API_MAP(MACRO)          \
     INSTRUMENTR_CALL_STACK_R_API_MAP(MACRO)    \
     INSTRUMENTR_FRAME_R_API_MAP(MACRO)         \

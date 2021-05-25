@@ -3,6 +3,7 @@
 
 #include <instrumentr/Rincludes.h>
 #include <instrumentr/api.h>
+#undef eval
 
 #ifdef __cplusplus
 extern "C" {

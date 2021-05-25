@@ -64,6 +64,12 @@ typedef struct instrumentr_special_impl_t* instrumentr_special_t;
 typedef struct instrumentr_closure_impl_t* instrumentr_closure_t;
 
 /********************************************************************************
+ * eval
+ *******************************************************************************/
+
+typedef struct instrumentr_eval_impl_t* instrumentr_eval_t;
+
+/********************************************************************************
  * call
  *******************************************************************************/
 
@@ -271,6 +277,7 @@ typedef enum {
 
 typedef enum {
     INSTRUMENTR_MODEL_TYPE_APPLICATION = 0,
+    INSTRUMENTR_MODEL_TYPE_EVAL,
     INSTRUMENTR_MODEL_TYPE_CALL,
     INSTRUMENTR_MODEL_TYPE_CALL_STACK,
     INSTRUMENTR_MODEL_TYPE_FRAME,
