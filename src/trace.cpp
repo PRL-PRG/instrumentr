@@ -38,7 +38,6 @@
     instrumentr_exec_stats_update(exec_stats, EVENT, diff); \
     instrumentr_tracer_reinstate(tracer);
 
-// definition for FOO
 #define TRACING_INVOKE_R_CALLBACK(...) \
     OVERLOADED_MACRO(TRACING_INVOKE_R_CALLBACK, __VA_ARGS__)
 
@@ -46,41 +45,62 @@
     Rf_eval(Rf_lang5(r_name, r_tracer, r_callback, r_state, r_application), \
             r_trace_env);
 
-#define TRACING_INVOKE_R_CALLBACK_1(ONE)                                    \
-    SEXP r_##ONE = PROTECT(instrumentr_##ONE##_wrap(ONE));                  \
-    Rf_eval(                                                                \
-        Rf_lang6(                                                           \
-            r_name, r_tracer, r_callback, r_state, r_application, r_##ONE), \
-        r_trace_env);                                                       \
+#define TRACING_INVOKE_R_CALLBACK_2(ONE_NAME, ONE_TYPE)                   \
+    SEXP r_##ONE_NAME = PROTECT(instrumentr_##ONE_TYPE##_wrap(ONE_NAME)); \
+    Rf_eval(Rf_lang6(r_name,                                              \
+                     r_tracer,                                            \
+                     r_callback,                                          \
+                     r_state,                                             \
+                     r_application,                                       \
+                     r_##ONE_NAME),                                       \
+            r_trace_env);                                                 \
     UNPROTECT(1);
 
-#define TRACING_INVOKE_R_CALLBACK_2(ONE, TWO)              \
-    SEXP r_##ONE = PROTECT(instrumentr_##ONE##_wrap(ONE)); \
-    SEXP r_##TWO = PROTECT(instrumentr_##TWO##_wrap(TWO)); \
-    Rf_eval(Rf_lang7(r_name,                               \
-                     r_tracer,                             \
-                     r_callback,                           \
-                     r_state,                              \
-                     r_application,                        \
-                     r_##ONE,                              \
-                     r_##TWO),                             \
-            r_trace_env);                                  \
+#define TRACING_INVOKE_R_CALLBACK_4(ONE_NAME, ONE_TYPE, TWO_NAME, TWO_TYPE) \
+    SEXP r_##ONE_NAME = PROTECT(instrumentr_##ONE_TYPE##_wrap(ONE_NAME));   \
+    SEXP r_##TWO_NAME = PROTECT(instrumentr_##TWO_TYPE##_wrap(TWO_NAME));   \
+    Rf_eval(Rf_lang7(r_name,                                                \
+                     r_tracer,                                              \
+                     r_callback,                                            \
+                     r_state,                                               \
+                     r_application,                                         \
+                     r_##ONE_NAME,                                          \
+                     r_##TWO_NAME),                                         \
+            r_trace_env);                                                   \
     UNPROTECT(2);
 
-#define TRACING_INVOKE_R_CALLBACK_3(ONE, TWO, THREE)             \
-    SEXP r_##ONE = PROTECT(instrumentr_##ONE##_wrap(ONE));       \
-    SEXP r_##TWO = PROTECT(instrumentr_##TWO##_wrap(TWO));       \
-    SEXP r_##THREE = PROTECT(instrumentr_##THREE##_wrap(THREE)); \
-    Rf_eval(Rf_lang8(r_name,                                     \
-                     r_tracer,                                   \
-                     r_callback,                                 \
-                     r_state,                                    \
-                     r_application,                              \
-                     r_##ONE,                                    \
-                     r_##TWO,                                    \
-                     r_##THREE),                                 \
-            r_trace_env);                                        \
+#define TRACING_INVOKE_R_CALLBACK_6(                                      \
+    ONE_NAME, ONE_TYPE, TWO_NAME, TWO_TYPE, THREE_NAME, THREE_TYPE)       \
+    SEXP r_##ONE_NAME = PROTECT(instrumentr_##ONE_TYPE##_wrap(ONE_NAME)); \
+    SEXP r_##TWO_NAME = PROTECT(instrumentr_##TWO_TYPE##_wrap(TWO_NAME)); \
+    SEXP r_##THREE_NAME =                                                 \
+        PROTECT(instrumentr_##THREE_TYPE##_wrap(THREE_NAME));             \
+    Rf_eval(Rf_lang8(r_name,                                              \
+                     r_tracer,                                            \
+                     r_callback,                                          \
+                     r_state,                                             \
+                     r_application,                                       \
+                     r_##ONE_NAME,                                        \
+                     r_##TWO_NAME,                                        \
+                     r_##THREE_NAME),                                     \
+            r_trace_env);                                                 \
     UNPROTECT(3);
+
+#define TRACING_INVOKE_C_CALLBACK(...) \
+    OVERLOADED_MACRO(TRACING_INVOKE_C_CALLBACK, __VA_ARGS__)
+
+#define TRACING_INVOKE_C_CALLBACK_0(ONE) \
+    cfun(tracer, callback, state, application);
+
+#define TRACING_INVOKE_C_CALLBACK_2(ONE_NAME, ONE_TYPE) \
+    cfun(tracer, callback, state, application, ONE_NAME);
+
+#define TRACING_INVOKE_C_CALLBACK_4(ONE_NAME, ONE_TYPE, TWO_NAME, TWO_TYPE) \
+    cfun(tracer, callback, state, application, ONE_NAME, TWO_NAME);
+
+#define TRACING_INVOKE_C_CALLBACK_6(                                \
+    ONE_NAME, ONE_TYPE, TWO_NAME, TWO_TYPE, THREE_NAME, THREE_TYPE) \
+    cfun(tracer, callback, state, application, ONE_NAME, TWO_NAME, THREE_NAME);
 
 #define TRACING_INVOKE_CALLBACK(EVENT, TYPE, ...)                             \
     if (instrumentr_tracer_has_callback(tracer, EVENT)) {                     \
@@ -92,7 +112,7 @@
                                                                               \
         if (instrumentr_callback_has_c_function(callback)) {                  \
             TYPE cfun = (TYPE) instrumentr_callback_get_c_function(callback); \
-            cfun(tracer, callback, state, application, ##__VA_ARGS__);        \
+            TRACING_INVOKE_C_CALLBACK(__VA_ARGS__)                            \
         } else {                                                              \
             SEXP r_tracer = PROTECT(instrumentr_tracer_wrap(tracer));         \
             SEXP r_application =                                              \
@@ -213,7 +233,8 @@ SEXP r_instrumentr_trace_package_load(SEXP r_tracer, SEXP r_package_name) {
     instrumentr_environment_t environment =
         instrumentr_state_value_table_update_namespace(state, package_name);
 
-    TRACING_INVOKE_CALLBACK(event, package_load_function_t, environment);
+    TRACING_INVOKE_CALLBACK(
+        event, package_load_function_t, environment, environment);
 
     TRACING_FINALIZE(event)
 
@@ -232,7 +253,8 @@ SEXP r_instrumentr_trace_package_unload(SEXP r_tracer, SEXP r_package_name) {
     instrumentr_environment_t environment =
         instrumentr_state_value_table_lookup_namespace(state, package_name);
 
-    TRACING_INVOKE_CALLBACK(event, package_unload_function_t, environment);
+    TRACING_INVOKE_CALLBACK(
+        event, package_unload_function_t, environment, environment);
 
     TRACING_FINALIZE(event)
 
@@ -251,7 +273,8 @@ SEXP r_instrumentr_trace_package_attach(SEXP r_tracer, SEXP r_package_name) {
     instrumentr_environment_t environment =
         instrumentr_state_value_table_lookup_package(state, package_name);
 
-    TRACING_INVOKE_CALLBACK(event, package_attach_function_t, environment);
+    TRACING_INVOKE_CALLBACK(
+        event, package_attach_function_t, environment, environment);
 
     TRACING_FINALIZE(event)
 
@@ -270,7 +293,8 @@ SEXP r_instrumentr_trace_package_detach(SEXP r_tracer, SEXP r_package_name) {
     instrumentr_environment_t environment =
         instrumentr_state_value_table_lookup_package(state, package_name);
 
-    TRACING_INVOKE_CALLBACK(event, package_detach_function_t, environment)
+    TRACING_INVOKE_CALLBACK(
+        event, package_detach_function_t, environment, environment)
 
     TRACING_FINALIZE(event)
 
@@ -320,7 +344,7 @@ void instrumentr_trace_builtin_call_entry(dyntracer_t* dyntracer,
         instrumentr_trace_call_entry(state, function, r_call, r_args, r_rho);
 
     TRACING_INVOKE_CALLBACK(
-        event, builtin_call_entry_function_t, builtin, call);
+        event, builtin_call_entry_function_t, builtin, builtin, call, call);
 
     TRACING_FINALIZE(event)
 }
@@ -346,7 +370,7 @@ void instrumentr_trace_special_call_entry(dyntracer_t* dyntracer,
         instrumentr_trace_call_entry(state, function, r_call, r_args, r_rho);
 
     TRACING_INVOKE_CALLBACK(
-        event, special_call_entry_function_t, special, call);
+        event, special_call_entry_function_t, special, special, call, call);
 
     TRACING_FINALIZE(event)
 }
@@ -380,7 +404,7 @@ void instrumentr_trace_closure_call_entry(dyntracer_t* dyntracer,
     instrumentr_environment_set_call(callenv, call);
 
     TRACING_INVOKE_CALLBACK(
-        event, closure_call_entry_function_t, closure, call);
+        event, closure_call_entry_function_t, closure, closure, call, call);
 
     TRACING_FINALIZE(event)
 }
@@ -441,6 +465,8 @@ void instrumentr_trace_builtin_call_exit(dyntracer_t* dyntracer,
     TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT,
                             builtin_call_exit_function_t,
                             builtin,
+                            builtin,
+                            call,
                             call);
 
     instrumentr_call_stack_t call_stack =
@@ -474,6 +500,8 @@ void instrumentr_trace_special_call_exit(dyntracer_t* dyntracer,
     TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
                             special_call_exit_function_t,
                             special,
+                            special,
+                            call,
                             call);
 
     instrumentr_call_stack_t call_stack =
@@ -507,6 +535,8 @@ void instrumentr_trace_closure_call_exit(dyntracer_t* dyntracer,
     TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT,
                             closure_call_exit_function_t,
                             closure,
+                            closure,
+                            call,
                             call);
 
     instrumentr_call_stack_t call_stack =
@@ -536,8 +566,12 @@ void instrumentr_trace_use_method_entry(dyntracer_t* dyntracer,
     instrumentr_environment_t environment =
         instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
 
-    TRACING_INVOKE_CALLBACK(
-        event, use_method_entry_function_t, value, environment);
+    TRACING_INVOKE_CALLBACK(event,
+                            use_method_entry_function_t,
+                            value,
+                            value,
+                            environment,
+                            environment);
 
     TRACING_FINALIZE(event)
 }
@@ -562,12 +596,19 @@ void instrumentr_trace_use_method_exit(dyntracer_t* dyntracer,
     instrumentr_environment_t environment =
         instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
 
+    // TODO: add optional_value
     instrumentr_value_t ans =
         r_ans == NULL ? NULL
                       : instrumentr_state_value_table_lookup(state, r_ans, 1);
 
-    TRACING_INVOKE_CALLBACK(
-        event, use_method_exit_function_t, value, environment, ans);
+    TRACING_INVOKE_CALLBACK(event,
+                            use_method_exit_function_t,
+                            value,
+                            value,
+                            environment,
+                            environment,
+                            ans,
+                            value);
 
     TRACING_FINALIZE(event)
 }
@@ -591,8 +632,10 @@ void instrumentr_trace_context_entry(dyntracer_t* dyntracer, void* pointer) {
     instrumentr_call_stack_push_frame(call_stack, frame);
     instrumentr_frame_release(frame);
 
-    TRACING_INVOKE_CALLBACK(
-        INSTRUMENTR_EVENT_CONTEXT_ENTRY, context_entry_function_t, context);
+    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CONTEXT_ENTRY,
+                            context_entry_function_t,
+                            context,
+                            context);
 
     TRACING_FINALIZE(event)
 }
@@ -625,8 +668,10 @@ void instrumentr_trace_context_exit(dyntracer_t* dyntracer, void* pointer) {
             actual_pointer);
     }
 
-    TRACING_INVOKE_CALLBACK(
-        INSTRUMENTR_EVENT_CONTEXT_EXIT, context_exit_function_t, context);
+    TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CONTEXT_EXIT,
+                            context_exit_function_t,
+                            context,
+                            context);
 
     instrumentr_call_stack_pop_frame(call_stack);
 
@@ -669,6 +714,7 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
 
             TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CONTEXT_EXIT,
                                     context_exit_function_t,
+                                    context,
                                     context);
 
         }
@@ -687,6 +733,8 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
                 TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_BUILTIN_CALL_EXIT,
                                         builtin_call_exit_function_t,
                                         builtin,
+                                        builtin,
+                                        call,
                                         call);
 
             }
@@ -698,6 +746,8 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
                 TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_SPECIAL_CALL_EXIT,
                                         special_call_exit_function_t,
                                         special,
+                                        special,
+                                        call,
                                         call);
 
             }
@@ -709,6 +759,8 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
                 TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_CLOSURE_CALL_EXIT,
                                         closure_call_exit_function_t,
                                         closure,
+                                        closure,
+                                        call,
                                         call);
             }
         }
@@ -721,6 +773,7 @@ void instrumentr_trace_context_jump(dyntracer_t* dyntracer,
 
             TRACING_INVOKE_CALLBACK(INSTRUMENTR_EVENT_PROMISE_FORCE_EXIT,
                                     promise_force_exit_function_t,
+                                    promise,
                                     promise);
         }
 
@@ -755,7 +808,8 @@ void instrumentr_trace_promise_force_entry(dyntracer_t* dyntracer,
     instrumentr_promise_set_force_entry_time(promise,
                                              instrumentr_state_get_time(state));
 
-    TRACING_INVOKE_CALLBACK(event, promise_force_entry_function_t, promise);
+    TRACING_INVOKE_CALLBACK(
+        event, promise_force_entry_function_t, promise, promise);
 
     TRACING_FINALIZE(event)
 }
@@ -774,7 +828,8 @@ void instrumentr_trace_promise_force_exit(dyntracer_t* dyntracer,
     instrumentr_promise_set_force_exit_time(promise,
                                             instrumentr_state_get_time(state));
 
-    TRACING_INVOKE_CALLBACK(event, promise_force_exit_function_t, promise);
+    TRACING_INVOKE_CALLBACK(
+        event, promise_force_exit_function_t, promise, promise);
 
     /* TODO: check that stack has promise. */
     instrumentr_call_stack_t call_stack =
@@ -796,7 +851,8 @@ void instrumentr_trace_promise_value_lookup(dyntracer_t* dyntracer,
     instrumentr_promise_t promise =
         instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
 
-    TRACING_INVOKE_CALLBACK(event, promise_value_lookup_function_t, promise);
+    TRACING_INVOKE_CALLBACK(
+        event, promise_value_lookup_function_t, promise, promise);
 
     TRACING_FINALIZE(event)
 }
@@ -813,7 +869,7 @@ void instrumentr_trace_promise_expression_lookup(dyntracer_t* dyntracer,
         instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
 
     TRACING_INVOKE_CALLBACK(
-        event, promise_expression_lookup_function_t, promise);
+        event, promise_expression_lookup_function_t, promise, promise);
 
     TRACING_FINALIZE(event)
 }
@@ -829,7 +885,8 @@ void instrumentr_trace_promise_substitute(dyntracer_t* dyntracer,
     instrumentr_promise_t promise =
         instrumentr_state_value_table_lookup_promise(state, r_promise, 1);
 
-    TRACING_INVOKE_CALLBACK(event, promise_substitute_function_t, promise);
+    TRACING_INVOKE_CALLBACK(
+        event, promise_substitute_function_t, promise, promise);
 
     TRACING_FINALIZE(event)
 }
@@ -857,8 +914,14 @@ void instrumentr_trace_promise_delayed_assign(dyntracer_t* dyntracer,
     instrumentr_environment_t environment =
         instrumentr_value_as_environment(envval);
 
-    TRACING_INVOKE_CALLBACK(
-        event, promise_delayed_assign_function_t, symbol, promise, environment)
+    TRACING_INVOKE_CALLBACK(event,
+                            promise_delayed_assign_function_t,
+                            symbol,
+                            symbol,
+                            promise,
+                            promise,
+                            environment,
+                            environment)
 
     TRACING_FINALIZE(event)
 }
@@ -886,8 +949,14 @@ void instrumentr_trace_promise_lazy_load(dyntracer_t* dyntracer,
     instrumentr_environment_t environment =
         instrumentr_value_as_environment(envval);
 
-    TRACING_INVOKE_CALLBACK(
-        event, promise_lazy_load_function_t, symbol, promise, environment)
+    TRACING_INVOKE_CALLBACK(event,
+                            promise_lazy_load_function_t,
+                            symbol,
+                            symbol,
+                            promise,
+                            promise,
+                            environment,
+                            environment)
 
     TRACING_FINALIZE(event)
 }
@@ -901,8 +970,18 @@ void instrumentr_trace_eval_entry(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    // TODO: add after adding value
-    // TRACING_INVOKE_CALLBACK(event, eval_entry_function_t, expression, rho);
+    instrumentr_value_t expression =
+        instrumentr_state_value_table_lookup(state, r_expression, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            eval_entry_function_t,
+                            expression,
+                            value,
+                            environment,
+                            environment);
 
     TRACING_FINALIZE(event)
 }
@@ -917,9 +996,23 @@ void instrumentr_trace_eval_exit(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
-    // TODO: add after adding value
-    // TRACING_INVOKE_CALLBACK(event, eval_entry_function_t, expression, rho,
-    // result);
+    instrumentr_value_t expression =
+        instrumentr_state_value_table_lookup(state, r_expression, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+
+    instrumentr_value_t result =
+        instrumentr_state_value_table_lookup(state, r_result, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            eval_exit_function_t,
+                            expression,
+                            value,
+                            environment,
+                            environment,
+                            result,
+                            value);
 
     TRACING_FINALIZE(event)
 }
@@ -972,8 +1065,14 @@ void instrumentr_trace_variable_definition(dyntracer_t* dyntracer,
 
     set_function_name(symbol, value, environment);
 
-    TRACING_INVOKE_CALLBACK(
-        event, variable_definition_function_t, symbol, value, environment);
+    TRACING_INVOKE_CALLBACK(event,
+                            variable_definition_function_t,
+                            symbol,
+                            symbol,
+                            value,
+                            value,
+                            environment,
+                            environment);
 
     TRACING_FINALIZE(event)
 }
@@ -1009,8 +1108,14 @@ void instrumentr_trace_variable_assignment(dyntracer_t* dyntracer,
 
     set_function_name(symbol, value, environment);
 
-    TRACING_INVOKE_CALLBACK(
-        event, variable_definition_function_t, symbol, value, environment);
+    TRACING_INVOKE_CALLBACK(event,
+                            variable_definition_function_t,
+                            symbol,
+                            symbol,
+                            value,
+                            value,
+                            environment,
+                            environment);
 
     TRACING_FINALIZE(event)
 }
@@ -1036,8 +1141,12 @@ void instrumentr_trace_variable_removal(dyntracer_t* dyntracer,
     instrumentr_environment_set_last_write_time(
         environment, instrumentr_state_get_time(state));
 
-    TRACING_INVOKE_CALLBACK(
-        event, variable_removal_function_t, symbol, environment);
+    TRACING_INVOKE_CALLBACK(event,
+                            variable_removal_function_t,
+                            symbol,
+                            symbol,
+                            environment,
+                            environment);
 
     TRACING_FINALIZE(event)
 }
@@ -1069,8 +1178,14 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
 
     set_function_name(symbol, value, environment);
 
-    TRACING_INVOKE_CALLBACK(
-        event, variable_lookup_function_t, symbol, value, environment);
+    TRACING_INVOKE_CALLBACK(event,
+                            variable_lookup_function_t,
+                            symbol,
+                            symbol,
+                            value,
+                            value,
+                            environment,
+                            environment);
 
     TRACING_FINALIZE(event)
 }
@@ -1097,8 +1212,14 @@ void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
     instrumentr_environment_t environment =
         instrumentr_value_as_environment(envval);
 
-    TRACING_INVOKE_CALLBACK(
-        event, function_context_lookup_function_t, symbol, value, environment)
+    TRACING_INVOKE_CALLBACK(event,
+                            function_context_lookup_function_t,
+                            symbol,
+                            symbol,
+                            value,
+                            value,
+                            environment,
+                            environment)
 
     TRACING_FINALIZE(event)
 }
@@ -1112,10 +1233,9 @@ void instrumentr_trace_gc_allocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     TRACING_INITIALIZE(event)
 
-    instrumentr_state_value_table_insert(state, r_object);
+    value = instrumentr_state_value_table_insert(state, r_object);
 
-    /* TODO: add this after adding value */
-    // TRACING_INVOKE_CALLBACK(event, gc_allocation_function_t, value);
+    TRACING_INVOKE_CALLBACK(event, gc_allocation_function_t, value, value);
 
     TRACING_FINALIZE(event)
 }
@@ -1149,7 +1269,8 @@ instrumentr_trace_value_finalize(instrumentr_tracer_t tracer,
     if (value != NULL) {
         if (instrumentr_value_is_closure(value) ||
             instrumentr_value_is_environment(value)) {
-            TRACING_INVOKE_CALLBACK(event, value_finalize_function_t, value);
+            TRACING_INVOKE_CALLBACK(
+                event, value_finalize_function_t, value, value);
         }
     }
 
@@ -1168,7 +1289,7 @@ void instrumentr_trace_gc_deallocation(dyntracer_t* dyntracer, SEXP r_object) {
 
     TRACING_INITIALIZE(event)
 
-    TRACING_INVOKE_CALLBACK(event, gc_deallocation_function_t, value);
+    TRACING_INVOKE_CALLBACK(event, gc_deallocation_function_t, value, value);
 
     if (value != NULL) {
         instrumentr_state_value_table_remove(state, r_object);
@@ -1192,7 +1313,7 @@ void instrumentr_trace_error(dyntracer_t* dyntracer,
         instrumentr_state_value_table_lookup(state, r_call, 1);
 
     /* TODO: handle format and ap arguments and remove call to R callback. */
-    TRACING_INVOKE_CALLBACK(event, error_function_t, value);
+    TRACING_INVOKE_CALLBACK(event, error_function_t, value, value);
 
     TRACING_FINALIZE(event)
 }
@@ -1218,8 +1339,14 @@ void instrumentr_trace_attribute_set(dyntracer_t* dyntracer,
     instrumentr_value_t attr_value =
         instrumentr_state_value_table_lookup(state, r_value, 1);
 
-    TRACING_INVOKE_CALLBACK(
-        event, attribute_set_function_t, object, attr_name, attr_value);
+    TRACING_INVOKE_CALLBACK(event,
+                            attribute_set_function_t,
+                            object,
+                            value,
+                            attr_name,
+                            symbol,
+                            attr_value,
+                            value);
 
     TRACING_FINALIZE(event)
 }
