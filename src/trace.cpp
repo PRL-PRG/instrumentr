@@ -1141,3 +1141,30 @@ void instrumentr_trace_error(dyntracer_t* dyntracer,
 
     TRACING_FINALIZE(event)
 }
+
+void instrumentr_trace_attribute_set(dyntracer_t* dyntracer,
+                                     SEXP r_object,
+                                     SEXP r_name,
+                                     SEXP r_value) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_ATTRIBUTE_SET;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t object =
+        instrumentr_state_value_table_lookup(state, r_object, 1);
+
+    instrumentr_value_t attr_name_val =
+        instrumentr_state_value_table_lookup(state, r_name, 1);
+
+    instrumentr_symbol_t attr_name = instrumentr_value_as_symbol(attr_name_val);
+
+    instrumentr_value_t attr_value =
+        instrumentr_state_value_table_lookup(state, r_value, 1);
+
+    TRACING_INVOKE_CALLBACK(
+        event, attribute_set_function_t, object, attr_name, attr_value);
+
+    TRACING_FINALIZE(event)
+}

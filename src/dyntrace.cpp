@@ -68,6 +68,9 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
 
     dyntracer_set_error_callback(dyntracer, instrumentr_trace_error);
 
+    dyntracer_set_attribute_set_callback(dyntracer,
+                                         instrumentr_trace_attribute_set);
+
     dyntracer_set_data(dyntracer, (void*) (tracer));
 
     return dyntracer;
@@ -79,7 +82,7 @@ void instrumentr_dyntracer_destroy(dyntracer_t* dyntracer) {
 
 instrumentr_tracer_t instrumentr_dyntracer_get_tracer(dyntracer_t* dyntracer) {
     instrumentr_tracer_t tracer =
-        (instrumentr_tracer_t)(dyntracer_get_data(dyntracer));
+        (instrumentr_tracer_t) (dyntracer_get_data(dyntracer));
 
     if (tracer == NULL) {
         instrumentr_log_error(

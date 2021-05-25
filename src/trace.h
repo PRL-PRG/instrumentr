@@ -157,6 +157,11 @@ void instrumentr_trace_error(dyntracer_t* dyntracer,
                              const char* format,
                              va_list ap);
 
+void instrumentr_trace_attribute_set(dyntracer_t* dyntracer,
+                                     SEXP r_object,
+                                     SEXP r_name,
+                                     SEXP r_value);
+
 #ifdef __cplusplus
 }
 #endif
