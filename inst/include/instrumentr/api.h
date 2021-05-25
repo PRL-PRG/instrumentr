@@ -1377,6 +1377,10 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_FRAME_C_API_MAP(MACRO)                              \
+    MACRO(instrumentr_frame_is_eval, int, instrumentr_frame_t frame)    \
+    MACRO(instrumentr_frame_as_eval,                                    \
+          instrumentr_eval_t,                                           \
+          instrumentr_frame_t frame)                                    \
     MACRO(instrumentr_frame_is_call, int, instrumentr_frame_t frame)    \
     MACRO(instrumentr_frame_as_call,                                    \
           instrumentr_call_t,                                           \
@@ -1393,6 +1397,8 @@
         MACRO, INSTRUMENTR_MODEL_TYPE_FRAME, frame, frame)
 
 #define INSTRUMENTR_FRAME_R_API_MAP(MACRO)                    \
+    MACRO(r_instrumentr_frame_is_eval, SEXP, SEXP r_frame)    \
+    MACRO(r_instrumentr_frame_as_eval, SEXP, SEXP r_frame)    \
     MACRO(r_instrumentr_frame_is_call, SEXP, SEXP r_frame)    \
     MACRO(r_instrumentr_frame_as_call, SEXP, SEXP r_frame)    \
     MACRO(r_instrumentr_frame_is_promise, SEXP, SEXP r_frame) \
