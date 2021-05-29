@@ -750,6 +750,10 @@
 *******************************************************************************/
 
 #define INSTRUMENTR_S4_C_API_MAP(MACRO) \
+    MACRO(instrumentr_s4_get_data_slot, \
+          instrumentr_value_t,          \
+          instrumentr_s4_t s4,          \
+          SEXPTYPE type)                \
     INSTRUMENTR_VALUE_DECLARE_C_API(MACRO, INSTRUMENTR_VALUE_TYPE_S4, s4, s4val)
 
 #define INSTRUMENTR_S4_R_API_MAP(MACRO) \
