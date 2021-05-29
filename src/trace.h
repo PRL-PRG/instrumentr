@@ -152,6 +152,12 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
                                        const SEXP r_value,
                                        const SEXP r_rho);
 
+void instrumentr_trace_environment_ls(dyntracer_t* dyntracer,
+                                      SEXP r_rho,
+                                      Rboolean all,
+                                      Rboolean sorted,
+                                      SEXP r_result);
+
 void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
                                                const SEXP r_symbol,
                                                const SEXP r_value,

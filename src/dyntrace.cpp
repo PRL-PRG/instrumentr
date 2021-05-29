@@ -82,6 +82,9 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_environment_variable_lookup_callback(
         dyntracer, instrumentr_trace_variable_lookup);
 
+    dyntracer_set_environment_ls_callback(dyntracer,
+                                          instrumentr_trace_environment_ls);
+
     dyntracer_set_environment_function_context_lookup_callback(
         dyntracer, instrumentr_trace_function_context_lookup);
 

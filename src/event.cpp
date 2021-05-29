@@ -34,6 +34,7 @@ event_info_t table[INSTRUMENTR_EVENT_COUNT] = {
     {INSTRUMENTR_EVENT_VARIABLE_REMOVAL, "variable_removal", 6},
     {INSTRUMENTR_EVENT_VARIABLE_EXISTS, "variable_exists", 6},
     {INSTRUMENTR_EVENT_VARIABLE_LOOKUP, "variable_lookup", 7},
+    {INSTRUMENTR_EVENT_ENVIRONMENT_LS, "environment_ls", 6},
     {INSTRUMENTR_EVENT_FUNCTION_CONTEXT_LOOKUP, "function_context_lookup", 7},
     {INSTRUMENTR_EVENT_CONTEXT_ENTRY, "context_entry", 5},
     {INSTRUMENTR_EVENT_CONTEXT_EXIT, "context_exit", 5},

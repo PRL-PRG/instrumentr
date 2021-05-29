@@ -1314,6 +1314,36 @@ void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
     TRACING_FINALIZE(event)
 }
 
+void instrumentr_trace_environment_ls(dyntracer_t* dyntracer,
+                                      SEXP r_rho,
+                                      Rboolean all,
+                                      Rboolean sorted,
+                                      SEXP r_result) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_ENVIRONMENT_LS;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+
+    instrumentr_character_t result =
+        instrumentr_state_value_table_lookup_character(state, r_result, 1);
+
+    instrumentr_environment_set_last_read_time(
+        environment, instrumentr_state_get_time(state));
+
+    TRACING_INVOKE_CALLBACK(event,
+                            environment_ls_function_t,
+                            environment,
+                            environment,
+                            result,
+                            character);
+
+    TRACING_FINALIZE(event)
+}
+
 void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
                                                SEXP r_symbol,
                                                SEXP r_value,
