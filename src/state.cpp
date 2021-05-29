@@ -1119,26 +1119,51 @@ SEXP r_instrumentr_state_get_namespace_registry(SEXP r_state) {
     return instrumentr_environment_wrap(environment);
 }
 
-//instrumentr_environment_t
-//instrumentr_state_get_methods_namespace(instrumentr_state_t state) {
+/*******************************************************************************
+ * eval
+ ******************************************************************************/
+
+/* TODO: add exception handling later on */
+instrumentr_value_t
+instrumentr_state_eval(instrumentr_state_t state,
+                       instrumentr_value_t value,
+                       instrumentr_environment_t environment) {
+    SEXP r_result = Rf_eval(instrumentr_value_get_sexp(value),
+                            instrumentr_environment_get_sexp(environment));
+    return instrumentr_state_value_table_lookup(state, r_result, 1);
+}
+
+/* TODO: add exception handling later on */
+SEXP r_instrumentr_state_eval(SEXP r_state, SEXP r_value, SEXP r_environment) {
+    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
+    instrumentr_value_t value = instrumentr_value_unwrap(r_value, INSTRUMENTR_VALUE_TYPE_COUNT);
+    instrumentr_environment_t environment =
+        instrumentr_environment_unwrap(r_environment);
+    instrumentr_value_t result =
+        instrumentr_state_eval(state, value, environment);
+    return instrumentr_value_wrap(result);
+}
+
+// instrumentr_environment_t
+// instrumentr_state_get_methods_namespace(instrumentr_state_t state) {
 //    return instrumentr_state_value_table_lookup_environment(
 //        state, R_MethodsNamespace, 1);
 //}
 //
-//SEXP r_instrumentr_state_get_methods_namespace(SEXP r_state) {
+// SEXP r_instrumentr_state_get_methods_namespace(SEXP r_state) {
 //    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
 //    instrumentr_environment_t environment =
 //        instrumentr_state_get_methods_namespace(state);
 //    return instrumentr_environment_wrap(environment);
 //}
 //
-//instrumentr_environment_t
-//instrumentr_state_get_global_cache(instrumentr_state_t state) {
+// instrumentr_environment_t
+// instrumentr_state_get_global_cache(instrumentr_state_t state) {
 //    return instrumentr_state_value_table_lookup_environment(
 //        state, R_GlobalCache, 1);
 //}
 //
-//SEXP r_instrumentr_state_get_global_cache(SEXP r_state) {
+// SEXP r_instrumentr_state_get_global_cache(SEXP r_state) {
 //    instrumentr_state_t state = instrumentr_state_unwrap(r_state);
 //    instrumentr_environment_t environment =
 //        instrumentr_state_get_global_cache(state);

@@ -525,7 +525,12 @@
           instrumentr_state_t state)                                   \
     MACRO(instrumentr_state_get_namespace_registry,                    \
           instrumentr_environment_t,                                   \
-          instrumentr_state_t state)
+          instrumentr_state_t state)                                   \
+    MACRO(instrumentr_state_eval,                                      \
+          instrumentr_value_t,                                         \
+          instrumentr_state_t state,                                   \
+          instrumentr_value_t value,                                   \
+          instrumentr_environment_t environment)
 // MACRO(instrumentr_state_get_methods_namespace,                     \
     //       instrumentr_environment_t,                                   \
     //       instrumentr_state_t state)                                   \
@@ -566,7 +571,13 @@
     MACRO(r_instrumentr_state_get_base_namespace, SEXP, SEXP r_state)      \
     MACRO(r_instrumentr_state_get_base_env, SEXP, SEXP r_state)            \
     MACRO(r_instrumentr_state_get_global_env, SEXP, SEXP r_state)          \
-    MACRO(r_instrumentr_state_get_namespace_registry, SEXP, SEXP r_state)
+    MACRO(r_instrumentr_state_get_namespace_registry, SEXP, SEXP r_state)  \
+    MACRO(r_instrumentr_state_eval,                                        \
+          SEXP,                                                            \
+          SEXP r_state,                                                    \
+          SEXP r_value,                                                    \
+          SEXP r_environment)
+
 //MACRO(r_instrumentr_state_get_methods_namespace, SEXP, SEXP r_state) \
     //MACRO(r_instrumentr_state_get_global_cache, SEXP, SEXP r_state)
 
