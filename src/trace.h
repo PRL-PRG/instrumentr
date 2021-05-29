@@ -143,6 +143,10 @@ void instrumentr_trace_variable_removal(dyntracer_t* dyntracer,
                                         const SEXP r_symbol,
                                         const SEXP r_rho);
 
+void instrumentr_trace_variable_exists(dyntracer_t* dyntracer,
+                                       const SEXP r_symbol,
+                                       const SEXP r_rho);
+
 void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
                                        const SEXP r_symbol,
                                        const SEXP r_value,

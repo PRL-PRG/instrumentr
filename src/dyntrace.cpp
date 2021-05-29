@@ -76,6 +76,9 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_environment_variable_remove_callback(
         dyntracer, instrumentr_trace_variable_removal);
 
+    dyntracer_set_environment_variable_exists_callback(
+        dyntracer, instrumentr_trace_variable_exists);
+
     dyntracer_set_environment_variable_lookup_callback(
         dyntracer, instrumentr_trace_variable_lookup);
 

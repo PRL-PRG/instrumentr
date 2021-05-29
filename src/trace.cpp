@@ -1243,6 +1243,38 @@ void instrumentr_trace_variable_removal(dyntracer_t* dyntracer,
     TRACING_FINALIZE(event)
 }
 
+void instrumentr_trace_variable_exists(dyntracer_t* dyntracer,
+                                       const SEXP r_symbol,
+                                       const SEXP r_rho) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_VARIABLE_EXISTS;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t symval =
+        instrumentr_state_value_table_lookup(state, r_symbol, 1);
+
+    instrumentr_symbol_t symbol = instrumentr_value_as_symbol(symval);
+
+    instrumentr_value_t envval =
+        instrumentr_state_value_table_lookup(state, r_rho, 1);
+    instrumentr_environment_t environment =
+        instrumentr_value_as_environment(envval);
+
+    instrumentr_environment_set_last_read_time(
+        environment, instrumentr_state_get_time(state));
+
+    TRACING_INVOKE_CALLBACK(event,
+                            variable_exists_function_t,
+                            symbol,
+                            symbol,
+                            environment,
+                            environment);
+
+    TRACING_FINALIZE(event)
+}
+
 void instrumentr_trace_variable_lookup(dyntracer_t* dyntracer,
                                        const SEXP r_symbol,
                                        const SEXP r_value,
