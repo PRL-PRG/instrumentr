@@ -13,6 +13,7 @@ extern "C" {
  *******************************************************************************/
 
 instrumentr_eval_t instrumentr_eval_create(instrumentr_state_t state,
+                                           int implicit,
                                            SEXP r_expression,
                                            SEXP r_environment);
 

@@ -352,6 +352,8 @@ typedef enum {
     INSTRUMENTR_EVENT_USE_METHOD_EXIT,
     INSTRUMENTR_EVENT_EVAL_ENTRY,
     INSTRUMENTR_EVENT_EVAL_EXIT,
+    INSTRUMENTR_EVENT_EVAL_CALL_ENTRY,
+    INSTRUMENTR_EVENT_EVAL_CALL_EXIT,
     INSTRUMENTR_EVENT_GC_ALLOCATION,
     INSTRUMENTR_EVENT_GC_DEALLOCATION,
     INSTRUMENTR_EVENT_VALUE_FINALIZE,
@@ -496,6 +498,22 @@ typedef void (*eval_exit_function_t)(instrumentr_tracer_t tracer,
                                      instrumentr_state_t state,
                                      instrumentr_application_t application,
                                      instrumentr_eval_t eval);
+
+typedef void (*eval_call_entry_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_value_t expression,
+    instrumentr_environment_t environment);
+
+typedef void (*eval_call_exit_function_t)(instrumentr_tracer_t tracer,
+                                          instrumentr_callback_t callback,
+                                          instrumentr_state_t state,
+                                          instrumentr_application_t application,
+                                          instrumentr_value_t expression,
+                                          instrumentr_environment_t environment,
+                                          instrumentr_value_t result);
 
 typedef void (*gc_allocation_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_callback_t callback,

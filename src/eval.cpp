@@ -11,6 +11,7 @@
 
 struct instrumentr_eval_impl_t {
     struct instrumentr_model_impl_t model;
+    int implicit;
     instrumentr_value_t expression;
     instrumentr_environment_t environment;
     int active;
@@ -43,6 +44,7 @@ void instrumentr_eval_finalize(instrumentr_model_t model) {
  *******************************************************************************/
 
 instrumentr_eval_t instrumentr_eval_create(instrumentr_state_t state,
+                                           int implicit,
                                            SEXP r_expression,
                                            SEXP r_environment) {
     instrumentr_model_t model =
@@ -53,6 +55,8 @@ instrumentr_eval_t instrumentr_eval_create(instrumentr_state_t state,
                                  INSTRUMENTR_ORIGIN_LOCAL);
 
     instrumentr_eval_t eval = (instrumentr_eval_t) (model);
+
+    eval->implicit = implicit;
 
     eval->expression =
         instrumentr_state_value_table_lookup(state, r_expression, 1);
@@ -74,6 +78,31 @@ instrumentr_eval_t instrumentr_eval_create(instrumentr_state_t state,
  *******************************************************************************/
 
 INSTRUMENTR_MODEL_DEFINE_DERIVED_API(INSTRUMENTR_MODEL_TYPE_EVAL, eval, eval)
+
+/********************************************************************************
+ * implicit
+ *******************************************************************************/
+
+/* accessor  */
+int instrumentr_eval_is_implicit(instrumentr_eval_t eval) {
+    return eval->implicit;
+}
+
+SEXP r_instrumentr_eval_is_implicit(SEXP r_eval) {
+    instrumentr_eval_t eval = instrumentr_eval_unwrap(r_eval);
+    int result = instrumentr_eval_is_implicit(eval);
+    return instrumentr_c_int_to_r_logical(result);
+}
+
+int instrumentr_eval_is_explicit(instrumentr_eval_t eval) {
+    return !instrumentr_eval_is_implicit(eval);
+}
+
+SEXP r_instrumentr_eval_is_explicit(SEXP r_eval) {
+    instrumentr_eval_t eval = instrumentr_eval_unwrap(r_eval);
+    int result = instrumentr_eval_is_explicit(eval);
+    return instrumentr_c_int_to_r_logical(result);
+}
 
 /********************************************************************************
  * expression

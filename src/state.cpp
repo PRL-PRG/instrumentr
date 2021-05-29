@@ -29,6 +29,7 @@ struct instrumentr_state_impl_t {
     std::unordered_map<std::string, SEXP>* external;
     instrumentr_call_stack_t call_stack;
     std::unordered_map<SEXP, instrumentr_value_t>* value_table;
+    bool explicit_eval;
 };
 
 /********************************************************************************
@@ -57,6 +58,8 @@ void instrumentr_state_finalize(instrumentr_object_t object) {
 
     instrumentr_object_release(state->alloc_stats);
     instrumentr_object_release(state->exec_stats);
+
+    state->explicit_eval = false;
 }
 
 /********************************************************************************
@@ -83,6 +86,8 @@ instrumentr_state_t instrumentr_state_create() {
     state->value_table->reserve(INSTRUMENTR_VALUE_TABLE_INITIAL_SIZE);
 
     state->call_stack = instrumentr_call_stack_create(state);
+
+    state->explicit_eval = false;
 
     return state;
 }
@@ -1117,6 +1122,20 @@ SEXP r_instrumentr_state_get_namespace_registry(SEXP r_state) {
     instrumentr_environment_t environment =
         instrumentr_state_get_namespace_registry(state);
     return instrumentr_environment_wrap(environment);
+}
+
+/*******************************************************************************
+ * explicit_eval
+ ******************************************************************************/
+
+bool instrumentr_state_get_explicit_eval_flag(instrumentr_state_t state) {
+    bool result = state->explicit_eval;
+    state->explicit_eval = false;
+    return result;
+}
+
+void instrumentr_state_set_explicit_eval_flag(instrumentr_state_t state) {
+    state->explicit_eval = true;
 }
 
 /*******************************************************************************

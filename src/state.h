@@ -97,6 +97,14 @@ instrumentr_environment_t
 instrumentr_state_value_table_update_namespace(instrumentr_state_t state,
                                                const char* name);
 
+/*******************************************************************************
+ * explicit_eval
+ ******************************************************************************/
+
+bool instrumentr_state_get_explicit_eval_flag(instrumentr_state_t state);
+
+void instrumentr_state_set_explicit_eval_flag(instrumentr_state_t state);
+
 INSTRUMENTR_STATE_API_MAP(INSTRUMENTR_API_INCLUDER)
 
 #ifdef __cplusplus

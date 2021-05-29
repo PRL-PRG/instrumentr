@@ -978,8 +978,10 @@ void instrumentr_trace_eval_entry(dyntracer_t* dyntracer,
 
     TRACING_INITIALIZE(event)
 
+    bool implicit = !instrumentr_state_get_explicit_eval_flag(state);
+
     instrumentr_eval_t eval =
-        instrumentr_eval_create(state, r_expression, r_rho);
+        instrumentr_eval_create(state, implicit, r_expression, r_rho);
 
     instrumentr_frame_t frame = instrumentr_frame_create_from_eval(state, eval);
     instrumentr_eval_release(eval);
@@ -1045,6 +1047,64 @@ void instrumentr_trace_eval_exit(dyntracer_t* dyntracer,
     TRACING_INVOKE_CALLBACK(event, eval_exit_function_t, eval, eval);
 
     instrumentr_call_stack_pop_frame(call_stack);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_eval_call_entry(dyntracer_t* dyntracer,
+                                       SEXP r_expression,
+                                       SEXP r_rho) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_EVAL_CALL_ENTRY;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_state_set_explicit_eval_flag(state);
+
+    instrumentr_value_t expression =
+        instrumentr_state_value_table_lookup(state, r_expression, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            eval_call_entry_function_t,
+                            expression,
+                            value,
+                            environment,
+                            environment);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_eval_call_exit(dyntracer_t* dyntracer,
+                                      SEXP r_expression,
+                                      SEXP r_rho,
+                                      SEXP r_result) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_EVAL_CALL_EXIT;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t expression =
+        instrumentr_state_value_table_lookup(state, r_expression, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(state, r_rho, 1);
+
+    instrumentr_value_t result =
+        instrumentr_state_value_table_lookup(state, r_result, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            eval_call_exit_function_t,
+                            expression,
+                            value,
+                            environment,
+                            environment,
+                            result,
+                            value);
 
     TRACING_FINALIZE(event)
 }
