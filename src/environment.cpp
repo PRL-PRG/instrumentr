@@ -396,3 +396,21 @@ void instrumentr_environment_set_last_read_time(
     int last_read_time) {
     environment->last_read_time = last_read_time;
 }
+
+int instrumentr_environment_get_frame_count(
+    instrumentr_environment_t environment) {
+    int frame_count = 0;
+    SEXP r_env = instrumentr_environment_get_sexp(environment);
+    while (ENCLOS(r_env) != R_EmptyEnv) {
+        r_env = ENCLOS(r_env);
+        ++frame_count;
+    }
+    return frame_count;
+}
+
+SEXP r_instrumentr_environment_get_frame_count(SEXP r_environment) {
+    instrumentr_environment_t environment =
+        instrumentr_environment_unwrap(r_environment);
+    int result = instrumentr_environment_get_frame_count(environment);
+    return instrumentr_c_int_to_r_integer(result);
+}

@@ -1145,30 +1145,34 @@
     MACRO(instrumentr_environment_get_last_write_time,                  \
           int,                                                          \
           instrumentr_environment_t environment)                        \
+    MACRO(instrumentr_environment_get_frame_count,                      \
+          int,                                                          \
+          instrumentr_environment_t environment)                        \
     INSTRUMENTR_VALUE_DECLARE_C_API(MACRO,                              \
                                     INSTRUMENTR_VALUE_TYPE_ENVIRONMENT, \
                                     environment,                        \
                                     environmentval)
 
-#define INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)                             \
-    MACRO(r_instrumentr_environment_get_name, SEXP, SEXP r_environment)      \
-    MACRO(r_instrumentr_environment_get_size, SEXP, SEXP r_environment)      \
-    MACRO(r_instrumentr_environment_is_hashed, SEXP, SEXP r_environment)     \
-    MACRO(r_instrumentr_environment_get_parent, SEXP, SEXP r_environment)    \
-    MACRO(r_instrumentr_environment_is_empty_env, SEXP, SEXP r_environment)  \
-    MACRO(r_instrumentr_environment_is_global_env, SEXP, SEXP r_environment) \
-    MACRO(r_instrumentr_environment_lookup,                                  \
-          SEXP,                                                              \
-          SEXP r_environment,                                                \
-          SEXP r_name)                                                       \
-    MACRO(r_instrumentr_environment_contains,                                \
-          SEXP,                                                              \
-          SEXP r_environment,                                                \
-          SEXP r_name)                                                       \
-    MACRO(r_instrumentr_environment_get_bindings, SEXP, SEXP r_environment)  \
-    INSTRUMENTR_VALUE_DECLARE_R_API(MACRO,                                   \
-                                    INSTRUMENTR_VALUE_TYPE_ENVIRONMENT,      \
-                                    environment,                             \
+#define INSTRUMENTR_ENVIRONMENT_R_API_MAP(MACRO)                               \
+    MACRO(r_instrumentr_environment_get_name, SEXP, SEXP r_environment)        \
+    MACRO(r_instrumentr_environment_get_size, SEXP, SEXP r_environment)        \
+    MACRO(r_instrumentr_environment_is_hashed, SEXP, SEXP r_environment)       \
+    MACRO(r_instrumentr_environment_get_parent, SEXP, SEXP r_environment)      \
+    MACRO(r_instrumentr_environment_is_empty_env, SEXP, SEXP r_environment)    \
+    MACRO(r_instrumentr_environment_is_global_env, SEXP, SEXP r_environment)   \
+    MACRO(r_instrumentr_environment_lookup,                                    \
+          SEXP,                                                                \
+          SEXP r_environment,                                                  \
+          SEXP r_name)                                                         \
+    MACRO(r_instrumentr_environment_contains,                                  \
+          SEXP,                                                                \
+          SEXP r_environment,                                                  \
+          SEXP r_name)                                                         \
+    MACRO(r_instrumentr_environment_get_bindings, SEXP, SEXP r_environment)    \
+    MACRO(r_instrumentr_environment_get_frame_count, SEXP, SEXP r_environment) \
+    INSTRUMENTR_VALUE_DECLARE_R_API(MACRO,                                     \
+                                    INSTRUMENTR_VALUE_TYPE_ENVIRONMENT,        \
+                                    environment,                               \
                                     environmentval)
 
 #define INSTRUMENTR_ENVIRONMENT_API_MAP(MACRO) \
