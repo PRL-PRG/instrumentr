@@ -198,6 +198,17 @@ void instrumentr_trace_attribute_set(dyntracer_t* dyntracer,
                                      SEXP r_name,
                                      SEXP r_value);
 
+void instrumentr_trace_subassign(dyntracer_t* dyntracer,
+                                 SEXP r_call,
+                                 SEXP r_x,
+                                 SEXP r_index,
+                                 SEXP r_y);
+
+void instrumentr_trace_subset(dyntracer_t* dyntracer,
+                              SEXP r_call,
+                              SEXP r_x,
+                              SEXP r_index,
+                              SEXP r_result);
 #ifdef __cplusplus
 }
 #endif

@@ -184,7 +184,9 @@ instrumentr_environment_t
 instrumentr_closure_get_environment(instrumentr_closure_t closure) {
     /* TODO: figure out why the closure->environment->r_sexp is NULL */
     if (closure->environment == NULL ||
-        instrumentr_environment_get_sexp(closure->environment) == NULL) {
+        instrumentr_environment_get_sexp(closure->environment) == NULL ||
+        instrumentr_environment_get_sexp(closure->environment) !=
+            CLOENV(instrumentr_closure_get_sexp(closure))) {
         instrumentr_closure_set_environment(closure);
     }
 

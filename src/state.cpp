@@ -706,6 +706,15 @@ instrumentr_value_t instrumentr_state_value_table_get(instrumentr_state_t state,
     return NULL;
 }
 
+instrumentr_character_t
+instrumentr_state_value_table_lookup_character(instrumentr_state_t state,
+                                               SEXP r_value,
+                                               int create) {
+    instrumentr_value_t value =
+        instrumentr_state_value_table_lookup(state, r_value, create);
+    return instrumentr_value_as_character(value);
+}
+
 instrumentr_closure_t
 instrumentr_state_value_table_lookup_closure(instrumentr_state_t state,
                                              SEXP r_value,

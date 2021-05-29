@@ -93,6 +93,10 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_attribute_set_callback(dyntracer,
                                          instrumentr_trace_attribute_set);
 
+    dyntracer_set_subassign_callback(dyntracer, instrumentr_trace_subassign);
+
+    dyntracer_set_subset_callback(dyntracer, instrumentr_trace_subset);
+
     dyntracer_set_data(dyntracer, (void*) (tracer));
 
     return dyntracer;

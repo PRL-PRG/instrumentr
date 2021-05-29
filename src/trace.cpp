@@ -87,6 +87,31 @@
             r_trace_env);                                                 \
     UNPROTECT(3);
 
+#define TRACING_INVOKE_R_CALLBACK_8(ONE_NAME,                                \
+                                    ONE_TYPE,                                \
+                                    TWO_NAME,                                \
+                                    TWO_TYPE,                                \
+                                    THREE_NAME,                              \
+                                    THREE_TYPE,                              \
+                                    FOUR_NAME,                               \
+                                    FOUR_TYPE)                               \
+    SEXP r_##ONE_NAME = PROTECT(instrumentr_##ONE_TYPE##_wrap(ONE_NAME));    \
+    SEXP r_##TWO_NAME = PROTECT(instrumentr_##TWO_TYPE##_wrap(TWO_NAME));    \
+    SEXP r_##THREE_NAME =                                                    \
+        PROTECT(instrumentr_##THREE_TYPE##_wrap(THREE_NAME));                \
+    SEXP r_##FOUR_NAME = PROTECT(instrumentr_##FOUR_TYPE##_wrap(FOUR_NAME)); \
+    Rf_eval(Rf_lang9(r_name,                                                 \
+                     r_tracer,                                               \
+                     r_callback,                                             \
+                     r_state,                                                \
+                     r_application,                                          \
+                     r_##ONE_NAME,                                           \
+                     r_##TWO_NAME,                                           \
+                     r_##THREE_NAME,                                         \
+                     r_##FOUR_NAME),                                         \
+            r_trace_env);                                                    \
+    UNPROTECT(4);
+
 #define TRACING_INVOKE_C_CALLBACK(...) \
     OVERLOADED_MACRO(TRACING_INVOKE_C_CALLBACK, __VA_ARGS__)
 
@@ -102,6 +127,23 @@
 #define TRACING_INVOKE_C_CALLBACK_6(                                \
     ONE_NAME, ONE_TYPE, TWO_NAME, TWO_TYPE, THREE_NAME, THREE_TYPE) \
     cfun(tracer, callback, state, application, ONE_NAME, TWO_NAME, THREE_NAME);
+
+#define TRACING_INVOKE_C_CALLBACK_8(ONE_NAME,   \
+                                    ONE_TYPE,   \
+                                    TWO_NAME,   \
+                                    TWO_TYPE,   \
+                                    THREE_NAME, \
+                                    THREE_TYPE, \
+                                    FOUR_NAME,  \
+                                    FOUR_TYPE)  \
+    cfun(tracer,                                \
+         callback,                              \
+         state,                                 \
+         application,                           \
+         ONE_NAME,                              \
+         TWO_NAME,                              \
+         THREE_NAME,                            \
+         FOUR_NAME);
 
 #define TRACING_INVOKE_CALLBACK(EVENT, TYPE, ...)                             \
     if (instrumentr_tracer_has_callback(tracer, EVENT)) {                     \
@@ -1500,6 +1542,116 @@ void instrumentr_trace_attribute_set(dyntracer_t* dyntracer,
                             attr_name,
                             symbol,
                             attr_value,
+                            value);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_subassign(dyntracer_t* dyntracer,
+                                 SEXP r_call,
+                                 SEXP r_x,
+                                 SEXP r_index,
+                                 SEXP r_y) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_SUBASSIGN;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
+
+    instrumentr_frame_t frame =
+        instrumentr_call_stack_peek_frame(call_stack, 0);
+
+    if (!instrumentr_frame_is_call(frame)) {
+        instrumentr_log_error("expected call on the stack for subassign");
+    }
+
+    instrumentr_call_t call = instrumentr_frame_as_call(frame);
+
+    SEXP r_curr_expr =
+        instrumentr_language_get_sexp(instrumentr_call_get_expression(call));
+
+    if (r_curr_expr != r_call) {
+        instrumentr_log_error(
+            "subassignment call expression '%p' does not match "
+            "stack call expression '%p'",
+            r_call,
+            r_curr_expr);
+    }
+
+    instrumentr_value_t x = instrumentr_state_value_table_lookup(state, r_x, 1);
+
+    instrumentr_value_t index =
+        instrumentr_state_value_table_lookup(state, r_index, 1);
+
+    instrumentr_value_t y = instrumentr_state_value_table_lookup(state, r_y, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            subassign_function_t,
+                            call,
+                            call,
+                            x,
+                            value,
+                            index,
+                            value,
+                            y,
+                            value);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_subset(dyntracer_t* dyntracer,
+                              SEXP r_call,
+                              SEXP r_x,
+                              SEXP r_index,
+                              SEXP r_result) {
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    instrumentr_event_t event = INSTRUMENTR_EVENT_SUBSET;
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_call_stack_t call_stack =
+        instrumentr_state_get_call_stack(state);
+
+    instrumentr_frame_t frame =
+        instrumentr_call_stack_peek_frame(call_stack, 0);
+
+    if (!instrumentr_frame_is_call(frame)) {
+        instrumentr_log_error("expected call on the stack for subset");
+    }
+
+    instrumentr_call_t call = instrumentr_frame_as_call(frame);
+
+    SEXP r_curr_expr =
+        instrumentr_language_get_sexp(instrumentr_call_get_expression(call));
+
+    if (r_curr_expr != r_call) {
+        instrumentr_log_error("subset call expression '%p' does not match "
+                              "stack call expression '%p'",
+                              r_call,
+                              r_curr_expr);
+    }
+
+    instrumentr_value_t x = instrumentr_state_value_table_lookup(state, r_x, 1);
+
+    instrumentr_value_t index =
+        instrumentr_state_value_table_lookup(state, r_index, 1);
+
+    instrumentr_value_t result =
+        instrumentr_state_value_table_lookup(state, r_result, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            subset_function_t,
+                            call,
+                            call,
+                            x,
+                            value,
+                            index,
+                            value,
+                            result,
                             value);
 
     TRACING_FINALIZE(event)

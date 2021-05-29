@@ -360,7 +360,9 @@ typedef enum {
     INSTRUMENTR_EVENT_VARIABLE_DEFINITION,
     INSTRUMENTR_EVENT_VARIABLE_ASSIGNMENT,
     INSTRUMENTR_EVENT_VARIABLE_REMOVAL,
+    INSTRUMENTR_EVENT_VARIABLE_EXISTS,
     INSTRUMENTR_EVENT_VARIABLE_LOOKUP,
+    INSTRUMENTR_EVENT_ENVIRONMENT_LS,
     INSTRUMENTR_EVENT_FUNCTION_CONTEXT_LOOKUP,
     INSTRUMENTR_EVENT_CONTEXT_ENTRY,
     INSTRUMENTR_EVENT_CONTEXT_EXIT,
@@ -373,6 +375,8 @@ typedef enum {
     INSTRUMENTR_EVENT_PROMISE_LAZY_LOAD,
     INSTRUMENTR_EVENT_ERROR,
     INSTRUMENTR_EVENT_ATTRIBUTE_SET,
+    INSTRUMENTR_EVENT_SUBASSIGN,
+    INSTRUMENTR_EVENT_SUBSET,
     /* NOTE: this has to be the last event */
     INSTRUMENTR_EVENT_COUNT
 } instrumentr_event_t;
@@ -560,6 +564,14 @@ typedef void (*variable_removal_function_t)(
     instrumentr_symbol_t symbol,
     instrumentr_environment_t environment);
 
+typedef void (*variable_exists_function_t)(
+    instrumentr_tracer_t tracer,
+    instrumentr_callback_t callback,
+    instrumentr_state_t state,
+    instrumentr_application_t application,
+    instrumentr_symbol_t symbol,
+    instrumentr_environment_t environment);
+
 typedef void (*variable_lookup_function_t)(
     instrumentr_tracer_t tracer,
     instrumentr_callback_t callback,
@@ -568,6 +580,13 @@ typedef void (*variable_lookup_function_t)(
     instrumentr_symbol_t symbol,
     instrumentr_value_t value,
     instrumentr_environment_t environment);
+
+typedef void (*environment_ls_function_t)(instrumentr_tracer_t tracer,
+                                          instrumentr_callback_t callback,
+                                          instrumentr_state_t state,
+                                          instrumentr_application_t application,
+                                          instrumentr_environment_t environment,
+                                          instrumentr_character_t result);
 
 typedef void (*function_context_lookup_function_t)(
     instrumentr_tracer_t tracer,
@@ -656,6 +675,24 @@ typedef void (*attribute_set_function_t)(instrumentr_tracer_t tracer,
                                          instrumentr_value_t object,
                                          instrumentr_symbol_t name,
                                          instrumentr_value_t value);
+
+typedef void (*subassign_function_t)(instrumentr_tracer_t tracer,
+                                     instrumentr_callback_t callback,
+                                     instrumentr_state_t state,
+                                     instrumentr_application_t application,
+                                     instrumentr_call_t call,
+                                     instrumentr_value_t x,
+                                     instrumentr_value_t index,
+                                     instrumentr_value_t y);
+
+typedef void (*subset_function_t)(instrumentr_tracer_t tracer,
+                                  instrumentr_callback_t callback,
+                                  instrumentr_state_t state,
+                                  instrumentr_application_t application,
+                                  instrumentr_call_t call,
+                                  instrumentr_value_t x,
+                                  instrumentr_value_t index,
+                                  instrumentr_value_t result);
 
 #define INSTRUMENTR_CALLBACK_TYPE_MAP_MACRO_1(MACRO, ARGUMENT)                 \
     MACRO(INSTRUMENTR_CALLBACK_TRACING_ENTRY, tracing_entry, ARGUMENT)         \

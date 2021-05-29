@@ -68,6 +68,11 @@ instrumentr_state_value_table_lookup(instrumentr_state_t state,
                                      SEXP r_value,
                                      int create);
 
+instrumentr_character_t
+instrumentr_state_value_table_lookup_character(instrumentr_state_t state,
+                                               SEXP r_value,
+                                               int create);
+
 instrumentr_closure_t
 instrumentr_state_value_table_lookup_closure(instrumentr_state_t state,
                                              SEXP r_value,
