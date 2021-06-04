@@ -113,6 +113,15 @@ void instrumentr_trace_eval_call_exit(dyntracer_t* dyntracer,
                                       SEXP r_rho,
                                       SEXP r_result);
 
+void instrumentr_trace_substitute_call_entry(dyntracer_t* dyntracer,
+                                             SEXP r_expression,
+                                             SEXP r_environment);
+
+void instrumentr_trace_substitute_call_exit(dyntracer_t* dyntracer,
+                                            SEXP r_expression,
+                                            SEXP r_environment,
+                                            SEXP r_result);
+
 void instrumentr_trace_function_context_lookup(dyntracer_t* dyntracer,
                                                const SEXP symbol,
                                                SEXP value,

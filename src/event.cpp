@@ -26,6 +26,8 @@ event_info_t table[INSTRUMENTR_EVENT_COUNT] = {
     {INSTRUMENTR_EVENT_EVAL_EXIT, "eval_exit", 5},
     {INSTRUMENTR_EVENT_EVAL_CALL_ENTRY, "eval_call_entry", 6},
     {INSTRUMENTR_EVENT_EVAL_CALL_EXIT, "eval_call_exit", 7},
+    {INSTRUMENTR_EVENT_SUBSTITUTE_CALL_ENTRY, "substitute_call_entry", 6},
+    {INSTRUMENTR_EVENT_SUBSTITUTE_CALL_EXIT, "substitute_call_exit", 7},
     {INSTRUMENTR_EVENT_GC_ALLOCATION, "gc_allocation", 5},
     {INSTRUMENTR_EVENT_GC_DEALLOCATION, "gc_deallocation", 5},
     {INSTRUMENTR_EVENT_VALUE_FINALIZE, "value_finalize", 5},

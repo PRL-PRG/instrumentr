@@ -41,6 +41,12 @@ dyntracer_t* instrumentr_dyntracer_create(instrumentr_tracer_t tracer) {
     dyntracer_set_eval_call_exit_callback(dyntracer,
                                           instrumentr_trace_eval_call_exit);
 
+    dyntracer_set_substitute_call_entry_callback(
+        dyntracer, instrumentr_trace_substitute_call_entry);
+
+    dyntracer_set_substitute_call_exit_callback(
+        dyntracer, instrumentr_trace_substitute_call_exit);
+
     dyntracer_set_gc_allocate_callback(dyntracer,
                                        instrumentr_trace_gc_allocation);
     dyntracer_set_gc_unmark_callback(dyntracer,

@@ -1151,6 +1151,64 @@ void instrumentr_trace_eval_call_exit(dyntracer_t* dyntracer,
     TRACING_FINALIZE(event)
 }
 
+void instrumentr_trace_substitute_call_entry(dyntracer_t* dyntracer,
+                                             SEXP r_expression,
+                                             SEXP r_environment) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_SUBSTITUTE_CALL_ENTRY;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t expression =
+        instrumentr_state_value_table_lookup(state, r_expression, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(
+            state, r_environment, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            substitute_call_entry_function_t,
+                            expression,
+                            value,
+                            environment,
+                            environment);
+
+    TRACING_FINALIZE(event)
+}
+
+void instrumentr_trace_substitute_call_exit(dyntracer_t* dyntracer,
+                                            SEXP r_expression,
+                                            SEXP r_environment,
+                                            SEXP r_result) {
+    instrumentr_event_t event = INSTRUMENTR_EVENT_SUBSTITUTE_CALL_EXIT;
+
+    instrumentr_tracer_t tracer = instrumentr_dyntracer_get_tracer(dyntracer);
+
+    TRACING_INITIALIZE(event)
+
+    instrumentr_value_t expression =
+        instrumentr_state_value_table_lookup(state, r_expression, 1);
+
+    instrumentr_environment_t environment =
+        instrumentr_state_value_table_lookup_environment(
+            state, r_environment, 1);
+
+    instrumentr_value_t result =
+        instrumentr_state_value_table_lookup(state, r_result, 1);
+
+    TRACING_INVOKE_CALLBACK(event,
+                            substitute_call_exit_function_t,
+                            expression,
+                            value,
+                            environment,
+                            environment,
+                            result,
+                            value);
+
+    TRACING_FINALIZE(event)
+}
+
 void set_function_name(instrumentr_symbol_t symbol,
                        instrumentr_value_t value,
                        instrumentr_environment_t environment) {
