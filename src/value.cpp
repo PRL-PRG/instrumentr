@@ -11,7 +11,7 @@
  *******************************************************************************/
 
 void instrumentr_value_finalize(instrumentr_model_t model) {
-    instrumentr_value_t value = (instrumentr_value_t)(model);
+    instrumentr_value_t value = (instrumentr_value_t) (model);
     /* NOTE: we don't overwrite the type field because it is read by model when
      * freeing the object to update alloc_stats. */
     value->r_sexp = NULL;
@@ -37,7 +37,7 @@ instrumentr_value_create(instrumentr_state_t state,
                                  instrumentr_value_finalize,
                                  origin);
 
-    instrumentr_value_t value = (instrumentr_value_t)(model);
+    instrumentr_value_t value = (instrumentr_value_t) (model);
 
     value->type = type;
     value->r_sexp = r_sexp;
@@ -135,7 +135,7 @@ SEXP r_instrumentr_value_get_reference_count(SEXP r_value) {
 
 /* accessor */
 instrumentr_id_t instrumentr_value_get_id(instrumentr_value_t value) {
-    return instrumentr_model_get_id((instrumentr_model_t)(value));
+    return instrumentr_model_get_id((instrumentr_model_t) (value));
 }
 
 SEXP r_instrumentr_value_get_id(SEXP r_value) {
@@ -156,7 +156,7 @@ instrumentr_value_type_t instrumentr_value_get_type(instrumentr_value_t value) {
 
 /* accessor */
 int instrumentr_value_get_birth_time(instrumentr_value_t value) {
-    return instrumentr_model_get_birth_time((instrumentr_model_t)(value));
+    return instrumentr_model_get_birth_time((instrumentr_model_t) (value));
 }
 
 SEXP r_instrumentr_value_get_birth_time(SEXP r_value) {
@@ -165,7 +165,7 @@ SEXP r_instrumentr_value_get_birth_time(SEXP r_value) {
 
 /* accessor */
 int instrumentr_value_get_death_time(instrumentr_value_t value) {
-    return instrumentr_model_get_death_time((instrumentr_model_t)(value));
+    return instrumentr_model_get_death_time((instrumentr_model_t) (value));
 }
 
 SEXP r_instrumentr_value_get_death_time(SEXP r_value) {
@@ -174,7 +174,7 @@ SEXP r_instrumentr_value_get_death_time(SEXP r_value) {
 
 /* accessor */
 int instrumentr_value_get_life_time(instrumentr_value_t value) {
-    return instrumentr_model_get_life_time((instrumentr_model_t)(value));
+    return instrumentr_model_get_life_time((instrumentr_model_t) (value));
 }
 
 SEXP r_instrumentr_value_get_life_time(SEXP r_value) {
@@ -247,4 +247,26 @@ SEXP r_instrumentr_value_get_sexp(SEXP r_value) {
     instrumentr_value_t value =
         instrumentr_value_unwrap(r_value, INSTRUMENTR_VALUE_TYPE_COUNT);
     return instrumentr_value_get_sexp(value);
+}
+
+/*******************************************************************************
+ * attribute
+ *******************************************************************************/
+
+/* accessor */
+instrumentr_value_t instrumentr_value_get_attribute(instrumentr_value_t value,
+                                                    const char* name) {
+    SEXP r_sexp = instrumentr_value_get_sexp(value);
+    SEXP r_name = Rf_install(name);
+    SEXP r_attribute = Rf_getAttrib(r_sexp, r_name);
+    instrumentr_state_t state = instrumentr_value_get_state(value);
+    return instrumentr_state_value_table_lookup(state, r_attribute, 1);
+}
+
+SEXP r_instrumentr_value_get_attribute(SEXP r_value, SEXP r_name) {
+    instrumentr_value_t value =
+        instrumentr_value_unwrap(r_value, INSTRUMENTR_VALUE_TYPE_COUNT);
+    const char* name = instrumentr_r_character_to_c_string(r_name);
+    instrumentr_value_t result = instrumentr_value_get_attribute(value, name);
+    return instrumentr_value_wrap(result);
 }

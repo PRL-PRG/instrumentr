@@ -125,7 +125,11 @@
           instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
     MACRO(instrumentr_##VALUE_NAME##_get_sexp,                                \
           SEXP,                                                               \
-          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)
+          instrumentr_##VALUE_NAME##_t VALUE_NAME##_var)                      \
+    MACRO(instrumentr_##VALUE_NAME##_get_attribute,                           \
+          instrumentr_value_t,                                                \
+          instrumentr_##VALUE_NAME##_t VALUE_VAR,                             \
+          const char* name)
 
 #define INSTRUMENTR_VALUE_DECLARE_R_API(                                       \
     MACRO, VALUE_TYPE, VALUE_NAME, VALUE_VAR)                                  \
@@ -156,7 +160,11 @@
           SEXP r_##VALUE_NAME##_var)                                           \
     MACRO(r_instrumentr_##VALUE_NAME##_get_sexp,                               \
           SEXP,                                                                \
-          SEXP r_##VALUE_NAME##_var)
+          SEXP r_##VALUE_NAME##_var)                                           \
+    MACRO(r_instrumentr_##VALUE_NAME##_get_attribute,                          \
+          SEXP,                                                                \
+          SEXP r_value,                                                        \
+          SEXP r_name)
 
 #define INSTRUMENTR_VALUE_DECLARE_API(VALUE_TYPE, VALUE_NAME, VALUE_VAR) \
     INSTRUMENTR_VALUE_DECLARE_R_API(VALUE_TYPE, VALUE_NAME, VALUE_VAR)   \
@@ -1536,7 +1544,11 @@
     MACRO(instrumentr_value_get_state,                                         \
           instrumentr_state_t,                                                 \
           instrumentr_value_t value)                                           \
-    MACRO(instrumentr_value_get_sexp, SEXP, instrumentr_value_t value)
+    MACRO(instrumentr_value_get_sexp, SEXP, instrumentr_value_t value)         \
+    MACRO(instrumentr_value_get_attribute,                                     \
+          instrumentr_value_t,                                                 \
+          instrumentr_value_t value,                                           \
+          const char* name)
 
 #define INSTRUMENTR_VALUE_R_API_MAP(MACRO)                             \
     MACRO(r_instrumentr_value_get_reference_count, SEXP, SEXP r_value) \
@@ -1548,7 +1560,8 @@
     MACRO(r_instrumentr_value_is_dead, SEXP, SEXP r_value)             \
     MACRO(r_instrumentr_value_is_local, SEXP, SEXP r_value)            \
     MACRO(r_instrumentr_value_is_foreign, SEXP, SEXP r_value)          \
-    MACRO(r_instrumentr_value_get_sexp, SEXP, SEXP r_value)
+    MACRO(r_instrumentr_value_get_sexp, SEXP, SEXP r_value)            \
+    MACRO(r_instrumentr_value_get_attribute, SEXP, SEXP r_value, SEXP r_name)
 
 #define INSTRUMENTR_VALUE_API_MAP(MACRO) \
     INSTRUMENTR_VALUE_C_API_MAP(MACRO)   \
