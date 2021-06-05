@@ -23,7 +23,7 @@ struct instrumentr_promise_impl_t {
  *******************************************************************************/
 
 void instrumentr_promise_finalize(instrumentr_value_t value) {
-    instrumentr_promise_t promise = (instrumentr_promise_t)(value);
+    instrumentr_promise_t promise = (instrumentr_promise_t) (value);
 
     if (promise->type != INSTRUMENTR_PROMISE_TYPE_UNKNOWN) {
         for (std::size_t i = 0; i < promise->calls->size(); ++i) {
@@ -48,7 +48,7 @@ instrumentr_promise_t instrumentr_promise_create(instrumentr_state_t state,
                                  INSTRUMENTR_ORIGIN_LOCAL,
                                  r_sexp);
 
-    instrumentr_promise_t promise = (instrumentr_promise_t)(value);
+    instrumentr_promise_t promise = (instrumentr_promise_t) (value);
 
     promise->type = INSTRUMENTR_PROMISE_TYPE_UNKNOWN;
     promise->calls = new std::vector<instrumentr_call_t>();
@@ -234,10 +234,9 @@ instrumentr_promise_get_calls(instrumentr_promise_t promise) {
 
 /* accessor  */
 instrumentr_call_t instrumentr_promise_get_call(instrumentr_promise_t promise) {
-    if (promise->type == INSTRUMENTR_PROMISE_TYPE_UNKNOWN ||
-        promise->type == INSTRUMENTR_PROMISE_TYPE_ARGUMENT) {
+    if (promise->type != INSTRUMENTR_PROMISE_TYPE_ARGUMENT) {
         instrumentr_log_error(
-            "attempt to get call from an unknown or argument promise");
+            "attempt to get call from a non-argument promise");
         /* NOTE: not executed */
         return NULL;
     }
