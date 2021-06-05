@@ -33,7 +33,7 @@ instrumentr_pairlist_t instrumentr_pairlist_create(instrumentr_state_t state,
                                  INSTRUMENTR_ORIGIN_LOCAL,
                                  r_sexp);
 
-    instrumentr_pairlist_t pairlist = (instrumentr_pairlist_t)(value);
+    instrumentr_pairlist_t pairlist = (instrumentr_pairlist_t) (value);
 
     return pairlist;
 }
@@ -81,7 +81,7 @@ instrumentr_pairlist_get_element(instrumentr_pairlist_t pairlist, int index) {
          result != R_NilValue;
          result = CDR(result), ++i) {
         if (i == index) {
-            return instrumentr_state_value_table_lookup(state, result, 1);
+            return instrumentr_state_value_table_lookup(state, CAR(result), 1);
         }
     }
 
