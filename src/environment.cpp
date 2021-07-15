@@ -65,6 +65,14 @@ instrumentr_environment_create(instrumentr_state_t state, SEXP r_sexp) {
     environment->last_read_time = INT_MAX;
     environment->last_write_time = INT_MAX;
 
+    if (r_sexp == R_GlobalEnv) {
+        instrumentr_environment_set_name(environment, "global");
+    } else if (r_sexp == R_EmptyEnv) {
+        instrumentr_environment_set_name(environment, "empty");
+    } else if (r_sexp == R_BaseEnv) {
+        instrumentr_environment_set_name(environment, "base");
+    }
+
     return environment;
 }
 
